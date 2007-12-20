@@ -14,7 +14,7 @@ Quick Jawr setup
 	  <artifactId>jawr</artifactId>
 	  <version>1.0</version>
 	</dependency>
-+------------------------------------------+
++------------------------------------------+º
 
 * Develop your scripts and stylesheets
 
@@ -26,13 +26,13 @@ Quick Jawr setup
 	
 * Configure instances of the Jawr Servlet
 
-	Add <<org.jeescript.web.servlet.JawrServlet>> to your web.xml descriptor. You will need an instance for handling Javascript, and another one 
+	Add <<net.java.jawr.web.servlet.JawrServlet>> to your web.xml descriptor. You will need an instance for handling Javascript, and another one 
 	for CSS stylesheets. For instance: 
 	
 +------------------------------------------+
 	<servlet>
 		<servlet-name>JavascriptServlet</servlet-name>
-		<servlet-class>org.jeescript.web.servlet.JawrServlet</servlet-class>
+		<servlet-class>net.java.jawr.web.servlet.JawrServlet</servlet-class>
 		<init-param>
 			<param-name>configLocation</param-name>
 			<param-value>/jawr.properties</param-value>
@@ -42,7 +42,7 @@ Quick Jawr setup
 	
 	<servlet>
 		<servlet-name>CSSServlet</servlet-name>
-		<servlet-class>org.jeescript.web.servlet.JawrServlet</servlet-class>
+		<servlet-class>net.java.jawr.web.servlet.JawrServlet</servlet-class>
 		<init-param>
 			<param-name>configLocation</param-name>
 			<param-value>/jawr.properties</param-value>
