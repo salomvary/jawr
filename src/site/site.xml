@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Jawr">  
+	<skin>
+    <groupId>org.jvnet.maven-javanet-skin</groupId>
+    <artifactId>maven-javanet-skin</artifactId>
+    <version>1.0</version>
+  </skin>
+  <bannerLeft>
+    <name>Jawr</name>
+    <src>http://maven.apache.org/images/apache-maven-project.png</src>
+    <href>http://maven.apache.org/</href>
+  </bannerLeft>
+  <bannerRight>
+    <src>http://maven.apache.org/images/maven-small.gif</src>
+  </bannerRight>
+  <body>
+    <links>
+      <item name="Index" href="/index.html"/>
+      <item name="Apache" href="http://www.apache.org/" />
+      <item name="Maven 2" href="http://maven.apache.org/"/>
+    </links>
+   
+	<menu name="About">
+		<item name="Index" href="/index.html"/>
+     	<item name="Introduction" href="/introduction.html"/>
+	</menu>
+		
+    <menu name="Documentation">
+      <item name="The Jawr servlet" href="/docs/servlet.html"/>
+      <item name="Descriptor syntax" href="/docs/descriptor_syntax.html"/>
+      <item name="Bundle definition" href="/docs/custom_bundles.html"/>
+      <item name="Source order in bundles" href="/docs/source_ordering.html"/>
+      <item name="Postprocessors" href="/docs/postprocessors.html"/>
+      <item name="Licenses in resources" href="/docs/license_files.html"/>
+      <item name="Tag libraries" href="/docs/taglibs.html"/>
+      <item name="Debug and production modes" href="/docs/modes.html"/>
+    </menu>
+    
+    <menu name="Tutorials">
+      <item name="Quick start" href="/tutorials/quickstart.html"/>
+      <item name="Using popular libraries" href="/tutorials/libraries.html"/>   
+    </menu>
+
+    <menu ref="reports"/>
+
+  </body>
+</project>
