@@ -167,9 +167,9 @@
           &lt;groupId&gt;net.java.jawr&lt;/groupId&gt;
           &lt;artifactId&gt;jawr&lt;/artifactId&gt;
           &lt;version&gt;1.0&lt;/version&gt;
-        &lt;/dependency&gt;</pre></div></div><div class="section"><h3>Develop your scripts and stylesheets</h3><p>For the quick setup, it is assumed that you have the following directories at the root of your application: <b>/js</b>, <b>/js/lib</b> and <b>/css</b>. Of course these may contain more subdirs. The sample configuration will create a bundle containing everything under <b>/js/lib</b>, named <b>/bundles/lib.js</b>. The remaining .js files at /js and subdirs will be served separately. As for the CSS files, a single all-in-one bundle named <b>/bundles/all.css</b> will be used. </p></div><div class="section"><h3>Configure instances of the Jawr Servlet</h3><p>Add <b>org.jeescript.web.servlet.JawrServlet</b> to your web.xml descriptor. You will need an instance for handling Javascript, and another one for CSS stylesheets. For instance: </p><div class="source"><pre>        &lt;servlet&gt;
+        &lt;/dependency&gt;</pre></div></div><div class="section"><h3>Develop your scripts and stylesheets</h3><p>For the quick setup, it is assumed that you have the following directories at the root of your application: <b>/js</b>, <b>/js/lib</b> and <b>/css</b>. Of course these may contain more subdirs. The sample configuration will create a bundle containing everything under <b>/js/lib</b>, named <b>/bundles/lib.js</b>. The remaining .js files at /js and subdirs will be served separately. As for the CSS files, a single all-in-one bundle named <b>/bundles/all.css</b> will be used. </p></div><div class="section"><h3>Configure instances of the Jawr Servlet</h3><p>Add <b>net.java.jawr.web.servlet.JawrServlet</b> to your web.xml descriptor. You will need an instance for handling Javascript, and another one for CSS stylesheets. For instance: </p><div class="source"><pre>        &lt;servlet&gt;
                 &lt;servlet-name&gt;JavascriptServlet&lt;/servlet-name&gt;
-                &lt;servlet-class&gt;org.jeescript.web.servlet.JawrServlet&lt;/servlet-class&gt;
+                &lt;servlet-class&gt;net.java.jawr.web.servlet.JawrServlet&lt;/servlet-class&gt;
                 &lt;init-param&gt;
                         &lt;param-name&gt;configLocation&lt;/param-name&gt;
                         &lt;param-value&gt;/jawr.properties&lt;/param-value&gt;
@@ -179,7 +179,7 @@
         
         &lt;servlet&gt;
                 &lt;servlet-name&gt;CSSServlet&lt;/servlet-name&gt;
-                &lt;servlet-class&gt;org.jeescript.web.servlet.JawrServlet&lt;/servlet-class&gt;
+                &lt;servlet-class&gt;net.java.jawr.web.servlet.JawrServlet&lt;/servlet-class&gt;
                 &lt;init-param&gt;
                         &lt;param-name&gt;configLocation&lt;/param-name&gt;
                         &lt;param-value&gt;/jawr.properties&lt;/param-value&gt;
