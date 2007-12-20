@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html>
+  <head>
+    <title>Jawr - </title>
+    <style type="text/css" media="all">
+      @import url("../css/maven-base.css");
+      @import url("../css/maven-theme.css");
+      @import url("../css/site.css");
+    </style>
+    <link rel="stylesheet" href="../css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <!-- TODO: move this into JavaScript to patch the skin
+      <div class="xright">      <a href="../index.html">Index</a>
+          |
+          <a href="http://www.apache.org/">Apache</a>
+          |
+          <a href="http://maven.apache.org/">Maven 2</a>
+      </div>
+    -->
+    <div id="leftColumn">
+      <div id="navcolumn">
+             <dl class=navgroup>
+        <dt>About</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../index.html">Index</a>
+        </li>
+              
+    <li class="none">
+              <a href="../introduction.html">Introduction</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Documentation</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../docs/servlet.html">The Jawr servlet</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/descriptor_syntax.html">Descriptor syntax</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/custom_bundles.html">Bundle definition</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/source_ordering.html">Source order in bundles</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/postprocessors.html">Postprocessors</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/license_files.html">Licenses in resources</a>
+        </li>
+              
+    <li class="none">
+              <strong>Tag libraries</strong>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/modes.html">Debug and production modes</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Tutorials</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../tutorials/quickstart.html">Quick start</a>
+        </li>
+              
+    <li class="none">
+              <a href="../tutorials/libraries.html">Using popular libraries</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Project Documentation</dt>
+        <dd><ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+              <a href="../project-info.html">Project Information</a>
+              </li>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+              <a href="../project-reports.html">Project Reports</a>
+              </li>
+          </ul></dd>
+    </dl>
+        </div>
+      <script>
+        // replace the java.net project tools with the navigation bar from Maven.
+        // also get rid of "Get Involved" thingie too, while we are at it
+        var pt = document.getElementById("projecttools");
+        var nv = document.getElementById("navcolumn");
+        
+        while(pt.previousSibling!=null)
+          pt.parentNode.removeChild(pt.previousSibling);
+        
+        pt.parentNode.insertBefore(nv,pt);
+        pt.parentNode.removeChild(pt);
+      </script>
+      <script>
+        // kill "description" h3 bar
+        var ld = document.getElementById("longdescription");
+        if(ld!=null) {
+          for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
+            if(n.nodeType==1 && n.innerHTML=="Description" ) {
+              n.parentNode.removeChild(n);
+              break;
+            }
+          }
+        }
+      </script>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>Jawr taglibs</h2><p>Jawr comes with two tag libraries used to generate tags that import our bundles to clients of our application. One of them will be used to generate script tags for javascript resources, and another will generate link tags for CSS resources. &#160;</p><p>Both taglibs have a <b>src</b> attribute in which you specify either the name of a bundle or the path to a member of a bundle. In either case, the taglib will do as follows: </p><ul><li>The page request headers will be analyzed to check wether the current client browser will accept gzip encoding or not. Depending on this, the generated URLs will point to the regular or the gzipped versions of the bundles. <ul><li>Internet Explorer has certain issues with gzip encoded resources under certain circumstances. This affects version 6 partially, since Service Pack 2 fixed all problems. If you wish to be 100% sure that you will not run into such problems, you may set the <b>jawr.gzip.ie6.on</b> flag to <b>false</b> in the descritor. This will disable gzipping for IE versions 6 and lower. However, the worst problems in Internet Explorer are related to Vary headers needed when the same URL points to a resource that is gzipped on demand. Jawr does not use this header by having a completely different path for gzipped and regular versions of the same file, so for most cases it should be fine to use gzipping with IE. &#160;<p>On some versions, though, it is said that compressed CSS in cache is not decompressed after restarting the browser and visiting a page that uses the resource, which results in the CSS not working properly. &#160;</p><p>The bottom line is that, unless your application runs on a controlled environment such as a corporate intranet, it will be the safest to set the <b>jawr.gzip.ie6.on</b> flag to <b>false</b>. </p></li></ul></li><li>Any global bundle will be added in the specified order. See the bundle definition manual for more info on this. If the global bundles have already been added to the page by a previous tag, this step is skipped. </li><li>Then the corresponding bundle is resolved, either by name or by finding a bundle to which the path belongs to. <ul><li>If the debug mode is off, a link to the bundle is then rendered, unless it had already been included by a previous tag. </li><li>Otherwise, a link is rendered to each member of the bundle, ading a random request parameter to the URL, to prevent the browser from caching any resource. Again, no resources will be linked again if a previous tag did it first. Also, processing HTML comments are added so a developer will easily follow how bundles would be processed in production mode. </li></ul></li></ul><div class="section"><h3>Usage</h3><p>In order to use any of the tags, you will need to import the taglib to your page, like this: </p><div class="source"><pre>
+        &lt;%@ taglib uri=&quot;http://www.jawr.org/tags&quot; prefix=&quot;jwr&quot; %&gt;
+        </pre></div></div><div class="section"><h3>The script taglib</h3><p>This tag has only one mandatory attribute, the aforementioned <b>src</b>. To see how it works, imagine we had a mapping like this in our config file: </p><div class="source"><pre>        jawr.js.bundle.names=globalBundle, fooBundle
+        
+        jawr.js.bundle.globalBundle.id=/bundles/global.js
+        jawr.js.bundle.globalBundle.global=true
+        jawr.js.bundle.globalBundle.mappings=/js/lib/** 
+        jawr.js.bundle.globalBundle.prefix=/global01
+        
+        jawr.js.bundle.fooBundle.id=/bundles/fooBundle.js
+        jawr.js.bundle.fooBundle.mappings=/js/foo.js,/js/bar.js 
+        jawr.js.bundle.fooBundle.prefix=/foo01</pre></div><p>Then, in a JSP we type the following: </p><div class="source"><pre>
+        &lt;%@ taglib uri=&quot;http://www.jawr.org/tags&quot; prefix=&quot;jwr&quot; %&gt;
+        &lt;html&gt;
+        &lt;head&gt;
+                &lt;!-- Invoking the bundle by name --&gt;
+                &lt;jwr:script src=&quot;/bundles/fooBundle.js&quot;/&gt; 
+                
+                &lt;!-- Invoking the bundle by using the path of one of its members --&gt;
+                &lt;jwr:script src=&quot;/js/bar.js&quot;/&gt; 
+        &lt;/head&gt;
+        ...
+        </pre></div><p>The result is that when the JSP is executed with Jawr in production mode, something like the following is written to the page: </p><div class="source"><pre>        &lt;script type=&quot;text/javascript&quot; src=&quot;/myWarContext/global01/bundles/global.js&quot; &gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;/myWarContext/foo01/bundles/fooBundle.js&quot; &gt;&lt;/script&gt;</pre></div><p>This might be unexpected: a link to the global bundle was writen first, even though no specific tag invoked it. That is precisely what global bundles are about: they will always be included whenever you use a Jawr tag in a page, before any other bundle. This way, commonly used libraries are implicitly availabe everywhere. &#160;</p><p>Although we wrote two tags in the JSP with paths corresponding to the foo bundle, only one script link is written out. It would be pointless to link twice to the same resource in a page, so Jawr will only write each different link once. &#160;</p><p>The link itself, as you can see, is composed of the application context path, the prefix we specified for the bundle, and the bundle id. &#160;</p></div><div class="section"><h3>The style taglib</h3><p>Aside from the mandatory <b>src</b> attribute, this tag has an optional <b>media</b> attribute. Use it if you need to set a specific media type for a CSS bundle. If this attribute is not set it will be rendered as media=&quot;screen&quot;. For example: </p><div class="source"><pre>
+        &lt;!-- 
+                        Invoking the bundle by name. 
+                        The generated link will have media=&quot;screen&quot;  
+        --&gt;
+        &lt;jwr:style src=&quot;/bundles/someCSSbundle.css&quot;/&gt;
+        
+        &lt;!-- Invoking the bundle by using the path of one of its members and setting the media attribute. --&gt;
+        &lt;jwr:style src=&quot;/css/printer.css&quot; media=&quot;print&quot; /&gt;
+        </pre></div></div></div>
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2007
+    
+          
+  
+
+  
+  
+  &nbsp;| Last Published: 12/20/2007
+  &nbsp;| Version: 1.0
+</div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>

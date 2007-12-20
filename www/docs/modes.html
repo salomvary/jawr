@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html>
+  <head>
+    <title>Jawr - </title>
+    <style type="text/css" media="all">
+      @import url("../css/maven-base.css");
+      @import url("../css/maven-theme.css");
+      @import url("../css/site.css");
+    </style>
+    <link rel="stylesheet" href="../css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <!-- TODO: move this into JavaScript to patch the skin
+      <div class="xright">      <a href="../index.html">Index</a>
+          |
+          <a href="http://www.apache.org/">Apache</a>
+          |
+          <a href="http://maven.apache.org/">Maven 2</a>
+      </div>
+    -->
+    <div id="leftColumn">
+      <div id="navcolumn">
+             <dl class=navgroup>
+        <dt>About</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../index.html">Index</a>
+        </li>
+              
+    <li class="none">
+              <a href="../introduction.html">Introduction</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Documentation</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../docs/servlet.html">The Jawr servlet</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/descriptor_syntax.html">Descriptor syntax</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/custom_bundles.html">Bundle definition</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/source_ordering.html">Source order in bundles</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/postprocessors.html">Postprocessors</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/license_files.html">Licenses in resources</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/taglibs.html">Tag libraries</a>
+        </li>
+              
+    <li class="none">
+              <strong>Debug and production modes</strong>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Tutorials</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../tutorials/quickstart.html">Quick start</a>
+        </li>
+              
+    <li class="none">
+              <a href="../tutorials/libraries.html">Using popular libraries</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Project Documentation</dt>
+        <dd><ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+              <a href="../project-info.html">Project Information</a>
+              </li>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+              <a href="../project-reports.html">Project Reports</a>
+              </li>
+          </ul></dd>
+    </dl>
+        </div>
+      <script>
+        // replace the java.net project tools with the navigation bar from Maven.
+        // also get rid of "Get Involved" thingie too, while we are at it
+        var pt = document.getElementById("projecttools");
+        var nv = document.getElementById("navcolumn");
+        
+        while(pt.previousSibling!=null)
+          pt.parentNode.removeChild(pt.previousSibling);
+        
+        pt.parentNode.insertBefore(nv,pt);
+        pt.parentNode.removeChild(pt);
+      </script>
+      <script>
+        // kill "description" h3 bar
+        var ld = document.getElementById("longdescription");
+        if(ld!=null) {
+          for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
+            if(n.nodeType==1 && n.innerHTML=="Description" ) {
+              n.parentNode.removeChild(n);
+              break;
+            }
+          }
+        }
+      </script>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>Debug and production modes</h2><p>Jawr was designed to be able to use bundled resources without losing the ability to use a fast development environment. Bundling resources together and minimizing them by removing whitespace and comments is great for production servers, but trying to debug a minified script that lacks comments is not going to make anyone's life easier. Also, if the strict caching policy that Jawr uses for production was used in development, you would basically need to clear your browser's cache every time you changed a line in a CSS or in a script to be able to test your changes. &#160; Thus, when you activate Jawr development mode (by setting the flag jawr.debug.on to true in the config), things change in the way Jawr works to make your life as a developer a lot easier. &#160;</p><p>The main difference between production and development modes is that bundle files are not served directly. Rather, each of the components in a bundle will be served sepparately in the same order that it would be included in the bundle. To understand this, we need an example. Imagine we had a very simple directory structure like this one: </p><img src="../images/modes/sample_dirs.png" alt="A sample directory structure" /><p>As you see, there is a sorting file in the /lib directory. This file is forcing prototype.js to be the first added to a bundle. &#160;</p><p>For this structure, we define two bundles in the following form: </p><div class="source"><pre>        jawr.js.bundle.names=globalBundle, fooBundle
+        
+        jawr.js.bundle.globalBundle.id=/bundles/global.js
+        jawr.js.bundle.globalBundle.global=true
+        jawr.js.bundle.globalBundle.mappings=/js/lib/** 
+        jawr.js.bundle.globalBundle.prefix=/global01
+        
+        jawr.js.bundle.fooBundle.id=/bundles/fooBundle.js
+        jawr.js.bundle.fooBundle.mappings=/js/foo.js,/js/bar.js 
+        jawr.js.bundle.fooBundle.prefix=/foo01</pre></div><p>Finally, we invoke a bundle in a page: </p><div class="source"><pre>
+        &lt;%@ taglib uri=&quot;http://www.jawr.org/tags&quot; prefix=&quot;jwr&quot; %&gt;
+        &lt;html&gt;
+        &lt;head&gt;
+                &lt;!-- Invoking the fooBundle by using the path of one of its members --&gt;
+                &lt;jwr:script src=&quot;/js/bar.js&quot;/&gt; 
+        &lt;/head&gt;
+        ...
+        </pre></div><p>Now, visiting this page has a very different effect depending on the mode Jawr is running. In production mode, the output is very straightforward: </p><div class="source"><pre>        &lt;script type=&quot;text/javascript&quot; src=&quot;/myWarContext/global01/bundles/global.js&quot; &gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;/myWarContext/foo01/bundles/fooBundle.js&quot; &gt;&lt;/script&gt;</pre></div><p>We get the global bundle first, then the one we invoked, as expected. &#160;</p><p>However, if we open the same page while in development mode, the output would look like this: </p><div class="source"><pre>        &lt;!-- Start adding members resolved by '/js/bar.js'. Bundle id is: '/bundles/fooBundle.js' --&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;/myWarContext/lib/prototype.js?d=1864721312&quot; &gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;/myWarContext/lib/sound.js?d=4725551312&quot; &gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;/myWarContext/lib/slider.js?d=2131218647&quot; &gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;/myWarContext/js/foo.js?d=7186421312&quot; &gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;/myWarContext/js/bar.js?d=6418721312&quot; &gt;&lt;/script&gt;
+        &lt;!-- Finished adding members resolved by /js/bar.js --&gt;</pre></div><p>There are major differences here: </p><ul><li>Jawr writes HTML comments to let you know how each tag is being processed. This way you have better understanding of how bundles are resolved. </li><li>Instead of links to the bundles, we get links to the individual members of the bundles. These appear in the same order as they would when added to the bundle. Thus, the first link is to prototype.js since it belongs to the global bundle and the sorting file at the /lib directory states that it should precede the others. </li><li>The URL prefix for the bundles is omitted. </li><li>A request parameter with a random value is appended at the end of each URL. The effect is that no matter which your browser's cache settings are, the files will always be requested every time you refresh the page. </li><li>The files will be served as deployed, meaning no minification or postprocessing whatsoever will be applied, so you can work with them easily. </li><li>The Jawr servlet will not cache any resource, so if you are working with an exploded WAR deployment, you can change individual resources and see the changes without having to fully redeploy your application.</li></ul><p>The caveat here is very clear: never forget to switch off development mode in production or the results might be catastrophic for your bandwidth. Also, it is recommended that you have at least one integration step previous to production where you don't use development mode. &#160;</p><p>To prevent this kind of problems, a warning is written to the log anytime you start Jawr in development mode so you can test the minified resources. </p></div>
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2007
+    
+          
+  
+
+  
+  
+  &nbsp;| Last Published: 12/20/2007
+  &nbsp;| Version: 1.0
+</div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>

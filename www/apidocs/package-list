@@ -1,0 +1,17 @@
+org.jawr.web.collections
+org.jawr.web.config
+org.jawr.web.exception
+org.jawr.web.minification
+org.jawr.web.resource
+org.jawr.web.resource.bundle
+org.jawr.web.resource.bundle.factory
+org.jawr.web.resource.bundle.factory.mapper
+org.jawr.web.resource.bundle.factory.processor
+org.jawr.web.resource.bundle.factory.util
+org.jawr.web.resource.bundle.handler
+org.jawr.web.resource.bundle.postprocess
+org.jawr.web.resource.bundle.postprocess.impl
+org.jawr.web.resource.bundle.renderer
+org.jawr.web.resource.bundle.sorting
+org.jawr.web.servlet
+org.jawr.web.taglib
