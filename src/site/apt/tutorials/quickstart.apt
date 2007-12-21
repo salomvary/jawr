@@ -135,7 +135,7 @@ log4j.logger.net.java.jawr=INFO
 	Create a test javascript file at the <</js>> directory, named <<test.js>>. Then write JSP page and add the following content: 
 
 +------------------------------------------+
-<%@ taglib uri="http://www.jawr.org/tags" prefix="jwr" %>
+<%@ taglib uri="http://jawr.java.net/tags" prefix="jwr" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
