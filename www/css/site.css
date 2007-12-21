@@ -3,23 +3,23 @@ body, h1, h2, h3, h4, h5, h6, p, td, table td, input, select {
 }
 h2, h3, h4 {
 	border:0 !important;
-	color:#000000;
-	font-weight:bold;
-	background-color:#669966;
-	color:#FFFFFF;
-	margin-left:2px;
-	margin-right:2px;
-	padding:3px;
+	color:#000000 !important;
+	font-weight:bold !important;
+	background-color:#669966 !important;
+	color:#FFFFFF !important;
+	margin-left:2px !important;
+	margin-right:2px !important;
+	padding:3px !important;
 }
-h2 {font-size:1.25em;}
-h3 {font-size:1.1em;}
-h4 {font-size:1em;}
+h2 {font-size:1.25em !important;}
+h3 {font-size:1.1em !important;}
+h4 {font-size:1em !important;}
 
 div.source {
-	background-color:#FEFEE6;
-	border-color:#DDDDDD rgb(136, 136, 136) rgb(136, 136, 136) rgb(221, 221, 221);
-	border-style:solid;
-	border-width:1px;
-	margin-bottom:1em;
-	padding:6px 11px 1em 6px;
+	background-color:#FEFEE6 !important;
+	border-color:#DDDDDD rgb(136, 136, 136) rgb(136, 136, 136) rgb(221, 221, 221) !important;
+	border-style:solid !important;
+	border-width:1px !important;
+	margin-bottom:1em !important;
+	padding:6px 11px 1em 6px !important;
 }
