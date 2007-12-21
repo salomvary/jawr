@@ -1,3 +1,9 @@
+																		------
+                                    The Jawr servlet
+                                    ------
+                                    ------
+                                    ------
+
 The Jawr servlet
 	
 	For each type of supported resource (CSS or Javascript), you need an instance of net.java.jawr.web.servlet.JawrServlet running. 

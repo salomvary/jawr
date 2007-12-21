@@ -1,3 +1,9 @@
+																		------
+                                    Definition of custom bundles
+                                    ------
+                                    ------
+                                    ------
+
 Definition of custom bundles
 
 	Bundles are the core functionality of Jawr. A bundle is a group of resources joined together in a single file that has an associated logical name. 

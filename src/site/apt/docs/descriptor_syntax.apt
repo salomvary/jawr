@@ -1,3 +1,9 @@
+																		------
+                                    Descriptor file syntax
+                                    ------
+                                    ------
+                                    ------
+
 Descriptor file syntax
 
 	The Jawr descriptor file consists of a simple properties file. All property names begin with <jawr.>, followed by either <js.> or <css.> to denote 

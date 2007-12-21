@@ -5,19 +5,29 @@
   <artifactId>jawr</artifactId>
   <name>Java web resources bundling and compression</name>
   <version>1.0</version>
+  <url>https://jawr.dev.java.net/</url>
   <description>
   	Javascript/CSS bundling and compressing tool for java web apps.
   	By using jawr resources are automatically bundled together and optionally minified and gzipped. 
-  	Jawr provides tag libraries to reference a generated bundle either by id or by using the name of any of its members.</description>
+  	Jawr provides tag libraries to reference a generated bundle either by id or by using the name of any of its members.
+  </description>
+  
   <developers>
     <developer>
-      <id>jordi</id>
+      <id>jordihs</id>
       <name>Jordi Hernandez Selles</name>
       <roles>
         <role>Project owner</role>
       </roles>
     </developer>
   </developers>
+  
+  <scm>
+      <connection>scm:svn:https://jawr.dev.java.net/svn/jawr/</connection>
+      <developerConnection>scm:svn:https://jawr.dev.java.net/svn/jawr/</developerConnection>
+      <url>https://jawr.dev.java.net/source/browse/jawr/</url>
+   </scm> 
+   
   <dependencies>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -46,13 +56,13 @@
   </dependencies>
    <reporting>
     <plugins>
-      <plugin>
+      <!--<plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jxr-maven-plugin</artifactId>
-      </plugin>
+      </plugin>-->
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-pmd-plugin</artifactId>

@@ -1,3 +1,9 @@
+																		------
+                                    Debug and production modes
+                                    ------
+                                    ------
+                                    ------
+
 Debug and production modes
 
 	Jawr was designed to be able to use bundled resources without losing the ability to use a fast development environment. Bundling resources together 

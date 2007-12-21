@@ -1,3 +1,9 @@
+																		------
+                                    Source ordering within bundles
+                                    ------
+                                    ------
+                                    ------
+
 Source ordering within bundles
 	
 	Both Javascript and CSS are interpreted in source order, which means that often you will need the files within a bundle to follow a certain sequence. 
