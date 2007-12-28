@@ -4,13 +4,16 @@
                                     ------
                                     ------
 
-Welcome to Jawr
+Jawr: bundling and compression for web application resources. 
 	
 	Jawr is a tunable packaging solution for Javascript and CSS which allows for rapid development of resources in separate module files. 
 	Writing a simple descriptor properties file, and using a servlet and a tag library are all the requirements to use it. 
-	In production, modules are joined into one or several bundle files, then minified and compressed, for up to a 1:5 compression ratio. 
-	At development time, modules are loaded separately an can be modified and tested without needing to go through a full build-redeploy cycle. 
 	
+	
+[./images/index/jawr.png] How Jawr will help you
+	
+	It is common knowledge that it is faster to serve one large file rather than two smaller ones, because of increased HTTP negotiation and the fact 
+	that most browsers only keep two connections open to the same host at any given time. 
 	Jawr will reduce the number of requests needed to load a page and the amount of data to transfer to clients, achieving drastic improvement of 
 	loading times. With a simple configuration file, resources can be distributed in bundles to best suit the usage pattern for a site. 
 	
@@ -34,6 +37,8 @@ Welcome to Jawr
 	
 	Jawr offers the best of both worlds, by combining a powerful bundling-minifying-compressing scheme for optimal service in 
 	production, with a rapid development mode for quick change-save-test cycles. 
+	
+	You can download the latest release of Jawr {{{https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=8543}here}}. 
 	
 	
 * Features

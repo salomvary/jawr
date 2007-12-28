@@ -8,7 +8,7 @@ Quick Jawr setup
 
 * Download and install
 	
-	{{{https://jawr.dev.java.net/servlets/ProjectDocumentList}Download Jawr from the documents area}} and place it within the classpath of 
+	{{{https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=8543}Download Jawr from the documents area}} and place it within the classpath of 
 	your application (typically, under WEB-INF/lib). Add log4j.jar to the path as well. 
 	
 	If you are using java 1.4, you can optionally download {{{http://backport-jsr166.sourceforge.net/}backport-util-concurrent}} and add it to 

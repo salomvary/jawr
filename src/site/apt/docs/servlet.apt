@@ -32,7 +32,7 @@ The Jawr servlet
 	
 +------------------------------------------+
 	
-	We would use this servlet to manage javacript bundles. The init params for a Jawr servlet are the following: 
+	We would use this servlet to manage javascript bundles. The init params for a Jawr servlet are the following: 
 	
 	* <<configLocation>>: This is a mandatory parameter. Its value points to a classpath resource that Jawr will use to configure itself. See the 
 	{{{./descriptor_syntax.html}config file syntax page}}for more information. You can use the same properties file for both instances of the servlet. 

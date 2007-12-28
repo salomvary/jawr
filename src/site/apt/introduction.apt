@@ -13,7 +13,7 @@ Introduction
 	are organized in separate files. The nature of the HTTP protocol makes it undesirable to have clients download many separate files.
 	Content negotiation and the fact that normally there will only be two concurrent connections to the same host produce an overhead that 
 	results in unacceptably long page loading times. Thus, it is faster to serve a 10KB script file than to serve, say, eight 1KB separate 
-	script files. So, from this perspective it is desirable to have as least files to serve as possible. \ 
+	script files. So, from this perspective it is desirable to have as least files to serve as possible. 
 	
 	The problem lies in the fact that, as javascript components grow in complexity, it becomes increasingly inconvenient to keep all the code in 
 	the same file. To change parts of the code, developers must first scan a potentially huge file to find the parts that need change. When working
@@ -49,5 +49,14 @@ Introduction
 	
 	Additionally, Jawr can bundle CSS files as well. Minification is provided as well, and any relative URL within a CSS added to a bundle will be
 	conveniently rewritten so that its link is not broken. 
+	
+* References 
+	
+	At {{{http://www.die.net/musings/page_load_time/}http://www.die.net/musings/page_load_time/}} there are several benchmarks that show how serving 
+	uncompressed, separate files is considerably worse than using unified files. / 
+	
+	There is an interesting read about the subject, by Cal Henderson of Flickr, at 
+	{{{http://www.thinkvitamin.com/features/webapps/serving-javascript-fast}http://www.thinkvitamin.com/features/webapps/serving-javascript-fast}}. 
+	It discusses solutions for PHP sites that Jawr tries to implement in the Java web application space. \ 
 	
 	
