@@ -3,8 +3,10 @@ body, h1, h2, h3, h4, h5, h6, p, td, table td, input, select {
 }
 
 h2, h2 span, h2 a {
-	color:#000000;
-	font-size:18px;
+	color:#000000 !important;
+	font-size:18px !important;
+	border:0 !important;
+	background-color:inherit !important;
 }
 
 h3, h4 {
