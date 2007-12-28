@@ -200,7 +200,7 @@
                 &lt;/init-param&gt;
                 &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
         &lt;/servlet&gt;
-        </pre></div><p>We would use this servlet to manage javacript bundles. The init params for a Jawr servlet are the following: </p><ul><li><b>configLocation</b>: This is a mandatory parameter. Its value points to a classpath resource that Jawr will use to configure itself. See the <a href="./descriptor_syntax.html">config file syntax page</a>for more information. You can use the same properties file for both instances of the servlet. </li><li><b>type</b>: Refers to the type of resource the servlet will manage. It can receive two possible values: <i>js</i> or <i>css</i>. You can omit this parameter for the javascript servlet, since <i>js</i> is the default value. &#160;</li><li><b>mapping</b>: In normal situations, you will have the Jawr servlet attend all requests for a certain type of resource, using a servlet-mapping like this: <div class="source"><pre>        
+        </pre></div><p>We would use this servlet to manage javascript bundles. The init params for a Jawr servlet are the following: </p><ul><li><b>configLocation</b>: This is a mandatory parameter. Its value points to a classpath resource that Jawr will use to configure itself. See the <a href="./descriptor_syntax.html">config file syntax page</a>for more information. You can use the same properties file for both instances of the servlet. </li><li><b>type</b>: Refers to the type of resource the servlet will manage. It can receive two possible values: <i>js</i> or <i>css</i>. You can omit this parameter for the javascript servlet, since <i>js</i> is the default value. &#160;</li><li><b>mapping</b>: In normal situations, you will have the Jawr servlet attend all requests for a certain type of resource, using a servlet-mapping like this: <div class="source"><pre>        
         &lt;servlet-mapping&gt;
                 &lt;servlet-name&gt;JavascriptServlet&lt;/servlet-name&gt;
                 &lt;url-pattern&gt;*.js&lt;/url-pattern&gt;
@@ -265,7 +265,7 @@
 
   
   
-  &nbsp;| Last Published: 12/21/2007
+  &nbsp;| Last Published: 12/28/2007
   &nbsp;| Version: 1.0
 </div>
       <div class="clear">
