@@ -80,6 +80,24 @@
       </plugin> 
     </plugins>
   </reporting>
+ 
+  <build>	
+   <extensions>
+      <extension>
+        <groupId>org.jvnet.wagon-svn</groupId>
+        <artifactId>wagon-svn</artifactId>
+        <version>RELEASE</version>
+      </extension>
+    </extensions>
+  </build>
+  
+  <distributionManagement>
+    <repository>
+      <id>java.net-m2-repository</id>
+    <url>java-net:/maven2-repository/trunk/www/repository/</url>
+    </repository>
+  </distributionManagement>
+  
   <repositories>
   	<repository>
 	  <id>maven2-repository.dev.java.net</id>
