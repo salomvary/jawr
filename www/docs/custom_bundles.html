@@ -219,7 +219,7 @@
         jawr.js.bundle.lib.mappings=/js/lib/**
         jawr.js.bundle.lib.global=true
         jawr.js.bundle.lib.order=1
-        jawr.js.bundle.lib.prefix=lib_002</pre></div><p><b>WARNING</b>: the most important thing you must keep in mind when using Jawr is to always remember to change this prefix when a bundle changes. If you put in production a new version of your files without changing the prefix, your clients will NOT download the newer version. This is the only drawback of a strict caching policy that, if used properly, will improve your users experience of the site while lowering the bandwith. </p></div><div class="section"><h3>Postprocessors </h3><p>Postprocessors are filters that Jawr applies to resources and bundles during startup. Check the <a href="./postprocessors.html">postprocessors manual page</a> for more info. &#160;</p><p>Each bundle you define can override the global postprocessing options. This is useful for example if you only want to minify a subset of your files. </p><p>To change the global postprocessor chain for a bundle, specify the <b>bundlepostprocessors</b> and/or the <b>filepostprocessors</b> attribute: </p><div class="source"><pre>
+        jawr.js.bundle.lib.prefix=lib_002</pre></div><p><b>WARNING</b>: the most important thing you must keep in mind when using Jawr is to always remember to change this prefix when a bundle changes. If you put in production a new version of your files without changing the prefix, your clients will NOT download the newer version. This is the only drawback of a strict caching policy that, if used properly, will improve your users experience of the site while lowering the bandwith. </p><p>As of version 1.1, you can specify a special keyword for the prefix, @startup, which will make Jawr generate a prefix automatically every time the application is deployed. This has the drawback of changing prefixes even for a maintenance restart of the application server, but you may prefer this so you don't need to remember to always change prefixes. The generated prefix uses System.currentTimeMillis(), so there is no risk of getting repeated prefixes whe deploying a new version. </p><div class="source"><pre>        jawr.js.bundle.lib.prefix=@startup</pre></div></div><div class="section"><h3>Postprocessors </h3><p>Postprocessors are filters that Jawr applies to resources and bundles during startup. Check the <a href="./postprocessors.html">postprocessors manual page</a> for more info. &#160;</p><p>Each bundle you define can override the global postprocessing options. This is useful for example if you only want to minify a subset of your files. </p><p>To change the global postprocessor chain for a bundle, specify the <b>bundlepostprocessors</b> and/or the <b>filepostprocessors</b> attribute: </p><div class="source"><pre>
         jawr.js.bundle.foo.bundlepostprocessors=license
         jawr.js.bundle.foo.fileprocessors=none
         </pre></div><p>In this example, the bundle postprocessor for the <i>foo</i> bundle is set to <i>license</i>, meaning no minification will occur. And for the file-by-file postprocessor, it is specified that none will be used. </p></div><div class="section"><h3>Composite bundles</h3><p>A composite bundle is made up of several bundles that may have different configuration attributes. For example, you might have a pre minified javascript library and need to bundle it along some of your own scripts. You can could then create a composite bundle in which your scripts are minified but the library is not. &#160;</p><p>Another use case for composites is to have part of a bundle appear in debug mode but not in production, such as loggers and the like. &#160;</p><p>Creating a composite is just like creating any other bundle, only instead of the mappings, you specify the child bundles that make the composite up using the <b>child.names</b> attribute. You also need to specify that the bundle is a composite by setting the <b>composite</b> attribute to true: </p><div class="source"><pre>jawr.js.bundle.names=comp
@@ -250,15 +250,15 @@ jawr.js.bundle.comp.child.names=foo, bar
     </div>
     <div id="footer">
       <div class="xright">&#169;  
-          2007
+          2008
     
           
   
 
   
   
-  &nbsp;| Last Published: 12/28/2007
-  &nbsp;| Version: 1.0
+  &nbsp;| Last Published: 01/31/2008
+  &nbsp;| Version: 1.1
 </div>
       <div class="clear">
         <hr/>

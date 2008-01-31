@@ -191,11 +191,18 @@
     </div>
     <div id="bodyColumn">
       <div id="contentBox">
-        <div class="section"><h2>Quick Jawr setup</h2><div class="section"><h3>Download and install</h3><p><a href="https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=8543">Download Jawr from the documents area</a> and place it within the classpath of your application (typically, under WEB-INF/lib). Add log4j.jar to the path as well. </p><p>If you are using java 1.4, you can optionally download <a href="http://backport-jsr166.sourceforge.net/">backport-util-concurrent</a> and add it to the classpath as well for improved performance. This is <b>not</b> needed the JDK version of your server is 5 or higher. </p><p>Alternatively, if you are using Maven, add a dependency to Jawr in your POM file: </p><div class="source"><pre>        &lt;dependency&gt;
+        <div class="section"><h2>Quick Jawr setup</h2><div class="section"><h3>Download and install</h3><p><a href="https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=8543">Download Jawr from the documents area</a> and place it within the classpath of your application (typically, under WEB-INF/lib). Add log4j.jar to the path as well. </p><p>If you are using java 1.4, you can optionally download <a href="http://backport-jsr166.sourceforge.net/">backport-util-concurrent</a> and add it to the classpath as well for improved performance. This is <b>not</b> needed the JDK version of your server is 5 or higher. </p><p>Alternatively, if you are using Maven 2, add a dependency to Jawr in your POM file: </p><div class="source"><pre>        &lt;dependency&gt;
           &lt;groupId&gt;net.java.jawr&lt;/groupId&gt;
           &lt;artifactId&gt;jawr&lt;/artifactId&gt;
-          &lt;version&gt;1.0&lt;/version&gt;
-        &lt;/dependency&gt;</pre></div></div><div class="section"><h3>Develop your scripts and stylesheets</h3><p>For the quick setup, it is assumed that you have the following directories at the root of your application: <b>/js</b>, <b>/js/lib</b> and <b>/css</b>. Of course these may contain more subdirs. The sample configuration will create a bundle containing everything under <b>/js/lib</b>, named <b>/bundles/lib.js</b>. The remaining .js files at /js and subdirs will be served separately. As for the CSS files, a single all-in-one bundle named <b>/bundles/all.css</b> will be used. </p></div><div class="section"><h3>Configure instances of the Jawr Servlet</h3><p>Add <b>net.java.jawr.web.servlet.JawrServlet</b> to your web.xml descriptor. You will need an instance for handling Javascript, and another one for CSS stylesheets. For instance: </p><div class="source"><pre>        &lt;servlet&gt;
+          &lt;version&gt;1.1&lt;/version&gt;
+        &lt;/dependency&gt;</pre></div><p>Also, if you are using Maven 2 make sure your project will access the Maven repository at java.net, by specifying it in you POM: </p><div class="source"><pre>  &lt;repositories&gt;
+        &lt;repository&gt;
+          &lt;id&gt;maven2-repository.dev.java.net&lt;/id&gt;
+          &lt;name&gt;Java.net Repository for Maven&lt;/name&gt;
+          &lt;url&gt;http://download.java.net/maven/2/&lt;/url&gt;
+          &lt;layout&gt;default&lt;/layout&gt;
+        &lt;/repository&gt;
+  &lt;/repositories&gt;</pre></div></div><div class="section"><h3>Develop your scripts and stylesheets</h3><p>For the quick setup, it is assumed that you have the following directories at the root of your application: <b>/js</b>, <b>/js/lib</b> and <b>/css</b>. Of course these may contain more subdirs. The sample configuration will create a bundle containing everything under <b>/js/lib</b>, named <b>/bundles/lib.js</b>. The remaining .js files at /js and subdirs will be served separately. As for the CSS files, a single all-in-one bundle named <b>/bundles/all.css</b> will be used. </p></div><div class="section"><h3>Configure instances of the Jawr Servlet</h3><p>Add <b>net.java.jawr.web.servlet.JawrServlet</b> to your web.xml descriptor. You will need an instance for handling Javascript, and another one for CSS stylesheets. For instance: </p><div class="source"><pre>        &lt;servlet&gt;
                 &lt;servlet-name&gt;JavascriptServlet&lt;/servlet-name&gt;
                 &lt;servlet-class&gt;net.java.jawr.web.servlet.JawrServlet&lt;/servlet-class&gt;
                 &lt;init-param&gt;
@@ -286,15 +293,15 @@ log4j.logger.net.java.jawr=INFO</pre></div><p>Note that the log level is set to
     </div>
     <div id="footer">
       <div class="xright">&#169;  
-          2007
+          2008
     
           
   
 
   
   
-  &nbsp;| Last Published: 12/28/2007
-  &nbsp;| Version: 1.0
+  &nbsp;| Last Published: 01/31/2008
+  &nbsp;| Version: 1.1
 </div>
       <div class="clear">
         <hr/>
