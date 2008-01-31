@@ -38,6 +38,7 @@ import org.apache.log4j.Logger;
 public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	
 	private static final Logger log = Logger.getLogger(JoinableResourceBundle.class.getName());
+	private static final String AUTO_PREFIX = "@startup";
 	
 	private InclusionPattern inclusionPattern;
 	private List pathMappings;
@@ -75,16 +76,28 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		this.itemPathList = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 		this.licensesPathList = new HashSet();
         this.fileExtension = fileExtension;    
-        this.urlPrefix = urlPrefix;
         
-        if(this.urlPrefix.lastIndexOf("/") > 0)
-            throw new IllegalArgumentException("The prefix for a bundle can not define more than one directory path name. [wrong path:" + urlPrefix+ "]");
+        setUrlPrefix(urlPrefix);
         
-        if(this.urlPrefix.equals(BundleRenderer.GZIP_PATH_PREFIX))                
-            throw new IllegalArgumentException("The prefix for a bundle can not be equal to the gzipped resources prefix, which is ["+ BundleRenderer.GZIP_PATH_PREFIX + ". [wrong path:" + urlPrefix+ "]");
-                
-		
 	}
+	
+	
+	/**
+	 * Verifies and sets the url prefix to prepend in URLs pointing to this bundle. 
+	 * If the supplied parameter is @startup, a URL is automatically generated. 
+	 * @param urlPrefix
+	 */
+	private void setUrlPrefix(String urlPrefix) {
+		if(AUTO_PREFIX.equals(urlPrefix)) {
+        	this.urlPrefix = System.currentTimeMillis() + "/";
+        }
+		else if(BundleRenderer.GZIP_PATH_PREFIX.equals(urlPrefix))                
+            throw new IllegalArgumentException("The prefix for a bundle can not be equal to the gzipped resources prefix, which is ["+ BundleRenderer.GZIP_PATH_PREFIX + ". [wrong path:" + urlPrefix+ "]");
+        else if(urlPrefix.lastIndexOf("/") > 0)
+            throw new IllegalArgumentException("The prefix for a bundle can not define more than one directory path name. [wrong path:" + urlPrefix+ "]");
+        else this.urlPrefix = urlPrefix;
+	}
+	
     /**
      * 
      * @param name String Unique name for this bundle.

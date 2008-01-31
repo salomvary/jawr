@@ -134,6 +134,15 @@ Definition of custom bundles
 	This is the only drawback of a strict caching policy that, if used properly, will improve your users experience of the site while lowering the 
 	bandwith. 
 	
+	As of version 1.1, you can specify a special keyword for the prefix, @startup, which will make Jawr generate a prefix automatically every time the 
+	application is deployed. This has the drawback of changing prefixes even for a maintenance restart of the application server, but you may prefer 
+	this so you don't need to remember to always change prefixes. The generated prefix uses System.currentTimeMillis(), so there is no risk of getting 
+	repeated prefixes whe deploying a new version. 
+	
++------------------------------------------+
+	jawr.js.bundle.lib.prefix=@startup
++------------------------------------------+
+	
 * Postprocessors 
 
 	Postprocessors are filters that Jawr applies to resources and bundles during startup. Check the  {{{./postprocessors.html}postprocessors manual page}}  for more info. \ 
