@@ -92,4 +92,10 @@ Jawr: bundling and compression for web application resources.
 	{{{http://backport-jsr166.sourceforge.net/}http://backport-jsr166.sourceforge.net/}}. However, this is completely optional and Jawr will work 
 	just fine if you choose not to use it.  
 	
+		
+* Announcements
+
+	* <<1/31/2008>>: Version 1.1 released, fixes a major problem with the taglib descriptor and adds the option to use @startup for generating 
+		bundle prefixes upon deployment. 
+	
 	

@@ -11,7 +11,7 @@
 
 	<tag>
 		<name>script</name>
-		<tag-class>org.jawr.web.taglib.JavascriptBundleTag</tag-class>
+		<tag-class>net.java.jawr.web.taglib.JavascriptBundleTag</tag-class>
 		<body-content>tagdependent</body-content>
 		<attribute>
 			<name>src</name>
@@ -22,7 +22,7 @@
 
 	<tag>
 		<name>style</name>
-		<tag-class>org.jawr.web.taglib.CSSBundleTag</tag-class>
+		<tag-class>net.java.jawr.web.taglib.CSSBundleTag</tag-class>
 		<body-content>tagdependent</body-content>
 		<attribute>
 			<name>src</name>
