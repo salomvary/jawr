@@ -218,7 +218,7 @@ jawr.css.bundle.all.mappings=/css/**
 </pre></div><p>In the event that you had other plugins did have minified versions available, it would be easy to add a third bundle to the composite, or simply to add more mappings to the jQuery bundle. The point is that all your libraries are served as a single, minified and potentially gzipped file. </p><p>The basic setup is finished, so now let's test it. To do that, create a javascript file at /js/index.js, with the following code: </p><div class="source"><pre>$(function()
 {
         $('.date-pick').datePicker();
-});</pre></div><p>This will setup the date picker for any input with a class of date-pick, and will require all the scripts you downloaded to work properly. </p><p>Finally, add an index.jsp test page with this contents: </p><div class="source"><pre>&lt;%@ taglib uri=&quot;http://jawr.java.net/tags&quot; prefix=&quot;jwr&quot; %&gt;
+});</pre></div><p>This will setup the date picker for any input with a class of date-pick, and will require all the scripts you downloaded to work properly. </p><p>Finally, add an index.jsp test page with this contents: </p><div class="source"><pre>&lt;%@ taglib uri=&quot;http://jawr.net/tags&quot; prefix=&quot;jwr&quot; %&gt;
 &lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; %&gt;
 &lt;html&gt;
 &lt;head&gt;
@@ -268,7 +268,7 @@ jawr.js.bundle.lib.mappings=/js/lib/**</pre></div><p>With this mapping, the bun
         Event.observe($('fadeOut'),'click',function(){new Effect.SwitchOff($('fadeOut'))});
 }
 
-Event.observe(window, 'load', attachFadeOutBehavior);</pre></div><p>This code uses prototype to hook up a couple of event listeners which fire a script.aculo.us effect when you click on an element in the page. Create an index.jsp page at the root of you application, and copy the following code there: </p><div class="source"><pre>&lt;%@ taglib uri=&quot;http://jawr.java.net/tags&quot; prefix=&quot;jwr&quot; %&gt;
+Event.observe(window, 'load', attachFadeOutBehavior);</pre></div><p>This code uses prototype to hook up a couple of event listeners which fire a script.aculo.us effect when you click on an element in the page. Create an index.jsp page at the root of you application, and copy the following code there: </p><div class="source"><pre>&lt;%@ taglib uri=&quot;http://jawr.net/tags&quot; prefix=&quot;jwr&quot; %&gt;
 &lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; %&gt;
 &lt;html&gt;
 &lt;head&gt;
@@ -358,7 +358,7 @@ function init() {
                               true);
 }
 
-YAHOO.util.Event.addListener(window, &quot;load&quot;, init);</pre></div><p>This script will setup an onload event for any page that loads it. The final thing we need is the test JSP. Create an index.jsp with the following contents: </p><div class="source"><pre>&lt;%@ taglib uri=&quot;http://jawr.java.net/tags&quot; prefix=&quot;jwr&quot; %&gt;
+YAHOO.util.Event.addListener(window, &quot;load&quot;, init);</pre></div><p>This script will setup an onload event for any page that loads it. The final thing we need is the test JSP. Create an index.jsp with the following contents: </p><div class="source"><pre>&lt;%@ taglib uri=&quot;http://jawr.net/tags&quot; prefix=&quot;jwr&quot; %&gt;
 &lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; %&gt;
 &lt;html&gt;
 
