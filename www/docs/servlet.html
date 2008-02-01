@@ -191,9 +191,9 @@
     </div>
     <div id="bodyColumn">
       <div id="contentBox">
-        <div class="section"><h2>The Jawr servlet</h2><p>For each type of supported resource (CSS or Javascript), you need an instance of net.java.jawr.web.servlet.JawrServlet running. Of course, you may choose to use Jawr for only one of these types of resources. &#160;</p><p>All bundles are created and postprocessed when this servlet starts up and stored at the application server's temporary directory. This way there is no processing overhead on requests, but you must remember to use the load-on-startup tag to force the Jawr servlet to initialize with your application server. &#160;</p><p>For every request, the servlet will make an attempt at forcing the client to keep a resource in cache for as long as possible using response headers. Also, if a request containt the If-Modified-Since header, the response status is set to 304(not modified) and no content is sent since such header means that the resource is already cached by the client. &#160;</p><p>Here is an example configuration of the servlet in a web.xml file: </p><div class="source"><pre>        &lt;servlet&gt;
+        <div class="section"><h2>The Jawr servlet</h2><p>For each type of supported resource (CSS or Javascript), you need an instance of net.jawr.web.servlet.JawrServlet running. Of course, you may choose to use Jawr for only one of these types of resources. &#160;</p><p>All bundles are created and postprocessed when this servlet starts up and stored at the application server's temporary directory. This way there is no processing overhead on requests, but you must remember to use the load-on-startup tag to force the Jawr servlet to initialize with your application server. &#160;</p><p>For every request, the servlet will make an attempt at forcing the client to keep a resource in cache for as long as possible using response headers. Also, if a request containt the If-Modified-Since header, the response status is set to 304(not modified) and no content is sent since such header means that the resource is already cached by the client. &#160;</p><p>Here is an example configuration of the servlet in a web.xml file: </p><div class="source"><pre>        &lt;servlet&gt;
                 &lt;servlet-name&gt;JavascriptServlet&lt;/servlet-name&gt;
-                &lt;servlet-class&gt;net.java.jawr.web.servlet.JawrServlet&lt;/servlet-class&gt;
+                &lt;servlet-class&gt;net.jawr.web.servlet.JawrServlet&lt;/servlet-class&gt;
                 &lt;init-param&gt;
                         &lt;param-name&gt;configLocation&lt;/param-name&gt;
                         &lt;param-value&gt;/jawr.properties&lt;/param-value&gt;
@@ -220,7 +220,7 @@
         &lt;/description&gt;
         &lt;servlet&gt;
                 &lt;servlet-name&gt;JavascriptServlet&lt;/servlet-name&gt;
-                &lt;servlet-class&gt;net.java.jawr.web.servlet.JawrServlet&lt;/servlet-class&gt;
+                &lt;servlet-class&gt;net.jawr.web.servlet.JawrServlet&lt;/servlet-class&gt;
                 &lt;init-param&gt;
                         &lt;param-name&gt;configLocation&lt;/param-name&gt;
                         &lt;param-value&gt;/jawr.properties&lt;/param-value&gt;
@@ -229,7 +229,7 @@
         &lt;/servlet&gt;
         &lt;servlet&gt;
                 &lt;servlet-name&gt;CssServlet&lt;/servlet-name&gt;
-                &lt;servlet-class&gt;net.java.jawr.web.servlet.JawrServlet&lt;/servlet-class&gt;
+                &lt;servlet-class&gt;net.jawr.web.servlet.JawrServlet&lt;/servlet-class&gt;
                 &lt;init-param&gt;
                         &lt;param-name&gt;configLocation&lt;/param-name&gt;
                         &lt;param-value&gt;/jawr.properties&lt;/param-value&gt;
@@ -258,15 +258,15 @@
     </div>
     <div id="footer">
       <div class="xright">&#169;  
-          2007
+          2008
     
           
   
 
   
   
-  &nbsp;| Last Published: 12/28/2007
-  &nbsp;| Version: 1.0
+  &nbsp;| Last Published: 02/01/2008
+  &nbsp;| Version: 1.2
 </div>
       <div class="clear">
         <hr/>
