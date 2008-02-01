@@ -47,7 +47,7 @@ Jawr tag libraries
 	
 +------------------------------------------+
 
-	<%@ taglib uri="http://jawr.java.net/tags" prefix="jwr" %>
+	<%@ taglib uri="http://jawr.net/tags" prefix="jwr" %>
 	
 +------------------------------------------+
 
@@ -72,7 +72,7 @@ Jawr tag libraries
 	
 +------------------------------------------+
 
-	<%@ taglib uri="http://jawr.java.net/tags" prefix="jwr" %>
+	<%@ taglib uri="http://jawr.net/tags" prefix="jwr" %>
 	<html>
 	<head>
 		<!-- Invoking the bundle by name -->

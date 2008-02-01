@@ -87,7 +87,7 @@ $(function()
 	Finally, add an index.jsp test page with this contents: 	
 	
 +------------------------------------------+
-<%@ taglib uri="http://jawr.java.net/tags" prefix="jwr" %>
+<%@ taglib uri="http://jawr.net/tags" prefix="jwr" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
@@ -213,7 +213,7 @@ Event.observe(window, 'load', attachFadeOutBehavior);
 	an index.jsp page at the root of you application, and copy the following code there: 
 	
 +------------------------------------------+
-<%@ taglib uri="http://jawr.java.net/tags" prefix="jwr" %>
+<%@ taglib uri="http://jawr.net/tags" prefix="jwr" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
@@ -426,7 +426,7 @@ YAHOO.util.Event.addListener(window, "load", init);
 	contents: 
 
 +------------------------------------------+	
-<%@ taglib uri="http://jawr.java.net/tags" prefix="jwr" %>
+<%@ taglib uri="http://jawr.net/tags" prefix="jwr" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 

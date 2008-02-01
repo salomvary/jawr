@@ -41,7 +41,7 @@ Debug and production modes
 	
 +------------------------------------------+
 
-	<%@ taglib uri="http://jawr.java.net/tags" prefix="jwr" %>
+	<%@ taglib uri="http://jawr.net/tags" prefix="jwr" %>
 	<html>
 	<head>
 		<!-- Invoking the fooBundle by using the path of one of its members -->
