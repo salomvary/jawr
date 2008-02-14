@@ -20,7 +20,7 @@ Getting started with Jawr
 	<dependency>
 	  <groupId>net.jawr</groupId>
 	  <artifactId>jawr</artifactId>
-	  <version>1.2</version>
+	  <version>[1,]</version>
 	</dependency>
 +------------------------------------------+
 
