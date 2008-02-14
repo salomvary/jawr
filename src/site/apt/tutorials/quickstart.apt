@@ -1,10 +1,10 @@
-﻿																		------
-                                    Tutorial: quick setup
+																		------
+                                    Tutorial: quick start
                                     ------
                                     ------
                                     ------
 
-Quick Jawr setup
+Getting started with Jawr
 
 * Download and install
 	
@@ -56,6 +56,8 @@ Quick Jawr setup
 	<servlet>
 		<servlet-name>JavascriptServlet</servlet-name>
 		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
+		
+		<!-- Location in classpath of the config file -->
 		<init-param>
 			<param-name>configLocation</param-name>
 			<param-value>/jawr.properties</param-value>
@@ -66,6 +68,8 @@ Quick Jawr setup
 	<servlet>
 		<servlet-name>CSSServlet</servlet-name>
 		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
+		
+		<!-- Location in classpath of the config file -->
 		<init-param>
 			<param-name>configLocation</param-name>
 			<param-value>/jawr.properties</param-value>
@@ -124,8 +128,8 @@ jawr.css.bundle.basedir=/css
 jawr.css.commonURLPrefix=css004
 
 # CSS files will be all bundled together automatically
-jawr.js.factory.use.singlebundle=true
-jawr.js.factory.singlebundle.bundlename=/bundles/all.css
+jawr.css.factory.use.singlebundle=true
+jawr.css.factory.singlebundle.bundlename=/bundles/all.css
 +------------------------------------------+
 	
 * Create the Log4j configuration file
@@ -144,7 +148,7 @@ log4j.appender.A1=org.apache.log4j.ConsoleAppender
 log4j.appender.A1.layout=org.apache.log4j.PatternLayout
 log4j.appender.A1.layout.ConversionPattern=%-4r [%t] %-5p %c %x - %m%n
 
-# Print messages up to level DEBUG
+# Print messages up to level INFO
 log4j.logger.net.jawr=INFO
 +------------------------------------------+
 
