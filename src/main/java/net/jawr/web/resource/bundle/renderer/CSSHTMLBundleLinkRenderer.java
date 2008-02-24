@@ -34,9 +34,16 @@ public class CSSHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer implem
         this.media = null == media ? "screen" : media;
     }
 
+    /* (non-Javadoc)
+     * @see net.jawr.web.resource.bundle.renderer.AbstractBundleLinkRenderer#createBundleLink(java.lang.String, java.lang.String)
+     */
     protected String createBundleLink(String bundleId, String contextPath) {
     	String fullPath = PathNormalizer.joinPaths(getBundler().getConfig().getServletMapping(), bundleId);
-        fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
+    	
+    	// Add context path unless configured to not do so
+    	if(getBundler().getConfig().isUseContextPathInURLs())
+    		fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
+    	
         StringBuffer sb = new StringBuffer(PRE_TAG);
 		sb.append(media).append(MID_TAG)
 						.append(fullPath)	

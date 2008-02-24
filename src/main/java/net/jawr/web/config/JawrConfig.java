@@ -26,6 +26,7 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
  *
  */
 public class JawrConfig {
+	
 	/**
 	 * Initialize configuration using params contained in the initialization properties file. 
 	 * @param configId
@@ -49,7 +50,11 @@ public class JawrConfig {
 		if(null != props.getProperty("jawr.gzip.ie6.on"))
 		{			
 			setGzipResourcesForIESixOn(Boolean.valueOf(props.getProperty("jawr.gzip.ie6.on")).booleanValue());
-		}	
+		}		
+		if(null != props.getProperty("jawr.url.contextpath.on"))
+		{			
+			setUseContextPathInURLs(Boolean.valueOf(props.getProperty("jawr.url.contextpath.on")).booleanValue());
+		}
 	}
 	
 	/**
@@ -84,6 +89,10 @@ public class JawrConfig {
 	 */
 	private String servletMapping = "";
 
+	/**
+	 * Flag to indicate whether the context path of the application should be used in generated urls. defaults to true.  
+	 */
+	private boolean useContextPathInURLs = true;
 		
 	/**
 	 * Get debug mode status. 
@@ -188,6 +197,20 @@ public class JawrConfig {
         public void setGzipResourcesForIESixOn(boolean gzipResourcesForIESixOn) {
             this.gzipResourcesForIESixOn = gzipResourcesForIESixOn;
         }
+
+		/**
+		 * @return  Wether should be using the webapp context path in urls that point to bundles. 
+		 */
+		public boolean isUseContextPathInURLs() {
+			return useContextPathInURLs;
+		}
+
+		/**
+		 * @param Set to false to avoid using the webapp context path in urls that point to bundles. 
+		 */
+		public void setUseContextPathInURLs(boolean useContextPathInURLs) {
+			this.useContextPathInURLs = useContextPathInURLs;
+		}
 	
 	
 }

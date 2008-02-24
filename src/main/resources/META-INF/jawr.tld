@@ -18,6 +18,11 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<name>useRandomParam</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 
 	<tag>
@@ -27,6 +32,11 @@
 		<attribute>
 			<name>src</name>
 			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>useRandomParam</name>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>

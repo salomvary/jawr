@@ -31,6 +31,8 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     
     private ResourceBundlesHandler bundler;
     
+    private boolean useRandomParam = true;
+    
     /** Creates a new instance of AbstractBundleLinkRenderer
      * @param bundler ResourceBundlesHandler Handles resolving of paths. 
      */
@@ -71,7 +73,8 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
                 // If the resource had been added before, it will not be included again. 
                 if(includedBundles.add(resourceName)){
                 		// In debug mode, all the resources are included separately and use a random parameter to avoid caching. 
-                        if( debugOn ) {
+                		// If useRandomParam is set to false, the links are created without the random parameter. 
+                        if( debugOn && useRandomParam) {
                                 int random = new Random().nextInt();
                                 if(random < 0)
                                 	random*=-1;
@@ -131,5 +134,12 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     public ResourceBundlesHandler getBundler() {
         return bundler;
     }
+
+	/**
+	 * @param useRandomParam boolean
+	 */
+	public void setUseRandomParam(boolean useRandomParam) {
+		this.useRandomParam = useRandomParam;
+	}
     
 }

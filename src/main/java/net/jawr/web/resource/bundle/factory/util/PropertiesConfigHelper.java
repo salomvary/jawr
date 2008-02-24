@@ -64,6 +64,11 @@ public class PropertiesConfigHelper {
 		return props.getProperty(prefix + key, defaultValue);
 	}
 
+	/**
+	 * Appends the prefix (jawr.) to the specified key and reads it from the properties object. 
+	 * @param key
+	 * @return
+	 */
 	public String getProperty(String key) {
 		return props.getProperty(prefix + key);
 	}

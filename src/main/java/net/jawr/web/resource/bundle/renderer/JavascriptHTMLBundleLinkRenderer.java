@@ -37,8 +37,12 @@ public class JavascriptHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer
     protected String createBundleLink(String bundleId, String contextPath) {
     	StringBuffer sb = new StringBuffer(PRE_TAG);
         String fullPath = PathNormalizer.joinPaths(getBundler().getConfig().getServletMapping(), bundleId);
-        fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
-		sb.append(fullPath)
+        
+        // Add context path unless configured to not do so
+    	if(getBundler().getConfig().isUseContextPathInURLs())
+    		fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
+		
+    	sb.append(fullPath)
 			.append(POST_TAG); 
         return sb.toString();
     }

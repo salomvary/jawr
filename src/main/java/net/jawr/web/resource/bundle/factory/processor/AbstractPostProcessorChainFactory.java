@@ -13,11 +13,15 @@
  */
 package net.jawr.web.resource.bundle.factory.processor;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.EmptyResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
+import net.jawr.web.resource.bundle.postprocess.impl.CustomPostProcessorChainWrapper;
 import net.jawr.web.resource.bundle.postprocess.impl.LicensesIncluderPostProcessor;
 
 /**
@@ -31,7 +35,11 @@ public abstract class AbstractPostProcessorChainFactory implements	PostProcessor
 	protected static final String LICENSE_INCLUDER = "license";
 	protected static final String NO_POSTPROCESSING_KEY = "none";
 	
+	private Map customPostProcessors;
 	
+	public AbstractPostProcessorChainFactory() {
+		this.customPostProcessors = new HashMap();
+	}
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.factory.processor.PostProcessorChainFactory#buildPostProcessorChain(java.lang.String)
@@ -59,7 +67,14 @@ public abstract class AbstractPostProcessorChainFactory implements	PostProcessor
 	 * @return
 	 */
 	private AbstractChainedResourceBundlePostProcessor addOrCreateChain(AbstractChainedResourceBundlePostProcessor chain, String key) {
-		AbstractChainedResourceBundlePostProcessor toAdd = buildProcessorByKey(key);
+		
+		AbstractChainedResourceBundlePostProcessor toAdd;
+		
+		if(null != customPostProcessors.get(key)) {
+			toAdd = (AbstractChainedResourceBundlePostProcessor)customPostProcessors.get(key);
+		}
+		else toAdd = buildProcessorByKey(key);
+		
 		if(null == chain)
 			chain = toAdd;
 		else chain.setNextProcessor(toAdd);
@@ -81,6 +96,30 @@ public abstract class AbstractPostProcessorChainFactory implements	PostProcessor
 	 */
 	protected LicensesIncluderPostProcessor buildLicensesProcessor() {
 		return new LicensesIncluderPostProcessor();
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.factory.processor.PostProcessorChainFactory#setCustomPostprocessors(java.util.Map)
+	 */
+	public void setCustomPostprocessors(Map keysClassNames) {
+		for(Iterator it = keysClassNames.keySet().iterator(); it.hasNext();){
+			String key = (String) it.next();
+			
+			try {
+				Class clazz = Class.forName((String) keysClassNames.get(key));
+				ResourceBundlePostProcessor customProcessor = (ResourceBundlePostProcessor) clazz.newInstance();
+				customPostProcessors.put(key, new CustomPostProcessorChainWrapper(customProcessor));
+				
+			} catch (Exception e) {
+				throw new IllegalArgumentException("It was not possible to create an instance of the custom postprocessor defined with key: '" 
+													+ key 
+													+ "' and with class '" 
+													+ keysClassNames.get(key)
+													+ "'. Please check your config file and review the documentation. "
+													+ "The specific error message is: " + e.getMessage());
+			} 
+		}		
 	}
 
 }
