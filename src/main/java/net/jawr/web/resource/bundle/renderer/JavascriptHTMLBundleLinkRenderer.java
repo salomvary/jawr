@@ -13,7 +13,6 @@
  */
 package net.jawr.web.resource.bundle.renderer;
 
-import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 
 /**
@@ -34,14 +33,8 @@ public class JavascriptHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer
     /* (non-Javadoc)
      * @see net.jawr.web.resource.bundle.renderer.AbstractBundleLinkRenderer#createBundleLink(java.lang.String, java.lang.String)
      */
-    protected String createBundleLink(String bundleId, String contextPath) {
+    protected String renderLink(String fullPath) {
     	StringBuffer sb = new StringBuffer(PRE_TAG);
-        String fullPath = PathNormalizer.joinPaths(getBundler().getConfig().getServletMapping(), bundleId);
-        
-        // Add context path unless configured to not do so
-    	if(getBundler().getConfig().isUseContextPathInURLs())
-    		fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
-		
     	sb.append(fullPath)
 			.append(POST_TAG); 
         return sb.toString();

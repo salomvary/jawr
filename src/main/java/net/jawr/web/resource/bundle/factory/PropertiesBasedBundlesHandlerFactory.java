@@ -70,7 +70,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 	private static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES = ".child.names";
 	
 	// Custom postprocessors factory parameters
-	private static final String CUSTOM_POSTPROCESSORS = "custom.postprocessors";
+	private static final String CUSTOM_POSTPROCESSORS = "jawr.custom.postprocessors";
 	private static final String CUSTOM_POSTPROCESSORS_NAMES = ".names";
 	private static final String CUSTOM_POSTPROCESSORS_CLASS = ".class";
 	
@@ -84,6 +84,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 	
 	private PropertiesConfigHelper props;
 	private BundlesHandlerFactory factory;
+	
 	
 	/**
 	 * Create a PropertiesBasedBundlesHandlerFactory using the specified properties. 
@@ -130,19 +131,20 @@ public class PropertiesBasedBundlesHandlerFactory {
 		}
 		
 		// Read custom postprocessor definitions
-		if(null != props.getProperty(CUSTOM_POSTPROCESSORS + CUSTOM_POSTPROCESSORS_NAMES)) {
+		if(null != properties.getProperty(CUSTOM_POSTPROCESSORS + CUSTOM_POSTPROCESSORS_NAMES)) {
 			Map customPostprocessors = new HashMap();
-			StringTokenizer tk = new StringTokenizer(props.getProperty(CUSTOM_POSTPROCESSORS + CUSTOM_POSTPROCESSORS_NAMES),",");
-
+			StringTokenizer tk = new StringTokenizer(properties.getProperty(CUSTOM_POSTPROCESSORS + CUSTOM_POSTPROCESSORS_NAMES),",");
+			
 			while(tk.hasMoreTokens()) {
 				String processorKey = tk.nextToken();
-				String processorClass = props.getProperty(CUSTOM_POSTPROCESSORS + "." + processorKey + CUSTOM_POSTPROCESSORS_CLASS);
+				String processorClass = properties.getProperty(CUSTOM_POSTPROCESSORS + "." + processorKey + CUSTOM_POSTPROCESSORS_CLASS);
 				if(null != processorClass) 
 					customPostprocessors.put(processorKey, processorClass);
 			}
-			
+			factory.setCustomPostprocessors(customPostprocessors);
 			
 		}
+		
 		factory.setBundleDefinitions(customBundles);
 	}
 	

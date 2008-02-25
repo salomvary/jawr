@@ -51,9 +51,9 @@ public class JawrConfig {
 		{			
 			setGzipResourcesForIESixOn(Boolean.valueOf(props.getProperty("jawr.gzip.ie6.on")).booleanValue());
 		}		
-		if(null != props.getProperty("jawr.url.contextpath.on"))
+		if(null != props.getProperty("jawr.url.contextpath.override"))
 		{			
-			setUseContextPathInURLs(Boolean.valueOf(props.getProperty("jawr.url.contextpath.on")).booleanValue());
+			setContextPathOverride(props.getProperty("jawr.url.contextpath.override"));
 		}
 	}
 	
@@ -90,9 +90,10 @@ public class JawrConfig {
 	private String servletMapping = "";
 
 	/**
-	 * Flag to indicate whether the context path of the application should be used in generated urls. defaults to true.  
+	 * Override value to use instead of the context path of the application in generated urls. If null, contextPath is used. If blank, 
+	 * urls are generated to be relative. 
 	 */
-	private boolean useContextPathInURLs = true;
+	private String contextPathOverride;
 		
 	/**
 	 * Get debug mode status. 
@@ -199,18 +200,21 @@ public class JawrConfig {
         }
 
 		/**
-		 * @return  Wether should be using the webapp context path in urls that point to bundles. 
+		 * @return The string to use instead of the regular context path. 
 		 */
-		public boolean isUseContextPathInURLs() {
-			return useContextPathInURLs;
+		public String getContextPathOverride() {
+			return contextPathOverride;
 		}
 
 		/**
-		 * @param Set to false to avoid using the webapp context path in urls that point to bundles. 
+		 * Set the string to use instead of the regular context path. If it is an empty string, 
+		 * urls will be relative to the path (i.e, not start with a slash). 
+		 * @param contextPathOverride The string to use instead of the regular context path. 
 		 */
-		public void setUseContextPathInURLs(boolean useContextPathInURLs) {
-			this.useContextPathInURLs = useContextPathInURLs;
+		public void setContextPathOverride(String contextPathOverride) {
+			this.contextPathOverride = contextPathOverride;
 		}
+
 	
 	
 }

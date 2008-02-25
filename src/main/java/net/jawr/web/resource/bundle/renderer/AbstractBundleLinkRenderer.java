@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 
 /**
@@ -120,13 +121,32 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
         return createBundleLink(BundleRenderer.GZIP_PATH_PREFIX + resourceName,contextPath);
     }
     
+    protected String createBundleLink(String bundleId, String contextPath) {
+    	
+    	String fullPath = PathNormalizer.joinPaths(bundler.getConfig().getServletMapping(), bundleId);
+    	
+    	// If context path is overriden..
+    	if(null != bundler.getConfig().getContextPathOverride()) {    		
+    		String override = bundler.getConfig().getContextPathOverride();
+    		// Blank override, create url relative to path
+    		if("".equals(override)) {
+    			fullPath = fullPath.substring(1);
+    		}
+    		else fullPath = PathNormalizer.joinPaths(override,fullPath);
+    	}    		
+    	else
+    		fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
+    	
+    	return renderLink(fullPath);
+    }
+    
     /**
      * Creates a link to a bundle in the page, using its identifier. 
      * @param bundleId
      * @param contextPath
      * @return String
      */
-    protected abstract String createBundleLink(String bundleId, String contextPath);
+    protected abstract String renderLink(String fullPath);
 
     /**
      * @return ResourceBundlesHandler The resources handler.
