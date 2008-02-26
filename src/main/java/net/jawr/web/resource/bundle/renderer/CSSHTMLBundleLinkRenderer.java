@@ -28,8 +28,8 @@ public class CSSHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer implem
     private String media;
     
     /** Creates a new instance of CSSHTMLBundleLinkRenderer */
-    public CSSHTMLBundleLinkRenderer(ResourceBundlesHandler bundler, String media) {
-        super(bundler);
+    public CSSHTMLBundleLinkRenderer(ResourceBundlesHandler bundler, boolean useRandomParam, String media) {
+        super(bundler, useRandomParam);
         this.media = null == media ? "screen" : media;
     }
 

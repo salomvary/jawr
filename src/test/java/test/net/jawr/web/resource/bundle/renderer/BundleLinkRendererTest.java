@@ -24,7 +24,6 @@ import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.resource.bundle.renderer.CSSHTMLBundleLinkRenderer;
 import net.jawr.web.resource.bundle.renderer.JavascriptHTMLBundleLinkRenderer;
-
 import test.net.jawr.web.resource.bundle.PredefinedBundlesHandlerUtil;
 import test.net.jawr.web.resource.bundle.handler.ResourceHandlerBasedTest;
 /**
@@ -70,9 +69,9 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 			// 
 			throw new RuntimeException(e);
 		}
-	    cssRenderer = new CSSHTMLBundleLinkRenderer(cssHandler,null);
-	    cssPrintRenderer  = new CSSHTMLBundleLinkRenderer(cssHandler,"print");
-	    jsRenderer = new JavascriptHTMLBundleLinkRenderer(jsHandler);
+	    cssRenderer = new CSSHTMLBundleLinkRenderer(cssHandler,true,null);
+	    cssPrintRenderer  = new CSSHTMLBundleLinkRenderer(cssHandler,true,"print");
+	    jsRenderer = new JavascriptHTMLBundleLinkRenderer(jsHandler,true);
 	}
 	
 	private String renderToString(BundleRenderer renderer, String path, String ctxPath,Set included, boolean gZip){

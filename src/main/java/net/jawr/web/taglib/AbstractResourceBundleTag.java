@@ -37,7 +37,7 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 	
 	private String src;
 	protected BundleRenderer renderer;
-        
+	protected boolean useRandomParam = true;    
 
 
 	/* (non-Javadoc)
@@ -84,6 +84,14 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 	public void setSrc(String src) {
 		this.src = src;
 	}
+
+	/**
+	 * Set wether random param will be added in development mode to generated urls. 
+	 * @param useRandomParam
+	 */
+	public void setUseRandomParam(boolean useRandomParam) {
+		this.useRandomParam = useRandomParam;
+	}
 	
 	/**
 	 * Retrieve the ResourceCollector from context. Each implementation will use a different key
@@ -91,4 +99,5 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 	 * @return
 	 */
 	protected abstract BundleRenderer createRenderer();
+
 }

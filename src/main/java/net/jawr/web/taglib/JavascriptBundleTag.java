@@ -33,7 +33,7 @@ public class JavascriptBundleTag extends AbstractResourceBundleTag {
 			throw new IllegalStateException("ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or never occurred.");
 
 		ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) pageContext.getServletContext().getAttribute(ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE);
-		return  new JavascriptHTMLBundleLinkRenderer(rsHandler);
+		return  new JavascriptHTMLBundleLinkRenderer(rsHandler, this.useRandomParam);
 	}
 
 	private static final long serialVersionUID = 5087323727715427593L;

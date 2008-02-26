@@ -37,8 +37,9 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     /** Creates a new instance of AbstractBundleLinkRenderer
      * @param bundler ResourceBundlesHandler Handles resolving of paths. 
      */
-    protected AbstractBundleLinkRenderer(ResourceBundlesHandler bundler) {
+    protected AbstractBundleLinkRenderer(ResourceBundlesHandler bundler, boolean useRandomParam) {
         this.bundler = bundler;
+        this.useRandomParam = useRandomParam;
     }
     
     /**
@@ -155,11 +156,5 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
         return bundler;
     }
 
-	/**
-	 * @param useRandomParam boolean
-	 */
-	public void setUseRandomParam(boolean useRandomParam) {
-		this.useRandomParam = useRandomParam;
-	}
     
 }

@@ -34,7 +34,7 @@ public class CSSBundleTag  extends AbstractResourceBundleTag {
 			throw new IllegalStateException("ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or never occurred.");
 
 		ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) pageContext.getServletContext().getAttribute(ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE);
-                return  new CSSHTMLBundleLinkRenderer(rsHandler,this.media);
+                return  new CSSHTMLBundleLinkRenderer(rsHandler, this.useRandomParam, this.media);
 	}
 
 	private static final long serialVersionUID = 5087323727715427592L;
