@@ -174,7 +174,29 @@
         jawr.css.bundle.factory.bundlepostprocessors=license</pre></div><p>Optionally, you may specify a different set of postprocessors for any given bundle, so you can mix and match different schemes within your application. In order to do that, you specify similar attributes for a particular bundle: </p><div class="source"><pre>
         jawr.js.bundle.foo.bundlepostprocessors=license
         jawr.js.bundle.foo.fileprocessors=none
-        </pre></div><p>In this example, the bundle postprocessor for the <i>foo</i> bundle is set to <i>license</i>, meaning no minification will occur. And for the file-by-file postprocessor, it is specified that none will be used. </p><div class="section"><h3>All-around postprocessors</h3><div class="section"><h4>Licenses includer</h4><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: license</li></ul><p>The licenses includer will add the content of .license files at the top of a bundle. That way you will be able to add open source mandatory licenses or any other comment to the top of your resources. Check the <a href="./license_files.html">license files page</a> for more info. </p><hr /><p>Note that licenses are themselves code comments, so you should be careful to always use this processor after any minification or compression processor has executed and not before. Otherwise, the license might be eliminated from the bundle right after it was inserted. </p><hr /></div></div><div class="section"><h3>Javascript-specific postprocessors</h3><div class="section"><h4>JSMin</h4><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: JSMin</li></ul><p>This processor uses <a href="http://www.crockford.com/javascript/jsmin.html">Douglas Crockford's JSMin</a> minificator. It will remove any comments in code and unnecesary whitespace in a very safe manner. </p></div></div><div class="section"><h3>CSS-specific postprocessors</h3><div class="section"><h4>CSS Minificator</h4><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: cssminify</li></ul><p>This processor removes comments and unneeded whitespace using search and replace with regular expressions. </p></div><div class="section"><h4>CSS Path rewriter</h4><ul><li><b>Type</b>: File</li><li><b>Properties Key</b>: csspathrewriter</li></ul><p>This processor rewrites relative paths in URLs for each file that is added to a bundle. A bundle will have a different URL to that of its contained resources, so in order for relative paths to image files and the like to keep working, URLs must be rewritten accordingly. </p></div></div></div>
+        </pre></div><p>In this example, the bundle postprocessor for the <i>foo</i> bundle is set to <i>license</i>, meaning no minification will occur. And for the file-by-file postprocessor, it is specified that none will be used. </p><p><b>Custom postprocessors</b></p><p>You can also implement your own postprocessor components (for js, css, or both) to perform any functionality not offered by the included ones. To do that, you must create a class with a no-params constructor that implements the interface <i>net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor</i>. This interface defines a single method: </p><div class="source"><pre>        /**
+         * Postprocess a bundle of resources. 
+         * @param StringBuffer Joined resources. 
+         * @return StringBuffer a buffer containing the postprocessed bundle. 
+         */
+        public StringBuffer postProcessBundle(BundleProcessingStatus status,StringBuffer bundleString);</pre></div><p>The first parameter is an object which encapsulates the status of a bundling process and also gives you acces to Jawr configuration plus other data which may be useful under certain circumstances. Most of the time, though, you won't need to use it at all. </p><p>The bundleString StringBuffer will contain different data depending on wether the postprocessor is used as a bundle postprocessor or a file postprocessor. In the first case, it will contain the text for the whole bundle, while in the latter case it will contain the text for just a single item in the bundle. </p><p>Finally, the return StringBuffer should contain the bundleString data after it is modified by the postprocessor. As an example, here is an implementation of a postprocessor which we would use to wrap all our scripts in a function that is inmediately executed: </p><div class="source"><pre>package net.jawr.test;
+// [import statements...]
+
+public class FunctionWrapperPostProcessor implements ResourceBundlePostProcessor {
+        
+        public StringBuffer postProcessBundle(BundleProcessingStatus status,StringBuffer bundleString) {
+                StringBuffer ret = new StringBuffer();
+                ret.append(&quot;function(){&quot;);
+                ret.append(bundleString);
+                ret.append(&quot;}()&quot;);
+                return ret;
+        }
+}</pre></div><p>To use this postprocessor with our application, we need to declare it in the properties configuration, by giving it a name and declaring the class so that Jawr may create an instance when starting up. The name you give to your postprocessor can then be used to define the bundlepostprocessors and filepostprocessors properties, thus allowing you to create a chain that combines your postprocessors with those of Jawr. For example, the following configuration would add two custom postprocessors named <i>func</i> and <i>sample</i> and map them in different postprocessing chains: </p><div class="source"><pre>jawr.custom.postprocessors.names=func,sample
+jawr.custom.postprocessors.func.class=net.jawr.test.FunctionWrapperPostProcessor
+jawr.custom.postprocessors.sample.class=net.jawr.test.SamplePostProcessor
+
+jawr.js.bundle.factory.bundlepostprocessors=JSMin,func,sample,license
+jawr.js.bundle.foo.bundlepostprocessors=license=func,license</pre></div><div class="section"><h3>Jawr included postprocessors reference</h3></div><div class="section"><h3>All-around postprocessors</h3></div></div><div class="section"><h2><b>Licenses includer</b></h2><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: license</li></ul><p>The licenses includer will add the content of .license files at the top of a bundle. That way you will be able to add open source mandatory licenses or any other comment to the top of your resources. Check the <a href="./license_files.html">license files page</a> for more info. </p><hr /><p>Note that licenses are themselves code comments, so you should be careful to always use this processor after any minification or compression processor has executed and not before. Otherwise, the license might be eliminated from the bundle right after it was inserted. </p><hr /><div class="section"><h3>Javascript-specific postprocessors</h3></div></div><div class="section"><h2><b>JSMin</b></h2><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: JSMin</li></ul><p>This processor uses <a href="http://www.crockford.com/javascript/jsmin.html">Douglas Crockford's JSMin</a> minificator. It will remove any comments in code and unnecesary whitespace in a very safe manner. </p><div class="section"><h3>CSS-specific postprocessors</h3></div></div><div class="section"><h2><b>CSS Minificator</b></h2><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: cssminify</li></ul><p>This processor removes comments and unneeded whitespace using search and replace with regular expressions. </p></div><div class="section"><h2><b>CSS Path rewriter</b></h2><ul><li><b>Type</b>: File</li><li><b>Properties Key</b>: csspathrewriter</li></ul><p>This processor rewrites relative paths in URLs for each file that is added to a bundle. A bundle will have a different URL to that of its contained resources, so in order for relative paths to image files and the like to keep working, URLs must be rewritten accordingly. </p></div>
       </div>
     </div>
     <div class="clear">
@@ -189,8 +211,8 @@
 
   
   
-  &nbsp;| Last Published: 02/13/2008
-  &nbsp;| Version: 1.3
+  &nbsp;| Last Published: 02/28/2008
+  &nbsp;| Version: 1.4
 </div>
       <div class="clear">
         <hr/>

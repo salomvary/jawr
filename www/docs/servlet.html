@@ -176,7 +176,7 @@
                 &lt;/init-param&gt;
                 &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
         &lt;/servlet&gt;
-        </pre></div><p>We would use this servlet to manage javascript bundles. The init params for a Jawr servlet are the following: </p><ul><li><b>configLocation</b>: This is a mandatory parameter. Its value points to a classpath resource that Jawr will use to configure itself. See the <a href="./descriptor_syntax.html">config file syntax page</a>for more information. You can use the same properties file for both instances of the servlet. </li><li><b>type</b>: Refers to the type of resource the servlet will manage. It can receive two possible values: <i>js</i> or <i>css</i>. You can omit this parameter for the javascript servlet, since <i>js</i> is the default value. &#160;</li><li><b>mapping</b>: In normal situations, you will have the Jawr servlet attend all requests for a certain type of resource, using a servlet-mapping like this: <div class="source"><pre>        
+        </pre></div><p>We would use this servlet to manage javascript bundles. The init params for a Jawr servlet are the following: </p><ul><li><b>configLocation</b>: This is a mandatory parameter. Its value points to a classpath resource that Jawr will use to configure itself. See the <a href="./descriptor_syntax.html">config file syntax page</a>for more information. You can use the same properties file for both instances of the servlet. </li><li><b>type</b>: Refers to the type of resource the servlet will manage. It can receive two possible values: <i>js</i> or <i>css</i>. You can omit this parameter for the javascript servlet, since <i>js</i> is the default value. &#160;</li><li><b>configPropertiesSourceClass</b>: This optional parameter holds the cualified class name of you custom implementation of ConfigPropertiesSource, in case you want to customize the way configuration is loaded when Jawr starts up. More on this below. </li><li><b>mapping</b>: In normal situations, you will have the Jawr servlet attend all requests for a certain type of resource, using a servlet-mapping like this: <div class="source"><pre>        
         &lt;servlet-mapping&gt;
                 &lt;servlet-name&gt;JavascriptServlet&lt;/servlet-name&gt;
                 &lt;url-pattern&gt;*.js&lt;/url-pattern&gt;
@@ -226,7 +226,27 @@
                 &lt;url-pattern&gt;*.css&lt;/url-pattern&gt;
         &lt;/servlet-mapping&gt;      
  
-&lt;/web-app&gt;</pre></div></div></div>
+&lt;/web-app&gt;</pre></div></div><div class="section"><h3>Defining a custom properties source</h3><p>You can customize the way properties are loaded into Jawr, be it by reading data from a source other than a .properties file (like, say, a database), or simply by manually overriding some of the values from the properties file. To do that you must create an implementation of the interface <i>net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource</i> and then you must declare it when defining the Jawr servlet, by setting the <b>configPropertiesSourceClass</b> init param: </p><div class="source"><pre>        &lt;servlet&gt;
+                &lt;servlet-name&gt;JavascriptServlet&lt;/servlet-name&gt;
+                &lt;servlet-class&gt;net.jawr.web.servlet.JawrServlet&lt;/servlet-class&gt;
+                &lt;init-param&gt;
+                        &lt;param-name&gt;configPropertiesSourceClass&lt;/param-name&gt;
+                        &lt;param-value&gt;com.mycompany.mypackage.MyConfigPropertiesSourceImplementation&lt;/param-value&gt;
+                &lt;/init-param&gt;
+                &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+        &lt;/servlet&gt;
+        </pre></div><p>The ConfigPropertiesSource interface declares two methods: </p><div class="source"><pre>        /**
+         * Read/modify configuration from a source (such as a .properties file) and return it. 
+         * @return
+         */
+        public abstract Properties getConfigProperties();
+        
+        /**
+         * Determine if configuration is changed to reconfigure Jawr during development 
+         * without having to restart the server. 
+         * @return
+         */
+        public abstract boolean configChanged();</pre></div><p>The configChanged method will be called only if you set the jawr.config.reload.interval parameter in the properties file to any valid value. This would have Jawr check every n seconds wether configuration has changed since the last time it was loaded. Therefore, if configChanged returns true, Jawr will redeploy itself. </p><p>If you only intend to override some values of the properties file for some reason (like mapping the debug mode to some global property from your own application), the best way to go is to subclass <i>net.jawr.web.resource.bundle.factory.util.PropsFilePropertiesSource</i>. Check the javadoc for details. </p></div></div>
       </div>
     </div>
     <div class="clear">
@@ -241,8 +261,8 @@
 
   
   
-  &nbsp;| Last Published: 02/13/2008
-  &nbsp;| Version: 1.3
+  &nbsp;| Last Published: 02/28/2008
+  &nbsp;| Version: 1.4
 </div>
       <div class="clear">
         <hr/>

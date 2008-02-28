@@ -46,7 +46,7 @@
 <a name="37" href="#37">37</a>  		StringBuffer processedBundle = <strong>null</strong>;
 <a name="38" href="#38">38</a>  		<strong>try</strong> {
 <a name="39" href="#39">39</a>  			<strong>if</strong>(log.isDebugEnabled())
-<a name="40" href="#40">40</a>  				log.debug(<span class="string">"postprocessing bundle:"</span> + status.getCurrentBundle());
+<a name="40" href="#40">40</a>  				log.debug(<span class="string">"postprocessing bundle:"</span> + status.getCurrentBundle().getName());
 <a name="41" href="#41">41</a>  			processedBundle = doPostProcessBundle(status,bundleData);
 <a name="42" href="#42">42</a>  		} <strong>catch</strong> (IOException e) {
 <a name="43" href="#43">43</a>  			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException during execution of a postprocessor."</span>);
