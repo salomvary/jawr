@@ -14,7 +14,6 @@
 package net.jawr.web.servlet;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.util.Calendar;
 import java.util.Properties;
@@ -31,6 +30,10 @@ import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.ServletContextResourceHandler;
 import net.jawr.web.resource.bundle.factory.PropertiesBasedBundlesHandlerFactory;
+import net.jawr.web.resource.bundle.factory.util.ConfigChangeListener;
+import net.jawr.web.resource.bundle.factory.util.ConfigChangeListenerThread;
+import net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource;
+import net.jawr.web.resource.bundle.factory.util.PropsFilePropertiesSource;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 
@@ -41,7 +44,7 @@ import org.apache.log4j.Logger;
  * 
  * @author Jordi Hernández Sellés
  */
-public class JawrRequestHandler {
+public class JawrRequestHandler implements ConfigChangeListener{
 	
     private static final String CACHE_CONTROL_HEADER = "Cache-Control";
     private static final String CACHE_CONTROL_VALUE = "public, max-age=315360000, post-check=315360000, pre-check=315360000";
@@ -51,18 +54,23 @@ public class JawrRequestHandler {
     private static final String ETAG_VALUE = "2740050219";
     private static final String EXPIRES_HEADER = "Expires";
     
+    private static final String CONFIG_RELOAD_INTERVAL = "jawr.config.reload.interval";
+    
 	private static final Logger log = Logger.getLogger(JawrRequestHandler.class.getName());
 	
 	private ResourceBundlesHandler bundlesHandler;
 	
 	private String contentType;
+	private String resourceType;
+	private ServletContext servletContext;
+	private ServletConfig servletConfig;
 	
-	private final JawrConfig jawrConfig;
+	private JawrConfig jawrConfig;
 
 	/**
 	 * Reads the properties file and  initializes all configuration. 
-	 * @param context ServletContext
-	 * @param config ServletConfig 
+	 * @param servletContext ServletContext
+	 * @param servletConfig ServletConfig 
 	 * @throws ServletException
 	 */
 	public JawrRequestHandler(ServletContext context, ServletConfig config) throws ServletException{
@@ -70,29 +78,86 @@ public class JawrRequestHandler {
 			log.info("Initializing jawr config for servlet named " + config.getServletName());
 		
 		long initialTime = System.currentTimeMillis();
-		
-		String configLocation = config.getInitParameter("configLocation");
-		if(null == configLocation) 
-			throw new ServletException("configLocation init param not found. Check your web.xml file");
-		
-		String resourceType = config.getInitParameter("type");
+		this.servletContext = context;
+		this.servletConfig = config;
+
+		resourceType = servletConfig.getInitParameter("type");
 		resourceType = null == resourceType ? "js" : resourceType;
 		
+		String configLocation = servletConfig.getInitParameter("configLocation");
+		String configPropsSourceClass = servletConfig.getInitParameter("configPropertiesSourceClass");
+		if(null == configLocation && null == configPropsSourceClass) 
+			throw new ServletException("Neither configLocation nor configPropertiesSourceClass init params were set."
+										+" You must set at least the configLocation param. Please check your web.xml file");
 		
-		// Read properties from config file
-		Properties props = readConfigProperties(configLocation);
+		// Initialize the config properties source that will provide with all configuration options. 
+		ConfigPropertiesSource propsSrc;
 		
+		// Load a custom class to set config properties
+		if(null != configPropsSourceClass) {
+			try {
+				Class clazz = Class.forName(configPropsSourceClass);
+				propsSrc = (ConfigPropertiesSource) clazz.newInstance();
+				
+			} catch (Exception e) {
+				throw new ServletException(e.getMessage() 
+											+ " [The custom property source class " 
+											+ configPropsSourceClass 
+											+ " could not be instantiated, check wether it is available on the classpath and" 
+											+ " that it has a zero-arg constructor]");
+			}
+		}
+		else {
+			// Default config properties source, reads from a .properties file in the classpath. 
+			propsSrc = new PropsFilePropertiesSource();
+		}
+
+		// If a custom properties source is a subclass of PropsFilePropertiesSource, we hand it the configLocation param. 
+		// This affects the standard one as well. 
+		if(propsSrc instanceof PropsFilePropertiesSource)
+			((PropsFilePropertiesSource) propsSrc).setConfigLocation(configLocation);
+		
+		
+		// Read properties from properties source
+		Properties props = propsSrc.getConfigProperties();
+		
+		// Initialize config 
+		initializeJawrConfig(props);
+		
+		// Initialize the properties reloading checker daemon if specified
+		if(null != props.getProperty(CONFIG_RELOAD_INTERVAL))
+		{	
+			int interval = Integer.valueOf(props.getProperty(CONFIG_RELOAD_INTERVAL)).intValue();
+			log.warn("Jawr started with configuration auto reloading on. " 
+					+ "Be aware that a daemon thread will be checking for changes to configuration every " + interval + " seconds.");
+			
+			new ConfigChangeListenerThread(propsSrc,this, interval).start();
+		}	
+		
+
+		if(log.isInfoEnabled()) {
+			long totaltime = System.currentTimeMillis() - initialTime;
+			log.info("Init method sucesful. jawr started in " + (totaltime/1000) + " seconds....");
+		}
+
+	}
+
+
+	/**
+	 * @param props
+	 * @throws ServletException
+	 */
+	private void initializeJawrConfig(Properties props) throws ServletException {
 		// Initialize config 
 		jawrConfig = new JawrConfig(props);
 
 		// Set the content type to be used for every request. 
 		contentType = "text/";
-		contentType += "js".equals(resourceType) ? "javascript" : "css";
-		
+		contentType += "js".equals(resourceType) ? "javascript" : "css";		
 		contentType += "; charset=" + jawrConfig.getResourceCharset().name();		
 		
 		// Set mapping, to be used by the tag lib to define URLs that point to this servlet. 
-		String mapping = config.getInitParameter("mapping");
+		String mapping = servletConfig.getInitParameter("mapping");
 		if(null != mapping)
 			jawrConfig.setServletMapping(mapping);
 		
@@ -104,7 +169,7 @@ public class JawrRequestHandler {
 		// Create a resource handler to read files from the WAR archive or exploded dir. 
 		ResourceHandler rsHandler;
 		
-		rsHandler = new ServletContextResourceHandler(context,jawrConfig.getResourceCharset());
+		rsHandler = new ServletContextResourceHandler(servletContext,jawrConfig.getResourceCharset());
 		PropertiesBasedBundlesHandlerFactory factory = new PropertiesBasedBundlesHandlerFactory(props,resourceType,rsHandler);
 		try {
 			bundlesHandler = factory.buildResourceBundlesHandler(jawrConfig);
@@ -113,24 +178,19 @@ public class JawrRequestHandler {
 		}
 		
 		if(resourceType.equals("js"))
-			context.setAttribute(ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE, bundlesHandler);
-		else context.setAttribute(ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE, bundlesHandler);
+			servletContext.setAttribute(ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE, bundlesHandler);
+		else servletContext.setAttribute(ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE, bundlesHandler);
 		
-		long totaltime = System.currentTimeMillis() - initialTime;
 		
 		if(log.isDebugEnabled()) {
 			log.debug("content type set to: " + contentType);
 			log.debug(bundlesHandler);
 		}
-		
-		if(log.isInfoEnabled()) 
-			log.info("Init method sucesful. jawr started in " + (totaltime/1000) + " seconds.");
-		
+				
 		// Warn when in debug mode
 		if(jawrConfig.isDebugModeOn()){
 			log.warn("Jawr initialized in DEVELOPMENT MODE. Do NOT use this mode in production or integration servers. ");
 		}
-			
 	}
 	
 	
@@ -192,38 +252,7 @@ public class JawrRequestHandler {
 			log.debug("request succesfully attended");
 	}
 
-	/**
-	 * Reads the config properties file. 
-	 * @param configLocation
-	 * @return
-	 * @throws ServletException
-	 */
-	private Properties readConfigProperties(String configLocation)
-			throws ServletException {
-		
-		if(log.isDebugEnabled())
-			log.debug("Reading properties from file at classpath: " + configLocation);
-		
-		Properties props = new Properties();	
-		
-		// Load properties file
-		try {	
-			InputStream is = getClass().getResourceAsStream(configLocation);
-			if(null == is)
-				throw new ServletException("jawr configuration could not be found. "
-						+ "Make sure init-param configLocation is properly set "
-						+ "in web.xml and that it points to a file in the classpath. ");
-
-			// load properties into a Properties object
-			props.load(is);
-		} 
-		catch (IOException e) {
-			throw new ServletException("jawr configuration could not be found. "
-										+ "Make sure init-param configLocation is properly set "
-										+ "in web.xml and that it points to a file in the classpath. ",e);
-		}
-		return props;
-	}
+	
 
 	/**
      * Adds aggresive caching headers to the response in order to prevent browsers requesting the same file
@@ -239,4 +268,21 @@ public class JawrRequestHandler {
             cal.roll(Calendar.YEAR,10);
             resp.setDateHeader(EXPIRES_HEADER, cal.getTimeInMillis());
     }
+
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.factory.util.ConfigChangeListener#configChanged(java.util.Properties)
+	 */
+	public synchronized void configChanged(Properties newConfig) {
+		if(log.isDebugEnabled())
+			log.debug("Reloading Jawr configuration");
+		try {
+			initializeJawrConfig(newConfig);
+		} catch (ServletException e) {
+			throw new RuntimeException("Error reloading Jawr config: " + e.getMessage());
+		}
+		if(log.isDebugEnabled())
+			log.debug("Jawr configuration succesfully reloaded. ");
+		
+	}
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 
 /**
@@ -31,11 +32,14 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     
     private ResourceBundlesHandler bundler;
     
+    private boolean useRandomParam = true;
+    
     /** Creates a new instance of AbstractBundleLinkRenderer
      * @param bundler ResourceBundlesHandler Handles resolving of paths. 
      */
-    protected AbstractBundleLinkRenderer(ResourceBundlesHandler bundler) {
+    protected AbstractBundleLinkRenderer(ResourceBundlesHandler bundler, boolean useRandomParam) {
         this.bundler = bundler;
+        this.useRandomParam = useRandomParam;
     }
     
     /**
@@ -71,7 +75,8 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
                 // If the resource had been added before, it will not be included again. 
                 if(includedBundles.add(resourceName)){
                 		// In debug mode, all the resources are included separately and use a random parameter to avoid caching. 
-                        if( debugOn ) {
+                		// If useRandomParam is set to false, the links are created without the random parameter. 
+                        if( debugOn && useRandomParam) {
                                 int random = new Random().nextInt();
                                 if(random < 0)
                                 	random*=-1;
@@ -117,13 +122,32 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
         return createBundleLink(BundleRenderer.GZIP_PATH_PREFIX + resourceName,contextPath);
     }
     
+    protected String createBundleLink(String bundleId, String contextPath) {
+    	
+    	String fullPath = PathNormalizer.joinPaths(bundler.getConfig().getServletMapping(), bundleId);
+    	
+    	// If context path is overriden..
+    	if(null != bundler.getConfig().getContextPathOverride()) {    		
+    		String override = bundler.getConfig().getContextPathOverride();
+    		// Blank override, create url relative to path
+    		if("".equals(override)) {
+    			fullPath = fullPath.substring(1);
+    		}
+    		else fullPath = PathNormalizer.joinPaths(override,fullPath);
+    	}    		
+    	else
+    		fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
+    	
+    	return renderLink(fullPath);
+    }
+    
     /**
      * Creates a link to a bundle in the page, using its identifier. 
      * @param bundleId
      * @param contextPath
      * @return String
      */
-    protected abstract String createBundleLink(String bundleId, String contextPath);
+    protected abstract String renderLink(String fullPath);
 
     /**
      * @return ResourceBundlesHandler The resources handler.
@@ -131,5 +155,6 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     public ResourceBundlesHandler getBundler() {
         return bundler;
     }
+
     
 }

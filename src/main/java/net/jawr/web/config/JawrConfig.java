@@ -26,6 +26,7 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
  *
  */
 public class JawrConfig {
+	
 	/**
 	 * Initialize configuration using params contained in the initialization properties file. 
 	 * @param configId
@@ -49,7 +50,11 @@ public class JawrConfig {
 		if(null != props.getProperty("jawr.gzip.ie6.on"))
 		{			
 			setGzipResourcesForIESixOn(Boolean.valueOf(props.getProperty("jawr.gzip.ie6.on")).booleanValue());
-		}	
+		}		
+		if(null != props.getProperty("jawr.url.contextpath.override"))
+		{			
+			setContextPathOverride(props.getProperty("jawr.url.contextpath.override"));
+		}
 	}
 	
 	/**
@@ -84,6 +89,11 @@ public class JawrConfig {
 	 */
 	private String servletMapping = "";
 
+	/**
+	 * Override value to use instead of the context path of the application in generated urls. If null, contextPath is used. If blank, 
+	 * urls are generated to be relative. 
+	 */
+	private String contextPathOverride;
 		
 	/**
 	 * Get debug mode status. 
@@ -188,6 +198,23 @@ public class JawrConfig {
         public void setGzipResourcesForIESixOn(boolean gzipResourcesForIESixOn) {
             this.gzipResourcesForIESixOn = gzipResourcesForIESixOn;
         }
+
+		/**
+		 * @return The string to use instead of the regular context path. 
+		 */
+		public String getContextPathOverride() {
+			return contextPathOverride;
+		}
+
+		/**
+		 * Set the string to use instead of the regular context path. If it is an empty string, 
+		 * urls will be relative to the path (i.e, not start with a slash). 
+		 * @param contextPathOverride The string to use instead of the regular context path. 
+		 */
+		public void setContextPathOverride(String contextPathOverride) {
+			this.contextPathOverride = contextPathOverride;
+		}
+
 	
 	
 }

@@ -13,7 +13,6 @@
  */
 package net.jawr.web.resource.bundle.renderer;
 
-import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 
 /**
@@ -29,14 +28,16 @@ public class CSSHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer implem
     private String media;
     
     /** Creates a new instance of CSSHTMLBundleLinkRenderer */
-    public CSSHTMLBundleLinkRenderer(ResourceBundlesHandler bundler, String media) {
-        super(bundler);
+    public CSSHTMLBundleLinkRenderer(ResourceBundlesHandler bundler, boolean useRandomParam, String media) {
+        super(bundler, useRandomParam);
         this.media = null == media ? "screen" : media;
     }
 
-    protected String createBundleLink(String bundleId, String contextPath) {
-    	String fullPath = PathNormalizer.joinPaths(getBundler().getConfig().getServletMapping(), bundleId);
-        fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
+    /* (non-Javadoc)
+     * @see net.jawr.web.resource.bundle.renderer.AbstractBundleLinkRenderer#createBundleLink(java.lang.String, java.lang.String)
+     */
+    protected String renderLink(String fullPath) {
+    	
         StringBuffer sb = new StringBuffer(PRE_TAG);
 		sb.append(media).append(MID_TAG)
 						.append(fullPath)	

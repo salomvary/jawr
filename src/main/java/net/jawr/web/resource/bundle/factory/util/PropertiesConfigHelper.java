@@ -31,6 +31,12 @@ public class PropertiesConfigHelper {
 	private Properties props;
 	private String prefix;
 	
+	/**
+	 * Build a properties wrapper that appends 'jawr.' and the specified resourceType 
+	 * to a a supplied key before  retrieveing its value from the properties.   
+	 * @param props Properties to wrap
+	 * @param resourceType resource type to use. 
+	 */
 	public PropertiesConfigHelper(Properties props, String resourceType) {
 		super();
 		this.props = props;
@@ -64,6 +70,11 @@ public class PropertiesConfigHelper {
 		return props.getProperty(prefix + key, defaultValue);
 	}
 
+	/**
+	 * Appends the prefix (jawr.) to the specified key and reads it from the properties object. 
+	 * @param key
+	 * @return
+	 */
 	public String getProperty(String key) {
 		return props.getProperty(prefix + key);
 	}

@@ -35,11 +35,16 @@ Jawr tag libraries
 	
 		** If the debug mode is off, a link to the bundle is then rendered, unless it had already been included by a previous tag. 
 		
-		** Otherwise, a link is rendered to each member of the bundle, ading a random request parameter to the URL, to prevent the browser from caching
+		** Otherwise, a link is rendered to each member of the bundle, adding a random request parameter to the URL, to prevent the browser from caching
 		any resource. Again, no resources will be linked again if a previous tag did it first. Also, processing HTML comments are added so a developer 
 		will easily follow how bundles would be processed in production mode. 
 	
 	[]
+	
+	Another attribute common to both tags is <<useRandomParam>>. As stated before, in development mode a random request parameter is added to the URL to 
+	avoid caching. However, sometimes a developer may need to use a cached version of a file to debug it (firebug, for instance 'forgets' break point 
+	locations when reloading a parameterized script). To avoid this, add this attribute and set it to 'false' so that the parameter is no longer added. 
+	Note that in production mode this attribute is ignored and thus has no effect. 
 
 * Usage
 	
@@ -99,7 +104,9 @@ Jawr tag libraries
 	Although we wrote two tags in the JSP with paths corresponding to the foo bundle, only one script link is written out. It would be pointless to link 
 	twice to the same resource in a page, so Jawr will only write each different link once. \ 
 	
-	The link itself, as you can see, is composed of the application context path, the prefix we specified for the bundle, and the bundle id. \ 
+	The link itself, as you can see, is composed of the application context path, the prefix we specified for the bundle, and the bundle id.  \ 
+	
+	
 
 
 * The style taglib
@@ -121,8 +128,19 @@ Jawr tag libraries
 	
 +------------------------------------------+
 
-
+* How to skip/modify the context path
 	
+	The context path can be replaced or removed from all generated URLs if you set the <<jawr.url.contextpath.override>> configuration
+	param to some value at the config properties file. This can be useful when you are serving your application behind an HTTP server. 
+	The values for this param can be: 
+	
+	* <</aCustomPathPrefix>>: Set a custom prefix for URLs to be used <<instead of>> the context path. 
+	
+	* <</>>: Skip the context path, all URLs are relative to the domain (as in /global01/bundles/global.js). 
+	
+	* [declare but leave value empty]: Skip the context path, all URLs are relative to the page (as in global01/bundles/global.js). 
+	
+	* [not declared at all]: Use the context path, this is the default behavior. 
 
 		
 	

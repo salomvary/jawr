@@ -14,8 +14,10 @@
 package net.jawr.web.resource.bundle.factory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -67,6 +69,12 @@ public class PropertiesBasedBundlesHandlerFactory {
 	private static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG = ".composite";
 	private static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES = ".child.names";
 	
+	// Custom postprocessors factory parameters
+	private static final String CUSTOM_POSTPROCESSORS = "jawr.custom.postprocessors";
+	private static final String CUSTOM_POSTPROCESSORS_NAMES = ".names";
+	private static final String CUSTOM_POSTPROCESSORS_CLASS = ".class";
+	
+	
 	//private static final String BUNDLE_FACTORY_DEBUGFOLDERS_SWITCH = "bundle.factory.debugfolders";
 	//private static final String BUNDLE_FACTORY_NAME = "bundle.factory.name";
 	//private static final String BUNDLE_FACTORY_GLOBAL_PREFIX = "bundle.factory.global.prefix";
@@ -76,6 +84,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 	
 	private PropertiesConfigHelper props;
 	private BundlesHandlerFactory factory;
+	
 	
 	/**
 	 * Create a PropertiesBasedBundlesHandlerFactory using the specified properties. 
@@ -120,6 +129,22 @@ public class PropertiesBasedBundlesHandlerFactory {
 			while(tk.hasMoreTokens())
 				customBundles.add(buildCustomBundleDefinition(tk.nextToken().trim(),false));
 		}
+		
+		// Read custom postprocessor definitions
+		if(null != properties.getProperty(CUSTOM_POSTPROCESSORS + CUSTOM_POSTPROCESSORS_NAMES)) {
+			Map customPostprocessors = new HashMap();
+			StringTokenizer tk = new StringTokenizer(properties.getProperty(CUSTOM_POSTPROCESSORS + CUSTOM_POSTPROCESSORS_NAMES),",");
+			
+			while(tk.hasMoreTokens()) {
+				String processorKey = tk.nextToken();
+				String processorClass = properties.getProperty(CUSTOM_POSTPROCESSORS + "." + processorKey + CUSTOM_POSTPROCESSORS_CLASS);
+				if(null != processorClass) 
+					customPostprocessors.put(processorKey, processorClass);
+			}
+			factory.setCustomPostprocessors(customPostprocessors);
+			
+		}
+		
 		factory.setBundleDefinitions(customBundles);
 	}
 	
@@ -173,9 +198,10 @@ public class PropertiesBasedBundlesHandlerFactory {
 		// Override bundle postprocessor
 		if(null != props.getCustomBundleProperty(bundleName, BUNDLE_FACTORY_CUSTOM_POSTPROCESSOR)) 
 			bundle.setBundlePostProcessorKeys(props.getCustomBundleProperty(bundleName, BUNDLE_FACTORY_CUSTOM_POSTPROCESSOR));
+		
 		// Override unitary postprocessor
 		if(null != props.getCustomBundleProperty(bundleName, BUNDLE_FACTORY_CUSTOM_FILE_POSTPROCESSOR)) 
-			bundle.setBundlePostProcessorKeys(props.getCustomBundleProperty(bundleName, BUNDLE_FACTORY_CUSTOM_FILE_POSTPROCESSOR));
+			bundle.setUnitaryPostProcessorKeys(props.getCustomBundleProperty(bundleName, BUNDLE_FACTORY_CUSTOM_FILE_POSTPROCESSOR));
 		
 		// Use only with debug mode on
 		Boolean isDebugOnly = Boolean.valueOf(props.getCustomBundleProperty(bundleName, BUNDLE_FACTORY_CUSTOM_DEBUGONLY, "false"));		

@@ -13,6 +13,8 @@
  */
 package net.jawr.web.resource.bundle.factory.processor;
 
+import java.util.Map;
+
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 
 /**
@@ -42,5 +44,16 @@ public interface PostProcessorChainFactory {
 	 * @return
 	 */
 	public abstract ResourceBundlePostProcessor buildPostProcessorChain(String processorKeys);
+	
+	
+	/**
+	 * Sets a map of custom postprocessors to use. 
+	 * The map has a key to name a postprocessor (to be used in bundle definitions), and 
+	 * the classname of a custom postprocessor class which must implement 
+	 * net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor. 
+	 * 
+	 * @param keysClassNames
+	 */
+	public abstract void setCustomPostprocessors(Map keysClassNames);
 
 }

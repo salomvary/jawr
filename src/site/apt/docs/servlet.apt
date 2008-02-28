@@ -40,6 +40,9 @@ The Jawr servlet
 	* <<type>>: Refers to the type of resource the servlet will manage. It can receive two possible values: <js> or <css>. You can omit this parameter 
 	for the javascript servlet, since <js> is the default value. \ 
 	
+	* <<configPropertiesSourceClass>>: This optional parameter holds the cualified class name of you custom implementation of ConfigPropertiesSource, 
+	in case you want to customize the way configuration is loaded when Jawr starts up. More on this below. 
+	
 	* <<mapping>>: In normal situations, you will have the Jawr servlet attend all requests for a certain type of resource, using a servlet-mapping 
 	like this: 
 	
@@ -111,3 +114,49 @@ The Jawr servlet
  
 </web-app>
 +------------------------------------------+
+
+* Defining a custom properties source
+
+	You can customize the way properties are loaded into Jawr, be it by reading data from a source other than a .properties file (like, say, a database), 
+	or simply by manually overriding some of the values from the properties file. To do that you must create an implementation of the interface 
+	<net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource> and then you must declare it when defining the Jawr servlet, by setting the 
+	<<configPropertiesSourceClass>> init param:  	
+
++------------------------------------------+
+	<servlet>
+		<servlet-name>JavascriptServlet</servlet-name>
+		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
+		<init-param>
+			<param-name>configPropertiesSourceClass</param-name>
+			<param-value>com.mycompany.mypackage.MyConfigPropertiesSourceImplementation</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
++------------------------------------------+	
+
+	The ConfigPropertiesSource interface declares two methods: 
+
++------------------------------------------+
+	/**
+	 * Read/modify configuration from a source (such as a .properties file) and return it. 
+	 * @return
+	 */
+	public abstract Properties getConfigProperties();
+	
+	/**
+	 * Determine if configuration is changed to reconfigure Jawr during development 
+	 * without having to restart the server. 
+	 * @return
+	 */
+	public abstract boolean configChanged();
++------------------------------------------+	
+
+	The configChanged method will be called only if you set the jawr.config.reload.interval parameter in the properties file to any valid value. This 
+	would have Jawr check every n seconds wether configuration has changed since the last time it was loaded. Therefore, if configChanged returns true, 
+	Jawr will redeploy itself. 
+	
+	If you only intend to override some values of the properties file for some reason (like mapping the debug mode to some global property from your 
+	own application), the best way to go is to subclass <net.jawr.web.resource.bundle.factory.util.PropsFilePropertiesSource>. Check the javadoc 
+	for details. 
+	

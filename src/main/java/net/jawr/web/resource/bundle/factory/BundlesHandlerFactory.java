@@ -65,6 +65,7 @@ public class BundlesHandlerFactory {
 	private boolean useDirMapperFactory = false;
 	private Set excludedDirMapperDirs;
 	private JawrConfig jawrConfig;
+	private Map customPostprocessors;
 	
 
 	/**
@@ -88,6 +89,10 @@ public class BundlesHandlerFactory {
 		if(null == this.commonURLPrefix)
 			throw new IllegalStateException("Must set the the commonURLPrefix. Please check the documentation. ");
 			
+		// Initialize custom postprocessors before using the factory to build the postprocessing chains
+		if(null != customPostprocessors)
+			chainFactory.setCustomPostprocessors(customPostprocessors);
+		
 		
 		// List of bundles
 		List resourceBundles = new ArrayList();
@@ -408,6 +413,10 @@ public class BundlesHandlerFactory {
 
 	public void setJawrConfig(JawrConfig jawrConfig) {
 		this.jawrConfig = jawrConfig;
+	}
+
+	public void setCustomPostprocessors(Map customPostprocessors) {
+		this.customPostprocessors = customPostprocessors;
 	}
 	
 }
