@@ -45,12 +45,12 @@ public class PropsFilePropertiesSource implements ConfigPropertiesSource {
 	 * Reads config properties from the classpath route specified by configLocation
 	 * @return
 	 */
-	private Properties readConfigProperties() {
+	protected Properties readConfigProperties() {
 		Properties props = new Properties();	
 		
 		// Load properties file
 		try {	
-			InputStream is = getClass().getResourceAsStream(configLocation);
+			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(configLocation);
 			if(null == is)
 				throw new IllegalArgumentException("jawr configuration could not be found. "
 						+ "Make sure init-param configLocation is properly set "
