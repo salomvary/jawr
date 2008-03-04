@@ -3,9 +3,7 @@ package test.net.jawr.web.minification;
 import java.io.File;
 
 import junit.framework.TestCase;
-
 import net.jawr.web.minification.CSSMinifier;
-
 import test.net.jawr.web.FileUtils;
 
 public class CSSMinifierTest extends TestCase {
@@ -20,7 +18,6 @@ public class CSSMinifierTest extends TestCase {
 	
 	public void testMinifyCSS() {
 		CSSMinifier minifier = new CSSMinifier();
-		
 		StringBuffer actual = minifier.minifyCSS(source);
 		assertEquals("Error in minifier",expected.toString(), actual.toString());
 	}

@@ -283,7 +283,7 @@ public class JSMin {
 		out.flush();
 	}
 
-	class UnterminatedCommentException extends RuntimeException{
+	public class UnterminatedCommentException extends Exception{
 
 		/**
 		 * 
@@ -291,7 +291,7 @@ public class JSMin {
 		private static final long serialVersionUID = -6518522022216739576L;
 	}
 
-	class UnterminatedStringLiteralException extends RuntimeException {
+	public class UnterminatedStringLiteralException extends Exception {
 
 		/**
 		 * 
@@ -299,7 +299,7 @@ public class JSMin {
 		private static final long serialVersionUID = 6638892379183043426L;
 	}
 
-	class UnterminatedRegExpLiteralException extends RuntimeException {
+	public class UnterminatedRegExpLiteralException extends Exception {
 
 		/**
 		 * 

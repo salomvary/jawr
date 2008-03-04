@@ -23,6 +23,9 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 
 import net.jawr.web.minification.JSMin;
+import net.jawr.web.minification.JSMin.UnterminatedCommentException;
+import net.jawr.web.minification.JSMin.UnterminatedRegExpLiteralException;
+import net.jawr.web.minification.JSMin.UnterminatedStringLiteralException;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 
@@ -55,7 +58,15 @@ public class JSMinPostProcessor extends
 		
 		// Compress data and recover it as a byte array. 
 		JSMin minifier = new JSMin(bIs,bOs);
-		minifier.jsmin();
+		try {
+			minifier.jsmin();
+		} catch (UnterminatedRegExpLiteralException e) {			
+			formatAndThrowJSLintError(status, e);				
+		} catch (UnterminatedCommentException e) {
+			formatAndThrowJSLintError(status, e);		
+		} catch (UnterminatedStringLiteralException e) {
+			formatAndThrowJSLintError(status, e);		
+		}
 		byte[] minified = bOs.toByteArray();
 
 		// Write the data into a string
@@ -67,6 +78,18 @@ public class JSMinPostProcessor extends
 			writer.write(i);
 		
 		return writer.getBuffer();
+	}
+
+	/**
+	 * Upon an exception thrown during minification, this method will throw an error with detailed information. 
+	 * @param status
+	 * @param e
+	 */
+	private void formatAndThrowJSLintError(BundleProcessingStatus status, Exception e) {
+		String errorMsg = "JSMin failed to minify the bundle with id: '" + status.getCurrentBundle().getName() + "'.\n";
+		errorMsg += "The exception thrown is of type:" + e.getClass().getName() + "'.\n";
+		errorMsg += "If you can't find the error, try to check the scripts using JSLint (http://www.jslint.com/) to find the conflicting part of the code. ";
+		throw new RuntimeException(errorMsg,e);
 	}
 
 }

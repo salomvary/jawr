@@ -93,7 +93,7 @@ public class CSSURLPathRewriterPostProcessor extends
 		
 		// Check if the URL is absolute, if it is return it as is. 
 		int firstSlash = url.indexOf('/');
-		if(firstSlash != -1 && url.charAt(++firstSlash) == '/'){
+		if(0 == firstSlash || (firstSlash != -1 && url.charAt(++firstSlash) == '/')){
 			StringBuffer sb = new StringBuffer("url(");
 			sb.append(quoteStr).append(url).append(quoteStr).append(")");
 			return sb.toString();

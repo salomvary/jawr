@@ -27,9 +27,13 @@ public class CSSMinifier {
 	// This regex captures comments, plus newlines and tabs
 	private static final String commentRegex ="(/\\*[^*]*\\*+([^/][^*]*\\*+)*/)|\\r|\\n|\\t|\\f";
 	
-	// This regex captures, in order: single or double quote enclosed content, 
-	// brackets, parentheses,colons and semicolons and any spaces around them, and occurrences of one or more spaces. 
-	private static final String spacesRegex = "('.*')|(\".*\")|(\\s*\\{\\s*)|(\\s*\\}\\s*)|(\\s*\\(\\s*)|(\\s*\\)\\s*)|(\\s*;\\s*)|(\\s*:\\s*)|( +)";
+	// This regex captures, in order: 
+	// ('.*')|(\".*\"):  
+	//			single or double quote enclosed content, 
+	//(\\s*\\{\\s*)|(\\s*\\}\\s*)|(\\s*\\(\\s*)|(\\s*\\))|(\\s*;\\s*)
+	// 			brackets, parentheses,colons and semicolons and any spaces around them (except spaces AFTER a parentheses closing symbol), 
+	//and ( +) occurrences of one or more spaces. 
+	private static final String spacesRegex = "('.*')|(\".*\")|(\\s*\\{\\s*)|(\\s*\\}\\s*)|(\\s*\\(\\s*)|(\\s*\\))|(\\s*;\\s*)|(\\s*:\\s*)|( +)";
 	
 	private static final Pattern cssPattern = Pattern.compile(commentRegex, Pattern.DOTALL);
 	private static final Pattern spacesPattern = Pattern.compile(spacesRegex, Pattern.DOTALL);

@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007 Jordi Hernï¿½ndez Sellï¿½s
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -26,7 +26,7 @@ import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 /**
  * Abstract base class for implementations of a link renderer. 
  * 
- * @author Jordi Hernández Sellés
+ * @author Jordi Hernï¿½ndez Sellï¿½s
  */
 public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     
@@ -82,7 +82,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
                                 	random*=-1;
                                 out.write(createBundleLink(resourceName + "?d=" + random,contextPath));
                         }
-                        else if(useGzip)
+                        else if(!debugOn && useGzip)
                             out.write(createGzipBundleLink(resourceName,contextPath));
                         else 
                             out.write(createBundleLink(resourceName,contextPath));

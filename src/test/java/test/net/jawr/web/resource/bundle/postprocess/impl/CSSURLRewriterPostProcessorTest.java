@@ -5,7 +5,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import junit.framework.TestCase;
-
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
@@ -54,7 +53,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 	
 	public void testBackReferenceAndSpaces() {
 		// Now a back reference must be created, and there are quotes and spaces
-		StringBuffer data = new StringBuffer("background-image:url( \n '/images/someImage.gif' );");
+		StringBuffer data = new StringBuffer("background-image:url( \n 'images/someImage.gif' );");
 		status.setLastPathAdded("/someCSS.css");
 		// Expected: goes 1 back for servlet mapping, 1 back for prefix , 1 back for the id having a subdir path. 
 		String expectedURL = "background-image:url('../../../images/someImage.gif');";
@@ -63,7 +62,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 	}
 	
 	public void testBackReferenceNoUrlMapping() {
-		StringBuffer data = new StringBuffer("background-image:url(  '/images/someImage.gif' );");
+		StringBuffer data = new StringBuffer("background-image:url(  'images/someImage.gif' );");
 		// Remove the url mapping from config, one back reference less expected
 		config.setServletMapping("");
 		String expectedURL = "background-image:url('../../css/images/someImage.gif');";
@@ -124,17 +123,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		assertEquals("URL was not rewritten properly",expectedURL, result);
 		
 	}
-	public void testSameLevelResourceLeadingSlash() {
-		
-		// An image at the same path as the css
-		status.setLastPathAdded("/css/subpath/someCSS.css");
-		StringBuffer data = new StringBuffer("background-image:url(  '/someImage.gif' );");
-		// Expected: goes 1 back for prefix , 1 back for the id having a subdir path. 
-		String expectedURL = "background-image:url('../../../css/subpath/someImage.gif');";
-		String result = processor.postProcessBundle(status, data).toString();	
-		assertEquals("URL was not rewritten properly",expectedURL, result);
-		
-	}
+
 	public void testSameLevelResourceLeadingDotSlash() {
 		
 		// An image at the same path as the css
@@ -161,7 +150,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		
 		// An image at the same path as the css
 		status.setLastPathAdded("/css/someCSS.css");
-		StringBuffer data = new StringBuffer("background-image:url(  '/folder/subfolder/subfolder$/someImage.gif' );");
+		StringBuffer data = new StringBuffer("background-image:url(  'folder/subfolder/subfolder$/someImage.gif' );");
 		// Expected: goes 1 back for prefix , 1 back for the id having a subdir path. 
 		String expectedURL = "background-image:url('../../../css/folder/subfolder/subfolder$/someImage.gif');";
 		String result = processor.postProcessBundle(status, data).toString();	
@@ -173,7 +162,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		
 		// An image at the same path as the css
 		status.setLastPathAdded("/css/someCSS.css");
-		StringBuffer data = new StringBuffer("background-image:URL(  '/folder/subfolder/subfolder/someImage.gif' );");
+		StringBuffer data = new StringBuffer("background-image:URL(  'folder/subfolder/subfolder/someImage.gif' );");
 		// Expected: goes 1 back for prefix , 1 back for the id having a subdir path. 
 		String expectedURL = "background-image:url('../../../css/folder/subfolder/subfolder/someImage.gif');";
 		String result = processor.postProcessBundle(status, data).toString();	
@@ -182,7 +171,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 	}
 
 	public void testSameUrlWithParens() {
-		StringBuffer data = new StringBuffer("background-image:url(  '/images/some\\(Image\\).gif' );");
+		StringBuffer data = new StringBuffer("background-image:url(  'images/some\\(Image\\).gif' );");
 		// Remove the url mapping from config, one back reference less expected
 		config.setServletMapping("");
 		String expectedURL = "background-image:url('../../css/images/some\\(Image\\).gif');";
@@ -192,7 +181,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 	}
 
 	public void testSameUrlWithQuotes() {
-		StringBuffer data = new StringBuffer("background-image:url(  '/images/some\\'Image\\\".gif' );");
+		StringBuffer data = new StringBuffer("background-image:url(  'images/some\\'Image\\\".gif' );");
 		// Remove the url mapping from config, one back reference less expected
 		config.setServletMapping("");
 		String expectedURL = "background-image:url('../../css/images/some\\'Image\\\".gif');";
@@ -201,12 +190,21 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		
 	}
 	
-	public void testStaticUrl() {
+
+	public void testDomainRelativeUrl() {
+		StringBuffer data = new StringBuffer("background-image:url('/someImage.gif');");
+		String result = processor.postProcessBundle(status, data).toString();	
+		assertEquals("URL was not rewritten properly:" + result,data.toString(), result);
+		
+	}
+	
+	public void testDblSlashDomainRelativeUrl() {
 		StringBuffer data = new StringBuffer("background-image:url('//someImage.gif');");
 		String result = processor.postProcessBundle(status, data).toString();	
 		assertEquals("URL was not rewritten properly:" + result,data.toString(), result);
 		
 	}
+	
 	public void testStaticUrlWithProtocol() {
 		StringBuffer data = new StringBuffer("background-image:url('http://www.someSite.org/someImage.gif');");
 		String result = processor.postProcessBundle(status, data).toString();	
