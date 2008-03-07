@@ -105,8 +105,8 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
      * @throws IOException
      */
     protected final void addComment(String commentText, Writer out)  throws IOException {
-    	StringBuffer sb = new StringBuffer("<!-- ");
-            sb.append(commentText).append(" -->").append("\n");
+    	StringBuffer sb = new StringBuffer("<script>/* ");
+            sb.append(commentText).append(" */</script>").append("\n");
             out.write(sb.toString());
     }
     

@@ -48,6 +48,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	protected Set licensesPathList;
 	private String urlPrefix;
 	private String fileExtension;
+	private int bundleDataHashCode;
 	
 	private ResourceBundlePostProcessor unitaryPostProcessor;
 	private ResourceBundlePostProcessor bundlePostProcessor;
@@ -79,24 +80,8 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
         
         setUrlPrefix(urlPrefix);
         
-	}
+	}	
 	
-	
-	/**
-	 * Verifies and sets the url prefix to prepend in URLs pointing to this bundle. 
-	 * If the supplied parameter is @startup, a URL is automatically generated. 
-	 * @param urlPrefix
-	 */
-	private void setUrlPrefix(String urlPrefix) {
-		if(AUTO_PREFIX.equals(urlPrefix)) {
-        	this.urlPrefix = System.currentTimeMillis() + "/";
-        }
-		else if(BundleRenderer.GZIP_PATH_PREFIX.equals(urlPrefix))                
-            throw new IllegalArgumentException("The prefix for a bundle can not be equal to the gzipped resources prefix, which is ["+ BundleRenderer.GZIP_PATH_PREFIX + ". [wrong path:" + urlPrefix+ "]");
-        else if(urlPrefix.lastIndexOf("/") > 0)
-            throw new IllegalArgumentException("The prefix for a bundle can not define more than one directory path name. [wrong path:" + urlPrefix+ "]");
-        else this.urlPrefix = urlPrefix;
-	}
 	
     /**
      * 
@@ -125,7 +110,22 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		
 	}
 	
-	
+
+ 	/**
+ 	 * Verifies and sets the url prefix to prepend in URLs pointing to this bundle. 
+ 	 * If the supplied parameter is @startup, a URL is automatically generated. 
+ 	 * @param urlPrefix
+ 	 */
+ 	private void setUrlPrefix(String urlPrefix) {
+ 		if(AUTO_PREFIX.equals(urlPrefix)) {
+         	this.urlPrefix = System.currentTimeMillis() + "/";
+         }
+ 		else if(BundleRenderer.GZIP_PATH_PREFIX.equals(urlPrefix))                
+             throw new IllegalArgumentException("The prefix for a bundle can not be equal to the gzipped resources prefix, which is ["+ BundleRenderer.GZIP_PATH_PREFIX + ". [wrong path:" + urlPrefix+ "]");
+         else if(urlPrefix.lastIndexOf("/") > 0)
+             throw new IllegalArgumentException("The prefix for a bundle can not define more than one directory path name. [wrong path:" + urlPrefix+ "]");
+         else this.urlPrefix = urlPrefix;
+ 	}
 	
 	/**
 	 * Detects all files that belong to this bundle and adds them to the 
@@ -306,6 +306,15 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	public void setBundlePostProcessor(
 			ResourceBundlePostProcessor bundlePostProcessor) {
 		this.bundlePostProcessor = bundlePostProcessor;
+	}
+
+
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setBundleDataHashCode(int)
+	 */
+	public void setBundleDataHashCode(int bundleDataHashCode) {
+		this.bundleDataHashCode = bundleDataHashCode;
 	}
 
 }

@@ -262,6 +262,9 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			}
 			else store = joinandPostprocessBundle(bundle);	
 			
+			// Set the data hascode in the bundle, in case the prefix needs to be generated
+			bundle.setBundleDataHashCode(store.hashCode());
+			
 			// Store the collected resources as a single file, both in text and gzip formats. 
 			resourceHandler.storeBundle(bundle.getName(),store);
 		}

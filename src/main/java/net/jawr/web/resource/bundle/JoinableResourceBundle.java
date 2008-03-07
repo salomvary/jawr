@@ -81,5 +81,13 @@ public interface JoinableResourceBundle {
      * @return
      */
     public ResourceBundlePostProcessor getBundlePostProcessor();
+    
+    /**
+     * Set the hashcode of the string representing the bundled files. 
+     * Used to generate an automatic version prefix. 
+     * 
+     * @param hashCode
+     */
+    public void setBundleDataHashCode(int bundleDataHashCode);
 	
 }
