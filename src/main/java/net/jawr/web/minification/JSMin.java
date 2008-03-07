@@ -65,6 +65,8 @@ public class JSMin {
 	private int theA;
 	private int theB;
 	
+	private int currentByteIndex;
+	
 	public JSMin(InputStream in, OutputStream out) {
 		this.in = new PushbackInputStream(in);
 		this.out = out;
@@ -87,6 +89,7 @@ public class JSMin {
 	 */
 	int get() throws IOException {
 		int c = in.read();
+		currentByteIndex++;
 
 		if (c >= ' ' || c == '\n' || c == EOF) {
 			return c;
@@ -137,7 +140,7 @@ public class JSMin {
 						}
 						break;
 					case EOF:
-						throw new UnterminatedCommentException();
+						throw new UnterminatedCommentException(currentByteIndex);
 					}
 				}
 
@@ -173,7 +176,7 @@ public class JSMin {
 						break;
 					}
 					if (theA <= '\n') {
-						throw new UnterminatedStringLiteralException();
+						throw new UnterminatedStringLiteralException(currentByteIndex);
 					}
 					if (theA == '\\') {
 						out.write(theA);
@@ -199,7 +202,7 @@ public class JSMin {
 						out.write(theA);
 						theA = get();
 					} else if (theA <= '\n') {
-						throw new UnterminatedRegExpLiteralException();
+						throw new UnterminatedRegExpLiteralException(currentByteIndex);
 					}
 					out.write(theA);
 				}
@@ -214,7 +217,7 @@ public class JSMin {
 	 * replaced with spaces. Carriage returns will be replaced with linefeeds.
 	 * Most spaces and linefeeds will be removed.
 	 */
-	public void jsmin() throws IOException, UnterminatedRegExpLiteralException, UnterminatedCommentException, UnterminatedStringLiteralException{
+	public void jsmin() throws IOException, JSMinException {
 		theA = '\n';
 		action(3);
 		while (theA != EOF) {
@@ -283,7 +286,28 @@ public class JSMin {
 		out.flush();
 	}
 
-	public class UnterminatedCommentException extends Exception{
+	public abstract class JSMinException extends Exception {
+		private int byteIndex;
+
+		/**
+		 * @param byteIndex
+		 */
+		public JSMinException(int byteIndex) {
+			super();
+			this.byteIndex = byteIndex;
+		}
+		
+		public int getByteIndex(){
+			return this.byteIndex;
+		}
+		
+	}
+	
+	public class UnterminatedCommentException extends JSMinException{
+
+		public UnterminatedCommentException(int byteIndex) {
+			super(byteIndex);
+		}
 
 		/**
 		 * 
@@ -291,7 +315,11 @@ public class JSMin {
 		private static final long serialVersionUID = -6518522022216739576L;
 	}
 
-	public class UnterminatedStringLiteralException extends Exception {
+	public class UnterminatedStringLiteralException extends JSMinException {
+
+		public UnterminatedStringLiteralException(int byteIndex) {
+			super(byteIndex);
+		}
 
 		/**
 		 * 
@@ -299,7 +327,11 @@ public class JSMin {
 		private static final long serialVersionUID = 6638892379183043426L;
 	}
 
-	public class UnterminatedRegExpLiteralException extends Exception {
+	public class UnterminatedRegExpLiteralException extends JSMinException {
+
+		public UnterminatedRegExpLiteralException(int byteIndex) {
+			super(byteIndex);
+		}
 
 		/**
 		 * 

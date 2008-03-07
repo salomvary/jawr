@@ -74,7 +74,7 @@ public interface ResourceBundlesHandler {
 	public void initAllBundles();
 	
 	/**
-	 * Retireves the configuration for this bundler
+	 * Retrieves the configuration for this bundler
 	 * @return
 	 */
 	public JawrConfig getConfig();

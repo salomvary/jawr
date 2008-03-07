@@ -38,7 +38,6 @@ import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 public class PropertiesBasedBundlesHandlerFactory {
 	
 	private static final String RESOURCES_BASEDIR = "bundle.basedir";
-	private static final String BUNDLE_COMMON_PREFIX= "commonURLPrefix";
 	private static final String RESOURCES_USE_CACHE = "use.cache";
 	
 	// Single bundle switch and param. 
@@ -60,7 +59,6 @@ public class PropertiesBasedBundlesHandlerFactory {
 	private static final String BUNDLE_FACTORY_CUSTOM_MAPPINGS = ".mappings";
 	private static final String BUNDLE_FACTORY_CUSTOM_GLOBAL_FLAG = ".global";
 	private static final String BUNDLE_FACTORY_CUSTOM_ORDER = ".order";
-	private static final String BUNDLE_FACTORY_CUSTOM_PREFIX = ".prefix";
 	private static final String BUNDLE_FACTORY_CUSTOM_DEBUGONLY = ".debugonly";
 	private static final String BUNDLE_FACTORY_CUSTOM_DEBUGNEVER = ".debugnever";
 	private static final String BUNDLE_FACTORY_CUSTOM_POSTPROCESSOR = ".bundlepostprocessors";
@@ -75,11 +73,6 @@ public class PropertiesBasedBundlesHandlerFactory {
 	private static final String CUSTOM_POSTPROCESSORS_CLASS = ".class";
 	
 	
-	//private static final String BUNDLE_FACTORY_DEBUGFOLDERS_SWITCH = "bundle.factory.debugfolders";
-	//private static final String BUNDLE_FACTORY_NAME = "bundle.factory.name";
-	//private static final String BUNDLE_FACTORY_GLOBAL_PREFIX = "bundle.factory.global.prefix";
-	//private static final String BUNDLE_FACTORY_LIBRARY_PREFIX = "bundle.factory.library.prefix";
-	//private static final String BUNDLE_FACTORY_DEBUG_PREFIX = "bundle.factory.debug.prefix";
 		
 	
 	private PropertiesConfigHelper props;
@@ -117,9 +110,6 @@ public class PropertiesBasedBundlesHandlerFactory {
 		// Use the automatic directory-as-bundle mapper. 
 		factory.setUseDirMapperFactory(Boolean.valueOf(props.getProperty(FACTORY_USE_DIR_MAPPER,"false")).booleanValue());
 		factory.setExludedDirMapperDirs(props.getPropertyAsSet(FACTORY_DIR_MAPPER_EXCLUSION));
-		
-		// Set default url prefix 
-		factory.setCommonURLPrefix(props.getProperty(BUNDLE_COMMON_PREFIX));
 		
 		// Initialize custom bundles
 		Set customBundles = null;
@@ -180,11 +170,6 @@ public class PropertiesBasedBundlesHandlerFactory {
 		ResourceBundleDefinition bundle = new ResourceBundleDefinition();
 		bundle.setBundleId(bundleId);
 
-		// Set the prefix. If none specified, use the global one. 
-		if(null != props.getCustomBundleProperty(bundleName, BUNDLE_FACTORY_CUSTOM_PREFIX)) 
-			bundle.setPrefix(props.getCustomBundleProperty(bundleName, BUNDLE_FACTORY_CUSTOM_PREFIX));
-		else bundle.setPrefix(props.getProperty(BUNDLE_COMMON_PREFIX));
-		
 		// Wether it's global or not
 		Boolean isGlobal = Boolean.valueOf(props.getCustomBundleProperty(bundleName,BUNDLE_FACTORY_CUSTOM_GLOBAL_FLAG,"false"));		
 		bundle.setGlobal(isGlobal.booleanValue());

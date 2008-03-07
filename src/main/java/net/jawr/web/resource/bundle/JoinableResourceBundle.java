@@ -84,7 +84,7 @@ public interface JoinableResourceBundle {
     
     /**
      * Set the hashcode of the string representing the bundled files. 
-     * Used to generate an automatic version prefix. 
+     * Used to generate an automatic version url prefix. 
      * 
      * @param hashCode
      */

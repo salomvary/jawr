@@ -45,13 +45,15 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 	 */
 	public int doStartTag() throws JspException {		
             
-            // In some cases, the container will reuse the tag instance so the renderer can be reused. 
-            // The spec says if properties are different then new instances will be created, otherwise instances are reused.  
-            if(null == this.renderer)
+           // In some cases, the container will reuse the tag instance so the renderer can be reused. 
+           // The spec says if properties are different then new instances will be created, otherwise instances are reused.  
+		   // It is also checked wether the configuration has been invalidated. 
+           if(null == this.renderer || !this.renderer.getBundler().getConfig().isValid())
                 this.renderer = createRenderer();		
+           
+           HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
             
             try {
-                HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
                 renderer.renderBundleLinks( src,
                                             request.getContextPath(),
                                             RendererRequestUtils.getAddedBundlesLog(request),

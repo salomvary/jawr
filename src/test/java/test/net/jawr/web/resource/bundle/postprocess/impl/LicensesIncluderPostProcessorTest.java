@@ -24,7 +24,6 @@ import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandlerImpl;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 import net.jawr.web.resource.bundle.postprocess.impl.LicensesIncluderPostProcessor;
-
 import test.net.jawr.web.resource.bundle.handler.ResourceHandlerBasedTest;
 /**
  *
@@ -44,15 +43,13 @@ public class LicensesIncluderPostProcessorTest  extends  ResourceHandlerBasedTes
 		rsHandler = createResourceHandler(ROOT_TESTDIR,charsetUtf);
 		jeesConfig = new JawrConfig(new Properties());
 		jeesConfig.setCharsetName("UTF-8");
-		//jeesConfig.setURLPrefix("/00");
 		
 		List c = Collections.singletonList("js/**");
 		resourcebundle = new JoinableResourceBundleImpl("script.js",
 										".js",
 										new InclusionPattern(true,0),
 										c,
-										rsHandler,
-										"/00");
+										rsHandler);
 		
 		processor = new LicensesIncluderPostProcessor();
 

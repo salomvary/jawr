@@ -24,7 +24,6 @@ import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
-import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.resource.bundle.sorting.SortFileParser;
 
 import org.apache.log4j.Logger;
@@ -38,7 +37,6 @@ import org.apache.log4j.Logger;
 public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	
 	private static final Logger log = Logger.getLogger(JoinableResourceBundle.class.getName());
-	private static final String AUTO_PREFIX = "@startup";
 	
 	private InclusionPattern inclusionPattern;
 	private List pathMappings;
@@ -46,8 +44,8 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	private ResourceHandler resourceHandler;
 	protected List itemPathList;
 	protected Set licensesPathList;
-	private String urlPrefix;
 	private String fileExtension;
+	private String urlPrefix;
 	private int bundleDataHashCode;
 	
 	private ResourceBundlePostProcessor unitaryPostProcessor;
@@ -66,8 +64,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	protected JoinableResourceBundleImpl(	String name, 
 			String fileExtension,
 			InclusionPattern inclusionPattern,
-			ResourceHandler resourceHandler,
-            String urlPrefix) {
+			ResourceHandler resourceHandler) {
 		super();
 
 		this.inclusionPattern = inclusionPattern;
@@ -76,10 +73,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		this.resourceHandler = resourceHandler;
 		this.itemPathList = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 		this.licensesPathList = new HashSet();
-        this.fileExtension = fileExtension;    
-        
-        setUrlPrefix(urlPrefix);
-        
+        this.fileExtension = fileExtension;
 	}	
 	
 	
@@ -96,9 +90,8 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
         									String fileExtension,
         									InclusionPattern inclusionPattern,
         									List pathMappings, 
-											ResourceHandler resourceHandler,
-                                            String urlPrefix) {
-		this(name, fileExtension, inclusionPattern, resourceHandler, urlPrefix);
+											ResourceHandler resourceHandler) {
+		this(name, fileExtension, inclusionPattern, resourceHandler);
       
 		if(log.isDebugEnabled())
 			log.debug("Adding mapped files for bundle " + getName());
@@ -111,22 +104,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	}
 	
 
- 	/**
- 	 * Verifies and sets the url prefix to prepend in URLs pointing to this bundle. 
- 	 * If the supplied parameter is @startup, a URL is automatically generated. 
- 	 * @param urlPrefix
- 	 */
- 	private void setUrlPrefix(String urlPrefix) {
- 		if(AUTO_PREFIX.equals(urlPrefix)) {
-         	this.urlPrefix = System.currentTimeMillis() + "/";
-         }
- 		else if(BundleRenderer.GZIP_PATH_PREFIX.equals(urlPrefix))                
-             throw new IllegalArgumentException("The prefix for a bundle can not be equal to the gzipped resources prefix, which is ["+ BundleRenderer.GZIP_PATH_PREFIX + ". [wrong path:" + urlPrefix+ "]");
-         else if(urlPrefix.lastIndexOf("/") > 0)
-             throw new IllegalArgumentException("The prefix for a bundle can not define more than one directory path name. [wrong path:" + urlPrefix+ "]");
-         else this.urlPrefix = urlPrefix;
- 	}
-	
+
 	/**
 	 * Detects all files that belong to this bundle and adds them to the 
 	 * items path list. 
@@ -273,6 +251,9 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	* @see net.jawr.web.resource.bundle.JoinableResourceBundle#getURLPrefix()
 	*/
     public String getURLPrefix() {
+    	if(null == this.urlPrefix)
+    		throw new IllegalStateException("The bundleDataHashCode must be set before accessing the url prefix.");
+    		
     	return this.urlPrefix;
     }
 
@@ -313,8 +294,14 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setBundleDataHashCode(int)
 	 */
-	public void setBundleDataHashCode(int bundleDataHashCode) {
+	public void setBundleDataHashCode(int bundleDataHashCode) {		
 		this.bundleDataHashCode = bundleDataHashCode;
+		// Since this numbre is used as part of urls, the -sign is converted to 'N'
+		if(bundleDataHashCode < 0){
+			this.urlPrefix = "N" + this.bundleDataHashCode*-1 + "/";
+		}
+		else urlPrefix = this.bundleDataHashCode + "/";
+		
 	}
 
 }

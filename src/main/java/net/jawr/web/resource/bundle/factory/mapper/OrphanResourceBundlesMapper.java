@@ -67,8 +67,7 @@ public class OrphanResourceBundlesMapper {
 																				this.resourceExtension,
 																				new InclusionPattern(),
 																				Collections.singletonList(this.baseDir),
-																				rsHandler,
-																				"");
+																				rsHandler);
 		
 		// Add licenses
 		Set licensesPathList = tempBundle.getLicensesPathList();

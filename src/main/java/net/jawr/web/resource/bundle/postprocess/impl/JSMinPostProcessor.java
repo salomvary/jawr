@@ -23,9 +23,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 
 import net.jawr.web.minification.JSMin;
-import net.jawr.web.minification.JSMin.UnterminatedCommentException;
-import net.jawr.web.minification.JSMin.UnterminatedRegExpLiteralException;
-import net.jawr.web.minification.JSMin.UnterminatedStringLiteralException;
+import net.jawr.web.minification.JSMin.JSMinException;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 
@@ -53,22 +51,29 @@ public class JSMinPostProcessor extends
 	protected StringBuffer doPostProcessBundle(BundleProcessingStatus status,StringBuffer bundleString)
 			throws IOException {
 		Charset charset = status.getJeesConfig().getResourceCharset();
-		ByteArrayInputStream bIs = new ByteArrayInputStream(bundleString.toString().getBytes(charset.name()));
+		byte[] bundleBytes = bundleString.toString().getBytes(charset.name());
+		ByteArrayInputStream bIs = new ByteArrayInputStream(bundleBytes);
 		ByteArrayOutputStream bOs = new ByteArrayOutputStream();
 		
 		// Compress data and recover it as a byte array. 
 		JSMin minifier = new JSMin(bIs,bOs);
 		try {
 			minifier.jsmin();
-		} catch (UnterminatedRegExpLiteralException e) {			
-			formatAndThrowJSLintError(status, e);				
-		} catch (UnterminatedCommentException e) {
-			formatAndThrowJSLintError(status, e);		
-		} catch (UnterminatedStringLiteralException e) {
-			formatAndThrowJSLintError(status, e);		
-		}
+		} catch (JSMinException e) {			
+			formatAndThrowJSLintError(status, bundleBytes, e);				
+		} 
 		byte[] minified = bOs.toByteArray();
+		return  byteArrayToString(charset, minified);
+	}
 
+	/**
+	 * @param charset
+	 * @param minified
+	 * @return
+	 * @throws IOException
+	 */
+	private StringBuffer byteArrayToString(Charset charset, byte[] minified)
+			throws IOException {
 		// Write the data into a string
 		ReadableByteChannel chan = Channels.newChannel(new ByteArrayInputStream(minified));
         Reader rd = Channels.newReader(chan,charset.newDecoder(),-1);
@@ -85,11 +90,34 @@ public class JSMinPostProcessor extends
 	 * @param status
 	 * @param e
 	 */
-	private void formatAndThrowJSLintError(BundleProcessingStatus status, Exception e) {
-		String errorMsg = "JSMin failed to minify the bundle with id: '" + status.getCurrentBundle().getName() + "'.\n";
-		errorMsg += "The exception thrown is of type:" + e.getClass().getName() + "'.\n";
-		errorMsg += "If you can't find the error, try to check the scripts using JSLint (http://www.jslint.com/) to find the conflicting part of the code. ";
-		throw new RuntimeException(errorMsg,e);
+	private void formatAndThrowJSLintError(BundleProcessingStatus status, byte[] bundleBytes, JSMinException e) {
+		StringBuffer errorMsg = new StringBuffer("JSMin failed to minify the bundle with id: '" + status.getCurrentBundle().getName() + "'.\n");
+		errorMsg.append("The exception thrown is of type:" + e.getClass().getName() + "'.\n");
+		int currentByte = e.getByteIndex();
+		int startPoint;
+		if(currentByte < 100)
+			startPoint = 0;
+		else startPoint = currentByte - 100;
+		int totalSize = currentByte - startPoint;
+		
+		byte[] lastData = new byte[totalSize];
+		
+		for(int x = 0; x < totalSize; x++) {
+			lastData[x] = bundleBytes[startPoint];
+			startPoint++;
+		}
+		errorMsg.append("The error happened at this point in your javascript: \n");
+		errorMsg.append("_______________________________________________\n...");
+		try {
+			String data = byteArrayToString(status.getJeesConfig().getResourceCharset(),lastData).toString();
+			errorMsg.append(data).append("\n\n");
+		} catch (IOException e1) {
+			// Ignored, we have enaugh problems by this point. 
+		}
+		errorMsg.append("_______________________________________________");
+		errorMsg.append("\nIf you can't find the error, try to check the scripts using JSLint (http://www.jslint.com/) to find the conflicting part of the code. ");
+		
+		throw new RuntimeException(errorMsg.toString(),e);
 	}
 
 }

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
-
 import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
@@ -75,6 +74,10 @@ public class GlobalResourceBundleComparatorTest extends TestCase {
 
 			public ResourceBundlePostProcessor getUnitaryPostProcessor() {
 				return null;
+			}
+
+			public void setBundleDataHashCode(int bundleDataHashCode) {
+				
 			}};
 	}
 

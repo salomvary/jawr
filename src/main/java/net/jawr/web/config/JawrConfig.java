@@ -94,6 +94,12 @@ public class JawrConfig {
 	 * urls are generated to be relative. 
 	 */
 	private String contextPathOverride;
+	
+	/**
+	 * Used to check if a configuration has not been outdated by a new one. 
+	 */
+	private boolean isValid = true;
+	
 		
 	/**
 	 * Get debug mode status. 
@@ -215,6 +221,19 @@ public class JawrConfig {
 			this.contextPathOverride = contextPathOverride;
 		}
 
-	
+		/**
+		 * Invalidate this configuration. Used to signal objects that have a hold on this instance but 
+		 * cannot be explicitly notified when the configuration is reloaded. 
+		 */
+		public void invalidate() {
+			this.isValid = false;
+		}
+		
+		/**
+		 * @return Whether this configuration has been invalidated. 
+		 */
+		public boolean isValid() {
+			return this.isValid;
+		}
 	
 }

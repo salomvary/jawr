@@ -149,6 +149,9 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	 */
 	private void initializeJawrConfig(Properties props) throws ServletException {
 		// Initialize config 
+		if(null != jawrConfig)
+			jawrConfig.invalidate();
+		
 		jawrConfig = new JawrConfig(props);
 
 		// Set the content type to be used for every request. 

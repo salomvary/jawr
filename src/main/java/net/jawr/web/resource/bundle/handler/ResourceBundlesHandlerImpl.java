@@ -183,7 +183,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 * @param path
 	 * @return
 	 */
-	private String removePreffixFromPath(String path) {
+	private String removePrefixFromPath(String path) {
 		// Remove first slash
         path = path.substring(1,path.length());
         // Remove up to second slash
@@ -199,7 +199,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		
 		// Prefixes are used only in production mode
 		if(!this.config.isDebugModeOn())
-			bundlePath = removePreffixFromPath(bundlePath);
+			bundlePath = removePrefixFromPath(bundlePath);
 		
 		// If debug mode is on, resources are retrieved one by one. 
 		if(config.isDebugModeOn())
@@ -222,7 +222,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 * @see net.jawr.web.resource.bundle.ResourceBundlesHandler#streamBundleTo(java.lang.String, java.io.OutputStream)
 	 */
 	public void streamBundleTo(String bundlePath, OutputStream out)  throws ResourceNotFoundException{
-		bundlePath = removePreffixFromPath(bundlePath);
+		bundlePath = removePrefixFromPath(bundlePath);
 		FileChannel data = resourceHandler.getResourceBundleChannel(bundlePath);
 		try {
 			WritableByteChannel channel = Channels.newChannel(out);
@@ -263,7 +263,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			else store = joinandPostprocessBundle(bundle);	
 			
 			// Set the data hascode in the bundle, in case the prefix needs to be generated
-			bundle.setBundleDataHashCode(store.hashCode());
+			bundle.setBundleDataHashCode(store.toString().hashCode());
 			
 			// Store the collected resources as a single file, both in text and gzip formats. 
 			resourceHandler.storeBundle(bundle.getName(),store);

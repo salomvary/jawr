@@ -12,7 +12,6 @@ import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.JoinableResourceBundleImpl;
-
 import test.net.jawr.web.resource.bundle.handler.ResourceHandlerBasedTest;
 
 
@@ -45,8 +44,8 @@ public class JoinableResourceBundleImplTest extends  ResourceHandlerBasedTest  {
 			System.out.println("Error in test constructor");
 			e.printStackTrace();
 		}
-		fullCollection = new JoinableResourceBundleImpl("full.js",".js",pattern,fullMapping,rsHandler,"aa");
-		partialCollection = new JoinableResourceBundleImpl("partial.js",".js",pattern,partialMapping,rsHandler,"aa");
+		fullCollection = new JoinableResourceBundleImpl("full.js",".js",pattern,fullMapping,rsHandler);
+		partialCollection = new JoinableResourceBundleImpl("partial.js",".js",pattern,partialMapping,rsHandler);
 	}
  
 	/**

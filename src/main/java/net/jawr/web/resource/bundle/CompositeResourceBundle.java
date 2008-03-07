@@ -36,19 +36,17 @@ public class CompositeResourceBundle extends JoinableResourceBundleImpl {
 	 * @param childBundles
 	 * @param inclusionPattern
 	 * @param resourceHandler
-	 * @param urlPrefix
 	 * @param fileExtension
 	 * @param config
 	 */
 	public CompositeResourceBundle(	String name,
 									List childBundles,
 									InclusionPattern inclusionPattern,
-									ResourceHandler resourceHandler, 
-									String urlPrefix,
+									ResourceHandler resourceHandler,
 									String fileExtension, 
 									JawrConfig config) {
 		
-		super(name, fileExtension, inclusionPattern, resourceHandler, urlPrefix);
+		super(name, fileExtension, inclusionPattern, resourceHandler);
 		this.childBundles = childBundles;
 		
 		boolean debugModeOn = config.isDebugModeOn();

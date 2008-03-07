@@ -296,6 +296,9 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 			}
 			public ResourceBundlePostProcessor getUnitaryPostProcessor() {
 				return null;
+			}
+			public void setBundleDataHashCode(int bundleDataHashCode) {
+				
 			}};
 		
 	}

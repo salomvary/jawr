@@ -12,7 +12,6 @@ import net.jawr.web.resource.bundle.CompositeResourceBundle;
 import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.JoinableResourceBundleImpl;
-
 import test.net.jawr.web.resource.bundle.handler.ResourceHandlerBasedTest;
 
 public class CompositeResourceBundleTest extends ResourceHandlerBasedTest {
@@ -41,8 +40,8 @@ public class CompositeResourceBundleTest extends ResourceHandlerBasedTest {
 		InclusionPattern onDebug = new InclusionPattern(false,0,true,false);
 		InclusionPattern excludedOnDebug = new InclusionPattern(false,0,false,true);
 		
-		JoinableResourceBundleImpl bundleA = new JoinableResourceBundleImpl(COMPOSITE_ID,".js", onDebug,mappingA,rsHandler,"");
-		JoinableResourceBundleImpl bundleB = new JoinableResourceBundleImpl(COMPOSITE_ID,".js", excludedOnDebug,mappingB,rsHandler,"");
+		JoinableResourceBundleImpl bundleA = new JoinableResourceBundleImpl(COMPOSITE_ID,".js", onDebug,mappingA,rsHandler);
+		JoinableResourceBundleImpl bundleB = new JoinableResourceBundleImpl(COMPOSITE_ID,".js", excludedOnDebug,mappingB,rsHandler);
 		List bundles = new ArrayList();
 		bundles.add(bundleA);
 		bundles.add(bundleB);
@@ -50,9 +49,9 @@ public class CompositeResourceBundleTest extends ResourceHandlerBasedTest {
 		Properties props = new Properties();
 		JawrConfig config = new JawrConfig(props);
 		config.setDebugModeOn(false);
-		compositeCollectionNoDebug = new CompositeResourceBundle(COMPOSITE_ID,bundles,new InclusionPattern(),rsHandler,"/001",".js",config);
+		compositeCollectionNoDebug = new CompositeResourceBundle(COMPOSITE_ID,bundles,new InclusionPattern(),rsHandler,".js",config);
 		config.setDebugModeOn(true);
-		compositeCollectionDebug = new CompositeResourceBundle(COMPOSITE_ID,bundles,new InclusionPattern(),rsHandler,"/001",".js",config);
+		compositeCollectionDebug = new CompositeResourceBundle(COMPOSITE_ID,bundles,new InclusionPattern(),rsHandler,".js",config);
 	}
 	
 	

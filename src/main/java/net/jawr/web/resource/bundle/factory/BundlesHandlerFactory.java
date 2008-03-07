@@ -54,7 +54,6 @@ public class BundlesHandlerFactory {
 	private boolean useInMemoryCache = true;
 	private String baseDir = "";
 	private String fileExtension;
-	private String commonURLPrefix;
 	private String globalPostProcessorKeys;
 	private String unitPostProcessorKeys; 
 	private Set bundleDefinitions;
@@ -86,8 +85,6 @@ public class BundlesHandlerFactory {
 			throw new IllegalStateException("Must set the resourceHandler for this factory before invoking buildResourceBundlesHandler(). ");
 		if(useSingleResourceFactory && null == singleFileBundleName)
 			throw new IllegalStateException("Must set the singleFileBundleName when useSingleResourceFactory is set to true. Please check the documentation. ");
-		if(null == this.commonURLPrefix)
-			throw new IllegalStateException("Must set the the commonURLPrefix. Please check the documentation. ");
 			
 		// Initialize custom postprocessors before using the factory to build the postprocessing chains
 		if(null != customPostprocessors)
@@ -197,13 +194,11 @@ public class BundlesHandlerFactory {
 														definition.isDebugOnly(),
 														definition.isDebugNever());
 		
-		String prefix = null == definition.getPrefix() ? commonURLPrefix : definition.getPrefix();
 		
 		CompositeResourceBundle composite = new CompositeResourceBundle(definition.getBundleId(),
 																		childBundles,
 																		include,
 																		resourceHandler,
-																		prefix,
 																		fileExtension,
 																		jawrConfig);
 		if(null != definition.getBundlePostProcessorKeys())
@@ -229,13 +224,11 @@ public class BundlesHandlerFactory {
 														definition.isDebugOnly(),
 														definition.isDebugNever());
 		
-		String prefix = null == definition.getPrefix() ? commonURLPrefix : definition.getPrefix();
 		JoinableResourceBundleImpl newBundle = new JoinableResourceBundleImpl(	definition.getBundleId(),
 																			fileExtension,
 																			include,
 																			definition.getMappings(),
-																			resourceHandler,
-																			prefix);
+																			resourceHandler);
 		if(null != definition.getBundlePostProcessorKeys())
 			newBundle.setBundlePostProcessor(chainFactory.buildPostProcessorChain(definition.getBundlePostProcessorKeys()));
 		
@@ -257,8 +250,7 @@ public class BundlesHandlerFactory {
 																			fileExtension,
 																			new InclusionPattern(),
 																			path,
-																			resourceHandler,
-																			commonURLPrefix);
+																			resourceHandler);
 		return newBundle;
 	}
 	
@@ -274,8 +266,7 @@ public class BundlesHandlerFactory {
 																			fileExtension,
 																			new InclusionPattern(),
 																			orphanPaths,
-																			resourceHandler,
-																			commonURLPrefix);
+																			resourceHandler);
 		return newBundle;
 	}
 	
@@ -292,8 +283,7 @@ public class BundlesHandlerFactory {
 											fileExtension,
 											new InclusionPattern(),
 											paths,
-											resourceHandler,
-											commonURLPrefix);
+											resourceHandler);
 		return newBundle;
 	}
 
@@ -404,11 +394,6 @@ public class BundlesHandlerFactory {
 	public void setExludedDirMapperDirs(Set exludedDirMapperDirs) {
 		if(null != excludedDirMapperDirs)
 			this.excludedDirMapperDirs = PathNormalizer.normalizePaths(exludedDirMapperDirs);
-	}
-
-
-	public void setCommonURLPrefix(String commonURLPrefix) {
-		this.commonURLPrefix = commonURLPrefix;
 	}
 
 	public void setJawrConfig(JawrConfig jawrConfig) {

@@ -9,7 +9,6 @@ import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
-
 import test.net.jawr.web.resource.bundle.PredefinedBundlesHandlerUtil;
 
 
@@ -22,9 +21,6 @@ public class ResourceBundlesHandlerImplTest  extends  ResourceHandlerBasedTest {
 	private ResourceBundlesHandler defaultHandler;
 	private ResourceBundlesHandler defaultDebugCollection;
 	private ResourceBundlesHandler simpleHandler;
-	private static final String RESOURCES_PREFIX = "/test";
-	private static final String RESOURCES_GLOBAL_PREFIX = "/global00";
-	private static final String RESOURCES_LIB_PREFIX = "/lib00";
 
 	public ResourceBundlesHandlerImplTest() {
 		try {
@@ -45,9 +41,9 @@ public class ResourceBundlesHandlerImplTest  extends  ResourceHandlerBasedTest {
 			configDebug.setDebugModeOn(true);
 			//configDebug.setURLPrefix(RESOURCES_PREFIX);
 			
-			defaultHandler = PredefinedBundlesHandlerUtil.buildSingleBundleHandler(handler,RESOURCES_PREFIX, config);
-			simpleHandler = PredefinedBundlesHandlerUtil.buildSimpleBundles(handlerSimple,"/js","js", config,RESOURCES_PREFIX,RESOURCES_GLOBAL_PREFIX,RESOURCES_LIB_PREFIX);
-			defaultDebugCollection = PredefinedBundlesHandlerUtil.buildSimpleBundles(handlerDebug,"/js","js", configDebug,RESOURCES_PREFIX,RESOURCES_GLOBAL_PREFIX,RESOURCES_LIB_PREFIX);
+			defaultHandler = PredefinedBundlesHandlerUtil.buildSingleBundleHandler(handler, config);
+			simpleHandler = PredefinedBundlesHandlerUtil.buildSimpleBundles(handlerSimple,"/js","js", config);
+			defaultDebugCollection = PredefinedBundlesHandlerUtil.buildSimpleBundles(handlerDebug,"/js","js", configDebug);
 			
 		} catch (Exception e) {
 			System.out.println("Error in test constructor");
@@ -58,17 +54,17 @@ public class ResourceBundlesHandlerImplTest  extends  ResourceHandlerBasedTest {
 	public void testGetSingleFilePath() {
 		
 		assertTrue("The collection path was not initialized properly", 
-					defaultHandler.getBundlePaths("/script.js").contains(RESOURCES_PREFIX +"/script.js"));
+					defaultHandler.getBundlePaths("/script.js").get(0).toString().endsWith("/script.js"));
 		
 	}
 	public void testGetNormalCollectionPaths() {
 		
 		List simplePaths = simpleHandler.getBundlePaths("/js/one.js");
 		assertEquals("Invalid number of paths returned",new Integer(4), new Integer(simplePaths.size()));
-		assertEquals("Path ordering does not match expected. ",RESOURCES_LIB_PREFIX +"/library.js", simplePaths.get(0));
-		assertEquals("Path ordering does not match expected. ",RESOURCES_GLOBAL_PREFIX +"/global.js", simplePaths.get(1));
-		assertEquals("Path ordering does not match expected. ",RESOURCES_PREFIX +"/debugOff.js", simplePaths.get(2));
-		assertEquals("Path ordering does not match expected. ",RESOURCES_PREFIX +"/js/one.js", simplePaths.get(3));
+		assertTrue("Path ordering does not match expected. ", simplePaths.get(0).toString().endsWith("/library.js"));
+		assertTrue("Path ordering does not match expected. ", simplePaths.get(1).toString().endsWith("/global.js"));
+		assertTrue("Path ordering does not match expected. ", simplePaths.get(2).toString().endsWith("/debugOff.js"));
+		assertTrue("Path ordering does not match expected. ", simplePaths.get(3).toString().endsWith("js/one.js"));
 		
 	}
 	public void testGetDebugCollectionPaths() {
@@ -84,7 +80,7 @@ public class ResourceBundlesHandlerImplTest  extends  ResourceHandlerBasedTest {
 	public void testWriteCollectionTo() {
 		StringWriter writer = new StringWriter();
 		try {
-			defaultHandler.writeBundleTo(RESOURCES_PREFIX +"/script.js", writer);
+			defaultHandler.writeBundleTo("/dummy/script.js", writer);
 		} catch (ResourceNotFoundException e) {
 			fail("File was not found:" + e.getRequestedPath());
 		}
@@ -92,7 +88,7 @@ public class ResourceBundlesHandlerImplTest  extends  ResourceHandlerBasedTest {
 		
 		writer = new StringWriter();
 		try {
-			simpleHandler.writeBundleTo(RESOURCES_PREFIX +"/js/one.js", writer);
+			simpleHandler.writeBundleTo("/dummy/js/one.js", writer);
 		} catch (ResourceNotFoundException e) {
 			fail("File was not found:" + e.getRequestedPath());
 		}

@@ -25,7 +25,6 @@ public class ResourceBundleDefinition {
 	
 	private String bundleId;
 	private List mappings;
-	private String prefix;
 	private boolean isGlobal;
 	private boolean isComposite;
 	private int inclusionOrder;
@@ -52,12 +51,6 @@ public class ResourceBundleDefinition {
 	}
 	public void setMappings(List mappings) {
 		this.mappings = mappings;
-	}
-	public String getPrefix() {
-		return prefix;
-	}
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
 	}
 	public boolean isGlobal() {
 		return isGlobal;

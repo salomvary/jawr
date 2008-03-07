@@ -36,8 +36,6 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 	private static final String JS_CTX_PATH = "/ctxPathJs";
 	private static final String CSS_BASEDIR = "css/";
 	private static final String CSS_CTX_PATH = "/ctxPathCss";
-	private static final String GLOBAL_PFX = "globalPfx";
-	private static final String LIB_PFX = "libPfx";
 	
 	private static final String JS_PRE_TAG = "<script type=\"text/javascript\" src=\"";
     private static final String JS_POST_TAG = "\" ></script>";
@@ -59,12 +57,11 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 	    jeesConfig = new JawrConfig(new Properties());
 	    jeesConfig.setCharsetName("UTF-8");
 	    jeesConfig.setServletMapping("/srvMapping");
-	  //  jeesConfig.setURLPrefix("pfx");
 	    ResourceBundlesHandler jsHandler = null;
 	    ResourceBundlesHandler cssHandler = null;
 	    try {
-	    	jsHandler = PredefinedBundlesHandlerUtil.buildSimpleBundles(rsHandler,JS_BASEDIR,"js", jeesConfig,"pfx",GLOBAL_PFX,LIB_PFX);
-	    	cssHandler = PredefinedBundlesHandlerUtil.buildSimpleBundles(rsHandler,CSS_BASEDIR,"css", jeesConfig,"pfx",GLOBAL_PFX,LIB_PFX);
+	    	jsHandler = PredefinedBundlesHandlerUtil.buildSimpleBundles(rsHandler,JS_BASEDIR,"js", jeesConfig);
+	    	cssHandler = PredefinedBundlesHandlerUtil.buildSimpleBundles(rsHandler,CSS_BASEDIR,"css", jeesConfig);
 		} catch (DuplicateBundlePathException e) {
 			// 
 			throw new RuntimeException(e);
@@ -98,15 +95,27 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 		
 		assertNotSame("No css tag written ", "", result.trim());
 			
-		String libTag = CSS_PRE_TAG + "/ctxPathCss/srvMapping/libPfx/library.css" + CSS_POST_TAG;
-		String globalTag = CSS_PRE_TAG + "/ctxPathCss/srvMapping/globalPfx/global.css" + CSS_POST_TAG;
-		String debOffTag = CSS_PRE_TAG + "/ctxPathCss/srvMapping/pfx/debugOff.css" + CSS_POST_TAG;
+		String libTag1 = CSS_PRE_TAG + "/ctxPathCss/srvMapping/";
+		String libTag2 = "/library.css" + CSS_POST_TAG;
+		String globalTag1 = CSS_PRE_TAG + "/ctxPathCss/srvMapping/";
+		String globalTag2 = "/global.css" + CSS_POST_TAG;
+		String debOffTag1 = CSS_PRE_TAG + "/ctxPathCss/srvMapping/";
+		String debOffTag2 = "/debugOff.css" + CSS_POST_TAG;
 		StringTokenizer tk = new StringTokenizer(result,"\n");
+		String next;
 		
 		assertEquals("Invalid number of tags written. ",3, tk.countTokens());
-		assertEquals("Unexpected tag added at position 0", libTag,tk.nextElement());
-		assertEquals("Unexpected tag added at position 1", globalTag,tk.nextElement());
-		assertEquals("Unexpected tag added at position 2", debOffTag,tk.nextElement());
+		next = tk.nextElement().toString();
+		assertTrue("Unexpected tag added at position 0:" + next, next.startsWith(libTag1));
+		assertTrue("Unexpected tag added at position 0:" + next, next.endsWith(libTag2));
+		
+		next = tk.nextElement().toString();
+		assertTrue("Unexpected tag added at position 1:" + next, next.startsWith(globalTag1));
+		assertTrue("Unexpected tag added at position 1:" + next, next.endsWith(globalTag2));
+		
+		next = tk.nextElement().toString();
+		assertTrue("Unexpected tag added at position 2:" + next, next.startsWith(debOffTag1));
+		assertTrue("Unexpected tag added at position 2:" + next, next.endsWith(debOffTag2));
 		
 		// Reusing the set, we test that no repeats are allowed. 
 		result = renderToString(cssRenderer,"/js/one/one2.js", JS_CTX_PATH, includedBundles, false);
@@ -117,14 +126,29 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 
 		assertNotSame("No css tag written ", "", result.trim());
 			
-		String libPrTag = CSS_PRE_PR_TAG + "/ctxPathCss/srvMapping/libPfx/library.css" + CSS_POST_TAG;
-		String globaPrlTag = CSS_PRE_PR_TAG + "/ctxPathCss/srvMapping/globalPfx/global.css" + CSS_POST_TAG;
-		String debOffPrTag = CSS_PRE_PR_TAG + "/ctxPathCss/srvMapping/pfx/debugOff.css" + CSS_POST_TAG;
+		String libPrTag1 = CSS_PRE_PR_TAG + "/ctxPathCss/srvMapping/";
+		String libPrTag2 = "library.css" + CSS_POST_TAG;
+		
+		String globaPrlTag1 = CSS_PRE_PR_TAG + "/ctxPathCss/srvMapping/";
+		String globaPrlTag2 = "global.css" + CSS_POST_TAG;
+		
+		String debOffPrTag1 = CSS_PRE_PR_TAG + "/ctxPathCss/srvMapping/";
+		String debOffPrTag2 = "debugOff.css" + CSS_POST_TAG;
+		
 		tk = new StringTokenizer(result,"\n");
 		assertEquals("Invalid number of tags written. ",3, tk.countTokens());
-		assertEquals("Unexpected tag added at position 0", libPrTag,tk.nextElement());
-		assertEquals("Unexpected tag added at position 1", globaPrlTag,tk.nextElement());
-		assertEquals("Unexpected tag added at position 2", debOffPrTag,tk.nextElement());
+		
+		next = tk.nextElement().toString();
+		assertTrue("Unexpected tag added at position 0:" + next, next.startsWith(libPrTag1));
+		assertTrue("Unexpected tag added at position 0:" + next, next.endsWith(libPrTag2));
+		
+		next = tk.nextElement().toString();
+		assertTrue("Unexpected tag added at position 1:" + next, next.startsWith(globaPrlTag1));
+		assertTrue("Unexpected tag added at position 1:" + next, next.endsWith(globaPrlTag2));
+		
+		next = tk.nextElement().toString();
+		assertTrue("Unexpected tag added at position 2:" + next, next.startsWith(debOffPrTag1));
+		assertTrue("Unexpected tag added at position 2:" + next, next.endsWith(debOffPrTag2));
 		
 	}
 	
@@ -145,10 +169,10 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 		
 		
 		assertEquals("Invalid number of tags written. ",4, tk.countTokens());
-		assertEquals("Unexpected tag added at position 0", libTag,tk.nextElement());
-		assertEquals("Unexpected tag added at position 1", globalTag,tk.nextElement());
-		assertEquals("Unexpected tag added at position 2", debOffTag,tk.nextElement());
-		assertEquals("Unexpected tag added at position 3", oneTag,tk.nextElement());
+		assertTrue("Unexpected tag added at position 0", assertStartEndSimmilarity(libTag,"libPfx",tk.nextToken()));
+		assertTrue("Unexpected tag added at position 1", assertStartEndSimmilarity(globalTag,"globalPfx",tk.nextToken()));
+		assertTrue("Unexpected tag added at position 2",assertStartEndSimmilarity(debOffTag,"pfx",tk.nextToken()) );
+		assertTrue("Unexpected tag added at position 3", assertStartEndSimmilarity(oneTag,"pfx",tk.nextToken()) );
 		
 		// Reusing the set, we test that no repeats are allowed. 
 		result = renderToString(jsRenderer,"/js/one/one2.js", JS_CTX_PATH, includedBundles, false);
@@ -165,14 +189,19 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 		assertNotSame("No gzip script tags written ", "", result.trim());
 		tk = new StringTokenizer(result,"\n");
 		assertEquals("Invalid number of gzip script tags written. ",4, tk.countTokens());
-		assertEquals("Unexpected tag added at position 0", libZTag,tk.nextToken());
-		assertEquals("Unexpected tag added at position 1", globalZTag,tk.nextToken());
-		assertEquals("Unexpected tag added at position 2", debOffZTag,tk.nextToken());
-		assertEquals("Unexpected tag added at position 3", debOffoneTag,tk.nextToken());
+		assertTrue("Unexpected tag added at position 0", assertStartEndSimmilarity(libZTag,"libPfx",tk.nextToken()));
+		assertTrue("Unexpected tag added at position 1",assertStartEndSimmilarity(globalZTag,"globalPfx",tk.nextToken()));
+		assertTrue("Unexpected tag added at position 2",assertStartEndSimmilarity(debOffZTag,"pfx",tk.nextToken()) );
+		assertTrue("Unexpected tag added at position 3",assertStartEndSimmilarity(debOffoneTag,"pfx",tk.nextToken()) );
 		
 		// Reusing the set, we test that no repeats are allowed. 
 		result = renderToString(jsRenderer,"/js/one/one2.js", JS_CTX_PATH, includedBundles, true);
 		assertEquals("Gzip tags were repeated","", result.trim());
+	}
+	
+	private boolean assertStartEndSimmilarity(String toCompare, String splitter, String toMatch) {
+		String[] parts = toCompare.split(splitter);
+		return toMatch.startsWith(parts[0]) && toMatch.endsWith(parts[1]);
 	}
 	
 	public void testWriteJSDebugLinks() 

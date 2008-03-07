@@ -13,7 +13,7 @@ import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 
 public class PredefinedBundlesHandlerUtil {
 
-	public static final ResourceBundlesHandler buildSingleBundleHandler(ResourceHandler handler, String commonPfx, JawrConfig config) throws DuplicateBundlePathException {
+	public static final ResourceBundlesHandler buildSingleBundleHandler(ResourceHandler handler, JawrConfig config) throws DuplicateBundlePathException {
 
 		BundlesHandlerFactory factory = new BundlesHandlerFactory();
 		factory.setResourceHandler(handler);
@@ -21,16 +21,14 @@ public class PredefinedBundlesHandlerUtil {
 		factory.setUseSingleResourceFactory(true);			
 		factory.setSingleFileBundleName("script");
 		factory.setBundlesType("js");
-		factory.setCommonURLPrefix(commonPfx);
 		factory.setJawrConfig(config);		
 		return factory.buildResourceBundlesHandler();
 		
 	}
 	
 	public static final ResourceBundlesHandler buildSimpleBundles(ResourceHandler handler,String baseDir, String type,
-																JawrConfig config, String commonPfx,String globalPfx, String libPfx) throws DuplicateBundlePathException {		
+																JawrConfig config) throws DuplicateBundlePathException {		
 		BundlesHandlerFactory factory = new BundlesHandlerFactory();
-		factory.setCommonURLPrefix(commonPfx);
 		factory.setResourceHandler(handler);
 		factory.setBaseDir(baseDir);
 		factory.setBundlesType(type);
@@ -41,7 +39,6 @@ public class PredefinedBundlesHandlerUtil {
 		ResourceBundleDefinition def = new ResourceBundleDefinition();
 		def.setMappings(Collections.singletonList(baseDir + "/lib/**"));
 		def.setBundleId("/library." + type);
-		def.setPrefix(libPfx);
 		def.setGlobal(true);
 		def.setInclusionOrder(0);			
 		customBundles.add(def);
@@ -49,7 +46,6 @@ public class PredefinedBundlesHandlerUtil {
 		def = new ResourceBundleDefinition();
 		def.setMappings(Collections.singletonList(baseDir + "/global/**"));
 		def.setBundleId("/global." + type);
-		def.setPrefix(globalPfx);
 		def.setGlobal(true);
 		def.setInclusionOrder(1);		
 		customBundles.add(def);
