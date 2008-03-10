@@ -68,9 +68,11 @@ public class ServletContextResourceHandler extends AbstractResourceHandler imple
 		Set paths = context.getResourcePaths(path);
 		Set names = new HashSet();
 		int length = path.length();
-		for(Iterator it = paths.iterator();it.hasNext();) {
-			String resourcePath = (String) it.next();
-			names.add(resourcePath.substring(length, resourcePath.length()));
+		if(null != paths) {
+			for(Iterator it = paths.iterator();it.hasNext();) {
+				String resourcePath = (String) it.next();
+				names.add(resourcePath.substring(length, resourcePath.length()));
+			}
 		}
 		return names;
 	}

@@ -13,8 +13,11 @@
  */
 package net.jawr.web.resource.bundle.factory.util;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -50,7 +53,8 @@ public class PropsFilePropertiesSource implements ConfigPropertiesSource {
 		
 		// Load properties file
 		try {	
-			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(configLocation);
+			URL url = Thread.currentThread().getContextClassLoader().getResource(configLocation);
+			InputStream is = new FileInputStream(new File(url.getFile()));
 			if(null == is)
 				throw new IllegalArgumentException("jawr configuration could not be found. "
 						+ "Make sure init-param configLocation is properly set "
