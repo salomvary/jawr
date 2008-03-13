@@ -132,13 +132,13 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 			    WritableByteChannel wrChannel = Channels.newChannel(baOs);
 			    Writer tempWriter = Channels.newWriter(wrChannel, charsetName);
 			    rsHandler.writeBundleTo(bundlePath, tempWriter);
-			    writer.close();
 			    text = baOs.toString(charsetName);
 			    textCache.put(bundlePath,text);
 			}
 			
 			// Write the text to the outputstream
 			writer.write(text);
+			writer.close();
 			
 		} catch (IOException e) {
 			throw new RuntimeException("Unexpected IOException writing bundle[" + bundlePath + "]");
