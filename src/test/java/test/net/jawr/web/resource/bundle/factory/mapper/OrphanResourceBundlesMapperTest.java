@@ -134,6 +134,11 @@ public class OrphanResourceBundlesMapperTest extends  ResourceHandlerBasedTest {
 
 			public void setBundleDataHashCode(int bundleDataHashCode) {
 				
+			}
+
+			public String getExplorerConditionalExpression() {
+				// TODO Auto-generated method stub
+				return null;
 			}};		
 	}
 }

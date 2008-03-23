@@ -26,7 +26,7 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
  *
  */
 public class JawrConfig {
-	
+	private static final String DEBUG_MODE_SYSTEM_FLAG = "net.jawr.debug.on"; 
 	/**
 	 * Initialize configuration using params contained in the initialization properties file. 
 	 * @param configId
@@ -39,6 +39,10 @@ public class JawrConfig {
 		{			
 			setDebugModeOn(Boolean.valueOf(props.getProperty("jawr.debug.on")).booleanValue());
 		}	
+		// If system flag is available, override debug mode from properties
+		if(null != System.getProperty(DEBUG_MODE_SYSTEM_FLAG)) {
+			setDebugModeOn(Boolean.valueOf(System.getProperty(DEBUG_MODE_SYSTEM_FLAG)).booleanValue());
+		}
 		if(null != props.getProperty("jawr.gzip.on"))
 		{			
 			setGzipResourcesModeOn(Boolean.valueOf(props.getProperty("jawr.gzip.on")).booleanValue());

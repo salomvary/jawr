@@ -91,7 +91,7 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 		jeesConfig.setDebugModeOn(false);
 		// Test regular link creation
 	    Set includedBundles = new HashSet();
-	    String result = renderToString(cssRenderer,"/js/one/one2.css", CSS_CTX_PATH, includedBundles, false);
+	    String result = renderToString(cssRenderer,"/css/lib/lib.css", CSS_CTX_PATH, includedBundles, false);
 		
 		assertNotSame("No css tag written ", "", result.trim());
 			
@@ -118,11 +118,11 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 		assertTrue("Unexpected tag added at position 2:" + next, next.endsWith(debOffTag2));
 		
 		// Reusing the set, we test that no repeats are allowed. 
-		result = renderToString(cssRenderer,"/js/one/one2.js", JS_CTX_PATH, includedBundles, false);
+		result = renderToString(cssRenderer,"/css/lib/lib.css", JS_CTX_PATH, includedBundles, false);
 		assertEquals("Tags were repeated","", result.trim());
 		
 		includedBundles = new HashSet();
-		result = renderToString(cssPrintRenderer,"/js/one/one2.css", CSS_CTX_PATH, includedBundles, false);
+		result = renderToString(cssPrintRenderer,"/css/lib/lib.css", CSS_CTX_PATH, includedBundles, false);
 
 		assertNotSame("No css tag written ", "", result.trim());
 			

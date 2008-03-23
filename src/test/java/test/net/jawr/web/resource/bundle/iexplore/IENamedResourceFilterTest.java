@@ -27,9 +27,9 @@ public class IENamedResourceFilterTest extends TestCase {
 		Map t = new IENamedResourceFilter().filterPathSet(tst);
 		
 		assertEquals(3,t.keySet().size());
-		assertTrue(t.keySet().contains("if IE"));
-		assertTrue(t.keySet().contains("if lt IE 6"));
-		assertTrue(t.keySet().contains("if gte IE 6.00"));
+		assertTrue(t.keySet().contains("[if IE]"));
+		assertTrue(t.keySet().contains("[if lt IE 6]"));
+		assertTrue(t.keySet().contains("[if gte IE 6.00]"));
 		
 	}
 

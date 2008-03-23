@@ -54,7 +54,6 @@ public class IENamedResourceFilter {
 				
 				Matcher matcher = operatorsPattern.matcher(path);
 				matcher.find();
-				//System.out.println(path);
 				String sufix = matcher.group();
 				sufix = sufix.substring(0,sufix.lastIndexOf("."));
 				String expressionKey = createExpressionKey(sufix);
@@ -68,10 +67,7 @@ public class IENamedResourceFilter {
 					fileNames.add(path);
 					expressions.put(expressionKey,fileNames);					
 				}
-				toRemove.add(path);	
-				System.out.println(sufix);
-				System.out.println(createExpressionKey(sufix));
-				System.out.println("___________");				
+				toRemove.add(path);			
 			}
 		}
 		// Remove extracted paths from the source collection
@@ -89,7 +85,7 @@ public class IENamedResourceFilter {
 	 */
 	private String createExpressionKey(String sufix) {
 		String[] parts =  sufix.split("_");
-		String ret = "if ";
+		String ret = "[if ";
 		boolean ieAdded = false;
 		for (int i = 0; i < parts.length; i++) {					
 			if("".equals(parts[i]))
@@ -105,7 +101,7 @@ public class IENamedResourceFilter {
 		}
 		if(!ieAdded)
 			ret += "IE";
-		
+		ret += "]";
 		return ret;
 	}
 

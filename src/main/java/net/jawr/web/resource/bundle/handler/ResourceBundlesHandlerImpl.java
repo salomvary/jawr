@@ -35,6 +35,10 @@ import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.CompositeResourceBundle;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
+import net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler;
+import net.jawr.web.resource.bundle.iterator.DebugModePathsIteratorImpl;
+import net.jawr.web.resource.bundle.iterator.PathsIteratorImpl;
+import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.sorting.GlobalResourceBundleComparator;
@@ -144,12 +148,14 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.ResourceCollector#getBundlePaths(java.lang.String)
 	 */
-	public List getBundlePaths(String bundleId) {
+	public ResourceBundlePathsIterator getBundlePaths(String bundleId, ConditionalCommentCallbackHandler commentCallbackHandler) {
 		List paths = new ArrayList();
+		List bundles = new ArrayList();
 		boolean returnAfterGlobals = false;
+		// add all the global bundles
 		for(Iterator it = globalBundles.iterator();it.hasNext();)	{
 			JoinableResourceBundle bundle = (JoinableResourceBundle) it.next();
-			
+			bundles.add(bundle);
 			// Add separate files or joined bundle file according to debug mode. 
 			if(getConfig().isDebugModeOn())
 				paths.addAll(bundle.getItemPathList());
@@ -159,11 +165,12 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			if(bundle.getName().equals(bundleId))
 				returnAfterGlobals = true;
 		}
+		// if the path did not correspond to a global bundle, find the requested one. 
 		if(!returnAfterGlobals)	{
 			for(Iterator it = contextBundles.iterator();it.hasNext();)	{
 				JoinableResourceBundle bundle = (JoinableResourceBundle) it.next();
 				if(bundle.getName().equals(bundleId)){
-					
+					bundles.add(bundle);					
 					// Add separate files or joined bundle file according to debug mode. 
 					if(getConfig().isDebugModeOn())
 						paths.addAll(bundle.getItemPathList());
@@ -173,13 +180,17 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 				}		
 			}
 		}
-		return paths;
+		ResourceBundlePathsIterator bundlesIterator;
+		if(getConfig().isDebugModeOn()) {
+			bundlesIterator = new DebugModePathsIteratorImpl(bundles,commentCallbackHandler);
+		}
+		else bundlesIterator = new PathsIteratorImpl(bundles,commentCallbackHandler);
+		return bundlesIterator;
 	}
 	
 	
-	
 	/**
-	 * Removes the URL preffix defined in the configuration from a path. 
+	 * Removes the URL prefix defined in the configuration from a path. 
 	 * @param path
 	 * @return
 	 */
@@ -357,17 +368,17 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.ResourceCollector#resolveBundleForPath(java.lang.String)
 	 */
-	public String resolveBundleForPath(String path) {
+	public JoinableResourceBundle resolveBundleForPath(String path) {
 		
-		String bundleId = null;
+		JoinableResourceBundle theBundle = null;
 		for(Iterator it = bundles.iterator();it.hasNext();)	{
 			JoinableResourceBundle bundle = (JoinableResourceBundle) it.next();
 			if(bundle.getName().equals(path) || bundle.belongsToBundle(path)) {
-				bundleId = bundle.getName();
+				theBundle = bundle;
 				break;
 			}
 		}
-		return bundleId;
+		return theBundle;
 	}
 
 }

@@ -299,6 +299,10 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 			}
 			public void setBundleDataHashCode(int bundleDataHashCode) {
 				
+			}
+			public String getExplorerConditionalExpression() {
+				// TODO Auto-generated method stub
+				return null;
 			}};
 		
 	}

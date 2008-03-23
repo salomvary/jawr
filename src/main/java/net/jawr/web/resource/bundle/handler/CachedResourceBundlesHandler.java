@@ -21,12 +21,14 @@ import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
-import java.util.List;
 import java.util.Map;
 
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.JoinableResourceBundle;
+import net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler;
+import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
 
 /**
  * ResourceBundlesHandler wrapper implementation that uses a ConcurrentHashMap to cache the resources. 
@@ -58,8 +60,8 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.ResourceBundlesHandler#getBundlePaths(java.lang.String)
 	 */
-	public List getBundlePaths(String bundleId) {
-		return rsHandler.getBundlePaths(bundleId);
+	public ResourceBundlePathsIterator getBundlePaths(String bundleId, ConditionalCommentCallbackHandler commentCallbackHandler) {
+		return rsHandler.getBundlePaths(bundleId, commentCallbackHandler);
 	}
 
 	/* (non-Javadoc)
@@ -79,7 +81,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.ResourceBundlesHandler#resolveBundleForPath(java.lang.String)
 	 */
-	public String resolveBundleForPath(String path) {
+	public JoinableResourceBundle resolveBundleForPath(String path) {
 		return rsHandler.resolveBundleForPath(path);
 	}
 

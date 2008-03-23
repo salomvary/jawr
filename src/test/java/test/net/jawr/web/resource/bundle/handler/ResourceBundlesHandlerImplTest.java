@@ -2,13 +2,13 @@ package test.net.jawr.web.resource.bundle.handler;
 
 import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Properties;
 
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
+import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
 import test.net.jawr.web.resource.bundle.PredefinedBundlesHandlerUtil;
 
 
@@ -54,26 +54,26 @@ public class ResourceBundlesHandlerImplTest  extends  ResourceHandlerBasedTest {
 	public void testGetSingleFilePath() {
 		
 		assertTrue("The collection path was not initialized properly", 
-					defaultHandler.getBundlePaths("/script.js").get(0).toString().endsWith("/script.js"));
+					defaultHandler.getBundlePaths("/script.js",null).next().toString().endsWith("/script.js"));
 		
 	}
 	public void testGetNormalCollectionPaths() {
 		
-		List simplePaths = simpleHandler.getBundlePaths("/js/one.js");
-		assertEquals("Invalid number of paths returned",new Integer(4), new Integer(simplePaths.size()));
-		assertTrue("Path ordering does not match expected. ", simplePaths.get(0).toString().endsWith("/library.js"));
-		assertTrue("Path ordering does not match expected. ", simplePaths.get(1).toString().endsWith("/global.js"));
-		assertTrue("Path ordering does not match expected. ", simplePaths.get(2).toString().endsWith("/debugOff.js"));
-		assertTrue("Path ordering does not match expected. ", simplePaths.get(3).toString().endsWith("js/one.js"));
+		ResourceBundlePathsIterator simplePaths = simpleHandler.getBundlePaths("/js/one.js",null);
+		//assertEquals("Invalid number of paths returned",new Integer(4), new Integer(simplePaths.size()));
+		assertTrue("Path ordering does not match expected. ", simplePaths.next().toString().endsWith("/library.js"));
+		assertTrue("Path ordering does not match expected. ", simplePaths.next().toString().endsWith("/global.js"));
+		assertTrue("Path ordering does not match expected. ", simplePaths.next().toString().endsWith("/debugOff.js"));
+		assertTrue("Path ordering does not match expected. ", simplePaths.next().toString().endsWith("js/one.js"));
 		
 	}
 	public void testGetDebugCollectionPaths() {
 		
 		
-		List simplePaths = defaultDebugCollection.getBundlePaths("/library.js");
-		assertEquals("Path ordering does not match expected. ","/js/lib/prototype/protoype.js", simplePaths.get(0));
-		assertEquals("Path ordering does not match expected. ","/js/lib/lib2.js", simplePaths.get(1));
-		assertEquals("Path ordering does not match expected. ","/js/lib/scriptaculous/scriptaculous.js", simplePaths.get(2));
+		ResourceBundlePathsIterator simplePaths = defaultDebugCollection.getBundlePaths("/library.js",null);
+		assertEquals("Path ordering does not match expected. ","/js/lib/prototype/protoype.js", simplePaths.next());
+		assertEquals("Path ordering does not match expected. ","/js/lib/lib2.js", simplePaths.next());
+		assertEquals("Path ordering does not match expected. ","/js/lib/scriptaculous/scriptaculous.js", simplePaths.next());
 		
 	}
 
@@ -96,11 +96,11 @@ public class ResourceBundlesHandlerImplTest  extends  ResourceHandlerBasedTest {
 	}
 
 	public void testResolveCollectionForPath() {
-		assertEquals("Get script by id failed","/script.js", defaultHandler.resolveBundleForPath("/script.js"));
-		assertEquals("Get script by script name failed","/script.js", defaultHandler.resolveBundleForPath("/js/script1.js"));
+		assertEquals("Get script by id failed","/script.js", defaultHandler.resolveBundleForPath("/script.js").getName());
+		assertEquals("Get script by script name failed","/script.js", defaultHandler.resolveBundleForPath("/js/script1.js").getName());
 
-		assertEquals("Get script by id failed","/library.js", simpleHandler.resolveBundleForPath("/library.js"));
-		assertEquals("Get script by script name failed","/global.js", simpleHandler.resolveBundleForPath("/js/global/global.js"));
+		assertEquals("Get script by id failed","/library.js", simpleHandler.resolveBundleForPath("/library.js").getName());
+		assertEquals("Get script by script name failed","/global.js", simpleHandler.resolveBundleForPath("/js/global/global.js").getName());
 	}
 
 }

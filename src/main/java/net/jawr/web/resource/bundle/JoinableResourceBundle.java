@@ -90,4 +90,12 @@ public interface JoinableResourceBundle {
      */
     public void setBundleDataHashCode(int bundleDataHashCode);
 	
+    
+    /**
+     * For bundles to be included for IE only within a conditional 
+     * comment, this method returns the expression to use.  
+     * @return The expression for the conditional comment, or null 
+     * if the bundle should be included for all browsers. 
+     */
+    public String getExplorerConditionalExpression();
 }

@@ -46,6 +46,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	protected Set licensesPathList;
 	private String fileExtension;
 	private String urlPrefix;
+	private String explorerConditionalExpression;
 	private int bundleDataHashCode;
 	
 	private ResourceBundlePostProcessor unitaryPostProcessor;
@@ -268,6 +269,9 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 
 
 
+	/**
+	 * @param unitaryPostProcessor
+	 */
 	public void setUnitaryPostProcessor(
 			ResourceBundlePostProcessor unitaryPostProcessor) {
 		this.unitaryPostProcessor = unitaryPostProcessor;
@@ -302,6 +306,24 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		}
 		else urlPrefix = this.bundleDataHashCode + "/";
 		
+	}
+
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getExplorerConditionalExpression()
+	 */
+	public String getExplorerConditionalExpression() {
+		return explorerConditionalExpression;
+	}
+
+
+	/**
+	 * Set the conditional comment expression. 
+	 * @param explorerConditionalExpression
+	 */
+	public void setExplorerConditionalExpression(
+			String explorerConditionalExpression) {
+		this.explorerConditionalExpression = explorerConditionalExpression;
 	}
 
 }

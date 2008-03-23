@@ -32,6 +32,7 @@ public class ResourceBundleDefinition {
 	private boolean debugNever = false;
 	private String unitaryPostProcessorKeys;
 	private String bundlePostProcessorKeys;
+	private String ieConditionalExpression;
 	private List children;
 	
 	public List getChildren() {
@@ -93,6 +94,12 @@ public class ResourceBundleDefinition {
 	}
 	public void setComposite(boolean isComposite) {
 		this.isComposite = isComposite;
+	}
+	public String getIeConditionalExpression() {
+		return ieConditionalExpression;
+	}
+	public void setIeConditionalExpression(String ieConditionalExpression) {
+		this.ieConditionalExpression = ieConditionalExpression;
 	}
 	
 	

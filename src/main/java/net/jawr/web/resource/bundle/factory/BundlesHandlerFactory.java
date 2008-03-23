@@ -206,6 +206,9 @@ public class BundlesHandlerFactory {
 		
 		if(null != definition.getUnitaryPostProcessorKeys())
 			composite.setUnitaryPostProcessor(chainFactory.buildPostProcessorChain(definition.getUnitaryPostProcessorKeys()));
+
+		if(null != definition.getIeConditionalExpression())
+			composite.setExplorerConditionalExpression(definition.getIeConditionalExpression());
 		
 		return composite;
 	}
@@ -234,6 +237,9 @@ public class BundlesHandlerFactory {
 		
 		if(null != definition.getUnitaryPostProcessorKeys())
 			newBundle.setUnitaryPostProcessor(chainFactory.buildPostProcessorChain(definition.getUnitaryPostProcessorKeys()));
+		
+		if(null != definition.getIeConditionalExpression())
+			newBundle.setExplorerConditionalExpression(definition.getIeConditionalExpression());
 		
 		return newBundle;
 	}

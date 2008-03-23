@@ -15,10 +15,12 @@ package net.jawr.web.resource.bundle.handler;
 
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.List;
 
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.JoinableResourceBundle;
+import net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler;
+import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
 
 /**
  * Main interface to work with resource bundles. It helps in resolving groups of resources
@@ -40,7 +42,7 @@ public interface ResourceBundlesHandler {
 	 * @param path
 	 * @return String The bundle ID that can be used to retrieve it.  
 	 */
-	public String resolveBundleForPath(String path);
+	public JoinableResourceBundle resolveBundleForPath(String path);
 	
 	/**
 	 * Returns an ordered list of the paths to use when accesing a resource bundle. 
@@ -51,7 +53,7 @@ public interface ResourceBundlesHandler {
 	 * @param bundleId
 	 * @return
 	 */
-	public List getBundlePaths(String bundleId);
+	public ResourceBundlePathsIterator getBundlePaths(String bundleId, ConditionalCommentCallbackHandler commentCallbackHandler);
 	
 	/**
 	 * Writes data using the supplied writer, representing a unified bundle of resources. 

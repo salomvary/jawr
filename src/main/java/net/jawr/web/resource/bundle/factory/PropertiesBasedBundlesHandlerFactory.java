@@ -63,6 +63,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 	private static final String BUNDLE_FACTORY_CUSTOM_DEBUGNEVER = ".debugnever";
 	private static final String BUNDLE_FACTORY_CUSTOM_POSTPROCESSOR = ".bundlepostprocessors";
 	private static final String BUNDLE_FACTORY_CUSTOM_FILE_POSTPROCESSOR = ".filepostprocessors";
+	private static final String BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION = ".ieonly.condition";
 
 	private static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG = ".composite";
 	private static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES = ".child.names";
@@ -195,6 +196,10 @@ public class PropertiesBasedBundlesHandlerFactory {
 		// Use only with debug mode off
 		Boolean isDebugNever = Boolean.valueOf(props.getCustomBundleProperty(bundleName, BUNDLE_FACTORY_CUSTOM_DEBUGNEVER, "false"));		
 		bundle.setDebugNever(isDebugNever.booleanValue());
+		
+		// Set conditional comment for IE, in case one is specified
+		if(null != props.getCustomBundleProperty(bundleName,BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION))
+			bundle.setIeConditionalExpression(props.getCustomBundleProperty(bundleName,BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION));
 		
 		if(isComposite) {
 			String childBundlesProperty = props.getCustomBundleProperty(bundleName,BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES);

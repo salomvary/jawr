@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernï¿½ndez Sellï¿½s
+ * Copyright 2007 Jordi Hernández Sellés
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -15,18 +15,18 @@ package net.jawr.web.resource.bundle.renderer;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
+import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
 
 /**
  * Abstract base class for implementations of a link renderer. 
  * 
- * @author Jordi Hernï¿½ndez Sellï¿½s
+ * @author Jordi Hernández Sellés
  */
 public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     
@@ -58,19 +58,23 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
                                     Writer out ) throws IOException {
         
     	boolean debugOn = bundler.getConfig().isDebugModeOn();
-        String bundleId = bundler.resolveBundleForPath(requestedPath);
+    	JoinableResourceBundle bundle = bundler.resolveBundleForPath(requestedPath);
 		
-        // Retrieve the name or names of bundle(s) that belong to/with the requested path. 
-        List resourceNames = bundler.getBundlePaths(bundleId);
-
+    	if(null == bundle)
+			return;
+    	
         if( debugOn ) {
-                addComment("Start adding members resolved by '" + requestedPath + "'. Bundle id is: '" + bundleId + "'",out);
+                addComment("Start adding members resolved by '" + requestedPath + "'. Bundle id is: '" + bundle.getName() + "'",out);
         }
 
+        // Retrieve the name or names of bundle(s) that belong to/with the requested path. 
+    	ResourceBundlePathsIterator it = bundler.getBundlePaths(bundle.getName(),
+    															new ConditionalCommentRenderer(out));
+    	
         // Add resources to the page as links. 
-        for(Iterator it = resourceNames.iterator();it.hasNext();)
+        while(it.hasNext())
         {
-                String resourceName = (String) it.next();
+                String resourceName = it.nextPath();
 
                 // If the resource had been added before, it will not be included again. 
                 if(includedBundles.add(resourceName)){
@@ -96,9 +100,8 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
         }
     }
     
-    
-    
-    /**
+        
+	/**
      * Adds an HTML comment to the output stream. 
      * @param commentText
      * @param out Writer
@@ -122,6 +125,12 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
         return createBundleLink(BundleRenderer.GZIP_PATH_PREFIX + resourceName,contextPath);
     }
     
+    /**
+     * Creates a link to a bundle in the page. 
+     * @param bundleId
+     * @param contextPath
+     * @return
+     */
     protected String createBundleLink(String bundleId, String contextPath) {
     	
     	String fullPath = PathNormalizer.joinPaths(bundler.getConfig().getServletMapping(), bundleId);
