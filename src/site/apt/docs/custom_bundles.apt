@@ -112,36 +112,10 @@ Definition of custom bundles
 	headers, in order to keep clients from requesting the same bundle over and over. But, when you make changes you want to be sure that every client 
 	will download the new version. Thus, the best way to do this is to actually change the URL for the resource whenever the resource changes. \ 
 	
-	In the configuration file you will specify a default prefix which will be applied to every bundle. However, some of your bundles will not change 
-	with every new deployment of your application. For instance, open source libraries will not change until you upgrade them, which will not happen so 
-	many times. Thus, for every bundle you define in the descriptor you can specify its prefix, which will override the default one. That way you will 
-	have increased control over which resources need to be re-downloaded by application clients. Normally, a prefix will convey some kind of version 
-	number. Here is an example: 
+	While in the past the prefix for a bundle had to be specified manually, now Jawr creates this prefix automatically, based upon the hash of the 
+	bundle contents. Since the generation has repeatable results, this prefix remains the same until you make a change to any member of the bundle, 
+	even across redeployments. 
 	
-+------------------------------------------+
-	jawr.js.bundle.names=foo, baz, lib	
-	
-	...	
-	jawr.js.bundle.lib.id=/lib.js
-	jawr.js.bundle.lib.mappings=/js/lib/**
-	jawr.js.bundle.lib.global=true
-	jawr.js.bundle.lib.order=1
-	jawr.js.bundle.lib.prefix=lib_002
-+------------------------------------------+
-	
-	<<WARNING>>: the most important thing you must keep in mind when using Jawr is to always remember to change this prefix when a bundle changes. If 
-	you put in production a new version of your files without changing the prefix, your clients will NOT download the newer version. 
-	This is the only drawback of a strict caching policy that, if used properly, will improve your users experience of the site while lowering the 
-	bandwith. 
-	
-	As of version 1.1, you can specify a special keyword for the prefix, @startup, which will make Jawr generate a prefix automatically every time the 
-	application is deployed. This has the drawback of changing prefixes even for a maintenance restart of the application server, but you may prefer 
-	this so you don't need to remember to always change prefixes. The generated prefix uses System.currentTimeMillis(), so there is no risk of getting 
-	repeated prefixes whe deploying a new version. 
-	
-+------------------------------------------+
-	jawr.js.bundle.lib.prefix=@startup
-+------------------------------------------+
 	
 * Postprocessors 
 

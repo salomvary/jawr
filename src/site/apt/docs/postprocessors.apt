@@ -124,6 +124,37 @@ jawr.js.bundle.foo.bundlepostprocessors=license=func,license
 
 =====================
 
+
+<<YUI compressor>>
+	
+	* <<Type>>: Bundle
+	
+	* <<Properties Key>>: YUI, YUIobf
+	
+	[]
+		
+	
+	This processor uses {{{http://developer.yahoo.com/yui/compressor/} Julien Lecomte's YUI compressor}}. 
+	This is a javascript and CSS minification tool that can also perform code obfuscation in the case of javascript bundles. If you 
+	want obfuscation, you should use the <<YUIobf>> key when defining postprocessors, but remember that this is only valid for javascript 
+	bundles. For CSS files, this is the default minification tool. The YUI compressor has an advantage over JSMin and Jawr's custom CSS 
+	compressor in that it will achieve better minification. On the other hand it will add a dependency to the YUI compressor and Rhino 
+	libraries. You can get YUI {{{http://www.julienlecomte.net/yuicompressor/} here}}, and rhino 
+	{{{http://www.mozilla.org/rhino/download.html} here}}. 
+	Maven users can get both by adding a single dependency, like this: 	
+	
++------------------------------------------+
+	<dependency>
+	    <groupId>com.yahoo.platform.yui</groupId>
+	    <artifactId>yuicompressor</artifactId>
+	    <version>2.2.5</version>
+	</dependency>
++------------------------------------------+
+	
+	Unfortunately, this is the only way I know to get YUI from maven, and it is somewhat ugly since it will include both the YUI compressor and 
+	rhino, which might be problematic if you already have rhino on your server's classpath. 
+	
+
 *	Javascript-specific postprocessors
 
 <<JSMin>>
@@ -149,7 +180,9 @@ jawr.js.bundle.foo.bundlepostprocessors=license=func,license
 	
 	[]
 	
-	This processor removes comments and unneeded whitespace using search and replace with regular expressions. 
+	This processor removes comments and unneeded whitespace using search and replace with regular expressions. While it works fine most of the 
+	time, it has some known problems (it doesn't work if you have declarations with whitespace other than spaces between rules). While not 
+	deprecated, it is recommended to use YUI instead, which is the default anyway. 
 		  
 
 <<CSS Path rewriter>>

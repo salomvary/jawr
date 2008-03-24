@@ -32,3 +32,4 @@ div.source, #bodyColumn img {
 	border-style:solid !important;
 	border-width:1px !important;
 }
+#bodyColumn ul li{margin:1.5em auto;}
