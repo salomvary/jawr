@@ -17,6 +17,7 @@ import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePos
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.impl.CSSMinPostProcessor;
 import net.jawr.web.resource.bundle.postprocess.impl.CSSURLPathRewriterPostProcessor;
+import net.jawr.web.resource.bundle.postprocess.impl.yui.YUICSSCompressor;
 
 /**
  * PostProcessorChainFactory for css resources. 
@@ -29,12 +30,13 @@ public class CSSPostProcessorChainFactory extends
 
 	private static final String CSS_MINIFIER = "cssminify";
 	private static final String URL_PATH_REWRITER = "csspathrewriter";
+	private static final String YUI_COMPRESSOR = "YUI";
 		
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.factory.processor.PostProcessorChainFactory#buildDefaultProcessorChain()
 	 */
 	public ResourceBundlePostProcessor buildDefaultProcessorChain() {
-		CSSMinPostProcessor processor = new CSSMinPostProcessor();
+		YUICSSCompressor processor = new YUICSSCompressor();
 		processor.setNextProcessor(buildLicensesProcessor());
 		return processor;
 	}
@@ -51,12 +53,15 @@ public class CSSPostProcessorChainFactory extends
 	 * @see net.jawr.web.resource.bundle.factory.processor.PostProcessorChainFactory#getPostProcessor(java.lang.String)
 	 */
 	protected AbstractChainedResourceBundlePostProcessor buildProcessorByKey(String processorKey){
+		
 		if (LICENSE_INCLUDER.equals(processorKey))
 			return buildLicensesProcessor();
 		else if(CSS_MINIFIER.equals(processorKey))
 			return new CSSMinPostProcessor();
 		else if (URL_PATH_REWRITER.equals(processorKey))
 			return new CSSURLPathRewriterPostProcessor();
+		else if (YUI_COMPRESSOR.equals(processorKey))
+			return new YUICSSCompressor();
 		
 		else throw new IllegalArgumentException("The supplied key [" + processorKey + "] is not bound to any ResourceBundlePostProcessor. Please check the documentation for valid keys. ");
 	}

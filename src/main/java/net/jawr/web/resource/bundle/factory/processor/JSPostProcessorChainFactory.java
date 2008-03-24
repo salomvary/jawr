@@ -16,6 +16,7 @@ package net.jawr.web.resource.bundle.factory.processor;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.impl.JSMinPostProcessor;
+import net.jawr.web.resource.bundle.postprocess.impl.yui.YUIJSCompressor;
 
 /**
  * PostProcessorChainFactory for javascript resources. 
@@ -26,6 +27,8 @@ import net.jawr.web.resource.bundle.postprocess.impl.JSMinPostProcessor;
 public class JSPostProcessorChainFactory extends AbstractPostProcessorChainFactory implements PostProcessorChainFactory {
 	
 	private static final String JSMIN = "JSMin";
+	private static final String YUI_COMPRESSOR = "YUI";
+	private static final String YUI_COMPRESSOR_OBFUSCATOR = "YUIobf";
 
 		
 	/* (non-Javadoc)
@@ -52,6 +55,10 @@ public class JSPostProcessorChainFactory extends AbstractPostProcessorChainFacto
 			return buildJSMinPostProcessor();
 		else if (LICENSE_INCLUDER.equals(procesorKey))
 			return buildLicensesProcessor();
+		else if (YUI_COMPRESSOR.equals(procesorKey))
+			return new YUIJSCompressor(false);
+		else if (YUI_COMPRESSOR_OBFUSCATOR.equals(procesorKey))
+			return new YUIJSCompressor(true);
 		else throw new IllegalArgumentException("The supplied key [" + procesorKey + "] is not bound to any ResourceBundlePostProcessor. Please check the documentation for valid keys. ");
 	}
 	
