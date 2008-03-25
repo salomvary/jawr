@@ -1,17 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.jawr</groupId>
   <artifactId>jawr</artifactId>
   <name>Java web resources bundling and compression</name>
   <version>1.5</version>
-  <url>https://jawr.dev.java.net/</url>
-  <description>
-  	Javascript/CSS bundling and compressing tool for java web apps.
+  <description>Javascript/CSS bundling and compressing tool for java web apps.
   	By using jawr resources are automatically bundled together and optionally minified and gzipped. 
-  	Jawr provides tag libraries to reference a generated bundle either by id or by using the name of any of its members.
-  </description>
-  
+  	Jawr provides tag libraries to reference a generated bundle either by id or by using the name of any of its members.</description>
+  <url>https://jawr.dev.java.net/</url>
   <developers>
     <developer>
       <id>jordihs</id>
@@ -21,13 +17,25 @@
       </roles>
     </developer>
   </developers>
-  
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>license.txt</url>
+    </license>
+  </licenses>
   <scm>
-      <connection>scm:svn:https://jawr.dev.java.net/svn/jawr/</connection>
-      <developerConnection>scm:svn:https://jawr.dev.java.net/svn/jawr/</developerConnection>
-      <url>https://jawr.dev.java.net/source/browse/jawr/</url>
-   </scm> 
-   
+    <connection>scm:svn:https://jawr.dev.java.net/svn/jawr/</connection>
+    <developerConnection>scm:svn:https://jawr.dev.java.net/svn/jawr/</developerConnection>
+    <url>https://jawr.dev.java.net/source/browse/jawr/</url>
+  </scm>
+  <build />
+  <repositories>
+    <repository>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven</name>
+      <url>http://download.java.net/maven/2/</url>
+    </repository>
+  </repositories>
   <dependencies>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -52,15 +60,20 @@
       <artifactId>jsp-api</artifactId>
       <version>2.0</version>
       <scope>provided</scope>
-    </dependency>    
-	<dependency>
-	    <groupId>com.yahoo.platform.yui</groupId>
-	    <artifactId>yuicompressor</artifactId>
-	    <version>2.2.5</version>
-      	<scope>provided</scope>
-	</dependency>
+    </dependency>
+    <dependency>
+      <groupId>com.yahoo.platform.yui</groupId>
+      <artifactId>yuicompressor</artifactId>
+      <version>2.2.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-api</artifactId>
+      <version>1.1_02</version>
+    </dependency>
   </dependencies>
-   <reporting>
+  <reporting>
     <plugins>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -70,53 +83,24 @@
         <artifactId>jxr-maven-plugin</artifactId>
       </plugin>
       <plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-pmd-plugin</artifactId>
-         <configuration>
-            <targetjdk>1.4</targetjdk>
-            <rulesets>
-               <ruleset>/rulesets/basic.xml</ruleset>
-            </rulesets>
-            <format>xml</format>
-            <linkXref>true</linkXref>
-            <sourceEncoding>utf-8</sourceEncoding>
-
-            <minimumTokens>100</minimumTokens>
-         </configuration>
-      </plugin> 
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <targetjdk>1.4</targetjdk>
+          <rulesets>
+            <ruleset>/rulesets/basic.xml</ruleset>
+          </rulesets>
+          <format>xml</format>
+          <linkXref>true</linkXref>
+          <sourceEncoding>utf-8</sourceEncoding>
+          <minimumTokens>100</minimumTokens>
+        </configuration>
+      </plugin>
     </plugins>
   </reporting>
- 
-  <build>
-  	 <extensions>
-      <!--<extension>
-        <groupId>org.jvnet.wagon-svn</groupId>
-        <artifactId>wagon-svn</artifactId>
-        <version>RELEASE</version>
-      </extension>-->
-    </extensions>
-  </build>
-  
   <distributionManagement>
     <repository>
       <id>java.net-m2-repository</id>
-    <url>java-net:/maven2-repository/trunk/www/repository/</url>
+      <url>java-net:/maven2-repository/trunk/www/repository/</url>
     </repository>
   </distributionManagement>
-  
-  <repositories>
-  	<repository>
-	  <id>maven2-repository.dev.java.net</id>
-	  <name>Java.net Repository for Maven</name>
-	  <url>http://download.java.net/maven/2/</url>
-	  <layout>default</layout>
-	</repository>
-	</repositories>
-  <licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>license.txt</url>
-		</license>
-	</licenses>
 </project>
-

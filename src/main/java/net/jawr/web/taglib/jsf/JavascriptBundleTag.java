@@ -11,14 +11,16 @@
  * either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-package net.jawr.web.taglib;
+package net.jawr.web.taglib.jsf;
+
+import javax.faces.context.FacesContext;
 
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.resource.bundle.renderer.JavascriptHTMLBundleLinkRenderer;
 
 /**
- * Implementation of a jsp taglib AbstractResourceBundleTag used to render javascript bundles. 
+ * Implementation of a facelets taglib AbstractResourceBundleTag used to render javascript bundles. 
  * 
  * @author Jordi Hernández Sellés
  *
@@ -26,16 +28,15 @@ import net.jawr.web.resource.bundle.renderer.JavascriptHTMLBundleLinkRenderer;
 public class JavascriptBundleTag extends AbstractResourceBundleTag {
 
 	/* (non-Javadoc)
-	 * @see net.jawr.web.taglib.AbstractResourceBundleTag#createRenderer()
+	 * @see net.jawr.web.taglib.jsf.AbstractResourceBundleTag#createRenderer(javax.faces.context.FacesContext)
 	 */
-	protected BundleRenderer createRenderer() {
-		if(null == pageContext.getServletContext().getAttribute(ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE))
+	protected BundleRenderer createRenderer(FacesContext context) {
+		Object handler = context.getExternalContext().getApplicationMap().get(ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE);
+		if(null == handler)
 			throw new IllegalStateException("ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or never occurred.");
 
-		ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) pageContext.getServletContext().getAttribute(ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE);
+		ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) handler;
 		return  new JavascriptHTMLBundleLinkRenderer(rsHandler, this.useRandomParam);
 	}
-
-	private static final long serialVersionUID = 5087323727715427593L;
 
 }

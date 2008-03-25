@@ -3,19 +3,22 @@
   <properties>
     <title>More than a Javascript/CSS compressor</title>
   </properties>
-
-  <!-- Optional HEAD element, which is copied as is into the XHTML <head> element -->
-  <head>
-    
-  </head>
+	
+	<head><style>h2{display:none}</style></head>
 
   <body>
 
-    <!-- The body of the document contains a number of sections -->
     <section>
-
-	<!-- Within sections, any XHTML can be used -->
-	<img src="./images/index/logo.png" style="margin-top:-20px;border:0 !important" />
+	
+	<div style="float:right">
+		<a href="https://jawr.dev.java.net/tutorials/quickstart.html" >
+			<img src="./images/index/get-started.png" style="border:0 !important" title="Go to the quickstart tutorial and start using Jawr" /></a> 
+		<a href="https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=8543">
+			<img src="./images/index/download.png" style="border:0 !important" title="Download the latest version of Jawr"  /></a> 
+		
+	</div>
+	
+	<img src="./images/index/logo.png" style="border:0 !important" />
 	<p>
 	Jawr is a tunable packaging solution for Javascript and CSS which allows for rapid development of resources in separate module files. 
 	Writing a simple descriptor properties file, and using a servlet and a tag library are all the requirements to use it. 
@@ -29,7 +32,7 @@
 	loading times. With a simple configuration file, resources can be distributed in bundles to best suit the usage pattern for a site. 
 	</p>	
 	<p>
-	A tag library is used to import the resources to pages. In development mode, the tags generate &lt;script&gt; and &lt;style&gt; links for each resource 
+	A JSP tag library (Facelets also supported) is used to import the resources to pages. In development mode, the tags generate &lt;script&gt; and &lt;style&gt; links for each resource 
 	mapped to a bundle.
 	In production mode, the tags generate a single link pointing to the bundle file. Thus, there is no need to change code in pages when switching 
 	from development to production mode. 
@@ -61,7 +64,6 @@
 	</p>
 	
 	
-      <!-- in addition to XHTML, any number of subsections can be within a section -->
       <subsection name="Features">
 		<ul>
 			<li> <strong>Lightweight</strong>: Bundling and compression is done once at server startup so there is no overhead to requests. Also, a cache component
@@ -97,6 +99,8 @@
 			
 			<li> <strong>Global bundles</strong>: Some bundles such as libraries will be needed anywhere in your site where there is javascript code. Same goes for base CSS 
 			stylesheets. With Jawr, these will be added to pages automatically so you don't need to repeat the same import statement everywhere.</li> 
+			
+			<li> <strong>JSF/Facelets support</strong>: If you are using JSF with Facelets as the view technology, you can still use Jawr using a specific tag library.</li> 
 			
 			
 			<li> <strong>Library friendly</strong>: Open source libraries can be used seamlessly with Jawr. Most of these are modular or have plugins: add the modules or 

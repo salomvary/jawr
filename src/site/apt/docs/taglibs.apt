@@ -1,10 +1,10 @@
 																		------
-                                    Tag libraries
+                                    JSP Tag libraries
                                     ------
                                     ------
                                     ------
 
-Jawr tag libraries
+Jawr JSP tag libraries
 
 	Jawr comes with two tag libraries used to generate tags that import our bundles to clients of our application. One of them will be used to generate 
 	script tags for javascript resources, and another will generate link tags for CSS resources. \ 

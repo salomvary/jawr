@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.servlet.RendererRequestUtils;
 
@@ -52,12 +51,13 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
                 this.renderer = createRenderer();		
            
            HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-            
+           boolean isGzippable = RendererRequestUtils.isRequestGzippable(request,renderer.getBundler().getConfig());
+           
             try {
                 renderer.renderBundleLinks( src,
                                             request.getContextPath(),
                                             RendererRequestUtils.getAddedBundlesLog(request),
-                                            shouldUseGZIP(request),
+                                            isGzippable,
                                             pageContext.getOut());
             } catch (IOException ex) {
                 throw new JspException("Unexpected IOException when writing script tags for path " + src,ex);
@@ -66,17 +66,6 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
             return super.doStartTag();
 	}
         
-    /**
-     * Determines wether gzip is suitable for the current request. 
-     * @param req 
-     * @return 
-     */
-    private boolean shouldUseGZIP(HttpServletRequest req) {
-        boolean rets;
-        JawrConfig jeesConfig = renderer.getBundler().getConfig();
-        rets = RendererRequestUtils.isRequestGzippable(req, jeesConfig);
-        return rets;
-    }
 
 	
 	/**
