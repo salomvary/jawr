@@ -16,6 +16,9 @@ package net.jawr.web.servlet;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -63,7 +66,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	private String contentType;
 	private String resourceType;
 	private ServletContext servletContext;
-	private ServletConfig servletConfig;
+	private Map initParameters;
 	
 	private JawrConfig jawrConfig;
 
@@ -74,18 +77,24 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	 * @throws ServletException
 	 */
 	public JawrRequestHandler(ServletContext context, ServletConfig config) throws ServletException{
+		this.initParameters = new HashMap();
+		Enumeration params = config.getInitParameterNames();
+		while(params.hasMoreElements()) {
+			String param = (String) params.nextElement();
+			initParameters.put(param, config.getInitParameter(param));
+		}
+		initParameters.put("handlerName", config.getServletName());
+		
 		if(log.isInfoEnabled())
 			log.info("Initializing jawr config for servlet named " + config.getServletName());
-		
 		long initialTime = System.currentTimeMillis();
 		this.servletContext = context;
-		this.servletConfig = config;
 
-		resourceType = servletConfig.getInitParameter("type");
+		resourceType = config.getInitParameter("type");
 		resourceType = null == resourceType ? "js" : resourceType;
 		
-		String configLocation = servletConfig.getInitParameter("configLocation");
-		String configPropsSourceClass = servletConfig.getInitParameter("configPropertiesSourceClass");
+		String configLocation = config.getInitParameter("configLocation");
+		String configPropsSourceClass = config.getInitParameter("configPropertiesSourceClass");
 		if(null == configLocation && null == configPropsSourceClass) 
 			throw new ServletException("Neither configLocation nor configPropertiesSourceClass init params were set."
 										+" You must set at least the configLocation param. Please check your web.xml file");
@@ -141,6 +150,31 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		}
 
 	}
+	
+	public JawrRequestHandler(ServletContext context, Map initParams, Properties configProps)  throws ServletException {
+		
+		this.initParameters = initParams;
+		
+		if(log.isInfoEnabled())
+			log.info("Initializing jawr config for request handler named " + (String) initParams.get("handlerName"));
+		
+		long initialTime = System.currentTimeMillis();
+		this.servletContext = context;
+
+		resourceType = (String) initParameters.get("type");
+		resourceType = null == resourceType ? "js" : resourceType;
+		
+		
+		// Initialize config 
+		initializeJawrConfig(configProps);
+		
+		
+
+		if(log.isInfoEnabled()) {
+			long totaltime = System.currentTimeMillis() - initialTime;
+			log.info("Init method sucesful. jawr started in " + (totaltime/1000) + " seconds....");
+		}
+	}
 
 
 	/**
@@ -160,7 +194,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		contentType += "; charset=" + jawrConfig.getResourceCharset().name();		
 		
 		// Set mapping, to be used by the tag lib to define URLs that point to this servlet. 
-		String mapping = servletConfig.getInitParameter("mapping");
+		String mapping = (String) initParameters.get("mapping");
 		if(null != mapping)
 			jawrConfig.setServletMapping(mapping);
 		
@@ -198,6 +232,19 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	
 	
 	/**
+	 * Handles a resource request by getting the requested path from the request object and invoking processRequest. 
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String requestedPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
+		processRequest(requestedPath,request,response);
+	}
+	
+	/**
 	 * Handles a resource request. 
 	 * <ul>
 	 * <li>If the request contains an If-Modified-Since header, the 304 status is set and no data is written to the response </li>
@@ -206,15 +253,15 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	 * <li>Otherwise, the resource is written as text to the response. </li>
 	 * <li>If the resource is not found, the response satus is set to 404 and no response is written. </li>
 	 * </ul>
+	 * 
+	 * @param requestedPath
 	 * @param request
 	 * @param response
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String requestedPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
-		
-		
+	public void processRequest(String requestedPath, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
 		if(log.isDebugEnabled())
 			log.debug("Request received for path:" + requestedPath);
 		
@@ -254,7 +301,6 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		if(log.isDebugEnabled())
 			log.debug("request succesfully attended");
 	}
-
 	
 
 	/**
