@@ -71,7 +71,8 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	private JawrConfig jawrConfig;
 
 	/**
-	 * Reads the properties file and  initializes all configuration. 
+	 * Reads the properties file and  initializes all configuration using the ServletConfig object. 
+	 * If aplicable, a ConfigChangeListenerThread will be started to listen to changes in the properties configuration. 
 	 * @param servletContext ServletContext
 	 * @param servletConfig ServletConfig 
 	 * @throws ServletException
@@ -151,6 +152,15 @@ public class JawrRequestHandler implements ConfigChangeListener{
 
 	}
 	
+	/**
+	 * Alternate constructor that does not need a ServletConfig object. 
+	 * Parameters normally read rom it are read from the initParams Map, and the configProps are used 
+	 * instead of reading a .properties file. 
+	 *
+	 * @param servletContext ServletContext
+	 * @param servletConfig ServletConfig 
+	 * @throws ServletException
+	 */
 	public JawrRequestHandler(ServletContext context, Map initParams, Properties configProps)  throws ServletException {
 		
 		this.initParameters = initParams;
