@@ -1,0 +1,10 @@
+<plugin name='jawr' version='0.1'>
+  <resources>
+    <resource>Config</resource>
+    <resource>DataSource</resource>
+    <resource>JawrUrlMappings</resource>
+    <resource>JawrCSSController</resource>
+    <resource>JawrJavascriptController</resource>
+    <resource>JawrTagLib</resource>
+  </resources>
+</plugin>
