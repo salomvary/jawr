@@ -81,6 +81,6 @@
 	<classpathentry kind="var" path="GRAILS_HOME/dist/grails-test-1.0.2.jar"/>
 	<classpathentry kind="var" path="GRAILS_HOME/dist/grails-web-1.0.2.jar"/>
 	<classpathentry kind="var" path="GRAILS_HOME/dist/grails-webflow-1.0.2.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Jawr1.5_"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Jawr_20"/>
 	<classpathentry kind="output" path="web-app/WEB-INF/classes"/>
 </classpath>

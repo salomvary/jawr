@@ -33,3 +33,4 @@ div.source, #bodyColumn img {
 	border-width:1px !important;
 }
 #bodyColumn ul li{margin:1.5em auto;}
+#bodyColumn ul ul li{margin:1em auto;}

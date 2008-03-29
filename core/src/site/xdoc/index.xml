@@ -4,25 +4,54 @@
     <title>More than a Javascript/CSS compressor</title>
   </properties>
 	
-	<head><style>h2{display:none}</style></head>
-
+	<head>
+		<style>
+			h2{display:none}
+			#firstPara{
+				clear:right;
+				margin-top:100px
+			}
+			#mainJawrLogo {
+				border:0 !important;
+				margin:auto 0 auto;
+				float:left;
+			}
+			#jawrlinks {
+				float:right;
+				width:45%;
+				text-align:right;
+				margin-right:-20px;
+			}
+			#jawrlinks img {
+				margin-bottom:10px;
+			}
+		</style>
+	</head>
+	
   <body>
-
+	
     <section>
 	
-	<div style="float:right">
-		<a href="https://jawr.dev.java.net/tutorials/quickstart.html" >
-			<img src="./images/index/get-started.png" style="border:0 !important" title="Go to the quickstart tutorial and start using Jawr" /></a> 
+	<img src="./images/index/logo.png" style="border:0 !important" id="mainJawrLogo"  />
+	
+	<div id="jawrlinks">
 		<a href="https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=8543">
 			<img src="./images/index/download.png" style="border:0 !important" title="Download the latest version of Jawr"  /></a> 
-		
+		<a href="https://jawr.dev.java.net/tutorials/quickstart.html" >
+			<img src="./images/index/get-started.png" style="border:0 !important" title="Go to the quickstart tutorial and start using Jawr" /></a> 		
 	</div>
 	
-	<img src="./images/index/logo.png" style="border:0 !important" />
-	<p>
-	Jawr is a tunable packaging solution for Javascript and CSS which allows for rapid development of resources in separate module files. 
-	Writing a simple descriptor properties file, and using a servlet and a tag library are all the requirements to use it. 
+		
+	<div id="firstPara">	
+	<p>Jawr is a tunable packaging solution for Javascript and CSS which allows for rapid development of resources in separate module files. 
+	Developers can work with a large set of split javascript files in development mode, then Jawr bundles all together into one or several files 
+	in a configurable way. 
+	<br/>By using a tag library, Jawr allows you to use the same, unchanged pages for development and production. 
+	Jawr also minifies and compresses the files, resulting in reduced page load times. 
+	<br/>Jawr is configured using a simple .properties descriptor, and aside of standard java web applications it can also be used with 
+	<a href="https://facelets.dev.java.net/">Facelets</a> and <a href="http://grails.org/">Grails</a> applications.   
 	</p>
+	</div>
   	
   	<img src="./images/index/jawr.png" />
 	<p>
@@ -102,8 +131,10 @@
 			
 			<li> <strong>JSF/Facelets support</strong>: If you are using JSF with Facelets as the view technology, you can still use Jawr using a specific tag library.</li> 
 			
+			<li> <strong>Grails plugin</strong>: Jawr can be used seamlessly in Grails applications, using a provided plugin that includes a GSP tag library.</li> 
 			
-			<li> <strong>Library friendly</strong>: Open source libraries can be used seamlessly with Jawr. Most of these are modular or have plugins: add the modules or 
+			
+			<li> <strong>Library friendly</strong>: Open source javascript libraries can be used seamlessly with Jawr. Most of these are modular or have plugins: add the modules or 
 			plugins you need and bundle all together. And, even if you minify them (thus eliminating comments), you can still keep the mandatory licenses in
 			the bundle. The <a href="https://jawr.dev.java.net/tutorials/quickstart.html">libraries tutorial</a> will show you how to integrate popular js libraries such 
 			as Protoype, JQuery or YUI. </li>
