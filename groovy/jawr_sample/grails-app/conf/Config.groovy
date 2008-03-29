@@ -88,8 +88,8 @@ jawr.css.bundle.names='all'
 jawr.css.bundle.all.mappings='/css/**'
 jawr.css.bundle.all.id='/bundles/all.css'
 
-jawr.js.mapping = '/script'
-jawr.css.mapping = '/style'
-//grails.mime.file.extensions = false;
-
+//jawr.js.mapping = '/script'
+//jawr.css.mapping = '/style'
+grails.mime.file.extensions = false;
+foo = 'bar';
 
