@@ -36,7 +36,7 @@ public class CSSPostProcessorChainFactory extends
 	 * @see net.jawr.web.resource.bundle.factory.processor.PostProcessorChainFactory#buildDefaultProcessorChain()
 	 */
 	public ResourceBundlePostProcessor buildDefaultProcessorChain() {
-		YUICSSCompressor processor = new YUICSSCompressor();
+		CSSMinPostProcessor processor = new CSSMinPostProcessor();
 		processor.setNextProcessor(buildLicensesProcessor());
 		return processor;
 	}

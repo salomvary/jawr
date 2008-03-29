@@ -69,7 +69,7 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 
 	
 	/**
-	 * Set the source of the resource or collection to retrieve. 
+	 * Set the source of the resource or bundle to retrieve. 
 	 * @param src
 	 */
 	public void setSrc(String src) {

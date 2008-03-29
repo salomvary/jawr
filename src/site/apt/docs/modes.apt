@@ -13,10 +13,18 @@ Debug and production modes
 	Thus, when you activate Jawr development mode, things change in the way Jawr works to make 
 	your life as a developer a lot easier. \ 
 	
-	To toggle debug mode, you can set the flag jawr.debug.on in the config file. Also, you can start the virtual machine setting the 
-	config key net.jawr.debug.on (-Dnet.jawr.debug.on=false, for instance). The JVM config param will always take precedence over the key in the 
-	config file, so it's a good idea to use it within the startup script of your production server. This way, you will never deploy Jawr in 
-	debug mode by mistake. \  
+	To toggle debug mode, you can set the flag jawr.debug.on in the config file. 
+	
+=====================
+			You can also start the virtual machine setting the config 
+		key net.jawr.debug.on (-Dnet.jawr.debug.on=false, for instance). 
+		The JVM config param will always take precedence over the key in 
+		the config file, so it's a good idea to use it within the startup 
+		script of your production server. This way, you will never deploy 
+		Jawr in debug mode by mistake.   
+
+=====================
+
 	
 	The main difference between production and development modes is that bundle files are not served directly. Rather, each of the components in a bundle 
 	will be served sepparately in the same order that it would be included in the bundle. To understand this, we need an example. Imagine we had a very 
@@ -103,10 +111,10 @@ Debug and production modes
 	[]
 	
 	The caveat here is very clear: never forget to switch off development mode in production or the results might be catastrophic for your bandwidth. 
-	As stated before, it's a good idea to use the JVM param -Dnet.jawr.debug.on=false within the startup script of your production server to be 
+	As stated before, it's a good idea to use the JVM param <<-Dnet.jawr.debug.on=false>> within the startup script of your production server to be 
 	safe against this kind of mistake.  
 	Also, it is recommended that you have at least one integration step previous to production where you don't use development mode. \ 
 	
-	To prevent this kind of problems, a warning is written to the log anytime you start Jawr in development mode so you can test the minified resources. 
+	To further protect you from this kind of problem, a warning is written to the log anytime you start Jawr in development mode. 
 	
 	

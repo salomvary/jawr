@@ -59,8 +59,6 @@ The Jawr servlet
 	all URLs created by the tag library start with this path mapping. You will then need to specify the <<mapping>> init param to let Jawr know about 
 	this so that URLs are properly formed. So if you map the servlet to /jsJawrPath/*, the mapping init param should have a value of /jsJawrPath/. \ 
 	
-	Note that for CSS resources, this will break relative resource paths (such as background-image urls) in development mode, so using a mapping for 
-	a CSS servlet is not recommended until this problem is addressed in a future version.  
 	
 	[]
 	

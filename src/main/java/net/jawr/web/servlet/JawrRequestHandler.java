@@ -231,7 +231,6 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		
 		if(log.isDebugEnabled()) {
 			log.debug("content type set to: " + contentType);
-			log.debug(bundlesHandler);
 		}
 				
 		// Warn when in debug mode
@@ -274,6 +273,16 @@ public class JawrRequestHandler implements ConfigChangeListener{
 
 		if(log.isDebugEnabled())
 			log.debug("Request received for path:" + requestedPath);
+
+		// CSS images would be requested through this handler in case servletMapping is used  
+		if( this.jawrConfig.isDebugModeOn() && !("".equals(this.jawrConfig.getServletMapping())) ) {
+			if(null == bundlesHandler.resolveBundleForPath(requestedPath)) {
+				if(log.isDebugEnabled())
+					log.debug("Path '" + requestedPath + "' does not belong to a bundle. Forwarding request to the server. ");
+				request.getRequestDispatcher(requestedPath).forward(request, response);
+				return;
+			}
+		}
 		
         // If a browser checks for changes, always respond 'no changes'. 
         if(null != request.getHeader("If-Modified-Since")) {
