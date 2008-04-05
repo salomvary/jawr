@@ -95,12 +95,15 @@
 	
       <subsection name="Features">
 		<ul>
-			<li> <strong>Lightweight</strong>: Bundling and compression is done once at server startup so there is no overhead to requests. Also, a cache component
-			is available and enabled by default to serve resources directly from memory instead of from the filesystem.</li> 
 			
+			<li> <strong>Free and open source</strong>: Released under an Apache 2.0 license, Jawr can be used free of charge with or 
+			without modifications, for both commercial and noncommercial purposes.</li> 
 			
 			<li> <strong>Easy to setup</strong>: All you need to start using Jawr is to declare a couple of servlets in you deployment descriptor, create a simple .properties configuration file, 
-			and use the Jawr tag library to import css and javascript resources to your pages.</li> 
+			and use the Jawr tag library to import css and javascript resources to your pages. A complete setup takes a matter of minutes and requires little or no modifications over time. </li> 
+			
+			<li> <strong>Lightweight</strong>: Bundling and compression is done once at server startup so there is no overhead to requests. Also, a cache component
+			is available and enabled by default to serve resources directly from memory instead of from the filesystem.</li> 
 			
 			
 			<li> <strong>Built-in minification and postprocessing</strong>: Jawr includes JSMin and the YUI compressor, both from Yahoo!. A custom minificator for 
@@ -151,6 +154,9 @@
       </subsection>
       <subsection name="Announcements">
       <ul>
+      	<li> <strong>4/5/2008</strong>: Version 2.0 released: new automatic prefixing system, conditional comments support, grails and facelets 
+      	plugins, YUI compressor... Check the <a href="./docs/changes_20.html" >what's new in 2.0 page</a> for a description of all the new features and fixes.    
+      	</li>
       	<li> <strong>2/28/2008</strong>: Version 1.4 released. Many issues resolved: 
 			<ul>
 				<li> #5: It is now possible to add a custom class to handle the loading of properties configuration. Check the <a href="/docs/servlet.html">servlet documentation</a> for details. 
