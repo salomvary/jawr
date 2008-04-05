@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html>
+  <head>
+    <title>Jawr - Source ordering within bundles</title>
+    <style type="text/css" media="all">
+      @import url("../css/maven-base.css");
+      @import url("../css/maven-theme.css");
+      @import url("../css/site.css");
+    </style>
+    <link rel="stylesheet" href="../css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <!-- TODO: move this into JavaScript to patch the skin
+      <div class="xright">  </div>
+    -->
+    <div id="leftColumn">
+      <div id="navcolumn">
+             <dl class=navgroup>
+        <dt>About</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../servlets/ProjectHome">Home</a>
+        </li>
+              
+    <li class="none">
+              <a href="../introduction.html">Introduction</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Documentation</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../docs/servlet.html">The Jawr servlet</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/descriptor_syntax.html">Descriptor syntax</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/custom_bundles.html">Bundle definition</a>
+        </li>
+              
+    <li class="none">
+              <strong>Source order in bundles</strong>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/postprocessors.html">Postprocessors</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/license_files.html">Licenses in resources</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/taglibs.html">JSP Tag library</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/facelets.html">Facelets Tag library</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/modes.html">Debug and production modes</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/grails.html">Grails plugin</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Tutorials</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../tutorials/quickstart.html">Quick start</a>
+        </li>
+              
+    <li class="none">
+              <a href="../tutorials/libraries.html">Using popular libraries</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>API and sources</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../nonav/apidocs/index.html">JavaDocs</a>
+        </li>
+              
+    <li class="none">
+              <a href="../nonav/xref/index.html">Source XREF</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Project tools</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../servlets/ProjectHome">Project home</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectMemberList">Membership</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectNewsList">Announcements</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectForumView">Discussion forums</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectMailingListList">Mailing lists</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectDocumentList">Documents & files</a>
+        </li>
+              
+    <li class="none">
+              <a href="../source/browse/jawr/">Subversion</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectIssues">Issue tracker</a>
+        </li>
+          </ul></dd>
+    </dl>
+        </div>
+      <script>
+        // replace the java.net project tools with the navigation bar from Maven.
+        // also get rid of "Get Involved" thingie too, while we are at it
+        var pt = document.getElementById("projecttools");
+        var nv = document.getElementById("navcolumn");
+        
+        while(pt.previousSibling!=null)
+          pt.parentNode.removeChild(pt.previousSibling);
+        
+        pt.parentNode.insertBefore(nv,pt);
+        pt.parentNode.removeChild(pt);
+      </script>
+      <script>
+        // kill "description" h3 bar
+        var ld = document.getElementById("longdescription");
+        if(ld!=null) {
+          for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
+            if(n.nodeType==1 && n.innerHTML=="Description" ) {
+              n.parentNode.removeChild(n);
+              break;
+            }
+          }
+        }
+      </script>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>Source ordering within bundles</h2><p>Both Javascript and CSS are interpreted in source order, which means that often you will need the files within a bundle to follow a certain sequence. For instance, if your project uses both Prototype.js and Script.aculo.us you will probably need them to be bundled together, but you need to make sure that Prototype is always loaded first since Script.aculo.us depends on it in order to work. If the generated bundle had Script.aculo.us first, there would be an inmediate Javascript error in any page that loaded it. &#160; </p><p>For example, say you have this directory structure containing both Prototype and Srcipt.aculo.us. You need to load prototype.js first, and then everything else: </p><img src="../images/sorting/flat_ptotype.png" alt="A sample directory structure" /><p>To solve this problem there are three simple ways to force ordering of resources within a bundle: </p><ul><li><b>Explicitly map files in order</b> &#160;<p>Jawr will add files to bundles in the same order you specify in the mappings attribute: </p><div class="source"><pre>
+
+        jawr.js.bundle.names=lib
+        
+        jawr.js.bundle.foo.id=/bundles/lib.js
+         # Add all files in needed ordering.  
+        jawr.js.bundle.foo.mappings=/js/lib/Protoype.js, /js/lib/scriptaculous.js, ...  </pre></div><p>The obvious drawback here is that ordering many files will mean a verbose configuration, so this option is recommended only for very simple cases. </p></li><li><b>Implicitly order files by using subfolders and a recurring mapping</b> &#160;<p>When doing recursive mapping, Jawr will always include resources first, then subdirectories. That means that you can effectively force ordering by putting the files which should appear last in a subdirectory. For instance, in the previous example, you could move all the Script.aculo.us files to a subdir, like this: </p><img src="../images/sorting/sub_ptotype.png" alt="A sample directory structure" /><p>Your mapping could then change to this: </p><div class="source"><pre>        jawr.js.bundle.names=lib
+        
+        jawr.js.bundle.foo.id=/bundles/lib.js
+        jawr.js.bundle.foo.mappings=/js/lib/**  </pre></div><p>Since we have Prototype.js directly under /js/lib and everything else in a subfolder, with this mapping we can be sure that our bundle will contain the Prototype library first, and then the rest of our files. </p></li><li><b>Explicitly order files using a sorting file</b> &#160;<p>Sorting files are simple descriptors that you place at any directory where you need to specify ordering. Following the previous examples, if we still had Prototype and Script.aculo.us at the same directory and we wanted to force ordering, we could create a file named <b>.sorting</b> at the /js/lib/ directory. The directory structure would look like this: </p><img src="../images/sorting/flat_ptotype_license.png" alt="A sample directory structure" /><p>The contents of the sorting file would be as follows: </p><div class="source"><pre>        prototype.js</pre></div><p>As you can see, only the files that need to go first are added. If our mapping was /js/lib/**, we would get prototype.js first, then every other resource in the directory in no particular order. If there were any subdirectory, its contents would be added afterwards. &#160;</p><p>Sorting files can also affect subdirs, so you can do things like add a resource, then everything in a subdir, then another resource, like this: </p><div class="source"><pre>        Prototype.js
+        someSubdir/
+        effects.js</pre></div><p>If our mapping was /js/lib/**, the resulting bundle would contain: </p><ul><li>The contents of prototype.js. </li><li>The contents of every .js file under /someSubdir/ and its subdirectories. </li><li>The contents of effects.js. </li><li>The contents of every other .js file at the /lib/ folder. </li><li>The contents of every file in subdirectories, if any, under /lib/ (except /someSubdir/). </li></ul></li></ul></div>
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2008
+    
+          
+  
+
+  
+  
+  &nbsp;| Last Published: 04/05/2008
+  &nbsp;| Version: 2.0
+</div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>

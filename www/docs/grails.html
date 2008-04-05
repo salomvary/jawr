@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html>
+  <head>
+    <title>Jawr - Jawr plugin for Grails</title>
+    <style type="text/css" media="all">
+      @import url("../css/maven-base.css");
+      @import url("../css/maven-theme.css");
+      @import url("../css/site.css");
+    </style>
+    <link rel="stylesheet" href="../css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <!-- TODO: move this into JavaScript to patch the skin
+      <div class="xright">  </div>
+    -->
+    <div id="leftColumn">
+      <div id="navcolumn">
+             <dl class=navgroup>
+        <dt>About</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../servlets/ProjectHome">Home</a>
+        </li>
+              
+    <li class="none">
+              <a href="../introduction.html">Introduction</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Documentation</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../docs/servlet.html">The Jawr servlet</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/descriptor_syntax.html">Descriptor syntax</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/custom_bundles.html">Bundle definition</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/source_ordering.html">Source order in bundles</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/postprocessors.html">Postprocessors</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/license_files.html">Licenses in resources</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/taglibs.html">JSP Tag library</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/facelets.html">Facelets Tag library</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/modes.html">Debug and production modes</a>
+        </li>
+              
+    <li class="none">
+              <strong>Grails plugin</strong>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Tutorials</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../tutorials/quickstart.html">Quick start</a>
+        </li>
+              
+    <li class="none">
+              <a href="../tutorials/libraries.html">Using popular libraries</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>API and sources</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../nonav/apidocs/index.html">JavaDocs</a>
+        </li>
+              
+    <li class="none">
+              <a href="../nonav/xref/index.html">Source XREF</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Project tools</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../servlets/ProjectHome">Project home</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectMemberList">Membership</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectNewsList">Announcements</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectForumView">Discussion forums</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectMailingListList">Mailing lists</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectDocumentList">Documents & files</a>
+        </li>
+              
+    <li class="none">
+              <a href="../source/browse/jawr/">Subversion</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectIssues">Issue tracker</a>
+        </li>
+          </ul></dd>
+    </dl>
+        </div>
+      <script>
+        // replace the java.net project tools with the navigation bar from Maven.
+        // also get rid of "Get Involved" thingie too, while we are at it
+        var pt = document.getElementById("projecttools");
+        var nv = document.getElementById("navcolumn");
+        
+        while(pt.previousSibling!=null)
+          pt.parentNode.removeChild(pt.previousSibling);
+        
+        pt.parentNode.insertBefore(nv,pt);
+        pt.parentNode.removeChild(pt);
+      </script>
+      <script>
+        // kill "description" h3 bar
+        var ld = document.getElementById("longdescription");
+        if(ld!=null) {
+          for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
+            if(n.nodeType==1 && n.innerHTML=="Description" ) {
+              n.parentNode.removeChild(n);
+              break;
+            }
+          }
+        }
+      </script>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>Jawr plugin for Grails</h2><p>For a Grails user, it is easy to instal Jawr and start using it. The steps to follow are to install the plugin, configure it with the same properties format used in the standard version, and add a couple of URL mapping statements. </p><div class="section"><h3>Installing the plugin</h3><p>Just execute following from your application directory:</p><p>grails install-plugin Jawr</p><p>If above method does not work for some reason you can download the plugin distribution from <a href="https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=8991">this page</a> and install it with:</p><p>grails install-plugin /path/to/downloaded/plugin.zip</p></div><div class="section"><h3>Configuration</h3><p>To configure Jawr you must add properties to the Config.groovy file located at the /conf folder of your application. The syntax you must use is exactly the same described for the .properties file used in standard java web applications. Check the <a href="./descriptor_syntax.html">config file syntax page</a> for details. Keep in mind that there are a few property keys that don't apply when using Jawr with Grails. Those are: </p><ul><li><b>jawr.config.reload.interval</b>: The Jawr servlet can be configured to listen to changes to the .properies file to reload it when it changes. In Grails, Jawr will instead listen to changes to the Config.groovy script to reload its configuration. This happens automatically when you start grails in development mode (but keep in mind that the changes are applied after you refresh a page in your browser). </li><li><b>jawr.charset.name</b>: The value set for grails.views.gsp.encoding will be used for this attribute (which is 'utf-8' by default in Grails). </li></ul><p>Using this syntax, you will be able to define bundles as specified in the relevant documentation pages. Note that you are not forced to use Jawr for both js and css files. If you add none of the jawr.css.* parameters, for instance, Jawr will do no effort to serve CSS files. </p><p>Jawr uses log4j to log messages, so you can configure its tracing level along with the rest of your application. All jawr packages start with net.jawr.*, so you can use that as a key for an appender. </p><div class="section"><h4>URL mapping</h4><p>There are two ways to map Jawr to requests: </p><ul><li>You can have Jawr respond to all requests ending in .js and .css, thus letting Jawr control all requests to your resources. There are two drawbacks to this: <ul><li>You may want to bundle only part of your code and serve the rest normally. This is specially useful if you are adding Jawr to an existing application and you do not want to change every existing script tag. Note that Jawr handles individual files (you don't need to explicitly define a bundle for every file you want to serve standalone), so that should not keep you from using this method of serving.</li></ul><ul><li>Because of the way Grails handles content negotiation by default (removing extensions before resolving the controller), you must disable it by setting the grails.mime.file.extensions option to <b>false</b> in Config.groovy. </li></ul><p>Aside from setting grails.mime.file.extension to false, you must add mappings to the Jawr controllers to the UrlMappings.groovy file, like this: </p><div class="source"><pre>class UrlMappings {
+    static mappings = {
+      &quot;/$controller/$action?/$id?&quot;{
+              constraints {
+                                //...
+                  }
+          }
+         &quot;/**.js&quot;(controller:'jawrJavascript')
+         &quot;/**.css&quot;(controller:'jawrCSS')
+          &quot;500&quot;(view:'/error')
+        }
+}</pre></div></li><li>You can define a URL fragment as a prefix (such as '/jawr') to prefix every URL. Jawr will only serve requests containing this prefix. To use this you must add two special parameters to your Config.groovy file, to specify the prefixes for js and css: <div class="source"><pre>jawr.js.mapping = '/script' // The value can be anything you want for the prefix
+jawr.css.mapping = '/style'</pre></div><p>Also, you will have to add matching mappings to the UrlMappings.groovy file, like this: </p><div class="source"><pre>class UrlMappings {
+    static mappings = {
+      &quot;/$controller/$action?/$id?&quot;{
+              constraints {
+                         // ...
+                  }
+          }
+         &quot;/script/**&quot;(controller:'jawrJavascript') // Whatever prefix you chose, followed by '/**'
+         &quot;/style/**&quot;(controller:'jawrCSS')
+          &quot;500&quot;(view:'/error')
+        }
+}</pre></div><p>With either method, once you have filled out the properties and established the mappings, you will be ready to start adding Jawr tags to your pages. </p></li></ul></div></div><div class="section"><h3>Using the tag library</h3><p>The tag library for grails works exactly the same as the JSP version, so you will find all the details in the <a href="./taglibs.html">JSP taglib documentation page</a>. </p><p>The only difference is that in GSP pages there is no need to import the tags at all. Also, keep in mind that the namespace for the Jawr taglib is 'jawr:'. </p><p>This is how you would use the tags in a typical page: </p><div class="source"><pre>&lt;html&gt;
+ &lt;head&gt;
+        &lt;jawr:script src=&quot;/bundles/yui.js&quot;  /&gt;
+        &lt;jawr:style src=&quot;/bundles/all.css&quot; /&gt;
+ &lt;/head&gt;
+ &lt;body&gt;
+        ...
+ &lt;/body&gt;
+&lt;/html&gt;
+</pre></div></div></div>
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2008
+    
+          
+  
+
+  
+  
+  &nbsp;| Last Published: 04/05/2008
+  &nbsp;| Version: 2.0
+</div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
