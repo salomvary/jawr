@@ -16,7 +16,7 @@ Jawr plugin for Grails
 	grails install-plugin Jawr
 	
 	If above method does not work for some reason you can download the plugin distribution from 
-	{{{./}this page}} and install it with:
+	{{{https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=8991}this page}} and install it with:
 	
 	grails install-plugin /path/to/downloaded/plugin.zip
 	
