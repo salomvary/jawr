@@ -10,7 +10,6 @@
 		</description>
   <documentation>https://jawr.dev.java.net</documentation>
   <resources>
-    <resource>JawrUrlMappings</resource>
     <resource>JawrCSSController</resource>
     <resource>JawrJavascriptController</resource>
     <resource>JawrTagLib</resource>
