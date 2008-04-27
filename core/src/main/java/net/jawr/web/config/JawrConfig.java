@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
+import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
 
 
 /**
@@ -27,6 +28,8 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
  */
 public class JawrConfig {
 	private static final String DEBUG_MODE_SYSTEM_FLAG = "net.jawr.debug.on"; 
+	private GeneratorRegistry generatorRegistry;
+	
 	/**
 	 * Initialize configuration using params contained in the initialization properties file. 
 	 * @param configId
@@ -59,6 +62,8 @@ public class JawrConfig {
 		{			
 			setContextPathOverride(props.getProperty("jawr.url.contextpath.override"));
 		}
+		// TODO pass adittional params to registry
+		this.generatorRegistry = new GeneratorRegistry();
 	}
 	
 	/**
@@ -238,6 +243,20 @@ public class JawrConfig {
 		 */
 		public boolean isValid() {
 			return this.isValid;
+		}
+
+		/**
+		 * @return the generatorRegistry
+		 */
+		public GeneratorRegistry getGeneratorRegistry() {
+			return generatorRegistry;
+		}
+
+		/**
+		 * @param generatorRegistry the generatorRegistry to set
+		 */
+		public void setGeneratorRegistry(GeneratorRegistry generatorRegistry) {
+			this.generatorRegistry = generatorRegistry;
 		}
 	
 }

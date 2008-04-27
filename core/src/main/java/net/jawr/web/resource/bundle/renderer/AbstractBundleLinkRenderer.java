@@ -14,7 +14,9 @@
 package net.jawr.web.resource.bundle.renderer;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URLEncoder;
 import java.util.Random;
 import java.util.Set;
 
@@ -133,6 +135,13 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
      */
     protected String createBundleLink(String bundleId, String contextPath) {
     	
+    	// When debug mode is on and the resource is generated the path must include a parameter
+    	if( bundler.getConfig().isDebugModeOn() && 
+    		bundler.getConfig().getGeneratorRegistry().isPathGenerated(bundleId)) {
+    		try {
+				bundleId = "generate.js?generationConfigParam=" + URLEncoder.encode(bundleId, "UTF-8");
+			} catch (UnsupportedEncodingException neverHappens) {/*URLEncoder:how not to use checked exceptions...*/}
+    	}
     	String fullPath = PathNormalizer.joinPaths(bundler.getConfig().getServletMapping(), bundleId);
     	
     	// If context path is overriden..

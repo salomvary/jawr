@@ -216,8 +216,8 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		// Create a resource handler to read files from the WAR archive or exploded dir. 
 		ResourceHandler rsHandler;
 		
-		rsHandler = new ServletContextResourceHandler(servletContext,jawrConfig.getResourceCharset());
-		PropertiesBasedBundlesHandlerFactory factory = new PropertiesBasedBundlesHandlerFactory(props,resourceType,rsHandler);
+		rsHandler = new ServletContextResourceHandler(servletContext,jawrConfig.getResourceCharset(),jawrConfig.getGeneratorRegistry());
+		PropertiesBasedBundlesHandlerFactory factory = new PropertiesBasedBundlesHandlerFactory(props,resourceType,rsHandler,jawrConfig.getGeneratorRegistry());
 		try {
 			bundlesHandler = factory.buildResourceBundlesHandler(jawrConfig);
 		} catch (DuplicateBundlePathException e) {
@@ -284,16 +284,21 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			}
 		}
 		
-        // If a browser checks for changes, always respond 'no changes'. 
-        if(null != request.getHeader("If-Modified-Since")) {
-            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-            if(log.isDebugEnabled())
-				log.debug("Returning 'not modified' header. ");
-            return;
-        }
-        
-        // Add caching headers
-        setResponseHeaders(response);
+		// If debug mode is off, check for If-Modified-Since header and set response caching headers. 
+		if(!this.jawrConfig.isDebugModeOn()) {
+	        // If a browser checks for changes, always respond 'no changes'. 
+	        if(null != request.getHeader("If-Modified-Since")) {
+	            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+	            if(log.isDebugEnabled())
+					log.debug("Returning 'not modified' header. ");
+	            return;
+	        }
+	        
+	        // Add caching headers
+	        setResponseHeaders(response);
+		}
+		else if(null != request.getParameter("generationConfigParam"))
+			requestedPath = request.getParameter("generationConfigParam");
                
 		// By setting content type, the response writer will use appropiate encoding
 		response.setContentType(contentType);

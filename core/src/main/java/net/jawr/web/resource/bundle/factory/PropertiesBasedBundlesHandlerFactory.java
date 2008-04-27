@@ -27,6 +27,7 @@ import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.factory.util.PropertiesConfigHelper;
 import net.jawr.web.resource.bundle.factory.util.ResourceBundleDefinition;
+import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 
 /**
@@ -86,7 +87,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 	 * @param resourceType js or css
 	 * @param rsHandler ResourceHandler to access files. 
 	 */
-	public PropertiesBasedBundlesHandlerFactory(Properties properties, String resourceType,ResourceHandler rsHandler){
+	public PropertiesBasedBundlesHandlerFactory(Properties properties, String resourceType,ResourceHandler rsHandler,GeneratorRegistry generatorRegistry){
 		this.props = new PropertiesConfigHelper(properties,resourceType);
 		
 		// Create the BundlesHandlerFactory

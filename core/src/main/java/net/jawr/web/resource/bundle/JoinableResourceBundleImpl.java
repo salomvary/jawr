@@ -132,6 +132,9 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 			else if(pathMapping.endsWith(LICENSES_FILENAME)){
 				licensesPathList.add(PathNormalizer.asPath(pathMapping));
 			}
+			else if(resourceHandler.isResourceGenerated(pathMapping)){
+				itemPathList.add(pathMapping);
+			}
 			else log.warn("Wrong mapping [" + pathMapping  
 							+ "] for bundle [" 
 							+ this.name 
