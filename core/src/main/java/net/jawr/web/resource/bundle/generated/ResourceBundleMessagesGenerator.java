@@ -18,8 +18,18 @@ import java.nio.charset.Charset;
 
 import net.jawr.web.resource.bundle.message.MessageBundleScriptCreator;
 
+/**
+ * A generator that creates a script from message bundles.
+ * The generated script can be used to reference the message literals easily from javascript.  
+ * 
+ * @author Jordi Hernández Sellés
+ *
+ */
 public class ResourceBundleMessagesGenerator implements ResourceGenerator {
 
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.generated.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
+	 */
 	public Reader createResource(String path,Charset charset) {
 		MessageBundleScriptCreator creator = new MessageBundleScriptCreator(path);
 		return creator.createScript();

@@ -1,6 +1,18 @@
+/**
+ * Copyright 2007-2008 Jordi Hernández Sellés
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ * 
+ * 	http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
 package net.jawr.web.resource.bundle.message;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -11,9 +23,17 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+
 import org.apache.log4j.Logger;
 
 
+/**
+ * Creates a script which holds the data from a message bundle(s). The script is such that properties can be accessed as functions
+ * (i.e.: alert(com.mycompany.mymessage()); ). 
+ * 
+ * @author Jordi Hernández Sellés
+ */
 public class MessageBundleScriptCreator {
 	private static final Logger log = Logger.getLogger(MessageBundleScriptCreator.class.getName());
 	private static final String SCRIPT_TEMPLATE = "/net/jawr/web/resource/bundle/message/messages.js";
@@ -25,33 +45,37 @@ public class MessageBundleScriptCreator {
 	public MessageBundleScriptCreator(String configParam) {
 		super();
 		if(null == template)
-			template = get();
+			template = loadScriptTemplate();
 		
 		props = new Properties();
 		this.configParam = configParam;
 	}
 	
-	private StringBuffer get() {
+	/**
+	 * Loads a template containing the functions which convert properties into methods. 
+	 * @return
+	 */
+	private StringBuffer loadScriptTemplate() {
 		StringWriter sw = new StringWriter();
 		try {
-			// TODO ensure this is loaded within any server
-			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(SCRIPT_TEMPLATE);
+			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(SCRIPT_TEMPLATE,this);
 			int i;
 			while((i = is.read()) != -1) {
 				sw.write(i);
 			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.fatal("a serious error occurred when initializing MessageBundleScriptCreator");
+			throw new RuntimeException("Classloading issues prevent loading the message template to be loaded. ");
 		}
 		
 		return sw.getBuffer();
 	}
 
 
+	/**
+	 * Loads the message resource bundles specified and uses a BundleStringJasonifier to generate the properties. 
+	 * @return
+	 */
 	public Reader createScript(){
 		Locale locale = null;
 		if(configParam.indexOf('@') != -1){

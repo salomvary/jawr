@@ -26,5 +26,13 @@ import java.nio.charset.Charset;
  */
 public interface ResourceGenerator {
 
+	/**
+	 * Create a reader on a generated resource (any script not read from the war file 
+	 * structure). 
+	 * 
+	 * @param path
+	 * @param charset
+	 * @return
+	 */
 	public Reader createResource(String path,Charset charset);
 }

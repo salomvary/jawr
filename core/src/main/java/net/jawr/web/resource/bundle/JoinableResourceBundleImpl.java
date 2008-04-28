@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hern√°ndez Sell√©s
+ * Copyright 2007 Jordi Hern·ndez SellÈs
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 /**
  * Basic implementation of JoinableResourceBundle. 
  * 
- * @author Jordi Hern√°ndez Sell√©s
+ * @author Jordi Hern·ndez SellÈs
  *
  */
 public class JoinableResourceBundleImpl implements JoinableResourceBundle {
@@ -48,6 +48,9 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	private String urlPrefix;
 	private String explorerConditionalExpression;
 	private int bundleDataHashCode;
+	
+	protected List localeVariantKeys;
+	
 	
 	private ResourceBundlePostProcessor unitaryPostProcessor;
 	private ResourceBundlePostProcessor bundlePostProcessor;
@@ -75,6 +78,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		this.itemPathList = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 		this.licensesPathList = new HashSet();
         this.fileExtension = fileExtension;
+        
 	}	
 	
 	
@@ -236,6 +240,13 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	public List getItemPathList() {
 		return itemPathList;
 	}
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList(java.lang.String)
+	 */
+	public List getItemPathList(String variantKey) {
+		return itemPathList; // TODO implement this
+	}
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getName()
@@ -328,5 +339,19 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 			String explorerConditionalExpression) {
 		this.explorerConditionalExpression = explorerConditionalExpression;
 	}
-
+	
+	/**
+	 * Set the list of variants for localized resources
+	 * @param localeVariantKeys
+	 */
+	public void setLocaleVariantKeys(List localeVariantKeys) {
+		this.localeVariantKeys = localeVariantKeys;
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getLocaleVariantKeys()
+	 */
+	public List getLocaleVariantKeys(){
+		return this.localeVariantKeys;
+	}
 }

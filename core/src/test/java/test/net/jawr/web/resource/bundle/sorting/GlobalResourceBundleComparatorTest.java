@@ -81,7 +81,14 @@ public class GlobalResourceBundleComparatorTest extends TestCase {
 			}
 
 			public String getExplorerConditionalExpression() {
-				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public List getItemPathList(String variantKey) {
+				return null;
+			}
+
+			public List getLocaleVariantKeys() {
 				return null;
 			}};
 	}

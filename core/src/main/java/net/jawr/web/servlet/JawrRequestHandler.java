@@ -67,6 +67,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	private String resourceType;
 	private ServletContext servletContext;
 	private Map initParameters;
+	private ConfigChangeListenerThread configChangeListenerThread;
 	
 	private JawrConfig jawrConfig;
 
@@ -141,7 +142,8 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			log.warn("Jawr started with configuration auto reloading on. " 
 					+ "Be aware that a daemon thread will be checking for changes to configuration every " + interval + " seconds.");
 			
-			new ConfigChangeListenerThread(propsSrc,this, interval).start();
+			this.configChangeListenerThread = new ConfigChangeListenerThread(propsSrc,this, interval);
+			configChangeListenerThread.start();
 		}	
 		
 
@@ -340,6 +342,15 @@ public class JawrRequestHandler implements ConfigChangeListener{
             Calendar cal = Calendar.getInstance();
             cal.roll(Calendar.YEAR,10);
             resp.setDateHeader(EXPIRES_HEADER, cal.getTimeInMillis());
+    }
+    
+    /**
+     * Analog to Servlet.destroy(), should be invoked whenever the app is redeployed. 
+     */
+    public void destroy() {
+    	// Stop the config change listener. 
+    	if(null != this.configChangeListenerThread)
+    		configChangeListenerThread.stopPolling();
     }
 
 

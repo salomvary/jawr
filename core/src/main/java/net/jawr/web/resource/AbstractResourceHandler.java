@@ -1,5 +1,5 @@
 /**
- * Copyright 2007  Jordi Hernández Sellés
+ * Copyright 2007   Jordi Hernández Sellés
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -59,6 +59,15 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 		else return doGetResource(resourceName);
 	}
 	
+	
+	/**
+	 * Retrieves a single resource using the implementation specifics. 
+	 * Invoked by getResource() unless the requested item is generated. 
+	 * 
+	 * @param resourceName
+	 * @return
+	 * @throws ResourceNotFoundException
+	 */
 	protected abstract Reader doGetResource(String resourceName) throws ResourceNotFoundException;
 	
 	

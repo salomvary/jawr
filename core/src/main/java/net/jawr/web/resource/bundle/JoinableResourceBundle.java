@@ -30,7 +30,7 @@ public interface JoinableResourceBundle {
 	public static final String SORT_FILE_NAME = ".sorting";
 		
 	/**
-	 * Returns the name for this bundle. It will normally end with .js, 
+	 * Returns the name for this bundle. It will normally end with .js or .css, 
 	 * since it will be used to refer to the bundle in URLs. 
 	 * @return
 	 */
@@ -98,4 +98,20 @@ public interface JoinableResourceBundle {
      * if the bundle should be included for all browsers. 
      */
     public String getExplorerConditionalExpression();
+    
+    // TODO personalization public List getVariantKeys();
+    
+    /**
+     * Returns a list with the specified locale variants of this bundle. 
+     * @return
+     */
+    public List getLocaleVariantKeys();
+    
+    /**
+     * Returns an ordered list with all the items pertaining to this bundle, with the variations 
+     * corresponding to the specified variant key. 
+     * @param variantKey
+     * @return
+     */
+    public List getItemPathList(String variantKey);
 }

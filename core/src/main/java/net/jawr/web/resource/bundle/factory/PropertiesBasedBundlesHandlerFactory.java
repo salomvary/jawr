@@ -74,7 +74,9 @@ public class PropertiesBasedBundlesHandlerFactory {
 	private static final String CUSTOM_POSTPROCESSORS_NAMES = ".names";
 	private static final String CUSTOM_POSTPROCESSORS_CLASS = ".class";
 	
-	
+	// Locale variants
+
+	private static final String BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS = ".locales";
 		
 	
 	private PropertiesConfigHelper props;
@@ -230,6 +232,16 @@ public class PropertiesBasedBundlesHandlerFactory {
 			while(tk.hasMoreTokens())
 				mappings.add(tk.nextToken().trim());
 			bundle.setMappings(mappings);
+			
+			String locales = props.getCustomBundleProperty(bundleName,BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS);
+			if(null !=  locales) {
+				List localeKeys = new ArrayList();
+				StringTokenizer tkl = new StringTokenizer(mappingsProperty,",");
+				while(tkl.hasMoreTokens())
+					localeKeys.add(tkl.nextToken().trim());
+				bundle.setLocaleVariantKeys(localeKeys);
+				
+			}
 		}
 		
 		

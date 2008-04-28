@@ -242,6 +242,9 @@ public class BundlesHandlerFactory {
 		if(null != definition.getIeConditionalExpression())
 			newBundle.setExplorerConditionalExpression(definition.getIeConditionalExpression());
 		
+		if(null != definition.getLocaleVariantKeys())
+			newBundle.setLocaleVariantKeys(definition.getLocaleVariantKeys());
+		
 		return newBundle;
 	}
 	
