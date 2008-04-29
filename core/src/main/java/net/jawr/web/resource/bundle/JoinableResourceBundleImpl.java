@@ -23,6 +23,7 @@ import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
+import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.sorting.SortFileParser;
 
@@ -245,7 +246,18 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList(java.lang.String)
 	 */
 	public List getItemPathList(String variantKey) {
-		return itemPathList; // TODO implement this
+		if(null == variantKey)
+			return itemPathList;
+		
+		List rets = new ArrayList();
+		for(Iterator it = itemPathList.iterator();it.hasNext();){
+			String path = (String) it.next();
+			if(path.startsWith(GeneratorRegistry.MESSAGE_BUNDLE_PREFIX)){
+				rets.add(path + '@' + variantKey);
+			}
+			else rets.add(path);
+		}
+		return rets; 
 	}
 
 	/* (non-Javadoc)
@@ -265,11 +277,15 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
     /* (non-Javadoc)
 	* @see net.jawr.web.resource.bundle.JoinableResourceBundle#getURLPrefix()
 	*/
-    public String getURLPrefix() {
+    public String getURLPrefix(String variantKey) {
     	if(null == this.urlPrefix)
     		throw new IllegalStateException("The bundleDataHashCode must be set before accessing the url prefix.");
-    		
-    	return this.urlPrefix;
+    	
+    	// TODO resolve locale keys like resourcebundle does
+    	if(null != variantKey && null != this.localeVariantKeys && this.localeVariantKeys.contains(variantKey)) {
+    		return this.urlPrefix + "." + variantKey + "/";
+    	}
+    	return this.urlPrefix + "/";
     }
 
 
@@ -316,9 +332,9 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		this.bundleDataHashCode = bundleDataHashCode;
 		// Since this numbre is used as part of urls, the -sign is converted to 'N'
 		if(bundleDataHashCode < 0){
-			this.urlPrefix = "N" + this.bundleDataHashCode*-1 + "/";
+			this.urlPrefix = "N" + this.bundleDataHashCode*-1;
 		}
-		else urlPrefix = this.bundleDataHashCode + "/";
+		else urlPrefix = ""+this.bundleDataHashCode;
 		
 	}
 

@@ -236,7 +236,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 			String locales = props.getCustomBundleProperty(bundleName,BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS);
 			if(null !=  locales) {
 				List localeKeys = new ArrayList();
-				StringTokenizer tkl = new StringTokenizer(mappingsProperty,",");
+				StringTokenizer tkl = new StringTokenizer(locales,",");
 				while(tkl.hasMoreTokens())
 					localeKeys.add(tkl.nextToken().trim());
 				bundle.setLocaleVariantKeys(localeKeys);

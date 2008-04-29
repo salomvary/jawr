@@ -18,6 +18,8 @@ import java.util.Properties;
 
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
+import net.jawr.web.resource.bundle.locale.DefaultLocaleResolver;
+import net.jawr.web.resource.bundle.locale.LocaleResolver;
 
 
 /**
@@ -29,6 +31,7 @@ import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
 public class JawrConfig {
 	private static final String DEBUG_MODE_SYSTEM_FLAG = "net.jawr.debug.on"; 
 	private GeneratorRegistry generatorRegistry;
+	private LocaleResolver localeResolver;
 	
 	/**
 	 * Initialize configuration using params contained in the initialization properties file. 
@@ -64,6 +67,7 @@ public class JawrConfig {
 		}
 		// TODO pass adittional params to registry
 		this.generatorRegistry = new GeneratorRegistry();
+		localeResolver = new DefaultLocaleResolver();
 	}
 	
 	/**
@@ -257,6 +261,10 @@ public class JawrConfig {
 		 */
 		public void setGeneratorRegistry(GeneratorRegistry generatorRegistry) {
 			this.generatorRegistry = generatorRegistry;
+		}
+
+		public LocaleResolver getLocaleResolver() {
+			return localeResolver;
 		}
 	
 }

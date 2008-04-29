@@ -120,7 +120,7 @@ public class OrphanResourceBundlesMapperTest extends  ResourceHandlerBasedTest {
 				return null;
 			}
 
-			public String getURLPrefix() {
+			public String getURLPrefix(String variantKey) {
 				return null;
 			}
 

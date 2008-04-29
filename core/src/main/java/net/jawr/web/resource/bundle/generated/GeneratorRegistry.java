@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
+
 /**
  * Placeholder for resource generators, which create scripts or CSS data dynamically, 
  * as opposed to the usual behavior of reading a resource from the war file. 

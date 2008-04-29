@@ -25,15 +25,17 @@ public abstract class AbstractPathsIterator implements
 		ResourceBundlePathsIterator {
 
 	protected ConditionalCommentCallbackHandler commentCallbackHandler;
+	protected String variantKey;
 
 
 	/**
 	 * Creates the iterator passing the reference to the ConditionalCommentCallbackHandler. 
 	 * @param handler
 	 */
-	public AbstractPathsIterator(ConditionalCommentCallbackHandler handler) {
+	public AbstractPathsIterator(ConditionalCommentCallbackHandler handler,String variantKey) {
 		super();
 		commentCallbackHandler = handler;
+		this.variantKey = variantKey;
 	}
 
 	/**

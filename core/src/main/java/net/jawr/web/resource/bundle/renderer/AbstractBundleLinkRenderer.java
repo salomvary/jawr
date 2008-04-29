@@ -24,6 +24,7 @@ import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
+import net.jawr.web.servlet.JawrRequestHandler;
 
 /**
  * Abstract base class for implementations of a link renderer. 
@@ -55,6 +56,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
      */
     public void renderBundleLinks(  String requestedPath,
                                     String contextPath,
+                                    String variantKey,
                                     final Set includedBundles, 
                                     boolean useGzip, 
                                     Writer out ) throws IOException {
@@ -71,7 +73,8 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
 
         // Retrieve the name or names of bundle(s) that belong to/with the requested path. 
     	ResourceBundlePathsIterator it = bundler.getBundlePaths(bundle.getName(),
-    															new ConditionalCommentRenderer(out));
+    															new ConditionalCommentRenderer(out),
+    															variantKey);
     	
         // Add resources to the page as links. 
         while(it.hasNext())
@@ -139,7 +142,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     	if( bundler.getConfig().isDebugModeOn() && 
     		bundler.getConfig().getGeneratorRegistry().isPathGenerated(bundleId)) {
     		try {
-				bundleId = "generate.js?generationConfigParam=" + URLEncoder.encode(bundleId, "UTF-8");
+				bundleId = "generate.js?" + JawrRequestHandler.GENERATION_PARAM + "=" + URLEncoder.encode(bundleId, "UTF-8");
 			} catch (UnsupportedEncodingException neverHappens) {/*URLEncoder:how not to use checked exceptions...*/}
     	}
     	String fullPath = PathNormalizer.joinPaths(bundler.getConfig().getServletMapping(), bundleId);

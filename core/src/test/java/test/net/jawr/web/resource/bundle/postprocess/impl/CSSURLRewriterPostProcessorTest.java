@@ -288,7 +288,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 			public String getName() {
 				return id;
 			}
-			public String getURLPrefix() {
+			public String getURLPrefix(String variantKey) {
 				return urlPrefix;
 			}
 			public ResourceBundlePostProcessor getBundlePostProcessor() {

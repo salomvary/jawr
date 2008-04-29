@@ -69,6 +69,8 @@ public class CompositeResourceBundle extends JoinableResourceBundleImpl {
 			if(null == child.getUnitaryPostProcessor() ) {
 				child.setUnitaryPostProcessor(this.getUnitaryPostProcessor());
 			}
+			
+			// TODO implement variants as needed
 		}
 	}
 

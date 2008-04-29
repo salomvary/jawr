@@ -31,8 +31,8 @@ public class DebugModePathsIteratorImpl extends AbstractPathsIterator implements
 	private Iterator pathsIterator;
 	private JoinableResourceBundle currentBundle;
 	
-	public DebugModePathsIteratorImpl(List bundles,ConditionalCommentCallbackHandler callbackHandler) {
-		super(callbackHandler);
+	public DebugModePathsIteratorImpl(List bundles,ConditionalCommentCallbackHandler callbackHandler,String variantKey) {
+		super(callbackHandler,variantKey);
 		this.bundlesIterator = bundles.iterator();
 		
 	}
@@ -48,7 +48,7 @@ public class DebugModePathsIteratorImpl extends AbstractPathsIterator implements
 			if(null != currentBundle.getExplorerConditionalExpression())
 				commentCallbackHandler.openConditionalComment(currentBundle.getExplorerConditionalExpression());
 
-			pathsIterator = currentBundle.getItemPathList().iterator();
+			pathsIterator = currentBundle.getItemPathList(variantKey).iterator();
 		}
 		return pathsIterator.next().toString();
 	}

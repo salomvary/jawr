@@ -58,12 +58,14 @@ public abstract class AbstractResourceBundleTag extends UIOutput {
         
         ResponseWriter writer = context.getResponseWriter();
         HttpServletRequest request = ((HttpServletRequest)context.getExternalContext().getRequest());
+        String localeKey = this.renderer.getBundler().getConfig().getLocaleResolver().resolveLocaleCode(request);
        
         // Determine if gzip is feasible for the current client. 
         boolean isGzippable = RendererRequestUtils.isRequestGzippable(request,renderer.getBundler().getConfig());
          
         renderer.renderBundleLinks( src,
                                      request.getContextPath(),
+                                     localeKey,
                                      RendererRequestUtils.getAddedBundlesLog(request),
                                      isGzippable,
                                      writer);

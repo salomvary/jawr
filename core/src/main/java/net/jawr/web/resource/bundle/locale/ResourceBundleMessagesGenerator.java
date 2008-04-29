@@ -11,12 +11,13 @@
  * either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-package net.jawr.web.resource.bundle.generated;
+package net.jawr.web.resource.bundle.locale;
 
 import java.io.Reader;
 import java.nio.charset.Charset;
 
-import net.jawr.web.resource.bundle.message.MessageBundleScriptCreator;
+import net.jawr.web.resource.bundle.generated.ResourceGenerator;
+import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
 
 /**
  * A generator that creates a script from message bundles.

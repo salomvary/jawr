@@ -77,7 +77,7 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 	    Writer writer = Channels.newWriter(wrChannel, jeesConfig.getResourceCharset().name());
 	    String ret = null;
 	    try {
-			renderer.renderBundleLinks(path,ctxPath,included,gZip,writer);
+			renderer.renderBundleLinks(path,ctxPath,null,included,gZip,writer);
 		    writer.close();
 		    ret = baOs.toString(jeesConfig.getResourceCharset().name());
 		} catch (IOException e) {

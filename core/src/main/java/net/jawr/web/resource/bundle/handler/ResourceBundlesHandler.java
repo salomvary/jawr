@@ -53,7 +53,9 @@ public interface ResourceBundlesHandler {
 	 * @param bundleId
 	 * @return
 	 */
-	public ResourceBundlePathsIterator getBundlePaths(String bundleId, ConditionalCommentCallbackHandler commentCallbackHandler);
+	public ResourceBundlePathsIterator getBundlePaths(String bundleId, 
+														ConditionalCommentCallbackHandler commentCallbackHandler, 
+														String variantKey);
 	
 	/**
 	 * Writes data using the supplied writer, representing a unified bundle of resources. 
@@ -80,5 +82,6 @@ public interface ResourceBundlesHandler {
 	 * @return
 	 */
 	public JawrConfig getConfig();
+	
 	
 }

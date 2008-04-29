@@ -56,8 +56,9 @@ public class JawrRequestHandler implements ConfigChangeListener{
     private static final String ETAG_HEADER = "ETag";
     private static final String ETAG_VALUE = "2740050219";
     private static final String EXPIRES_HEADER = "Expires";
-    
+        
     private static final String CONFIG_RELOAD_INTERVAL = "jawr.config.reload.interval";
+    public static final String GENERATION_PARAM = "generationConfigParam";
     
 	private static final Logger log = Logger.getLogger(JawrRequestHandler.class.getName());
 	
@@ -299,13 +300,12 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	        // Add caching headers
 	        setResponseHeaders(response);
 		}
-		else if(null != request.getParameter("generationConfigParam"))
-			requestedPath = request.getParameter("generationConfigParam");
+		else if(null != request.getParameter(GENERATION_PARAM))
+			requestedPath = request.getParameter(GENERATION_PARAM);
                
 		// By setting content type, the response writer will use appropiate encoding
 		response.setContentType(contentType);
 		        
-		
 		try {
 			// Send gzipped resource if user agent supports it. 
 			if(requestedPath.startsWith(BundleRenderer.GZIP_PATH_PREFIX) ) {

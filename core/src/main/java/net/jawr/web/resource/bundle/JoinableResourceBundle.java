@@ -67,7 +67,7 @@ public interface JoinableResourceBundle {
      * when needed. 
      * @return 
      */
-    public String getURLPrefix();
+    public String getURLPrefix(String variantKey);
     
     /**
      * Get the postprocessor to use in resources before adding them to the bundle

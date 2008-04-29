@@ -64,7 +64,7 @@ public class GlobalResourceBundleComparatorTest extends TestCase {
 				return name;
 			}
 
-			public String getURLPrefix() {
+			public String getURLPrefix(String variantKey) {
 				return null;
 			}
 
