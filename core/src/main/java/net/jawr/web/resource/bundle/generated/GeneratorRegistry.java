@@ -22,7 +22,7 @@ import java.util.Map;
 import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
 
 /**
- * Placeholder for resource generators, which create scripts or CSS data dynamically, 
+ * Registry for resource generators, which create scripts or CSS data dynamically, 
  * as opposed to the usual behavior of reading a resource from the war file. 
  * It provides methods to determine if a path mapping should be handled by a generator, 
  * and to actually render the resource using the appropiate generator. 

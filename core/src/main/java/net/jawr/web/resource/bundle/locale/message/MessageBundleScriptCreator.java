@@ -18,10 +18,14 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 
@@ -39,7 +43,12 @@ public class MessageBundleScriptCreator {
 	private static final String SCRIPT_TEMPLATE = "/net/jawr/web/resource/bundle/message/messages.js";
 	private static StringBuffer template;
 	private String configParam;
+	private String namespace = "messages";
+	private String filter;
 	private Properties props;
+	private static final String PARENFINDER_REGEXP = ".*(\\(.*\\)).*";
+	private static final String BRACKFINDER_REGEXP = ".*(\\[.*\\]).*";
+	private List filterList;
 	
 	
 	public MessageBundleScriptCreator(String configParam) {
@@ -48,8 +57,25 @@ public class MessageBundleScriptCreator {
 			template = loadScriptTemplate();
 		
 		props = new Properties();
+		
+		// Set the namespace
+		if(configParam.matches(PARENFINDER_REGEXP)) {
+			namespace = configParam.substring(configParam.indexOf('(')+1,configParam.indexOf(')'));
+			configParam = configParam.substring(configParam.indexOf(')')+1);
+		}
+		// Set the filter
+		if(configParam.matches(BRACKFINDER_REGEXP)) {
+			filter = configParam.substring(configParam.indexOf('[')+1,configParam.indexOf(']'));
+			StringTokenizer tk = new StringTokenizer(filter,"\\|");
+			filterList = new ArrayList();
+			while(tk.hasMoreTokens())
+				filterList.add(tk.nextToken());
+			configParam = configParam.substring(configParam.indexOf(']')+1);
+		}
+		
 		this.configParam = configParam;
 	}
+	
 	
 	/**
 	 * Loads a template containing the functions which convert properties into methods. 
@@ -94,17 +120,33 @@ public class MessageBundleScriptCreator {
 			Enumeration keys = bundle.getKeys();
 			while(keys.hasMoreElements()) {
 				String key = (String) keys.nextElement();
-				props.put(key, bundle.getString(key));
+				
+				if(matchesFilter(key))
+					props.put(key, bundle.getString(key));
 			}
 		}
 		BundleStringJasonifier bsj = new BundleStringJasonifier(props);
 		String script = template.toString();
 		String messages = bsj.serializeBundles().toString();
-		script = script.replaceFirst("@namespace", "messages");
+		script = script.replaceFirst("@namespace", namespace);
 		script = script.replaceFirst("@messages", messages);
 		
 		return new StringReader(script);
 	}
 	
+	/**
+	 * Determines wether a key matches any of the set filters. 
+	 * @param key
+	 * @return
+	 */
+	private boolean matchesFilter(String key) {
+		boolean rets = (null == filterList);
+		if(!rets) {
+			for(Iterator it = filterList.iterator();it.hasNext() && !rets; )
+				rets = key.startsWith((String)it.next());
+		}
+		return rets;
+			
+	}
 	
 }

@@ -281,14 +281,39 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
     	if(null == this.urlPrefix)
     		throw new IllegalStateException("The bundleDataHashCode must be set before accessing the url prefix.");
     	
-    	// TODO resolve locale keys like resourcebundle does
-    	if(null != variantKey && null != this.localeVariantKeys && this.localeVariantKeys.contains(variantKey)) {
-    		return this.urlPrefix + "." + variantKey + "/";
+    	// Resolves the locale key like resourcebundle does
+    	if(null != variantKey && null != this.localeVariantKeys) {
+    		String key = getAvailableLocaleVariant(variantKey);
+    		if(null != key)
+    			return this.urlPrefix + "." + key + "/";
     	}
     	return this.urlPrefix + "/";
     }
-
-
+    
+    /**
+     * Resolves a registered path from a locale key, using the same algorithm used to 
+     * locate ResourceBundles. 
+     *  
+     * @param variantKey
+     * @return
+     */
+    private String getAvailableLocaleVariant(String variantKey) {
+    	String key = null;
+    	if(this.localeVariantKeys.contains(variantKey)){
+    		key = variantKey;
+    	}
+    	else {
+    		String subVar = variantKey;
+    		while(subVar.indexOf('_') != -1) {
+    			subVar = subVar.substring(0,subVar.lastIndexOf('_'));
+    			if(this.localeVariantKeys.contains(subVar)){
+        			key = subVar;
+        		}
+    		}
+    	}
+    	return key;
+    }
+    
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getUnitaryPostProcessor()
