@@ -47,10 +47,10 @@ public class GeneratorRegistry {
 	 * 
 	 * @param prefix
 	 * @param clazz
-	 */
+	
 	public void registerGenerator(String prefix, Class clazz){
-		// TODO unimplemented
-	}
+		
+	} */
 	
 	/**
 	 * Determines wether a path is to be handled by a generator. 

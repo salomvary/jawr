@@ -107,7 +107,19 @@ public class MessageBundleScriptCreator {
 		if(configParam.indexOf('@') != -1){
 			String localeKey = configParam.substring(configParam.indexOf('@')+1);
 			configParam = configParam.substring(0,configParam.indexOf('@'));
-			locale = new Locale(localeKey);
+			
+			// Resourcebundle should be doing this for me...
+			String[] params = localeKey.split("_");			
+			switch(params.length) {
+				case 3:
+					locale = new Locale(params[0],params[1],params[2]);
+					break;
+				case 2: 
+					locale = new Locale(params[0],params[1]);
+					break;
+				default:
+					locale = new Locale(localeKey);
+			}
 		}
 		String[] names = configParam.split("\\|");
 		for(int x = 0;x < names.length; x++) {

@@ -215,7 +215,7 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 	    
 	    assertNotSame("No script tag written ", "", result.trim());
 
-	    Pattern comment = Pattern.compile("<script>/.*/</script>");
+	    Pattern comment = Pattern.compile("<script type=\"text/javascript\">/.*/</script>");
 	   
 		StringTokenizer tk = new StringTokenizer(result,"\n");
 		

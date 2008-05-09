@@ -65,7 +65,6 @@ public class JawrConfig {
 		{			
 			setContextPathOverride(props.getProperty("jawr.url.contextpath.override"));
 		}
-		// TODO pass adittional params to registry
 		this.generatorRegistry = new GeneratorRegistry();
 		localeResolver = new DefaultLocaleResolver();
 	}

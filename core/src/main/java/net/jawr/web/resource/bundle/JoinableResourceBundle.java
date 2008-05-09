@@ -99,8 +99,7 @@ public interface JoinableResourceBundle {
      */
     public String getExplorerConditionalExpression();
     
-    // TODO personalization public List getVariantKeys();
-    
+       
     /**
      * Returns a list with the specified locale variants of this bundle. 
      * @return

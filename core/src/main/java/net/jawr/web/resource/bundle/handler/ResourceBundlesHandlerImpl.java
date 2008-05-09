@@ -274,60 +274,48 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		// Run through every bundle		
 		for(Iterator itCol = bundles.iterator();itCol.hasNext();){
 			JoinableResourceBundle bundle = (JoinableResourceBundle) itCol.next();
-			joinAndStoreBundle(bundle);/*
-			StringBuffer store = null;
-			
-			// If this is a composite bundle create each independent bundle
-			if(bundle instanceof CompositeResourceBundle) {
-				CompositeResourceBundle composite = (CompositeResourceBundle) bundle;
-				store = new StringBuffer();
-				for(Iterator it = composite.getChildBundles().iterator();it.hasNext();) {
-					JoinableResourceBundle childbundle = (JoinableResourceBundle) it.next();
-					store.append(joinandPostprocessBundle(childbundle, null));					
-				}
-			}
-			else store = joinandPostprocessBundle(bundle, null);	
-			
-			// Set the data hascode in the bundle, in case the prefix needs to be generated
-			bundle.setBundleDataHashCode(store.toString().hashCode());
-			
-			// Store the collected resources as a single file, both in text and gzip formats. 
-			resourceHandler.storeBundle(bundle.getName(),store);*/
+			if(bundle instanceof CompositeResourceBundle)
+				joinAndStoreCompositeResourcebundle((CompositeResourceBundle) bundle);
+			else joinAndStoreBundle(bundle);
 		}
+	}
+	
+	private void joinAndStoreCompositeResourcebundle(CompositeResourceBundle composite){
+		StringBuffer store = new StringBuffer();
+		for(Iterator it = composite.getChildBundles().iterator();it.hasNext();) {
+			JoinableResourceBundle childbundle = (JoinableResourceBundle) it.next();
+			store.append(joinandPostprocessBundle(childbundle, null));					
+		}
+		// Set the data hascode in the bundle, in case the prefix needs to be generated
+		composite.setBundleDataHashCode(store.toString().hashCode());
+		
+		// Store the collected resources as a single file, both in text and gzip formats. 
+		resourceHandler.storeBundle(composite.getName(),store);
 	}
 	
 	private void joinAndStoreBundle(JoinableResourceBundle bundle) {
 		StringBuffer store = null;
 		
-		// If this is a composite bundle create each independent bundle
-		if(bundle instanceof CompositeResourceBundle) {
-			CompositeResourceBundle composite = (CompositeResourceBundle) bundle;
-			store = new StringBuffer();
-			for(Iterator it = composite.getChildBundles().iterator();it.hasNext();) {
-				JoinableResourceBundle childbundle = (JoinableResourceBundle) it.next();
-				store.append(joinandPostprocessBundle(childbundle, null));					
+		int hash = 0;
+		// Process the locale specific variants
+		if(null != bundle.getLocaleVariantKeys()) {
+			for(Iterator it = bundle.getLocaleVariantKeys().iterator();it.hasNext();) {
+				String variantKey = (String) it.next();
+				String name = LocaleUtils.getLocalizedBundleName(bundle.getName(),variantKey);
+				store = joinandPostprocessBundle(bundle, variantKey);	
+				resourceHandler.storeBundle(name,store);
+				hash += store.toString().hashCode();
 			}
 		}
-		else {
-			int hash = 0;
-			// Process the locale specific variants
-			if(null != bundle.getLocaleVariantKeys()) {
-				for(Iterator it = bundle.getLocaleVariantKeys().iterator();it.hasNext();) {
-					String variantKey = (String) it.next();
-					String name = LocaleUtils.getLocalizedBundleName(bundle.getName(),variantKey);
-					store = joinandPostprocessBundle(bundle, variantKey);	
-					resourceHandler.storeBundle(name,store);
-					hash += store.toString().hashCode();
-				}
-			}
-			store = joinandPostprocessBundle(bundle, null);	
-			hash += store.toString().hashCode();
-			// Set the data hascode in the bundle, in case the prefix needs to be generated
-			bundle.setBundleDataHashCode(hash);
-			
-			// Store the collected resources as a single file, both in text and gzip formats. 
-			resourceHandler.storeBundle(bundle.getName(),store);
-		}
+		store = joinandPostprocessBundle(bundle, null);	
+		hash += store.toString().hashCode();
+		
+		// Set the data hascode in the bundle, in case the prefix needs to be generated
+		bundle.setBundleDataHashCode(hash);
+		
+		// Store the collected resources as a single file, both in text and gzip formats. 
+		resourceHandler.storeBundle(bundle.getName(),store);
+		
 		
 	}
 

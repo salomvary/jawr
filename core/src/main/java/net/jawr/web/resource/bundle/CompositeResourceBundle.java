@@ -53,6 +53,12 @@ public class CompositeResourceBundle extends JoinableResourceBundleImpl {
 		
 		for(Iterator it = this.childBundles.iterator();it.hasNext();) {
 			JoinableResourceBundleImpl child = (JoinableResourceBundleImpl) it.next();
+
+			if(null != child.getLocaleVariantKeys()) {
+				throw new UnsupportedOperationException("Composite bundles cannot be composed of bundles that have locale variants. " 
+														+ child.getName() + " was added to this bundle, but it has locale variants and "
+														+"thus can't belong in a composite. ");
+			}
 			
 			// Skip the child as needed
 			if( (debugModeOn && child.getInclusionPattern().isExcludeOnDebug()) || 
@@ -70,8 +76,16 @@ public class CompositeResourceBundle extends JoinableResourceBundleImpl {
 				child.setUnitaryPostProcessor(this.getUnitaryPostProcessor());
 			}
 			
-			// TODO implement variants as needed
 		}
+	}
+	
+	
+	/**
+	 * Throws UnsupportedOperationException. Composites will use the chilren's variants instead. 
+	 */
+	public void setLocaleVariantKeys(List localeVariantKeys) {
+		throw new UnsupportedOperationException("Composite bundles do not support locale variants directly. "
+												+"Set locale variants in child bundles instead. ");
 	}
 
 	/**

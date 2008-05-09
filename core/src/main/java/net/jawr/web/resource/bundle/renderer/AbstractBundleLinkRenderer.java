@@ -85,7 +85,8 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
                 if(includedBundles.add(resourceName)){
                 		// In debug mode, all the resources are included separately and use a random parameter to avoid caching. 
                 		// If useRandomParam is set to false, the links are created without the random parameter. 
-                        if( debugOn && useRandomParam) {
+                        if( debugOn && useRandomParam && 
+                        		!bundler.getConfig().getGeneratorRegistry().isPathGenerated(resourceName)) {
                                 int random = new Random().nextInt();
                                 if(random < 0)
                                 	random*=-1;
@@ -113,7 +114,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
      * @throws IOException
      */
     protected final void addComment(String commentText, Writer out)  throws IOException {
-    	StringBuffer sb = new StringBuffer("<script>/* ");
+    	StringBuffer sb = new StringBuffer("<script type=\"text/javascript\">/* ");
             sb.append(commentText).append(" */</script>").append("\n");
             out.write(sb.toString());
     }

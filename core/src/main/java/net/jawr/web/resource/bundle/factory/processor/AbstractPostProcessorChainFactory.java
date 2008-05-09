@@ -117,7 +117,7 @@ public abstract class AbstractPostProcessorChainFactory implements	PostProcessor
 													+ "' and with class '" 
 													+ keysClassNames.get(key)
 													+ "'. Please check your config file and review the documentation. "
-													+ "The specific error message is: " + e.getMessage());
+													+ "The specific error message is: " + e.getClass().getName() + ":" + e.getMessage());
 			} 
 		}		
 	}
