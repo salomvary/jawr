@@ -56,7 +56,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	private static final Logger log = Logger.getLogger(ResourceBundlesHandler.class);
 	
 	/**
-	 * The bundles that this collector manages. 
+	 * The bundles that this handler manages. 
 	 */
 	private List bundles;
 	
@@ -404,7 +404,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	}
 
 	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.ResourceCollector#resolveBundleForPath(java.lang.String)
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#resolveBundleForPath(java.lang.String)
 	 */
 	public JoinableResourceBundle resolveBundleForPath(String path) {
 		

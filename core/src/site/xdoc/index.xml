@@ -135,8 +135,7 @@
 			<li> <strong>JSF/Facelets support</strong>: If you are using JSF with Facelets as the view technology, you can still use Jawr using a specific tag library.</li> 
 			
 			<li> <strong>Grails plugin</strong>: Jawr can be used seamlessly in Grails applications, using a provided plugin that includes a GSP tag library.</li> 
-			
-			
+						
 			<li> <strong>Library friendly</strong>: Open source javascript libraries can be used seamlessly with Jawr. Most of these are modular or have plugins: add the modules or 
 			plugins you need and bundle all together. And, even if you minify them (thus eliminating comments), you can still keep the mandatory licenses in
 			the bundle. The <a href="https://jawr.dev.java.net/tutorials/quickstart.html">libraries tutorial</a> will show you how to integrate popular js libraries such 
@@ -154,6 +153,13 @@
       </subsection>
       <subsection name="Announcements">
       <ul>
+      	<li> <strong>5/11/2008</strong>: Version 2.1 released: <strong>i18n messages mapping from java ResourceBundles to javascript:</strong> 
+      	your internationalized messages that you keep in properties files can be easily converted into a script that allows for easy access to 
+      	every message and supports variable substitution. According tho the user's locale, the script generated will correspond to his language.   
+      	<br/>Other than that, mostly internal changes and bugfixes. The internal changes include a new system to 
+      	map to Generators. These are java components which generate javascript/CSS, or read it from a different place than the usual WAR directories.
+      	This opens the gate for reading resources off of jar files in the near future. 
+      	</li>
       	<li> <strong>4/5/2008</strong>: Version 2.0 released: new automatic prefixing system, conditional comments support, grails and facelets 
       	plugins, YUI compressor... Check the <a href="./docs/changes_20.html" >what's new in 2.0 page</a> for a description of all the new features and fixes.    
       	</li>
