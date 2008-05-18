@@ -19,7 +19,8 @@ class JawrJavascriptController {
 				path = path.replace(grailsApplication.config.jawr.js.mapping, '');
 				
 			}
-				
+			
+		render "";	
 		requestHandler.processRequest(path,request, response );
 		
 		return null;

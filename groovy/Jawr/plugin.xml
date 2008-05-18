@@ -1,4 +1,4 @@
-<plugin name='jawr' version='2.0'>
+<plugin name='jawr' version='2.1'>
   <author>Jordi Hern?ndez Sell?s</author>
   <authorEmail>jordihs@dev.java.net</authorEmail>
   <title>adds Jawr (https://jawr.dev.java.net) functionality to Grails applications.</title>
