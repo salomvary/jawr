@@ -33,6 +33,7 @@ import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.ServletContextResourceHandler;
 import net.jawr.web.resource.bundle.factory.PropertiesBasedBundlesHandlerFactory;
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.ConfigChangeListener;
 import net.jawr.web.resource.bundle.factory.util.ConfigChangeListenerThread;
 import net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource;
@@ -107,17 +108,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		
 		// Load a custom class to set config properties
 		if(null != configPropsSourceClass) {
-			try {
-				Class clazz = Class.forName(configPropsSourceClass);
-				propsSrc = (ConfigPropertiesSource) clazz.newInstance();
-				
-			} catch (Exception e) {
-				throw new ServletException(e.getMessage() 
-											+ " [The custom property source class " 
-											+ configPropsSourceClass 
-											+ " could not be instantiated, check wether it is available on the classpath and" 
-											+ " that it has a zero-arg constructor]");
-			}
+			propsSrc = (ConfigPropertiesSource) ClassLoaderResourceUtils.buildObjectInstance(configPropsSourceClass);			
 		}
 		else {
 			// Default config properties source, reads from a .properties file in the classpath. 

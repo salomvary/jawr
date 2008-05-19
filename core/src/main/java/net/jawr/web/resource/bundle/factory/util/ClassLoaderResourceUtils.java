@@ -48,8 +48,15 @@ public class ClassLoaderResourceUtils {
 			if(null != cl)
 				is = cl.getResourceAsStream(resourcePath);
 		}
+		
 		// If current classloader failed, try with the Threads context classloader. If that fails ott, the resource is either not on the 
 		// classpath or inaccessible from the current context. 
+		
+		if(null == is) {
+			is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
+		}
+		
+		// Try to retrieve by URL
 		if(null == is) {
 			try {
 				URL url = Thread.currentThread().getContextClassLoader().getResource(resourcePath);
@@ -76,8 +83,32 @@ public class ClassLoaderResourceUtils {
 				throw new FileNotFoundException( resourcePath + " could not be found. ");
 			}
 		}
+		
+		// Everything failed... exception is trown. 
 		if(null == is)
 			throw new FileNotFoundException( resourcePath + " could not be found. ");
 		return is;
+	}
+	
+	/**
+	 * Builds a class instance using reflection, by using its classname. The class must have a zero-arg constructor. 
+	 * @param classname the class to build an instance of. 
+	 * @return
+	 */
+	public static Object buildObjectInstance(String classname) {
+		Object rets = null;
+		try {
+			Class clazz = Class.forName(classname);
+			rets = clazz.newInstance();
+			
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage() 
+										+ " [The custom class " 
+										+ classname 
+										+ " could not be instantiated, check wether it is available on the classpath and" 
+										+ " verify that it has a zero-arg constructor].\n" 
+										+ " The specific error message is: " + e.getClass().getName() + ":" + e.getMessage());
+		}
+		return rets;
 	}
 }

@@ -16,6 +16,7 @@ package net.jawr.web.config;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
 import net.jawr.web.resource.bundle.locale.DefaultLocaleResolver;
@@ -65,8 +66,13 @@ public class JawrConfig {
 		{			
 			setContextPathOverride(props.getProperty("jawr.url.contextpath.override"));
 		}
+		
+		if(null != props.getProperty("jawr.locale.resolver")) {
+			localeResolver = (LocaleResolver) ClassLoaderResourceUtils.buildObjectInstance(props.getProperty("jawr.locale.resolver"));
+		}
+		else localeResolver = new DefaultLocaleResolver();
+			
 		this.generatorRegistry = new GeneratorRegistry();
-		localeResolver = new DefaultLocaleResolver();
 	}
 	
 	/**
