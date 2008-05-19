@@ -70,6 +70,12 @@ Javascript i18n message generator
 	Also note that variants do not need to overwrite every property defined in the base locale messages file. The 
 	non overwritten properties will be read from the base file (which is the normal behavior when using java 
 	ResourceBundles). 
+	
+	
+=====================
+	There is a limitation for bundles which have a messages generator: they can't be used as a child of a composite bundle. 
+
+=====================
 
 ** Defining the message namespace. 
 
@@ -111,6 +117,34 @@ Javascript i18n message generator
     jawr.js.bundle.lib.mappings=messages:com.myapp.messages(mynamespace)[javascript.messages],/js/lib/**    
 +------------------------------------------+	
 	
+** Locale resolution. 
+	 
+	There is not a universal way to determine which Locale to use for a given user. Many applications roll their own, so Jawr has a way to 
+	plug in a component to take care of custom Locale resolution strategies. Normally Jawr will use the request.getLocale() method to find out 
+	the user's Locale. If your app has different needs, you will have to create a class that implements a simple interface 
+	(net.jawr.web.resource.bundle.locale.LocaleResolver). This interface defines a single method: 
+	
++------------------------------------------+
+   public abstract String resolveLocaleCode(HttpServletRequest request);  
++------------------------------------------+	
+	
+	Your implementation will take the request, determine the user's locale an return its String representation. Jawr will take care of the rest. 
+	To plug in your class, you will define it in the properties file under the key jawr.locale.resolver: 
+	
++------------------------------------------+
+   jawr.locale.resolver=com.mypackage.myapp.MyLocaleResolverImplementation
++------------------------------------------+	
+	
+	Your class will be instantiated using reflection, so make sure it has a public default no-arg constructor. 
+	
+** Grails usage. 
+
+	Grails users do not need to implement the LocaleResolver interface, since the default strategy used by Grails will be leveraged by Jawr. 
+	Keep in mind that the default cualified name for the Grails Resourcebundle is grails-app.i18n.messages, so map accordingly: 
+	
++------------------------------------------+
+    jawr.js.bundle.lib.mappings=messages:grails-app.i18n.messages
++------------------------------------------+
 	
 	
 	 

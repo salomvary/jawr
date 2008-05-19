@@ -35,6 +35,8 @@ Jawr plugin for Grails
 	
 	* <<jawr.charset.name>>: The value set for grails.views.gsp.encoding will be used for this attribute (which is 'utf-8' by default in Grails). 
 	
+	* <<jawr.locale.resolver>>: Jawr will use Grails' Locale resolution strategy whe it applies.  
+	
 	[]
 	
 	

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * An adapter to let Jawr access the user's locale based on the current request.  
  * 
- * @author jhernandez
+ * @author Jordi Hernández Sellés
  */
 public interface LocaleResolver {
 	

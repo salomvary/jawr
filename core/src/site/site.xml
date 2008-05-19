@@ -22,6 +22,7 @@
       <item name="JSP Tag library" href="/docs/taglibs.html"/>
       <item name="Facelets Tag library" href="/docs/facelets.html"/>
       <item name="Debug and production modes" href="/docs/modes.html"/>
+      <item name="i18n message generator" href="/docs/messages_gen.html"/>
       <item name="Grails plugin" href="/docs/grails.html"/>
     </menu>
     
