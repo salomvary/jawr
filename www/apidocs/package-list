@@ -8,9 +8,12 @@ net.jawr.web.resource.bundle.factory
 net.jawr.web.resource.bundle.factory.mapper
 net.jawr.web.resource.bundle.factory.processor
 net.jawr.web.resource.bundle.factory.util
+net.jawr.web.resource.bundle.generated
 net.jawr.web.resource.bundle.handler
 net.jawr.web.resource.bundle.iexplore
 net.jawr.web.resource.bundle.iterator
+net.jawr.web.resource.bundle.locale
+net.jawr.web.resource.bundle.locale.message
 net.jawr.web.resource.bundle.postprocess
 net.jawr.web.resource.bundle.postprocess.impl
 net.jawr.web.resource.bundle.postprocess.impl.yui

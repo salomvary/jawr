@@ -62,33 +62,49 @@
 <a name="53" href="#53">53</a>  		
 <a name="54" href="#54">54</a>  		<strong>for</strong>(Iterator it = <strong>this</strong>.childBundles.iterator();it.hasNext();) {
 <a name="55" href="#55">55</a>  			JoinableResourceBundleImpl child = (JoinableResourceBundleImpl) it.next();
-<a name="56" href="#56">56</a>  			
-<a name="57" href="#57">57</a>  			<em class="comment">// Skip the child as needed</em>
-<a name="58" href="#58">58</a>  			<strong>if</strong>( (debugModeOn &amp;&amp; child.getInclusionPattern().isExcludeOnDebug()) || 
-<a name="59" href="#59">59</a>  				(!debugModeOn &amp;&amp; child.getInclusionPattern().isIncludeOnDebug()) )
-<a name="60" href="#60">60</a>  				<strong>continue</strong>;
-<a name="61" href="#61">61</a>  			
-<a name="62" href="#62">62</a>  			<strong>this</strong>.itemPathList.addAll(child.getItemPathList());
-<a name="63" href="#63">63</a>  			<strong>this</strong>.licensesPathList.addAll(child.getLicensesPathList());
-<a name="64" href="#64">64</a>  			
-<a name="65" href="#65">65</a>  			<em class="comment">// If the child has no postprocessors, apply the composite's if any</em>
-<a name="66" href="#66">66</a>  			<strong>if</strong>(<strong>null</strong> == child.getBundlePostProcessor() ) {
-<a name="67" href="#67">67</a>  				child.setBundlePostProcessor(<strong>this</strong>.getBundlePostProcessor());
-<a name="68" href="#68">68</a>  			}
-<a name="69" href="#69">69</a>  			<strong>if</strong>(<strong>null</strong> == child.getUnitaryPostProcessor() ) {
-<a name="70" href="#70">70</a>  				child.setUnitaryPostProcessor(<strong>this</strong>.getUnitaryPostProcessor());
-<a name="71" href="#71">71</a>  			}
-<a name="72" href="#72">72</a>  		}
-<a name="73" href="#73">73</a>  	}
-<a name="74" href="#74">74</a>  
-<a name="75" href="#75">75</a>  	<em>/**<em>*</em></em>
-<a name="76" href="#76">76</a>  <em>	 * @return List&lt;JoinableResourceBundle> The bundles which are members of this composite.</em>
-<a name="77" href="#77">77</a>  <em>	 */</em>
-<a name="78" href="#78">78</a>  	<strong>public</strong> List getChildBundles() {
-<a name="79" href="#79">79</a>  		<strong>return</strong> childBundles;
+<a name="56" href="#56">56</a>  
+<a name="57" href="#57">57</a>  			<strong>if</strong>(<strong>null</strong> != child.getLocaleVariantKeys()) {
+<a name="58" href="#58">58</a>  				<strong>throw</strong> <strong>new</strong> UnsupportedOperationException(<span class="string">"Composite bundles cannot be composed of bundles that have locale variants. "</span> 
+<a name="59" href="#59">59</a>  														+ child.getName() + <span class="string">" was added to this bundle, but it has locale variants and "</span>
+<a name="60" href="#60">60</a>  														+<span class="string">"thus can't belong in a composite. "</span>);
+<a name="61" href="#61">61</a>  			}
+<a name="62" href="#62">62</a>  			
+<a name="63" href="#63">63</a>  			<em class="comment">// Skip the child as needed</em>
+<a name="64" href="#64">64</a>  			<strong>if</strong>( (debugModeOn &amp;&amp; child.getInclusionPattern().isExcludeOnDebug()) || 
+<a name="65" href="#65">65</a>  				(!debugModeOn &amp;&amp; child.getInclusionPattern().isIncludeOnDebug()) )
+<a name="66" href="#66">66</a>  				<strong>continue</strong>;
+<a name="67" href="#67">67</a>  			
+<a name="68" href="#68">68</a>  			<strong>this</strong>.itemPathList.addAll(child.getItemPathList());
+<a name="69" href="#69">69</a>  			<strong>this</strong>.licensesPathList.addAll(child.getLicensesPathList());
+<a name="70" href="#70">70</a>  			
+<a name="71" href="#71">71</a>  			<em class="comment">// If the child has no postprocessors, apply the composite's if any</em>
+<a name="72" href="#72">72</a>  			<strong>if</strong>(<strong>null</strong> == child.getBundlePostProcessor() ) {
+<a name="73" href="#73">73</a>  				child.setBundlePostProcessor(<strong>this</strong>.getBundlePostProcessor());
+<a name="74" href="#74">74</a>  			}
+<a name="75" href="#75">75</a>  			<strong>if</strong>(<strong>null</strong> == child.getUnitaryPostProcessor() ) {
+<a name="76" href="#76">76</a>  				child.setUnitaryPostProcessor(<strong>this</strong>.getUnitaryPostProcessor());
+<a name="77" href="#77">77</a>  			}
+<a name="78" href="#78">78</a>  			
+<a name="79" href="#79">79</a>  		}
 <a name="80" href="#80">80</a>  	}
-<a name="81" href="#81">81</a>  
-<a name="82" href="#82">82</a>  }
+<a name="81" href="#81">81</a>  	
+<a name="82" href="#82">82</a>  	
+<a name="83" href="#83">83</a>  	<em>/**<em>*</em></em>
+<a name="84" href="#84">84</a>  <em>	 * Throws UnsupportedOperationException. Composites will use the chilren's variants instead. </em>
+<a name="85" href="#85">85</a>  <em>	 */</em>
+<a name="86" href="#86">86</a>  	<strong>public</strong> <strong>void</strong> setLocaleVariantKeys(List localeVariantKeys) {
+<a name="87" href="#87">87</a>  		<strong>throw</strong> <strong>new</strong> UnsupportedOperationException(<span class="string">"Composite bundles do not support locale variants directly. "</span>
+<a name="88" href="#88">88</a>  												+<span class="string">"Set locale variants in child bundles instead. "</span>);
+<a name="89" href="#89">89</a>  	}
+<a name="90" href="#90">90</a>  
+<a name="91" href="#91">91</a>  	<em>/**<em>*</em></em>
+<a name="92" href="#92">92</a>  <em>	 * @return List&lt;JoinableResourceBundle> The bundles which are members of this composite.</em>
+<a name="93" href="#93">93</a>  <em>	 */</em>
+<a name="94" href="#94">94</a>  	<strong>public</strong> List getChildBundles() {
+<a name="95" href="#95">95</a>  		<strong>return</strong> childBundles;
+<a name="96" href="#96">96</a>  	}
+<a name="97" href="#97">97</a>  
+<a name="98" href="#98">98</a>  }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

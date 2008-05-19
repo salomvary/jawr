@@ -40,8 +40,8 @@
 <a name="31" href="#31">31</a>  	<strong>private</strong> Iterator pathsIterator;
 <a name="32" href="#32">32</a>  	<strong>private</strong> <a href="../../../../../../net/jawr/web/resource/bundle/JoinableResourceBundle.html">JoinableResourceBundle</a> currentBundle;
 <a name="33" href="#33">33</a>  	
-<a name="34" href="#34">34</a>  	<strong>public</strong> <a href="../../../../../../net/jawr/web/resource/bundle/iterator/DebugModePathsIteratorImpl.html">DebugModePathsIteratorImpl</a>(List bundles,ConditionalCommentCallbackHandler callbackHandler) {
-<a name="35" href="#35">35</a>  		<strong>super</strong>(callbackHandler);
+<a name="34" href="#34">34</a>  	<strong>public</strong> <a href="../../../../../../net/jawr/web/resource/bundle/iterator/DebugModePathsIteratorImpl.html">DebugModePathsIteratorImpl</a>(List bundles,ConditionalCommentCallbackHandler callbackHandler,String variantKey) {
+<a name="35" href="#35">35</a>  		<strong>super</strong>(callbackHandler,variantKey);
 <a name="36" href="#36">36</a>  		<strong>this</strong>.bundlesIterator = bundles.iterator();
 <a name="37" href="#37">37</a>  		
 <a name="38" href="#38">38</a>  	}
@@ -57,7 +57,7 @@
 <a name="48" href="#48">48</a>  			<strong>if</strong>(<strong>null</strong> != currentBundle.getExplorerConditionalExpression())
 <a name="49" href="#49">49</a>  				commentCallbackHandler.openConditionalComment(currentBundle.getExplorerConditionalExpression());
 <a name="50" href="#50">50</a>  
-<a name="51" href="#51">51</a>  			pathsIterator = currentBundle.getItemPathList().iterator();
+<a name="51" href="#51">51</a>  			pathsIterator = currentBundle.getItemPathList(variantKey).iterator();
 <a name="52" href="#52">52</a>  		}
 <a name="53" href="#53">53</a>  		<strong>return</strong> pathsIterator.next().toString();
 <a name="54" href="#54">54</a>  	}

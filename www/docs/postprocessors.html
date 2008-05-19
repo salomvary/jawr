@@ -80,6 +80,10 @@
         </li>
               
     <li class="none">
+              <a href="../docs/messages_gen.html">i18n message generator</a>
+        </li>
+              
+    <li class="none">
               <a href="../docs/grails.html">Grails plugin</a>
         </li>
           </ul></dd>
@@ -182,7 +186,7 @@
         jawr.css.bundle.factory.bundlepostprocessors=license</pre></div><p>Optionally, you may specify a different set of postprocessors for any given bundle, so you can mix and match different schemes within your application. In order to do that, you specify similar attributes for a particular bundle: </p><div class="source"><pre>
         jawr.js.bundle.foo.bundlepostprocessors=license
         jawr.js.bundle.foo.fileprocessors=none
-        </pre></div><p>In this example, the bundle postprocessor for the <i>foo</i> bundle is set to <i>license</i>, meaning no minification will occur. And for the file-by-file postprocessor, it is specified that none will be used. </p><p><b>Custom postprocessors</b></p><p>You can also implement your own postprocessor components (for js, css, or both) to perform any functionality not offered by the included ones. To do that, you must create a class with a no-params constructor that implements the interface <i>net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor</i>. This interface defines a single method: </p><div class="source"><pre>        /**
+        </pre></div><p>In this example, the bundle postprocessor for the <i>foo</i> bundle is set to <i>license</i>, meaning no minification will occur. And for the file-by-file postprocessor, it is specified that none will be used. </p><div class="section"><h3>Custom postprocessors</h3><p>You can also implement your own postprocessor components (for js, css, or both) to perform any functionality not offered by the included ones. To do that, you must create a class with a no-params constructor that implements the interface <i>net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor</i>. This interface defines a single method: </p><div class="source"><pre>        /**
          * Postprocess a bundle of resources. 
          * @param StringBuffer Joined resources. 
          * @return StringBuffer a buffer containing the postprocessed bundle. 
@@ -204,7 +208,7 @@ jawr.custom.postprocessors.func.class=net.jawr.test.FunctionWrapperPostProcessor
 jawr.custom.postprocessors.sample.class=net.jawr.test.SamplePostProcessor
 
 jawr.js.bundle.factory.bundlepostprocessors=JSMin,func,sample,license
-jawr.js.bundle.foo.bundlepostprocessors=license=func,license</pre></div><div class="section"><h3>Jawr included postprocessors reference</h3></div><div class="section"><h3>All-around postprocessors</h3></div></div><div class="section"><h2><b>Licenses includer</b></h2><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: license</li></ul><p>The licenses includer will add the content of .license files at the top of a bundle. That way you will be able to add open source mandatory licenses or any other comment to the top of your resources. Check the <a href="./license_files.html">license files page</a> for more info. </p><hr /><p>Note that licenses are themselves code comments, so you should be careful to always use this processor after any minification or compression processor has executed and not before. Otherwise, the license might be eliminated from the bundle right after it was inserted. </p><hr /></div><div class="section"><h2><b>YUI compressor</b></h2><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: YUI, YUIobf</li></ul><p>This processor uses <a href="http://developer.yahoo.com/yui/compressor/"> Julien Lecomte's YUI compressor</a>. This is a javascript and CSS minification tool that can also perform code obfuscation in the case of javascript bundles. If you want obfuscation, you should use the <b>YUIobf</b> key when defining postprocessors, but remember that this is only valid for javascript bundles. The YUI compressor has an advantage over JSMin and Jawr's custom CSS compressor in that it will achieve better minification (although in the case of CSS the difference is minimal). On the other hand it will add a dependency to the YUI compressor and Rhino libraries. You can get YUI <a href="http://www.julienlecomte.net/yuicompressor/"> here</a>, and rhino <a href="http://www.mozilla.org/rhino/download.html"> here</a>. Maven users can get both by adding a single dependency, like this: </p><div class="source"><pre>        &lt;dependency&gt;
+jawr.js.bundle.foo.bundlepostprocessors=license=func,license</pre></div><hr /><p>Grails users will unfortunately need to pack their classes in a jar and add it to the lib folder of their application. The reason for this is a known flaw in the Grails classloading strategy that keeps plugins from accessing application classes.</p><hr /></div><div class="section"><h3>Jawr included postprocessors reference</h3></div><div class="section"><h3>All-around postprocessors</h3></div></div><div class="section"><h2><b>Licenses includer</b></h2><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: license</li></ul><p>The licenses includer will add the content of .license files at the top of a bundle. That way you will be able to add open source mandatory licenses or any other comment to the top of your resources. Check the <a href="./license_files.html">license files page</a> for more info. </p><hr /><p>Note that licenses are themselves code comments, so you should be careful to always use this processor after any minification or compression processor has executed and not before. Otherwise, the license might be eliminated from the bundle right after it was inserted. </p><hr /></div><div class="section"><h2><b>YUI compressor</b></h2><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: YUI, YUIobf</li></ul><p>This processor uses <a href="http://developer.yahoo.com/yui/compressor/"> Julien Lecomte's YUI compressor</a>. This is a javascript and CSS minification tool that can also perform code obfuscation in the case of javascript bundles. If you want obfuscation, you should use the <b>YUIobf</b> key when defining postprocessors, but remember that this is only valid for javascript bundles. The YUI compressor has an advantage over JSMin and Jawr's custom CSS compressor in that it will achieve better minification (although in the case of CSS the difference is minimal). On the other hand it will add a dependency to the YUI compressor and Rhino libraries. You can get YUI <a href="http://www.julienlecomte.net/yuicompressor/"> here</a>, and rhino <a href="http://www.mozilla.org/rhino/download.html"> here</a>. Maven users can get both by adding a single dependency, like this: </p><div class="source"><pre>        &lt;dependency&gt;
             &lt;groupId&gt;com.yahoo.platform.yui&lt;/groupId&gt;
             &lt;artifactId&gt;yuicompressor&lt;/artifactId&gt;
             &lt;version&gt;2.2.5&lt;/version&gt;
@@ -223,8 +227,8 @@ jawr.js.bundle.foo.bundlepostprocessors=license=func,license</pre></div><div cl
 
   
   
-  &nbsp;| Last Published: 04/05/2008
-  &nbsp;| Version: 2.0
+  &nbsp;| Last Published: 05/19/2008
+  &nbsp;| Version: 2.1
 </div>
       <div class="clear">
         <hr/>
