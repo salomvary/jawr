@@ -33,6 +33,7 @@ import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.ServletContextResourceHandler;
 import net.jawr.web.resource.bundle.factory.PropertiesBasedBundlesHandlerFactory;
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.ConfigChangeListener;
 import net.jawr.web.resource.bundle.factory.util.ConfigChangeListenerThread;
 import net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource;
@@ -56,8 +57,9 @@ public class JawrRequestHandler implements ConfigChangeListener{
     private static final String ETAG_HEADER = "ETag";
     private static final String ETAG_VALUE = "2740050219";
     private static final String EXPIRES_HEADER = "Expires";
-    
+        
     private static final String CONFIG_RELOAD_INTERVAL = "jawr.config.reload.interval";
+    public static final String GENERATION_PARAM = "generationConfigParam";
     
 	private static final Logger log = Logger.getLogger(JawrRequestHandler.class.getName());
 	
@@ -67,6 +69,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	private String resourceType;
 	private ServletContext servletContext;
 	private Map initParameters;
+	private ConfigChangeListenerThread configChangeListenerThread;
 	
 	private JawrConfig jawrConfig;
 
@@ -105,17 +108,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		
 		// Load a custom class to set config properties
 		if(null != configPropsSourceClass) {
-			try {
-				Class clazz = Class.forName(configPropsSourceClass);
-				propsSrc = (ConfigPropertiesSource) clazz.newInstance();
-				
-			} catch (Exception e) {
-				throw new ServletException(e.getMessage() 
-											+ " [The custom property source class " 
-											+ configPropsSourceClass 
-											+ " could not be instantiated, check wether it is available on the classpath and" 
-											+ " that it has a zero-arg constructor]");
-			}
+			propsSrc = (ConfigPropertiesSource) ClassLoaderResourceUtils.buildObjectInstance(configPropsSourceClass);			
 		}
 		else {
 			// Default config properties source, reads from a .properties file in the classpath. 
@@ -141,7 +134,8 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			log.warn("Jawr started with configuration auto reloading on. " 
 					+ "Be aware that a daemon thread will be checking for changes to configuration every " + interval + " seconds.");
 			
-			new ConfigChangeListenerThread(propsSrc,this, interval).start();
+			this.configChangeListenerThread = new ConfigChangeListenerThread(propsSrc,this, interval);
+			configChangeListenerThread.start();
 		}	
 		
 
@@ -216,8 +210,8 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		// Create a resource handler to read files from the WAR archive or exploded dir. 
 		ResourceHandler rsHandler;
 		
-		rsHandler = new ServletContextResourceHandler(servletContext,jawrConfig.getResourceCharset());
-		PropertiesBasedBundlesHandlerFactory factory = new PropertiesBasedBundlesHandlerFactory(props,resourceType,rsHandler);
+		rsHandler = new ServletContextResourceHandler(servletContext,jawrConfig.getResourceCharset(),jawrConfig.getGeneratorRegistry());
+		PropertiesBasedBundlesHandlerFactory factory = new PropertiesBasedBundlesHandlerFactory(props,resourceType,rsHandler,jawrConfig.getGeneratorRegistry());
 		try {
 			bundlesHandler = factory.buildResourceBundlesHandler(jawrConfig);
 		} catch (DuplicateBundlePathException e) {
@@ -284,21 +278,25 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			}
 		}
 		
-        // If a browser checks for changes, always respond 'no changes'. 
-        if(null != request.getHeader("If-Modified-Since")) {
-            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-            if(log.isDebugEnabled())
-				log.debug("Returning 'not modified' header. ");
-            return;
-        }
-        
-        // Add caching headers
-        setResponseHeaders(response);
+		// If debug mode is off, check for If-Modified-Since header and set response caching headers. 
+		if(!this.jawrConfig.isDebugModeOn()) {
+	        // If a browser checks for changes, always respond 'no changes'. 
+	        if(null != request.getHeader("If-Modified-Since")) {
+	            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+	            if(log.isDebugEnabled())
+					log.debug("Returning 'not modified' header. ");
+	            return;
+	        }
+	        
+	        // Add caching headers
+	        setResponseHeaders(response);
+		}
+		else if(null != request.getParameter(GENERATION_PARAM))
+			requestedPath = request.getParameter(GENERATION_PARAM);
                
 		// By setting content type, the response writer will use appropiate encoding
 		response.setContentType(contentType);
 		        
-		
 		try {
 			// Send gzipped resource if user agent supports it. 
 			if(requestedPath.startsWith(BundleRenderer.GZIP_PATH_PREFIX) ) {
@@ -335,6 +333,15 @@ public class JawrRequestHandler implements ConfigChangeListener{
             Calendar cal = Calendar.getInstance();
             cal.roll(Calendar.YEAR,10);
             resp.setDateHeader(EXPIRES_HEADER, cal.getTimeInMillis());
+    }
+    
+    /**
+     * Analog to Servlet.destroy(), should be invoked whenever the app is redeployed. 
+     */
+    public void destroy() {
+    	// Stop the config change listener. 
+    	if(null != this.configChangeListenerThread)
+    		configChangeListenerThread.stopPolling();
     }
 
 

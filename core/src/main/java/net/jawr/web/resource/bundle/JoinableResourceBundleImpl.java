@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hern√°ndez Sell√©s
+ * Copyright 2007 Jordi Hern·ndez SellÈs
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -23,6 +23,7 @@ import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
+import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.sorting.SortFileParser;
 
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
 /**
  * Basic implementation of JoinableResourceBundle. 
  * 
- * @author Jordi Hern√°ndez Sell√©s
+ * @author Jordi Hern·ndez SellÈs
  *
  */
 public class JoinableResourceBundleImpl implements JoinableResourceBundle {
@@ -48,6 +49,9 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	private String urlPrefix;
 	private String explorerConditionalExpression;
 	private int bundleDataHashCode;
+	
+	protected List localeVariantKeys;
+	
 	
 	private ResourceBundlePostProcessor unitaryPostProcessor;
 	private ResourceBundlePostProcessor bundlePostProcessor;
@@ -75,6 +79,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		this.itemPathList = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 		this.licensesPathList = new HashSet();
         this.fileExtension = fileExtension;
+        
 	}	
 	
 	
@@ -131,6 +136,9 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 			}
 			else if(pathMapping.endsWith(LICENSES_FILENAME)){
 				licensesPathList.add(PathNormalizer.asPath(pathMapping));
+			}
+			else if(resourceHandler.isResourceGenerated(pathMapping)){
+				itemPathList.add(pathMapping);
 			}
 			else log.warn("Wrong mapping [" + pathMapping  
 							+ "] for bundle [" 
@@ -233,6 +241,24 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	public List getItemPathList() {
 		return itemPathList;
 	}
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList(java.lang.String)
+	 */
+	public List getItemPathList(String variantKey) {
+		if(null == variantKey)
+			return itemPathList;
+		
+		List rets = new ArrayList();
+		for(Iterator it = itemPathList.iterator();it.hasNext();){
+			String path = (String) it.next();
+			if(path.startsWith(GeneratorRegistry.MESSAGE_BUNDLE_PREFIX)){
+				rets.add(path + '@' + variantKey);
+			}
+			else rets.add(path);
+		}
+		return rets; 
+	}
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getName()
@@ -251,14 +277,43 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
     /* (non-Javadoc)
 	* @see net.jawr.web.resource.bundle.JoinableResourceBundle#getURLPrefix()
 	*/
-    public String getURLPrefix() {
+    public String getURLPrefix(String variantKey) {
     	if(null == this.urlPrefix)
     		throw new IllegalStateException("The bundleDataHashCode must be set before accessing the url prefix.");
-    		
-    	return this.urlPrefix;
+    	
+    	// Resolves the locale key like resourcebundle does
+    	if(null != variantKey && null != this.localeVariantKeys) {
+    		String key = getAvailableLocaleVariant(variantKey);
+    		if(null != key)
+    			return this.urlPrefix + "." + key + "/";
+    	}
+    	return this.urlPrefix + "/";
     }
-
-
+    
+    /**
+     * Resolves a registered path from a locale key, using the same algorithm used to 
+     * locate ResourceBundles. 
+     *  
+     * @param variantKey
+     * @return
+     */
+    private String getAvailableLocaleVariant(String variantKey) {
+    	String key = null;
+    	if(this.localeVariantKeys.contains(variantKey)){
+    		key = variantKey;
+    	}
+    	else {
+    		String subVar = variantKey;
+    		while(subVar.indexOf('_') != -1) {
+    			subVar = subVar.substring(0,subVar.lastIndexOf('_'));
+    			if(this.localeVariantKeys.contains(subVar)){
+        			key = subVar;
+        		}
+    		}
+    	}
+    	return key;
+    }
+    
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getUnitaryPostProcessor()
@@ -302,9 +357,9 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		this.bundleDataHashCode = bundleDataHashCode;
 		// Since this numbre is used as part of urls, the -sign is converted to 'N'
 		if(bundleDataHashCode < 0){
-			this.urlPrefix = "N" + this.bundleDataHashCode*-1 + "/";
+			this.urlPrefix = "N" + this.bundleDataHashCode*-1;
 		}
-		else urlPrefix = this.bundleDataHashCode + "/";
+		else urlPrefix = ""+this.bundleDataHashCode;
 		
 	}
 
@@ -325,5 +380,19 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 			String explorerConditionalExpression) {
 		this.explorerConditionalExpression = explorerConditionalExpression;
 	}
-
+	
+	/**
+	 * Set the list of variants for localized resources
+	 * @param localeVariantKeys
+	 */
+	public void setLocaleVariantKeys(List localeVariantKeys) {
+		this.localeVariantKeys = localeVariantKeys;
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getLocaleVariantKeys()
+	 */
+	public List getLocaleVariantKeys(){
+		return this.localeVariantKeys;
+	}
 }

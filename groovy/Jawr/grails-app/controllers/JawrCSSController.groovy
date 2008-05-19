@@ -19,7 +19,7 @@ class JawrCSSController {
 			if(grailsApplication.config.jawr.css.mapping)
 				path = path.replace(grailsApplication.config.jawr.css.mapping, '');
 			
-			
+			render "";
 			requestHandler.processRequest(path,request, response );
 			
 			return null;

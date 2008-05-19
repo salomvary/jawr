@@ -61,5 +61,13 @@ public class JawrServlet extends HttpServlet {
 			throws ServletException, IOException {
 		requestHandler.doGet(req, resp);
 	}
+
+	/* (non-Javadoc)
+	 * @see javax.servlet.GenericServlet#destroy()
+	 */
+	public void destroy() {		
+		super.destroy();
+		requestHandler.destroy();
+	}
      
 }

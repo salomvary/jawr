@@ -26,6 +26,7 @@ import java.util.Set;
 
 import net.jawr.web.exception.InvalidPathException;
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
 
 /**
  * Implementation of resourcehandler that gets its resources from the filesystem.  
@@ -43,8 +44,8 @@ public class FileSystemResourceHandler extends AbstractResourceHandler implement
 	 * @param tempDirRoot Directory to store temporary files
 	 * @param charset Charset to use for reading/writing the files. 
 	 */
-	public FileSystemResourceHandler(String baseDir, File tempDirRoot,Charset charset) {
-		super(tempDirRoot, charset);
+	public FileSystemResourceHandler(String baseDir, File tempDirRoot,Charset charset,GeneratorRegistry generatorRegistry) {
+		super(tempDirRoot, charset,generatorRegistry);
 		this.baseDir = baseDir.replace('/', File.separatorChar);
         this.baseDir = this.baseDir.replaceAll("%20", " ");
 	}
@@ -52,7 +53,7 @@ public class FileSystemResourceHandler extends AbstractResourceHandler implement
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.ResourceHandler#getResource(java.lang.String)
 	 */
-	public Reader getResource(String resourceName) throws ResourceNotFoundException {
+	public Reader doGetResource(String resourceName) throws ResourceNotFoundException {
 		Reader rd = null;
 		try {
 			File resource = new File(baseDir, resourceName);

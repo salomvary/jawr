@@ -7,7 +7,15 @@
 Definition of custom bundles
 
 	Bundles are the core functionality of Jawr. A bundle is a group of resources joined together in a single file that has an associated logical name. 
-	Thus, to create a bundle the bare minimum you will need is a name and a group of resources. For instance, the following lines in your descriptor 
+	
+=====================
+	<<Common misconception>>: Note that you are not required to add each and every resource to a bundle in order to achieve compression. Standalone resources can also be referred 
+	by a tag library and they will be compressed as well (see the orphan resources section below for more information). 
+	
+	
+=====================
+
+	To create a bundle the bare minimum you will need is a name and a group of resources. For instance, the following lines in your descriptor 
 	file would create a bundle named /bundles/fooBundle.js: 
 	
 +------------------------------------------+

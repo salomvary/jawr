@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.EmptyResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
@@ -104,21 +105,12 @@ public abstract class AbstractPostProcessorChainFactory implements	PostProcessor
 	 */
 	public void setCustomPostprocessors(Map keysClassNames) {
 		for(Iterator it = keysClassNames.keySet().iterator(); it.hasNext();){
-			String key = (String) it.next();
+			Object key = it.next();			
+			ResourceBundlePostProcessor customProcessor = 
+				(ResourceBundlePostProcessor) ClassLoaderResourceUtils.buildObjectInstance((String) keysClassNames.get(key));
 			
-			try {
-				Class clazz = Class.forName((String) keysClassNames.get(key));
-				ResourceBundlePostProcessor customProcessor = (ResourceBundlePostProcessor) clazz.newInstance();
-				customPostProcessors.put(key, new CustomPostProcessorChainWrapper(customProcessor));
-				
-			} catch (Exception e) {
-				throw new IllegalArgumentException("It was not possible to create an instance of the custom postprocessor defined with key: '" 
-													+ key 
-													+ "' and with class '" 
-													+ keysClassNames.get(key)
-													+ "'. Please check your config file and review the documentation. "
-													+ "The specific error message is: " + e.getMessage());
-			} 
+			customPostProcessors.put(key, new CustomPostProcessorChainWrapper(customProcessor));
+			
 		}		
 	}
 

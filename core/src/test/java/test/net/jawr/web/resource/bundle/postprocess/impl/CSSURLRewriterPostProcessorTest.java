@@ -288,7 +288,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 			public String getName() {
 				return id;
 			}
-			public String getURLPrefix() {
+			public String getURLPrefix(String variantKey) {
 				return urlPrefix;
 			}
 			public ResourceBundlePostProcessor getBundlePostProcessor() {
@@ -301,7 +301,12 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 				
 			}
 			public String getExplorerConditionalExpression() {
-				// TODO Auto-generated method stub
+				return null;
+			}
+			public List getItemPathList(String variantKey) {
+				return null;
+			}
+			public List getLocaleVariantKeys() {
 				return null;
 			}};
 		

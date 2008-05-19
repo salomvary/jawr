@@ -34,7 +34,14 @@ public class ResourceBundleDefinition {
 	private String bundlePostProcessorKeys;
 	private String ieConditionalExpression;
 	private List children;
+	private List localeVariantKeys;
 	
+	public List getLocaleVariantKeys() {
+		return localeVariantKeys;
+	}
+	public void setLocaleVariantKeys(List localeVariantKeys) {
+		this.localeVariantKeys = localeVariantKeys;
+	}
 	public List getChildren() {
 		return children;
 	}

@@ -64,7 +64,7 @@ public class BundlesHandlerFactory {
 	private boolean useDirMapperFactory = false;
 	private Set excludedDirMapperDirs;
 	private JawrConfig jawrConfig;
-	private Map customPostprocessors;
+	private Map customPostprocessors;	
 	
 
 	/**
@@ -86,6 +86,7 @@ public class BundlesHandlerFactory {
 		if(useSingleResourceFactory && null == singleFileBundleName)
 			throw new IllegalStateException("Must set the singleFileBundleName when useSingleResourceFactory is set to true. Please check the documentation. ");
 			
+		
 		// Initialize custom postprocessors before using the factory to build the postprocessing chains
 		if(null != customPostprocessors)
 			chainFactory.setCustomPostprocessors(customPostprocessors);
@@ -240,6 +241,9 @@ public class BundlesHandlerFactory {
 		
 		if(null != definition.getIeConditionalExpression())
 			newBundle.setExplorerConditionalExpression(definition.getIeConditionalExpression());
+		
+		if(null != definition.getLocaleVariantKeys())
+			newBundle.setLocaleVariantKeys(definition.getLocaleVariantKeys());
 		
 		return newBundle;
 	}
@@ -409,5 +413,6 @@ public class BundlesHandlerFactory {
 	public void setCustomPostprocessors(Map customPostprocessors) {
 		this.customPostprocessors = customPostprocessors;
 	}
+
 	
 }

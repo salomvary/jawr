@@ -46,7 +46,7 @@ Jawr Postprocessors
 	In this example, the bundle postprocessor for the <foo> bundle is set to <license>, meaning no minification will occur. And for the file-by-file
 	postprocessor, it is specified that none will be used. 
 	
-	<<Custom postprocessors>>
+*	Custom postprocessors
 	
 	You can also implement your own postprocessor components  (for js, css, or both) to perform any functionality not offered by the included ones. 
 	To do that, you must create a class with a no-params constructor that implements the interface 
@@ -102,6 +102,12 @@ jawr.js.bundle.factory.bundlepostprocessors=JSMin,func,sample,license
 jawr.js.bundle.foo.bundlepostprocessors=license=func,license
 +------------------------------------------+		
 	
+	
+=====================
+	Grails users will unfortunately need to pack their classes in a jar and add it to the lib folder of their application. The reason for this is a 
+	known flaw in the Grails classloading strategy that keeps plugins from accessing application classes.
+	 
+=====================
 
 * Jawr included postprocessors reference
 

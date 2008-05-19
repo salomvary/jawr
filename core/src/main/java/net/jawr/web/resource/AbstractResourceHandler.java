@@ -1,5 +1,5 @@
 /**
- * Copyright 2007  Jordi Hernández Sellés
+ * Copyright 2007   Jordi Hernández Sellés
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -26,6 +26,7 @@ import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
 
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
 
 import org.apache.log4j.Logger;
 
@@ -37,6 +38,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class AbstractResourceHandler  implements ResourceHandler{
 	private static final Logger log = Logger.getLogger(AbstractResourceHandler.class.getName());
+	private GeneratorRegistry generatorRegistry;
 
 	protected static final String TEMP_SUBDIR = "jawrTmp";
 	protected static final String TEMP_TEXT_SUBDIR = "text";
@@ -44,15 +46,48 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 	protected String textDirPath;
 	protected String gzipDirPath;
 	protected Charset charset;
+	
+	
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.ResourceHandler#getResource(java.lang.String)
+	 */
+	public final Reader getResource(String resourceName) throws ResourceNotFoundException {
+		if(generatorRegistry.isPathGenerated(resourceName)) {			
+			return generatorRegistry.createResource(resourceName,charset);
+		}
+		else return doGetResource(resourceName);
+	}
+	
+	
+	/**
+	 * Retrieves a single resource using the implementation specifics. 
+	 * Invoked by getResource() unless the requested item is generated. 
+	 * 
+	 * @param resourceName
+	 * @return
+	 * @throws ResourceNotFoundException
+	 */
+	protected abstract Reader doGetResource(String resourceName) throws ResourceNotFoundException;
+	
+	
 
-    /**
+    /* (non-Javadoc)
+	 * @see net.jawr.web.resource.ResourceHandler#isResourceGenerated(java.lang.String)
+	 */
+	public boolean isResourceGenerated(String path) {
+		return generatorRegistry.isPathGenerated(path);
+	}
+
+	/**
      * Build a resource handler based on the specified temporary files root path and charset. 
      * @param tempDirRoot Root dir for storing bundle files. 
      * @param charset Charset to read/write characters. 
      */
-	protected AbstractResourceHandler(File tempDirRoot,Charset charset) {
+	protected AbstractResourceHandler(File tempDirRoot,Charset charset,GeneratorRegistry generatorRegistry) {
 		super();
 		this.charset = charset;
+		this.generatorRegistry = generatorRegistry;
 		try {
 			String tempDirPath = tempDirRoot.getCanonicalPath() + File.separator + TEMP_SUBDIR;
              // In windows, pathnames with spaces are returned as %20
