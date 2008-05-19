@@ -9,7 +9,7 @@ import org.codehaus.groovy.grails.commons.*;
  */
 class JawrGrailsPlugin {
     // Plugin attributes
-	def version = 2.0
+	def version = 2.1
     def dependsOn = [:]
 	def author = "Jordi Hernández Sellés"
     def authorEmail = "jordihs@dev.java.net"
