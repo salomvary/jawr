@@ -27,6 +27,7 @@ import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.factory.util.PropertiesConfigHelper;
 import net.jawr.web.resource.bundle.factory.util.ResourceBundleDefinition;
+import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 
 /**
@@ -73,7 +74,9 @@ public class PropertiesBasedBundlesHandlerFactory {
 	private static final String CUSTOM_POSTPROCESSORS_NAMES = ".names";
 	private static final String CUSTOM_POSTPROCESSORS_CLASS = ".class";
 	
-	
+	// Locale variants
+
+	private static final String BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS = ".locales";
 		
 	
 	private PropertiesConfigHelper props;
@@ -86,7 +89,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 	 * @param resourceType js or css
 	 * @param rsHandler ResourceHandler to access files. 
 	 */
-	public PropertiesBasedBundlesHandlerFactory(Properties properties, String resourceType,ResourceHandler rsHandler){
+	public PropertiesBasedBundlesHandlerFactory(Properties properties, String resourceType,ResourceHandler rsHandler,GeneratorRegistry generatorRegistry){
 		this.props = new PropertiesConfigHelper(properties,resourceType);
 		
 		// Create the BundlesHandlerFactory
@@ -229,6 +232,16 @@ public class PropertiesBasedBundlesHandlerFactory {
 			while(tk.hasMoreTokens())
 				mappings.add(tk.nextToken().trim());
 			bundle.setMappings(mappings);
+			
+			String locales = props.getCustomBundleProperty(bundleName,BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS);
+			if(null !=  locales) {
+				List localeKeys = new ArrayList();
+				StringTokenizer tkl = new StringTokenizer(locales,",");
+				while(tkl.hasMoreTokens())
+					localeKeys.add(tkl.nextToken().trim());
+				bundle.setLocaleVariantKeys(localeKeys);
+				
+			}
 		}
 		
 		

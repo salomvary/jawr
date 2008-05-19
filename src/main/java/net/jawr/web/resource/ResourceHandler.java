@@ -72,4 +72,13 @@ public interface ResourceHandler {
 	 * @return
 	 */
 	public boolean isDirectory(String path);
+	
+	/**
+	 * Determines if a reource is not strictly a file in the war structure but  
+	 * a resource either java generated or read from elsewhere. 
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public boolean isResourceGenerated(String path);
 }

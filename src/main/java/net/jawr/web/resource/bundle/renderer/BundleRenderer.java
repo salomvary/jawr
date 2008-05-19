@@ -41,6 +41,7 @@ public interface BundleRenderer {
      */
     public void renderBundleLinks(  String requestedPath,
                                     String contextPath,
+                                    String variantKey,
                                     final Set includedBundles, 
                                     boolean useGzip, 
                                     Writer out ) throws IOException;

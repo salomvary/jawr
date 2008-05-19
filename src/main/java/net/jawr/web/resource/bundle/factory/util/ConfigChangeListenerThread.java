@@ -16,7 +16,7 @@ package net.jawr.web.resource.bundle.factory.util;
 import org.apache.log4j.Logger;
 
 /**
- * A threaded compoenent that periodically checks for updates to the configuration of Jawr. 
+ * A threaded component that periodically checks for updates to the configuration of Jawr. 
  * 
  * @author Jordi Hernández Sellés
  */
@@ -26,6 +26,7 @@ public class ConfigChangeListenerThread extends Thread {
 	private long waitMillis;
 	private ConfigPropertiesSource propertiesSource;
 	private ConfigChangeListener listener;
+	private boolean continuePolling;
 	
 	public ConfigChangeListenerThread(ConfigPropertiesSource propertiesSource,
 			ConfigChangeListener listener, long secondsToWait ) {
@@ -33,6 +34,7 @@ public class ConfigChangeListenerThread extends Thread {
 		this.propertiesSource = propertiesSource;
 		this.listener = listener;
 		this.waitMillis = secondsToWait * 1000;
+		continuePolling = true;
 		this.setDaemon(true);
 	}
 
@@ -41,25 +43,35 @@ public class ConfigChangeListenerThread extends Thread {
 	 * @see java.lang.Thread#run()
 	 */
 	public void run() {
-		while(true) {
+		// Flag to avoid checking the very first time, when the request handler has just started. 
+		boolean firstRun = true;
+		
+		while(continuePolling) {
 			try {
+				// Must check before sleeping, otherwise stopPolling does not work.  
+				if(!firstRun && propertiesSource.configChanged()){
+					listener.configChanged(propertiesSource.getConfigProperties());
+				}
 				sleep(waitMillis);
-								
+				firstRun = false;				
 				/* It is painful to show a log statement every certain amount of seconds...		  
 				 if(log.isDebugEnabled())
 					log.debug("Verifying wether properties are changed...");
 					*/
-				
-				if(propertiesSource.configChanged())
-					listener.configChanged(propertiesSource.getConfigProperties());
-				
 			} catch (InterruptedException e) {
 				log.error("Failure at config reloading checker thread.");
 			}
 		}
-		
 	}
 	
-	
+	/**
+	 * Causes the thread to stop polling for changes. 
+	 */
+	public void stopPolling() {
+		if(log.isDebugEnabled())
+			log.debug("Stopping the configuration change polling");
+		
+		continuePolling = false;
+	}
 
 }

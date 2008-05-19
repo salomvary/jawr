@@ -51,11 +51,13 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
                 this.renderer = createRenderer();		
            
            HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+           String localeKey = this.renderer.getBundler().getConfig().getLocaleResolver().resolveLocaleCode(request);
            boolean isGzippable = RendererRequestUtils.isRequestGzippable(request,renderer.getBundler().getConfig());
            
             try {
                 renderer.renderBundleLinks( src,
                                             request.getContextPath(),
+                                            localeKey,
                                             RendererRequestUtils.getAddedBundlesLog(request),
                                             isGzippable,
                                             pageContext.getOut());

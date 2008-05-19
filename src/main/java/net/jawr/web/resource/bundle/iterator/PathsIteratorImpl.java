@@ -35,8 +35,8 @@ public class PathsIteratorImpl extends AbstractPathsIterator implements Resource
 	 * @param bundles
 	 * @param commentCallbackHandler
 	 */
-	public PathsIteratorImpl(List bundles,ConditionalCommentCallbackHandler commentCallbackHandler) {
-		super(commentCallbackHandler);
+	public PathsIteratorImpl(List bundles,ConditionalCommentCallbackHandler commentCallbackHandler, String variantKey) {
+		super(commentCallbackHandler,variantKey);
 		this.bundlesIterator = bundles.iterator();
 	}
 
@@ -57,7 +57,10 @@ public class PathsIteratorImpl extends AbstractPathsIterator implements Resource
 		if(null != currentBundle.getExplorerConditionalExpression())
 			commentCallbackHandler.openConditionalComment(currentBundle.getExplorerConditionalExpression());
 		
-		return PathNormalizer.joinPaths(currentBundle.getURLPrefix(),currentBundle.getName());
+		String name = currentBundle.getName();
+		
+		
+		return PathNormalizer.joinPaths(currentBundle.getURLPrefix(variantKey),name);
 	}
 
 

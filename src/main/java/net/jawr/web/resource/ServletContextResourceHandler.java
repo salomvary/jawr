@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
 
 /**
  * Implementation of resourcehandler that gets its resources
@@ -44,8 +45,8 @@ public class ServletContextResourceHandler extends AbstractResourceHandler imple
 	 * @param resourceDir
 	 * @param context
 	 */
-	public ServletContextResourceHandler(ServletContext context, Charset charset) {
-		super((File) context.getAttribute(SERVLET_CONTEXT_TEMPDIR),charset);		
+	public ServletContextResourceHandler(ServletContext context, Charset charset,GeneratorRegistry generatorRegistry) {
+		super((File) context.getAttribute(SERVLET_CONTEXT_TEMPDIR),charset,generatorRegistry);		
 		this.context  = context;
 		this.charset = charset;
 	}
@@ -53,7 +54,7 @@ public class ServletContextResourceHandler extends AbstractResourceHandler imple
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.ResourceHandler#getResource(java.lang.String)
 	 */
-	public Reader getResource(String resourceName)  throws ResourceNotFoundException{
+	public Reader doGetResource(String resourceName)  throws ResourceNotFoundException{
 		InputStream is = context.getResourceAsStream(resourceName);		
 		if(null == is)
 			throw new ResourceNotFoundException(resourceName);

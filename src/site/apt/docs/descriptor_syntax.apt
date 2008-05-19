@@ -25,6 +25,8 @@ Descriptor file syntax
 *---------------+---------+--------------+----------------+
 | jawr.config.reload.interval | int | The interval in seconds in which Jawr checks wether the configuration has changed. If this value is set, when you change the properties file Jawr will detect it and redeploy itself so you don't need to restart the server to test your changes.  | none| 
 *---------------*---------*--------------+----------------+
+| jawr.locale.resolver | String | Name of a class implementing net.jawr.web.resource.bundle.locale.LocaleResolver. An instance of this class will be created and used to determine the Locale to use for a given request when using an {{{./messages_gen.html}i18n messages generator}}.   | none| 
+*---------------*---------*--------------+----------------+
 | jawr.url.contextpath.override | URL fragment ([<</somepath >>] or [<</>>] or []). | Override the use of the application's contextpath to prefix every generated URL.  | none    | 
 | | | Using '<</>>' will cause Jawr to skip the context path altogether ('/001/bundles/mybundle.js').  |     | 
 | | | Using an empty value will cause Jawr to generate page relative urls ('001/bundles/mybundle.js').  |     | 

@@ -39,6 +39,7 @@ import net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler;
 import net.jawr.web.resource.bundle.iterator.DebugModePathsIteratorImpl;
 import net.jawr.web.resource.bundle.iterator.PathsIteratorImpl;
 import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
+import net.jawr.web.resource.bundle.locale.LocaleUtils;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.sorting.GlobalResourceBundleComparator;
@@ -55,7 +56,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	private static final Logger log = Logger.getLogger(ResourceBundlesHandler.class);
 	
 	/**
-	 * The bundles that this collector manages. 
+	 * The bundles that this handler manages. 
 	 */
 	private List bundles;
 	
@@ -148,7 +149,9 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.ResourceCollector#getBundlePaths(java.lang.String)
 	 */
-	public ResourceBundlePathsIterator getBundlePaths(String bundleId, ConditionalCommentCallbackHandler commentCallbackHandler) {
+	public ResourceBundlePathsIterator getBundlePaths(String bundleId, 
+														ConditionalCommentCallbackHandler commentCallbackHandler, 
+														String variantKey) {
 		List paths = new ArrayList();
 		List bundles = new ArrayList();
 		boolean returnAfterGlobals = false;
@@ -159,7 +162,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			// Add separate files or joined bundle file according to debug mode. 
 			if(getConfig().isDebugModeOn())
 				paths.addAll(bundle.getItemPathList());
-			else paths.add(PathNormalizer.joinPaths(bundle.getURLPrefix(),bundle.getName()));
+			else paths.add(PathNormalizer.joinPaths(bundle.getURLPrefix(variantKey),bundle.getName()));
 			
 			// If the bundle requested was this, return 
 			if(bundle.getName().equals(bundleId))
@@ -174,7 +177,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 					// Add separate files or joined bundle file according to debug mode. 
 					if(getConfig().isDebugModeOn())
 						paths.addAll(bundle.getItemPathList());
-					else paths.add(PathNormalizer.joinPaths(bundle.getURLPrefix(),bundle.getName()));
+					else paths.add(PathNormalizer.joinPaths(bundle.getURLPrefix(variantKey),bundle.getName()));
 					
 					break;
 				}		
@@ -182,25 +185,36 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		}
 		ResourceBundlePathsIterator bundlesIterator;
 		if(getConfig().isDebugModeOn()) {
-			bundlesIterator = new DebugModePathsIteratorImpl(bundles,commentCallbackHandler);
+			bundlesIterator = new DebugModePathsIteratorImpl(bundles,commentCallbackHandler,variantKey);
 		}
-		else bundlesIterator = new PathsIteratorImpl(bundles,commentCallbackHandler);
+		else bundlesIterator = new PathsIteratorImpl(bundles,commentCallbackHandler,variantKey);
 		return bundlesIterator;
 	}
 	
 	
 	/**
 	 * Removes the URL prefix defined in the configuration from a path. 
+	 * If the prerfix contains a variant information, it adds it to the name. 
 	 * @param path
 	 * @return
 	 */
 	private String removePrefixFromPath(String path) {
 		// Remove first slash
         path = path.substring(1,path.length());
-        // Remove up to second slash
-        path = path.substring(path.indexOf("/"),path.length());
+        
+        // eval the existence of a suffix
+        String prefix = path.substring(0, path.indexOf("/"));
+        
+        // The prefix also contains variant information after a '.'
+        if(prefix.indexOf('.') != -1) {
+        	String suffix = '_' + prefix.substring(prefix.indexOf('.')+1) + path.substring(path.lastIndexOf('.'));
+            path = path.substring(path.indexOf("/"),path.lastIndexOf('.')) + suffix;
+        }
+        else path = path.substring(path.indexOf("/"),path.length());
 		return path;
 	}
+	
+	
 	
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.ResourceCollector#writeBundleTo(java.lang.String, java.io.Writer)
@@ -260,25 +274,49 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		// Run through every bundle		
 		for(Iterator itCol = bundles.iterator();itCol.hasNext();){
 			JoinableResourceBundle bundle = (JoinableResourceBundle) itCol.next();
-			StringBuffer store = null;
-			
-			// If this is a composite bundle create each independent bundle
-			if(bundle instanceof CompositeResourceBundle) {
-				CompositeResourceBundle composite = (CompositeResourceBundle) bundle;
-				store = new StringBuffer();
-				for(Iterator it = composite.getChildBundles().iterator();it.hasNext();) {
-					JoinableResourceBundle childbundle = (JoinableResourceBundle) it.next();
-					store.append(joinandPostprocessBundle(childbundle));					
-				}
-			}
-			else store = joinandPostprocessBundle(bundle);	
-			
-			// Set the data hascode in the bundle, in case the prefix needs to be generated
-			bundle.setBundleDataHashCode(store.toString().hashCode());
-			
-			// Store the collected resources as a single file, both in text and gzip formats. 
-			resourceHandler.storeBundle(bundle.getName(),store);
+			if(bundle instanceof CompositeResourceBundle)
+				joinAndStoreCompositeResourcebundle((CompositeResourceBundle) bundle);
+			else joinAndStoreBundle(bundle);
 		}
+	}
+	
+	private void joinAndStoreCompositeResourcebundle(CompositeResourceBundle composite){
+		StringBuffer store = new StringBuffer();
+		for(Iterator it = composite.getChildBundles().iterator();it.hasNext();) {
+			JoinableResourceBundle childbundle = (JoinableResourceBundle) it.next();
+			store.append(joinandPostprocessBundle(childbundle, null));					
+		}
+		// Set the data hascode in the bundle, in case the prefix needs to be generated
+		composite.setBundleDataHashCode(store.toString().hashCode());
+		
+		// Store the collected resources as a single file, both in text and gzip formats. 
+		resourceHandler.storeBundle(composite.getName(),store);
+	}
+	
+	private void joinAndStoreBundle(JoinableResourceBundle bundle) {
+		StringBuffer store = null;
+		
+		int hash = 0;
+		// Process the locale specific variants
+		if(null != bundle.getLocaleVariantKeys()) {
+			for(Iterator it = bundle.getLocaleVariantKeys().iterator();it.hasNext();) {
+				String variantKey = (String) it.next();
+				String name = LocaleUtils.getLocalizedBundleName(bundle.getName(),variantKey);
+				store = joinandPostprocessBundle(bundle, variantKey);	
+				resourceHandler.storeBundle(name,store);
+				hash += store.toString().hashCode();
+			}
+		}
+		store = joinandPostprocessBundle(bundle, null);	
+		hash += store.toString().hashCode();
+		
+		// Set the data hascode in the bundle, in case the prefix needs to be generated
+		bundle.setBundleDataHashCode(hash);
+		
+		// Store the collected resources as a single file, both in text and gzip formats. 
+		resourceHandler.storeBundle(bundle.getName(),store);
+		
+		
 	}
 
 
@@ -287,7 +325,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 * @param bundle JoinableResourceBundle
 	 * @return
 	 */
-	private StringBuffer joinandPostprocessBundle(JoinableResourceBundle bundle) {
+	private StringBuffer joinandPostprocessBundle(JoinableResourceBundle bundle, String variantKey) {
 		
 		// Don't bother with the bundle if it is excluded because of the inclusion pattern
 		if( (bundle.getInclusionPattern().isExcludeOnDebug() && config.isDebugModeOn()) ||
@@ -301,7 +339,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		
 		try {
 			// Run through all the files belonging to the bundle
-			for(Iterator it = bundle.getItemPathList().iterator();it.hasNext();){
+			for(Iterator it = bundle.getItemPathList(variantKey).iterator();it.hasNext();){
 
 				// File is first created in memory using a stringwriter. 
 				StringWriter writer = new StringWriter(); 
@@ -366,7 +404,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	}
 
 	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.ResourceCollector#resolveBundleForPath(java.lang.String)
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#resolveBundleForPath(java.lang.String)
 	 */
 	public JoinableResourceBundle resolveBundleForPath(String path) {
 		

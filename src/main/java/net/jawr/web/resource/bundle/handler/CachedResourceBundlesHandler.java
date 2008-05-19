@@ -60,8 +60,8 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.ResourceBundlesHandler#getBundlePaths(java.lang.String)
 	 */
-	public ResourceBundlePathsIterator getBundlePaths(String bundleId, ConditionalCommentCallbackHandler commentCallbackHandler) {
-		return rsHandler.getBundlePaths(bundleId, commentCallbackHandler);
+	public ResourceBundlePathsIterator getBundlePaths(String bundleId, ConditionalCommentCallbackHandler commentCallbackHandler, String variant) {
+		return rsHandler.getBundlePaths(bundleId, commentCallbackHandler,variant);
 	}
 
 	/* (non-Javadoc)

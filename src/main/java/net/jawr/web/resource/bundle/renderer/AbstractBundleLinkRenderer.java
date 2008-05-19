@@ -14,7 +14,9 @@
 package net.jawr.web.resource.bundle.renderer;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URLEncoder;
 import java.util.Random;
 import java.util.Set;
 
@@ -22,6 +24,7 @@ import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
+import net.jawr.web.servlet.JawrRequestHandler;
 
 /**
  * Abstract base class for implementations of a link renderer. 
@@ -53,6 +56,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
      */
     public void renderBundleLinks(  String requestedPath,
                                     String contextPath,
+                                    String variantKey,
                                     final Set includedBundles, 
                                     boolean useGzip, 
                                     Writer out ) throws IOException {
@@ -69,7 +73,8 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
 
         // Retrieve the name or names of bundle(s) that belong to/with the requested path. 
     	ResourceBundlePathsIterator it = bundler.getBundlePaths(bundle.getName(),
-    															new ConditionalCommentRenderer(out));
+    															new ConditionalCommentRenderer(out),
+    															variantKey);
     	
         // Add resources to the page as links. 
         while(it.hasNext())
@@ -80,7 +85,8 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
                 if(includedBundles.add(resourceName)){
                 		// In debug mode, all the resources are included separately and use a random parameter to avoid caching. 
                 		// If useRandomParam is set to false, the links are created without the random parameter. 
-                        if( debugOn && useRandomParam) {
+                        if( debugOn && useRandomParam && 
+                        		!bundler.getConfig().getGeneratorRegistry().isPathGenerated(resourceName)) {
                                 int random = new Random().nextInt();
                                 if(random < 0)
                                 	random*=-1;
@@ -108,7 +114,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
      * @throws IOException
      */
     protected final void addComment(String commentText, Writer out)  throws IOException {
-    	StringBuffer sb = new StringBuffer("<script>/* ");
+    	StringBuffer sb = new StringBuffer("<script type=\"text/javascript\">/* ");
             sb.append(commentText).append(" */</script>").append("\n");
             out.write(sb.toString());
     }
@@ -133,6 +139,13 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
      */
     protected String createBundleLink(String bundleId, String contextPath) {
     	
+    	// When debug mode is on and the resource is generated the path must include a parameter
+    	if( bundler.getConfig().isDebugModeOn() && 
+    		bundler.getConfig().getGeneratorRegistry().isPathGenerated(bundleId)) {
+    		try {
+				bundleId = "generate.js?" + JawrRequestHandler.GENERATION_PARAM + "=" + URLEncoder.encode(bundleId, "UTF-8");
+			} catch (UnsupportedEncodingException neverHappens) {/*URLEncoder:how not to use checked exceptions...*/}
+    	}
     	String fullPath = PathNormalizer.joinPaths(bundler.getConfig().getServletMapping(), bundleId);
     	
     	// If context path is overriden..
