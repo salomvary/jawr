@@ -110,7 +110,6 @@ jawr.charset.name=UTF-8
 
 # Javascript properties and mappings
 jawr.js.bundle.basedir=/js
-jawr.js.commonURLPrefix=003
 
 # Javascript properties and mappings
 jawr.js.bundle.names=lib
@@ -118,14 +117,15 @@ jawr.js.bundle.names=lib
 # All files within /js/lib will be together in a bundle. 
 # The remaining scripts will be served sepparately. 
 jawr.js.bundle.lib.id=/bundles/lib.js
-jawr.js.bundle.lib.global=true
 jawr.js.bundle.lib.mappings=/js/lib/**
-jawr.js.bundle.lib.prefix=lib001
+
+# The /bundles/lib.js bundle is global 
+# (always imported before other scripts to pages using the taglib)
+jawr.js.bundle.lib.global=true
 
 
 # CSS properties and mappings
 jawr.css.bundle.basedir=/css
-jawr.css.commonURLPrefix=css004
 
 # CSS files will be all bundled together automatically
 jawr.css.factory.use.singlebundle=true
