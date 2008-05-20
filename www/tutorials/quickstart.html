@@ -244,9 +244,11 @@ jawr.js.bundle.names=lib
 # All files within /js/lib will be together in a bundle. 
 # The remaining scripts will be served sepparately. 
 jawr.js.bundle.lib.id=/bundles/lib.js
-jawr.js.bundle.lib.global=true
 jawr.js.bundle.lib.mappings=/js/lib/**
-jawr.js.bundle.lib.prefix=lib001
+
+# The /bundles/lib.js bundle is global 
+# (always imported before other scripts to pages using the taglib)
+jawr.js.bundle.lib.global=true
 
 
 # CSS properties and mappings
@@ -292,7 +294,7 @@ log4j.logger.net.jawr=INFO</pre></div><p>Note that the log level is set to INFO
 
   
   
-  &nbsp;| Last Published: 05/19/2008
+  &nbsp;| Last Published: 05/20/2008
   &nbsp;| Version: 2.1
 </div>
       <div class="clear">
