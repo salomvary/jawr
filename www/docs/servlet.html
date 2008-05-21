@@ -193,7 +193,28 @@
                 &lt;servlet-name&gt;JavascriptServlet&lt;/servlet-name&gt;
                 &lt;url-pattern&gt;*.js&lt;/url-pattern&gt;
         &lt;/servlet-mapping&gt; 
-        </pre></div><p>However, you might be forced to serve some of your scripts in the traditional way. You can then use a mapping in the form of /jsJawrPath/*, so that all URLs created by the tag library start with this path mapping. You will then need to specify the <b>mapping</b> init param to let Jawr know about this so that URLs are properly formed. So if you map the servlet to /jsJawrPath/*, the mapping init param should have a value of /jsJawrPath/. &#160;</p></li></ul><div class="section"><h3>Example web.xml configuration</h3><div class="source"><pre>        &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt; 
+        </pre></div><p>However, you might be forced to serve some of your scripts in the traditional way. For instance, you might be using a tag library that imports scripts on its own, or simply you want to update an existing application to use Jawr in some cases, but you don't want to change each and every page. You can then use a mapping in the form of /jsJawrPath/*, so that all URLs created by the tag library start with this path mapping. You will then need to specify the <b>mapping</b> init param to let Jawr know about this so that URLs are properly formed. So if you map the servlet to /jsJawrPath/*, the mapping init param should have a value of /jsJawrPath/. The resulting configuration would end up like this: </p><div class="source"><pre>
+        ...
+        &lt;servlet&gt;
+                &lt;servlet-name&gt;JavascriptServlet&lt;/servlet-name&gt;
+                &lt;servlet-class&gt;net.jawr.web.servlet.JawrServlet&lt;/servlet-class&gt;
+                &lt;init-param&gt;
+                        &lt;param-name&gt;configLocation&lt;/param-name&gt;
+                        &lt;param-value&gt;/jawr.properties&lt;/param-value&gt;
+                &lt;/init-param&gt;
+                &lt;init-param&gt;
+                        &lt;param-name&gt;mapping&lt;/param-name&gt;
+                        &lt;param-value&gt;/jsJawrPath/&lt;/param-value&gt;
+                &lt;/init-param&gt;
+                &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+        &lt;/servlet&gt;
+        ...
+        
+        &lt;servlet-mapping&gt;
+                &lt;servlet-name&gt;JavascriptServlet&lt;/servlet-name&gt;
+                &lt;url-pattern&gt;/jsJawrPath/*&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt; 
+        </pre></div></li></ul><div class="section"><h3>Example web.xml configuration</h3><div class="source"><pre>        &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt; 
 
         &lt;!DOCTYPE web-app
            PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot;
@@ -273,7 +294,7 @@
 
   
   
-  &nbsp;| Last Published: 05/19/2008
+  &nbsp;| Last Published: 05/21/2008
   &nbsp;| Version: 2.1
 </div>
       <div class="clear">
