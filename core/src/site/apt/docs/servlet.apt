@@ -55,10 +55,37 @@ The Jawr servlet
 	
 +------------------------------------------+
 	
-	However, you might be forced to serve some of your scripts in the traditional way. You can then use a mapping in the form of /jsJawrPath/*, so that 
-	all URLs created by the tag library start with this path mapping. You will then need to specify the <<mapping>> init param to let Jawr know about 
-	this so that URLs are properly formed. So if you map the servlet to /jsJawrPath/*, the mapping init param should have a value of /jsJawrPath/. \ 
+	However, you might be forced to serve some of your scripts in the traditional way. For instance, you might be using a tag library that imports scripts
+	on its own, or simply you want to update an existing application to use Jawr in some cases, but you don't want to change each and every page. 
+	You can then use a mapping in the form of /jsJawrPath/*, so that all URLs created by the tag library start with this path mapping. You will then 
+	need to specify the <<mapping>> init param to let Jawr know about this so that URLs are properly formed. So if you map the servlet to /jsJawrPath/*, 
+	the mapping init param should have a value of /jsJawrPath/. The	resulting configuration would end up like this: 
 	
+
++------------------------------------------+
+
+	...
+	<servlet>
+		<servlet-name>JavascriptServlet</servlet-name>
+		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
+		<init-param>
+			<param-name>configLocation</param-name>
+			<param-value>/jawr.properties</param-value>
+		</init-param>
+		<init-param>
+			<param-name>mapping</param-name>
+			<param-value>/jsJawrPath/</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	...
+	
+	<servlet-mapping>
+		<servlet-name>JavascriptServlet</servlet-name>
+		<url-pattern>/jsJawrPath/*</url-pattern>
+	</servlet-mapping> 
+	
++------------------------------------------+
 	
 	[]
 	
