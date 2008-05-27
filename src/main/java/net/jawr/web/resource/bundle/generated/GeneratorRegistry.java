@@ -11,7 +11,7 @@
  * either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-package net.jawr.web.resource.bundle.generated;
+package net.jawr.web.resource.bundle.generator;
 
 import java.io.Reader;
 import java.nio.charset.Charset;
@@ -19,6 +19,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+
+import net.jawr.web.resource.bundle.generator.classpath.ClasspathResourceGenerator;
+import net.jawr.web.resource.bundle.generator.dwr.DWRBeanGenerator;
 import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
 
 /**
@@ -36,10 +40,27 @@ import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
 public class GeneratorRegistry {
 	
 	public static final String MESSAGE_BUNDLE_PREFIX = "messages:";
+	public static final String CLASSPATH_BUNDLE_PREFIX = "jar:";
+	public static final String DWR_BUNDLE_PREFIX = "dwr:";
 	private static final Map registry = new HashMap();
+	
+	private ServletContext servletContext;
+	
 	static
 	{
-		registry.put("messages:", new ResourceBundleMessagesGenerator());
+		registry.put(MESSAGE_BUNDLE_PREFIX, new ResourceBundleMessagesGenerator());
+		registry.put(CLASSPATH_BUNDLE_PREFIX, new ClasspathResourceGenerator());
+	}
+	
+
+	public GeneratorRegistry(ServletContext servletContext) {
+		super();
+		this.servletContext = servletContext;
+		registry.put(DWR_BUNDLE_PREFIX, new DWRBeanGenerator(servletContext));
+	}
+	
+	public GeneratorRegistry(){
+		super();
 	}
 	
 	/**
@@ -86,4 +107,5 @@ public class GeneratorRegistry {
 		}	
 		return rets;
 	}
+
 }
