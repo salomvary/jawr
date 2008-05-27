@@ -32,6 +32,7 @@ import net.jawr.web.servlet.JawrRequestHandler;
  * @author Jordi Hernández Sellés
  */
 public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
+	private static final String ID_SCRIPT_DWR_PATH = "__dwr_path__";
     
     private ResourceBundlesHandler bundler;
     
@@ -69,6 +70,15 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     	
         if( debugOn ) {
                 addComment("Start adding members resolved by '" + requestedPath + "'. Bundle id is: '" + bundle.getName() + "'",out);
+        }
+        
+        // If DWR is being used, add a path var to the page
+        if( null != bundler.getConfig().getDwrMapping() && 
+        	includedBundles.add(ID_SCRIPT_DWR_PATH)) {
+        	StringBuffer sb = new StringBuffer("<script type=\"text/javascript\">jawr_dwr_path='");
+            sb.append(PathNormalizer.joinPaths(contextPath,  bundler.getConfig().getDwrMapping()));
+            sb.append("';</script>").append("\n");
+            out.write(sb.toString());
         }
 
         // Retrieve the name or names of bundle(s) that belong to/with the requested path. 

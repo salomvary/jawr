@@ -27,7 +27,7 @@ import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.factory.util.PropertiesConfigHelper;
 import net.jawr.web.resource.bundle.factory.util.ResourceBundleDefinition;
-import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 
 /**

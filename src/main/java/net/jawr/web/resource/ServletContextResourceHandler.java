@@ -25,7 +25,7 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 
 import net.jawr.web.exception.ResourceNotFoundException;
-import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 
 /**
  * Implementation of resourcehandler that gets its resources

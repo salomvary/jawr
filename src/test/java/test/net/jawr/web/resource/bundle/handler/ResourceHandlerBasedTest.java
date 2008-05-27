@@ -11,7 +11,7 @@ import java.util.zip.GZIPInputStream;
 
 import junit.framework.TestCase;
 import net.jawr.web.resource.FileSystemResourceHandler;
-import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import test.net.jawr.web.FileUtils;
 
 /**
@@ -30,7 +30,7 @@ public abstract class ResourceHandlerBasedTest  extends  TestCase {
 	    File tmp = FileUtils.createDir(rootDir + TMP_DIR);
 
 	    String work = FileUtils.createDir(rootDir + WORK_DIR).getCanonicalPath().replaceAll("%20", " ");
-	    return new FileSystemResourceHandler(work, tmp, charset, new GeneratorRegistry());
+	    return new FileSystemResourceHandler(work, tmp, charset, new GeneratorRegistry(null));
 	} catch (Exception ex) {
 	     ex.printStackTrace();
 	   throw new RuntimeException(ex);

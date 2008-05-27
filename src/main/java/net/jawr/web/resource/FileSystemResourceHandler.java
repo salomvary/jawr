@@ -26,7 +26,7 @@ import java.util.Set;
 
 import net.jawr.web.exception.InvalidPathException;
 import net.jawr.web.exception.ResourceNotFoundException;
-import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 
 /**
  * Implementation of resourcehandler that gets its resources from the filesystem.  
