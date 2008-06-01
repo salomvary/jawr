@@ -25,7 +25,7 @@
 <a name="16" href="#16">16</a>  <strong>import</strong> java.io.Reader;
 <a name="17" href="#17">17</a>  <strong>import</strong> java.nio.charset.Charset;
 <a name="18" href="#18">18</a>  
-<a name="19" href="#19">19</a>  <strong>import</strong> net.jawr.web.resource.bundle.generated.ResourceGenerator;
+<a name="19" href="#19">19</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.ResourceGenerator;
 <a name="20" href="#20">20</a>  <strong>import</strong> net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
 <a name="21" href="#21">21</a>  
 <a name="22" href="#22">22</a>  <em>/**<em>*</em></em>
@@ -35,10 +35,10 @@
 <a name="26" href="#26">26</a>  <em> * @author Jordi Hernández Sellés</em>
 <a name="27" href="#27">27</a>  <em> *</em>
 <a name="28" href="#28">28</a>  <em> */</em>
-<a name="29" href="#29">29</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../../../net/jawr/web/resource/bundle/locale/ResourceBundleMessagesGenerator.html">ResourceBundleMessagesGenerator</a> implements <a href="../../../../../../net/jawr/web/resource/bundle/generated/ResourceGenerator.html">ResourceGenerator</a> {
+<a name="29" href="#29">29</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../../../net/jawr/web/resource/bundle/locale/ResourceBundleMessagesGenerator.html">ResourceBundleMessagesGenerator</a> implements <a href="../../../../../../net/jawr/web/resource/bundle/generator/ResourceGenerator.html">ResourceGenerator</a> {
 <a name="30" href="#30">30</a>  
 <a name="31" href="#31">31</a>  	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="32" href="#32">32</a>  <em class="comment">	 * @see net.jawr.web.resource.bundle.generated.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)</em>
+<a name="32" href="#32">32</a>  <em class="comment">	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)</em>
 <a name="33" href="#33">33</a>  <em class="comment">	 */</em>
 <a name="34" href="#34">34</a>  	<strong>public</strong> Reader createResource(String path,Charset charset) {
 <a name="35" href="#35">35</a>  		MessageBundleScriptCreator creator = <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/locale/message/MessageBundleScriptCreator.html">MessageBundleScriptCreator</a>(path);

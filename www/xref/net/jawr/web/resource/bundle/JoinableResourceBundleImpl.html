@@ -32,7 +32,7 @@
 <a name="23" href="#23">23</a>  <strong>import</strong> net.jawr.web.exception.ResourceNotFoundException;
 <a name="24" href="#24">24</a>  <strong>import</strong> net.jawr.web.resource.ResourceHandler;
 <a name="25" href="#25">25</a>  <strong>import</strong> net.jawr.web.resource.bundle.factory.util.PathNormalizer;
-<a name="26" href="#26">26</a>  <strong>import</strong> net.jawr.web.resource.bundle.generated.GeneratorRegistry;
+<a name="26" href="#26">26</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 <a name="27" href="#27">27</a>  <strong>import</strong> net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 <a name="28" href="#28">28</a>  <strong>import</strong> net.jawr.web.resource.bundle.sorting.SortFileParser;
 <a name="29" href="#29">29</a>  
@@ -132,279 +132,280 @@
 <a name="123" href="#123">123</a> 		{
 <a name="124" href="#124">124</a> 			String pathMapping = (String) it.next();
 <a name="125" href="#125">125</a> 
-<a name="126" href="#126">126</a> 			<em class="comment">// path ends in /, the folder is included without subfolders</em>
-<a name="127" href="#127">127</a> 			<strong>if</strong>(pathMapping.endsWith(<span class="string">"/"</span>)) {
-<a name="128" href="#128">128</a> 				addItemsFromDir(pathMapping,false);
+<a name="126" href="#126">126</a> 			<em class="comment">// Handle generated resources</em>
+<a name="127" href="#127">127</a> 			<strong>if</strong>(resourceHandler.isResourceGenerated(pathMapping)){
+<a name="128" href="#128">128</a> 				itemPathList.add(pathMapping);
 <a name="129" href="#129">129</a> 			}
-<a name="130" href="#130">130</a> 			<em class="comment">// path ends in /, the folder is included with all subfolders</em>
-<a name="131" href="#131">131</a> 			<strong>else</strong> <strong>if</strong>(pathMapping.endsWith(<span class="string">"/**"</span>)){
-<a name="132" href="#132">132</a> 				addItemsFromDir(pathMapping.substring(0,pathMapping.lastIndexOf(<span class="string">"**"</span>)),<strong>true</strong>);
+<a name="130" href="#130">130</a> 			<em class="comment">// path ends in /, the folder is included without subfolders</em>
+<a name="131" href="#131">131</a> 			<strong>else</strong> <strong>if</strong>(pathMapping.endsWith(<span class="string">"/"</span>)) {
+<a name="132" href="#132">132</a> 				addItemsFromDir(pathMapping,false);
 <a name="133" href="#133">133</a> 			}
-<a name="134" href="#134">134</a> 			<strong>else</strong> <strong>if</strong>(pathMapping.endsWith(fileExtension)){
-<a name="135" href="#135">135</a> 				itemPathList.add(PathNormalizer.asPath(pathMapping));
-<a name="136" href="#136">136</a> 			}
-<a name="137" href="#137">137</a> 			<strong>else</strong> <strong>if</strong>(pathMapping.endsWith(LICENSES_FILENAME)){
-<a name="138" href="#138">138</a> 				licensesPathList.add(PathNormalizer.asPath(pathMapping));
-<a name="139" href="#139">139</a> 			}
-<a name="140" href="#140">140</a> 			<strong>else</strong> <strong>if</strong>(resourceHandler.isResourceGenerated(pathMapping)){
-<a name="141" href="#141">141</a> 				itemPathList.add(pathMapping);
-<a name="142" href="#142">142</a> 			}
-<a name="143" href="#143">143</a> 			<strong>else</strong> log.warn(<span class="string">"Wrong mapping ["</span> + pathMapping  
-<a name="144" href="#144">144</a> 							+ <span class="string">"] for bundle ["</span> 
-<a name="145" href="#145">145</a> 							+ <strong>this</strong>.name 
-<a name="146" href="#146">146</a> 							+ <span class="string">"]. Please check configuration. "</span>);
-<a name="147" href="#147">147</a> 		}
-<a name="148" href="#148">148</a> 		<strong>if</strong>(log.isDebugEnabled())
-<a name="149" href="#149">149</a> 			log.debug(<span class="string">"Finished creating bundle path List for "</span> + getName());
-<a name="150" href="#150">150</a> 	}
-<a name="151" href="#151">151</a> 
-<a name="152" href="#152">152</a> 	<em>/**<em>*</em></em>
-<a name="153" href="#153">153</a> <em>	 * Adds all the resources within a path to the item path list. </em>
-<a name="154" href="#154">154</a> <em>	 * @param dirName</em>
-<a name="155" href="#155">155</a> <em>	 * @param addSubDirs boolean If subfolders will be included. In such case, </em>
-<a name="156" href="#156">156</a> <em>	 * 							 every folder below the path is included.  </em>
-<a name="157" href="#157">157</a> <em>	 */</em>
-<a name="158" href="#158">158</a> 	<strong>private</strong> <strong>void</strong> addItemsFromDir(String dirName, <strong>boolean</strong> addSubDirs)
-<a name="159" href="#159">159</a> 	{
-<a name="160" href="#160">160</a> 		Set resources = resourceHandler.getResourceNames(dirName);
-<a name="161" href="#161">161</a> 		
-<a name="162" href="#162">162</a> 			
-<a name="163" href="#163">163</a> 		<strong>if</strong>(log.isDebugEnabled()) {
-<a name="164" href="#164">164</a> 			log.debug(<span class="string">"Adding "</span> + resources.size() + <span class="string">" resources from path ["</span> + dirName + <span class="string">"] to bundle "</span> + getName());
-<a name="165" href="#165">165</a> 		}
-<a name="166" href="#166">166</a> 
-<a name="167" href="#167">167</a> 		
-<a name="168" href="#168">168</a> 		<em class="comment">// If the directory contains a sorting file, it is used to order the resources. </em>
-<a name="169" href="#169">169</a> 		<strong>if</strong>(resources.contains(SORT_FILE_NAME) || resources.contains(<span class="string">"/"</span> + SORT_FILE_NAME)) {
-<a name="170" href="#170">170</a> 			SortFileParser parser;
-<a name="171" href="#171">171</a> 			<strong>try</strong> {
-<a name="172" href="#172">172</a> 				String sortFilePath = PathNormalizer.joinPaths(dirName, SORT_FILE_NAME);
-<a name="173" href="#173">173</a> 				parser = <strong>new</strong> <a href="../../../../../net/jawr/web/resource/bundle/sorting/SortFileParser.html">SortFileParser</a>(resourceHandler.getResource(sortFilePath),
-<a name="174" href="#174">174</a> 															resources,
-<a name="175" href="#175">175</a> 															dirName);
-<a name="176" href="#176">176</a> 			} <strong>catch</strong> (ResourceNotFoundException e) {
-<a name="177" href="#177">177</a> 				<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected ResourceNotFoundException when reading a sorting file["</span> + e.getRequestedPath() + <span class="string">"]"</span>,e);
-<a name="178" href="#178">178</a> 			}
-<a name="179" href="#179">179</a> 			List sortedResources = parser.getSortedResources();
-<a name="180" href="#180">180</a> 			<strong>for</strong>(Iterator it = sortedResources.iterator();it.hasNext();) {
-<a name="181" href="#181">181</a> 				String resourceName = (String) it.next();
-<a name="182" href="#182">182</a> 				
-<a name="183" href="#183">183</a> 				<em class="comment">// Add subfolders or files</em>
-<a name="184" href="#184">184</a> 				<strong>if</strong>(resourceName.endsWith(fileExtension)){
-<a name="185" href="#185">185</a> 					itemPathList.add(PathNormalizer.asPath(resourceName));
-<a name="186" href="#186">186</a> 					<strong>if</strong>(log.isDebugEnabled())
-<a name="187" href="#187">187</a> 						log.debug(<span class="string">"Added to item path list from the sorting file:"</span> + resourceName);
-<a name="188" href="#188">188</a> 				}
-<a name="189" href="#189">189</a> 				<strong>else</strong> <strong>if</strong>(addSubDirs &amp;&amp; resourceHandler.isDirectory(resourceName))
-<a name="190" href="#190">190</a> 					addItemsFromDir(resourceName,<strong>true</strong>);
-<a name="191" href="#191">191</a> 			}		
-<a name="192" href="#192">192</a> 		}
-<a name="193" href="#193">193</a> 		
-<a name="194" href="#194">194</a> 		<em class="comment">// Add licenses file</em>
-<a name="195" href="#195">195</a> 		<strong>if</strong>(resources.contains(LICENSES_FILENAME) || resources.contains(<span class="string">"/"</span> + LICENSES_FILENAME)) {
-<a name="196" href="#196">196</a> 			licensesPathList.add(PathNormalizer.joinPaths(dirName, LICENSES_FILENAME));
-<a name="197" href="#197">197</a> 		}
-<a name="198" href="#198">198</a> 		
-<a name="199" href="#199">199</a> 		<em class="comment">// Add remaining resources (remaining after sorting, or all if no sort file present)</em>
-<a name="200" href="#200">200</a> 		List folders = <strong>new</strong> ArrayList();
-<a name="201" href="#201">201</a> 		<strong>for</strong>(Iterator it = resources.iterator();it.hasNext();) {
-<a name="202" href="#202">202</a> 			String resourceName = (String) it.next();
-<a name="203" href="#203">203</a> 			String resourcePath = PathNormalizer.joinPaths(dirName, resourceName);
-<a name="204" href="#204">204</a> 			<strong>if</strong>(resourceName.endsWith(fileExtension)) {
-<a name="205" href="#205">205</a> 				itemPathList.add(PathNormalizer.asPath(resourcePath));
-<a name="206" href="#206">206</a> 
-<a name="207" href="#207">207</a> 				<strong>if</strong>(log.isDebugEnabled())
-<a name="208" href="#208">208</a> 					log.debug(<span class="string">"Added to item path list:"</span> + PathNormalizer.asPath(resourcePath));
-<a name="209" href="#209">209</a> 			}
-<a name="210" href="#210">210</a> 			<strong>else</strong> <strong>if</strong>(addSubDirs &amp;&amp; resourceHandler.isDirectory(resourcePath))
-<a name="211" href="#211">211</a> 				folders.add(resourceName);
-<a name="212" href="#212">212</a> 		}
-<a name="213" href="#213">213</a> 		
-<a name="214" href="#214">214</a> 		<em class="comment">// Add subfolders if requested. Subfolders are added last unless specified in sorting file. </em>
-<a name="215" href="#215">215</a> 		<strong>if</strong>(addSubDirs)
-<a name="216" href="#216">216</a> 		{
-<a name="217" href="#217">217</a> 			<strong>for</strong>(Iterator it = folders.iterator();it.hasNext();) {
-<a name="218" href="#218">218</a> 				String folderName = (String) it.next();
-<a name="219" href="#219">219</a> 				addItemsFromDir(PathNormalizer.joinPaths(dirName, folderName),<strong>true</strong>);
-<a name="220" href="#220">220</a> 			}
-<a name="221" href="#221">221</a> 		}
-<a name="222" href="#222">222</a> 	}
-<a name="223" href="#223">223</a> 
-<a name="224" href="#224">224</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="225" href="#225">225</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#belongsTobundle(java.lang.String)</em>
-<a name="226" href="#226">226</a> <em class="comment">	 */</em>
-<a name="227" href="#227">227</a> 	<strong>public</strong> <strong>boolean</strong> belongsToBundle(String itemPath) {		
-<a name="228" href="#228">228</a> 		<strong>return</strong> itemPathList.contains(itemPath);
-<a name="229" href="#229">229</a> 	}
-<a name="230" href="#230">230</a> 
-<a name="231" href="#231">231</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="232" href="#232">232</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getInclusionPattern()</em>
-<a name="233" href="#233">233</a> <em class="comment">	 */</em>
-<a name="234" href="#234">234</a> 	<strong>public</strong> <a href="../../../../../net/jawr/web/resource/bundle/InclusionPattern.html">InclusionPattern</a> getInclusionPattern() {
-<a name="235" href="#235">235</a> 		<strong>return</strong> <strong>this</strong>.inclusionPattern;
-<a name="236" href="#236">236</a> 	}
-<a name="237" href="#237">237</a> 
-<a name="238" href="#238">238</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="239" href="#239">239</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList()</em>
-<a name="240" href="#240">240</a> <em class="comment">	 */</em>
-<a name="241" href="#241">241</a> 	<strong>public</strong> List getItemPathList() {
-<a name="242" href="#242">242</a> 		<strong>return</strong> itemPathList;
-<a name="243" href="#243">243</a> 	}
-<a name="244" href="#244">244</a> 	
-<a name="245" href="#245">245</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="246" href="#246">246</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList(java.lang.String)</em>
-<a name="247" href="#247">247</a> <em class="comment">	 */</em>
-<a name="248" href="#248">248</a> 	<strong>public</strong> List getItemPathList(String variantKey) {
-<a name="249" href="#249">249</a> 		<strong>if</strong>(<strong>null</strong> == variantKey)
-<a name="250" href="#250">250</a> 			<strong>return</strong> itemPathList;
-<a name="251" href="#251">251</a> 		
-<a name="252" href="#252">252</a> 		List rets = <strong>new</strong> ArrayList();
-<a name="253" href="#253">253</a> 		<strong>for</strong>(Iterator it = itemPathList.iterator();it.hasNext();){
-<a name="254" href="#254">254</a> 			String path = (String) it.next();
-<a name="255" href="#255">255</a> 			<strong>if</strong>(path.startsWith(GeneratorRegistry.MESSAGE_BUNDLE_PREFIX)){
-<a name="256" href="#256">256</a> 				rets.add(path + '@' + variantKey);
-<a name="257" href="#257">257</a> 			}
-<a name="258" href="#258">258</a> 			<strong>else</strong> rets.add(path);
-<a name="259" href="#259">259</a> 		}
-<a name="260" href="#260">260</a> 		<strong>return</strong> rets; 
-<a name="261" href="#261">261</a> 	}
-<a name="262" href="#262">262</a> 
-<a name="263" href="#263">263</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="264" href="#264">264</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getName()</em>
-<a name="265" href="#265">265</a> <em class="comment">	 */</em>
-<a name="266" href="#266">266</a> 	<strong>public</strong> String getName() {
-<a name="267" href="#267">267</a> 		<strong>return</strong> <strong>this</strong>.name;
-<a name="268" href="#268">268</a> 	}
-<a name="269" href="#269">269</a> 
-<a name="270" href="#270">270</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="271" href="#271">271</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getLicensesPathList()</em>
-<a name="272" href="#272">272</a> <em class="comment">	 */</em>
-<a name="273" href="#273">273</a> 	<strong>public</strong> Set getLicensesPathList() {
-<a name="274" href="#274">274</a> 		<strong>return</strong> <strong>this</strong>.licensesPathList;
-<a name="275" href="#275">275</a> 	}
-<a name="276" href="#276">276</a> 
-<a name="277" href="#277">277</a>     <em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="278" href="#278">278</a> <em class="comment">	* @see net.jawr.web.resource.bundle.JoinableResourceBundle#getURLPrefix()</em>
-<a name="279" href="#279">279</a> <em class="comment">	*/</em>
-<a name="280" href="#280">280</a>     <strong>public</strong> String getURLPrefix(String variantKey) {
-<a name="281" href="#281">281</a>     	<strong>if</strong>(<strong>null</strong> == <strong>this</strong>.urlPrefix)
-<a name="282" href="#282">282</a>     		<strong>throw</strong> <strong>new</strong> IllegalStateException(<span class="string">"The bundleDataHashCode must be set before accessing the url prefix."</span>);
-<a name="283" href="#283">283</a>     	
-<a name="284" href="#284">284</a>     	<em class="comment">// Resolves the locale key like resourcebundle does</em>
-<a name="285" href="#285">285</a>     	<strong>if</strong>(<strong>null</strong> != variantKey &amp;&amp; <strong>null</strong> != <strong>this</strong>.localeVariantKeys) {
-<a name="286" href="#286">286</a>     		String key = getAvailableLocaleVariant(variantKey);
-<a name="287" href="#287">287</a>     		<strong>if</strong>(<strong>null</strong> != key)
-<a name="288" href="#288">288</a>     			<strong>return</strong> <strong>this</strong>.urlPrefix + <span class="string">"."</span> + key + <span class="string">"/"</span>;
-<a name="289" href="#289">289</a>     	}
-<a name="290" href="#290">290</a>     	<strong>return</strong> <strong>this</strong>.urlPrefix + <span class="string">"/"</span>;
-<a name="291" href="#291">291</a>     }
-<a name="292" href="#292">292</a>     
-<a name="293" href="#293">293</a>     <em>/**<em>*</em></em>
-<a name="294" href="#294">294</a> <em>     * Resolves a registered path from a locale key, using the same algorithm used to </em>
-<a name="295" href="#295">295</a> <em>     * locate ResourceBundles. </em>
-<a name="296" href="#296">296</a> <em>     *  </em>
-<a name="297" href="#297">297</a> <em>     * @param variantKey</em>
-<a name="298" href="#298">298</a> <em>     * @return</em>
-<a name="299" href="#299">299</a> <em>     */</em>
-<a name="300" href="#300">300</a>     <strong>private</strong> String getAvailableLocaleVariant(String variantKey) {
-<a name="301" href="#301">301</a>     	String key = <strong>null</strong>;
-<a name="302" href="#302">302</a>     	<strong>if</strong>(<strong>this</strong>.localeVariantKeys.contains(variantKey)){
-<a name="303" href="#303">303</a>     		key = variantKey;
-<a name="304" href="#304">304</a>     	}
-<a name="305" href="#305">305</a>     	<strong>else</strong> {
-<a name="306" href="#306">306</a>     		String subVar = variantKey;
-<a name="307" href="#307">307</a>     		<strong>while</strong>(subVar.indexOf('_') != -1) {
-<a name="308" href="#308">308</a>     			subVar = subVar.substring(0,subVar.lastIndexOf('_'));
-<a name="309" href="#309">309</a>     			<strong>if</strong>(<strong>this</strong>.localeVariantKeys.contains(subVar)){
-<a name="310" href="#310">310</a>         			key = subVar;
-<a name="311" href="#311">311</a>         		}
-<a name="312" href="#312">312</a>     		}
-<a name="313" href="#313">313</a>     	}
-<a name="314" href="#314">314</a>     	<strong>return</strong> key;
-<a name="315" href="#315">315</a>     }
-<a name="316" href="#316">316</a>     
-<a name="317" href="#317">317</a> 
-<a name="318" href="#318">318</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="319" href="#319">319</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getUnitaryPostProcessor()</em>
-<a name="320" href="#320">320</a> <em class="comment">	 */</em>
-<a name="321" href="#321">321</a> 	<strong>public</strong> <a href="../../../../../net/jawr/web/resource/bundle/postprocess/ResourceBundlePostProcessor.html">ResourceBundlePostProcessor</a> getUnitaryPostProcessor() {
-<a name="322" href="#322">322</a> 		<strong>return</strong> unitaryPostProcessor;
-<a name="323" href="#323">323</a> 	}
-<a name="324" href="#324">324</a> 
+<a name="134" href="#134">134</a> 			<em class="comment">// path ends in /, the folder is included with all subfolders</em>
+<a name="135" href="#135">135</a> 			<strong>else</strong> <strong>if</strong>(pathMapping.endsWith(<span class="string">"/**"</span>)){
+<a name="136" href="#136">136</a> 				addItemsFromDir(pathMapping.substring(0,pathMapping.lastIndexOf(<span class="string">"**"</span>)),<strong>true</strong>);
+<a name="137" href="#137">137</a> 			}
+<a name="138" href="#138">138</a> 			<strong>else</strong> <strong>if</strong>(pathMapping.endsWith(fileExtension)){
+<a name="139" href="#139">139</a> 				itemPathList.add(PathNormalizer.asPath(pathMapping));
+<a name="140" href="#140">140</a> 			}
+<a name="141" href="#141">141</a> 			<strong>else</strong> <strong>if</strong>(pathMapping.endsWith(LICENSES_FILENAME)){
+<a name="142" href="#142">142</a> 				licensesPathList.add(PathNormalizer.asPath(pathMapping));
+<a name="143" href="#143">143</a> 			}
+<a name="144" href="#144">144</a> 			<strong>else</strong> log.warn(<span class="string">"Wrong mapping ["</span> + pathMapping  
+<a name="145" href="#145">145</a> 							+ <span class="string">"] for bundle ["</span> 
+<a name="146" href="#146">146</a> 							+ <strong>this</strong>.name 
+<a name="147" href="#147">147</a> 							+ <span class="string">"]. Please check configuration. "</span>);
+<a name="148" href="#148">148</a> 		}
+<a name="149" href="#149">149</a> 		<strong>if</strong>(log.isDebugEnabled())
+<a name="150" href="#150">150</a> 			log.debug(<span class="string">"Finished creating bundle path List for "</span> + getName());
+<a name="151" href="#151">151</a> 	}
+<a name="152" href="#152">152</a> 
+<a name="153" href="#153">153</a> 	<em>/**<em>*</em></em>
+<a name="154" href="#154">154</a> <em>	 * Adds all the resources within a path to the item path list. </em>
+<a name="155" href="#155">155</a> <em>	 * @param dirName</em>
+<a name="156" href="#156">156</a> <em>	 * @param addSubDirs boolean If subfolders will be included. In such case, </em>
+<a name="157" href="#157">157</a> <em>	 * 							 every folder below the path is included.  </em>
+<a name="158" href="#158">158</a> <em>	 */</em>
+<a name="159" href="#159">159</a> 	<strong>private</strong> <strong>void</strong> addItemsFromDir(String dirName, <strong>boolean</strong> addSubDirs)
+<a name="160" href="#160">160</a> 	{
+<a name="161" href="#161">161</a> 		Set resources = resourceHandler.getResourceNames(dirName);
+<a name="162" href="#162">162</a> 		
+<a name="163" href="#163">163</a> 			
+<a name="164" href="#164">164</a> 		<strong>if</strong>(log.isDebugEnabled()) {
+<a name="165" href="#165">165</a> 			log.debug(<span class="string">"Adding "</span> + resources.size() + <span class="string">" resources from path ["</span> + dirName + <span class="string">"] to bundle "</span> + getName());
+<a name="166" href="#166">166</a> 		}
+<a name="167" href="#167">167</a> 
+<a name="168" href="#168">168</a> 		
+<a name="169" href="#169">169</a> 		<em class="comment">// If the directory contains a sorting file, it is used to order the resources. </em>
+<a name="170" href="#170">170</a> 		<strong>if</strong>(resources.contains(SORT_FILE_NAME) || resources.contains(<span class="string">"/"</span> + SORT_FILE_NAME)) {
+<a name="171" href="#171">171</a> 			SortFileParser parser;
+<a name="172" href="#172">172</a> 			<strong>try</strong> {
+<a name="173" href="#173">173</a> 				String sortFilePath = PathNormalizer.joinPaths(dirName, SORT_FILE_NAME);
+<a name="174" href="#174">174</a> 				parser = <strong>new</strong> <a href="../../../../../net/jawr/web/resource/bundle/sorting/SortFileParser.html">SortFileParser</a>(resourceHandler.getResource(sortFilePath),
+<a name="175" href="#175">175</a> 															resources,
+<a name="176" href="#176">176</a> 															dirName);
+<a name="177" href="#177">177</a> 			} <strong>catch</strong> (ResourceNotFoundException e) {
+<a name="178" href="#178">178</a> 				<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected ResourceNotFoundException when reading a sorting file["</span> + e.getRequestedPath() + <span class="string">"]"</span>,e);
+<a name="179" href="#179">179</a> 			}
+<a name="180" href="#180">180</a> 			List sortedResources = parser.getSortedResources();
+<a name="181" href="#181">181</a> 			<strong>for</strong>(Iterator it = sortedResources.iterator();it.hasNext();) {
+<a name="182" href="#182">182</a> 				String resourceName = (String) it.next();
+<a name="183" href="#183">183</a> 				
+<a name="184" href="#184">184</a> 				<em class="comment">// Add subfolders or files</em>
+<a name="185" href="#185">185</a> 				<strong>if</strong>(resourceName.endsWith(fileExtension)){
+<a name="186" href="#186">186</a> 					itemPathList.add(PathNormalizer.asPath(resourceName));
+<a name="187" href="#187">187</a> 					<strong>if</strong>(log.isDebugEnabled())
+<a name="188" href="#188">188</a> 						log.debug(<span class="string">"Added to item path list from the sorting file:"</span> + resourceName);
+<a name="189" href="#189">189</a> 				}
+<a name="190" href="#190">190</a> 				<strong>else</strong> <strong>if</strong>(addSubDirs &amp;&amp; resourceHandler.isDirectory(resourceName))
+<a name="191" href="#191">191</a> 					addItemsFromDir(resourceName,<strong>true</strong>);
+<a name="192" href="#192">192</a> 			}		
+<a name="193" href="#193">193</a> 		}
+<a name="194" href="#194">194</a> 		
+<a name="195" href="#195">195</a> 		<em class="comment">// Add licenses file</em>
+<a name="196" href="#196">196</a> 		<strong>if</strong>(resources.contains(LICENSES_FILENAME) || resources.contains(<span class="string">"/"</span> + LICENSES_FILENAME)) {
+<a name="197" href="#197">197</a> 			licensesPathList.add(PathNormalizer.joinPaths(dirName, LICENSES_FILENAME));
+<a name="198" href="#198">198</a> 		}
+<a name="199" href="#199">199</a> 		
+<a name="200" href="#200">200</a> 		<em class="comment">// Add remaining resources (remaining after sorting, or all if no sort file present)</em>
+<a name="201" href="#201">201</a> 		List folders = <strong>new</strong> ArrayList();
+<a name="202" href="#202">202</a> 		<strong>for</strong>(Iterator it = resources.iterator();it.hasNext();) {
+<a name="203" href="#203">203</a> 			String resourceName = (String) it.next();
+<a name="204" href="#204">204</a> 			String resourcePath = PathNormalizer.joinPaths(dirName, resourceName);
+<a name="205" href="#205">205</a> 			<strong>if</strong>(resourceName.endsWith(fileExtension)) {
+<a name="206" href="#206">206</a> 				itemPathList.add(PathNormalizer.asPath(resourcePath));
+<a name="207" href="#207">207</a> 
+<a name="208" href="#208">208</a> 				<strong>if</strong>(log.isDebugEnabled())
+<a name="209" href="#209">209</a> 					log.debug(<span class="string">"Added to item path list:"</span> + PathNormalizer.asPath(resourcePath));
+<a name="210" href="#210">210</a> 			}
+<a name="211" href="#211">211</a> 			<strong>else</strong> <strong>if</strong>(addSubDirs &amp;&amp; resourceHandler.isDirectory(resourcePath))
+<a name="212" href="#212">212</a> 				folders.add(resourceName);
+<a name="213" href="#213">213</a> 		}
+<a name="214" href="#214">214</a> 		
+<a name="215" href="#215">215</a> 		<em class="comment">// Add subfolders if requested. Subfolders are added last unless specified in sorting file. </em>
+<a name="216" href="#216">216</a> 		<strong>if</strong>(addSubDirs)
+<a name="217" href="#217">217</a> 		{
+<a name="218" href="#218">218</a> 			<strong>for</strong>(Iterator it = folders.iterator();it.hasNext();) {
+<a name="219" href="#219">219</a> 				String folderName = (String) it.next();
+<a name="220" href="#220">220</a> 				addItemsFromDir(PathNormalizer.joinPaths(dirName, folderName),<strong>true</strong>);
+<a name="221" href="#221">221</a> 			}
+<a name="222" href="#222">222</a> 		}
+<a name="223" href="#223">223</a> 	}
+<a name="224" href="#224">224</a> 
+<a name="225" href="#225">225</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="226" href="#226">226</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#belongsTobundle(java.lang.String)</em>
+<a name="227" href="#227">227</a> <em class="comment">	 */</em>
+<a name="228" href="#228">228</a> 	<strong>public</strong> <strong>boolean</strong> belongsToBundle(String itemPath) {		
+<a name="229" href="#229">229</a> 		<strong>return</strong> itemPathList.contains(itemPath);
+<a name="230" href="#230">230</a> 	}
+<a name="231" href="#231">231</a> 
+<a name="232" href="#232">232</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="233" href="#233">233</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getInclusionPattern()</em>
+<a name="234" href="#234">234</a> <em class="comment">	 */</em>
+<a name="235" href="#235">235</a> 	<strong>public</strong> <a href="../../../../../net/jawr/web/resource/bundle/InclusionPattern.html">InclusionPattern</a> getInclusionPattern() {
+<a name="236" href="#236">236</a> 		<strong>return</strong> <strong>this</strong>.inclusionPattern;
+<a name="237" href="#237">237</a> 	}
+<a name="238" href="#238">238</a> 
+<a name="239" href="#239">239</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="240" href="#240">240</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList()</em>
+<a name="241" href="#241">241</a> <em class="comment">	 */</em>
+<a name="242" href="#242">242</a> 	<strong>public</strong> List getItemPathList() {
+<a name="243" href="#243">243</a> 		<strong>return</strong> itemPathList;
+<a name="244" href="#244">244</a> 	}
+<a name="245" href="#245">245</a> 	
+<a name="246" href="#246">246</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="247" href="#247">247</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList(java.lang.String)</em>
+<a name="248" href="#248">248</a> <em class="comment">	 */</em>
+<a name="249" href="#249">249</a> 	<strong>public</strong> List getItemPathList(String variantKey) {
+<a name="250" href="#250">250</a> 		<strong>if</strong>(<strong>null</strong> == variantKey)
+<a name="251" href="#251">251</a> 			<strong>return</strong> itemPathList;
+<a name="252" href="#252">252</a> 		
+<a name="253" href="#253">253</a> 		List rets = <strong>new</strong> ArrayList();
+<a name="254" href="#254">254</a> 		<strong>for</strong>(Iterator it = itemPathList.iterator();it.hasNext();){
+<a name="255" href="#255">255</a> 			String path = (String) it.next();
+<a name="256" href="#256">256</a> 			<strong>if</strong>(path.startsWith(GeneratorRegistry.MESSAGE_BUNDLE_PREFIX)){
+<a name="257" href="#257">257</a> 				rets.add(path + '@' + variantKey);
+<a name="258" href="#258">258</a> 			}
+<a name="259" href="#259">259</a> 			<strong>else</strong> rets.add(path);
+<a name="260" href="#260">260</a> 		}
+<a name="261" href="#261">261</a> 		<strong>return</strong> rets; 
+<a name="262" href="#262">262</a> 	}
+<a name="263" href="#263">263</a> 
+<a name="264" href="#264">264</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="265" href="#265">265</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getName()</em>
+<a name="266" href="#266">266</a> <em class="comment">	 */</em>
+<a name="267" href="#267">267</a> 	<strong>public</strong> String getName() {
+<a name="268" href="#268">268</a> 		<strong>return</strong> <strong>this</strong>.name;
+<a name="269" href="#269">269</a> 	}
+<a name="270" href="#270">270</a> 
+<a name="271" href="#271">271</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="272" href="#272">272</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getLicensesPathList()</em>
+<a name="273" href="#273">273</a> <em class="comment">	 */</em>
+<a name="274" href="#274">274</a> 	<strong>public</strong> Set getLicensesPathList() {
+<a name="275" href="#275">275</a> 		<strong>return</strong> <strong>this</strong>.licensesPathList;
+<a name="276" href="#276">276</a> 	}
+<a name="277" href="#277">277</a> 
+<a name="278" href="#278">278</a>     <em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="279" href="#279">279</a> <em class="comment">	* @see net.jawr.web.resource.bundle.JoinableResourceBundle#getURLPrefix()</em>
+<a name="280" href="#280">280</a> <em class="comment">	*/</em>
+<a name="281" href="#281">281</a>     <strong>public</strong> String getURLPrefix(String variantKey) {
+<a name="282" href="#282">282</a>     	<strong>if</strong>(<strong>null</strong> == <strong>this</strong>.urlPrefix)
+<a name="283" href="#283">283</a>     		<strong>throw</strong> <strong>new</strong> IllegalStateException(<span class="string">"The bundleDataHashCode must be set before accessing the url prefix."</span>);
+<a name="284" href="#284">284</a>     	
+<a name="285" href="#285">285</a>     	<em class="comment">// Resolves the locale key like resourcebundle does</em>
+<a name="286" href="#286">286</a>     	<strong>if</strong>(<strong>null</strong> != variantKey &amp;&amp; <strong>null</strong> != <strong>this</strong>.localeVariantKeys) {
+<a name="287" href="#287">287</a>     		String key = getAvailableLocaleVariant(variantKey);
+<a name="288" href="#288">288</a>     		<strong>if</strong>(<strong>null</strong> != key)
+<a name="289" href="#289">289</a>     			<strong>return</strong> <strong>this</strong>.urlPrefix + <span class="string">"."</span> + key + <span class="string">"/"</span>;
+<a name="290" href="#290">290</a>     	}
+<a name="291" href="#291">291</a>     	<strong>return</strong> <strong>this</strong>.urlPrefix + <span class="string">"/"</span>;
+<a name="292" href="#292">292</a>     }
+<a name="293" href="#293">293</a>     
+<a name="294" href="#294">294</a>     <em>/**<em>*</em></em>
+<a name="295" href="#295">295</a> <em>     * Resolves a registered path from a locale key, using the same algorithm used to </em>
+<a name="296" href="#296">296</a> <em>     * locate ResourceBundles. </em>
+<a name="297" href="#297">297</a> <em>     *  </em>
+<a name="298" href="#298">298</a> <em>     * @param variantKey</em>
+<a name="299" href="#299">299</a> <em>     * @return</em>
+<a name="300" href="#300">300</a> <em>     */</em>
+<a name="301" href="#301">301</a>     <strong>private</strong> String getAvailableLocaleVariant(String variantKey) {
+<a name="302" href="#302">302</a>     	String key = <strong>null</strong>;
+<a name="303" href="#303">303</a>     	<strong>if</strong>(<strong>this</strong>.localeVariantKeys.contains(variantKey)){
+<a name="304" href="#304">304</a>     		key = variantKey;
+<a name="305" href="#305">305</a>     	}
+<a name="306" href="#306">306</a>     	<strong>else</strong> {
+<a name="307" href="#307">307</a>     		String subVar = variantKey;
+<a name="308" href="#308">308</a>     		<strong>while</strong>(subVar.indexOf('_') != -1) {
+<a name="309" href="#309">309</a>     			subVar = subVar.substring(0,subVar.lastIndexOf('_'));
+<a name="310" href="#310">310</a>     			<strong>if</strong>(<strong>this</strong>.localeVariantKeys.contains(subVar)){
+<a name="311" href="#311">311</a>         			key = subVar;
+<a name="312" href="#312">312</a>         		}
+<a name="313" href="#313">313</a>     		}
+<a name="314" href="#314">314</a>     	}
+<a name="315" href="#315">315</a>     	<strong>return</strong> key;
+<a name="316" href="#316">316</a>     }
+<a name="317" href="#317">317</a>     
+<a name="318" href="#318">318</a> 
+<a name="319" href="#319">319</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="320" href="#320">320</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getUnitaryPostProcessor()</em>
+<a name="321" href="#321">321</a> <em class="comment">	 */</em>
+<a name="322" href="#322">322</a> 	<strong>public</strong> <a href="../../../../../net/jawr/web/resource/bundle/postprocess/ResourceBundlePostProcessor.html">ResourceBundlePostProcessor</a> getUnitaryPostProcessor() {
+<a name="323" href="#323">323</a> 		<strong>return</strong> unitaryPostProcessor;
+<a name="324" href="#324">324</a> 	}
 <a name="325" href="#325">325</a> 
 <a name="326" href="#326">326</a> 
-<a name="327" href="#327">327</a> 	<em>/**<em>*</em></em>
-<a name="328" href="#328">328</a> <em>	 * @param unitaryPostProcessor</em>
-<a name="329" href="#329">329</a> <em>	 */</em>
-<a name="330" href="#330">330</a> 	<strong>public</strong> <strong>void</strong> setUnitaryPostProcessor(
-<a name="331" href="#331">331</a> 			ResourceBundlePostProcessor unitaryPostProcessor) {
-<a name="332" href="#332">332</a> 		<strong>this</strong>.unitaryPostProcessor = unitaryPostProcessor;
-<a name="333" href="#333">333</a> 	}
-<a name="334" href="#334">334</a> 
+<a name="327" href="#327">327</a> 
+<a name="328" href="#328">328</a> 	<em>/**<em>*</em></em>
+<a name="329" href="#329">329</a> <em>	 * @param unitaryPostProcessor</em>
+<a name="330" href="#330">330</a> <em>	 */</em>
+<a name="331" href="#331">331</a> 	<strong>public</strong> <strong>void</strong> setUnitaryPostProcessor(
+<a name="332" href="#332">332</a> 			ResourceBundlePostProcessor unitaryPostProcessor) {
+<a name="333" href="#333">333</a> 		<strong>this</strong>.unitaryPostProcessor = unitaryPostProcessor;
+<a name="334" href="#334">334</a> 	}
 <a name="335" href="#335">335</a> 
 <a name="336" href="#336">336</a> 
-<a name="337" href="#337">337</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="338" href="#338">338</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getBundlePostProcessor()</em>
-<a name="339" href="#339">339</a> <em class="comment">	 */</em>
-<a name="340" href="#340">340</a> 	<strong>public</strong> <a href="../../../../../net/jawr/web/resource/bundle/postprocess/ResourceBundlePostProcessor.html">ResourceBundlePostProcessor</a> getBundlePostProcessor() {
-<a name="341" href="#341">341</a> 		<strong>return</strong> bundlePostProcessor;
-<a name="342" href="#342">342</a> 	}
-<a name="343" href="#343">343</a> 
+<a name="337" href="#337">337</a> 
+<a name="338" href="#338">338</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="339" href="#339">339</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getBundlePostProcessor()</em>
+<a name="340" href="#340">340</a> <em class="comment">	 */</em>
+<a name="341" href="#341">341</a> 	<strong>public</strong> <a href="../../../../../net/jawr/web/resource/bundle/postprocess/ResourceBundlePostProcessor.html">ResourceBundlePostProcessor</a> getBundlePostProcessor() {
+<a name="342" href="#342">342</a> 		<strong>return</strong> bundlePostProcessor;
+<a name="343" href="#343">343</a> 	}
 <a name="344" href="#344">344</a> 
 <a name="345" href="#345">345</a> 
-<a name="346" href="#346">346</a> 	<strong>public</strong> <strong>void</strong> setBundlePostProcessor(
-<a name="347" href="#347">347</a> 			ResourceBundlePostProcessor bundlePostProcessor) {
-<a name="348" href="#348">348</a> 		<strong>this</strong>.bundlePostProcessor = bundlePostProcessor;
-<a name="349" href="#349">349</a> 	}
-<a name="350" href="#350">350</a> 
+<a name="346" href="#346">346</a> 
+<a name="347" href="#347">347</a> 	<strong>public</strong> <strong>void</strong> setBundlePostProcessor(
+<a name="348" href="#348">348</a> 			ResourceBundlePostProcessor bundlePostProcessor) {
+<a name="349" href="#349">349</a> 		<strong>this</strong>.bundlePostProcessor = bundlePostProcessor;
+<a name="350" href="#350">350</a> 	}
 <a name="351" href="#351">351</a> 
-<a name="352" href="#352">352</a> 	
-<a name="353" href="#353">353</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="354" href="#354">354</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setBundleDataHashCode(int)</em>
-<a name="355" href="#355">355</a> <em class="comment">	 */</em>
-<a name="356" href="#356">356</a> 	<strong>public</strong> <strong>void</strong> setBundleDataHashCode(<strong>int</strong> bundleDataHashCode) {		
-<a name="357" href="#357">357</a> 		<strong>this</strong>.bundleDataHashCode = bundleDataHashCode;
-<a name="358" href="#358">358</a> 		<em class="comment">// Since this numbre is used as part of urls, the -sign is converted to 'N'</em>
-<a name="359" href="#359">359</a> 		<strong>if</strong>(bundleDataHashCode &lt; 0){
-<a name="360" href="#360">360</a> 			<strong>this</strong>.urlPrefix = <span class="string">"N"</span> + <strong>this</strong>.bundleDataHashCode*-1;
-<a name="361" href="#361">361</a> 		}
-<a name="362" href="#362">362</a> 		<strong>else</strong> urlPrefix = <span class="string">""</span>+<strong>this</strong>.bundleDataHashCode;
-<a name="363" href="#363">363</a> 		
-<a name="364" href="#364">364</a> 	}
-<a name="365" href="#365">365</a> 
+<a name="352" href="#352">352</a> 
+<a name="353" href="#353">353</a> 	
+<a name="354" href="#354">354</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="355" href="#355">355</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setBundleDataHashCode(int)</em>
+<a name="356" href="#356">356</a> <em class="comment">	 */</em>
+<a name="357" href="#357">357</a> 	<strong>public</strong> <strong>void</strong> setBundleDataHashCode(<strong>int</strong> bundleDataHashCode) {		
+<a name="358" href="#358">358</a> 		<strong>this</strong>.bundleDataHashCode = bundleDataHashCode;
+<a name="359" href="#359">359</a> 		<em class="comment">// Since this numbre is used as part of urls, the -sign is converted to 'N'</em>
+<a name="360" href="#360">360</a> 		<strong>if</strong>(bundleDataHashCode &lt; 0){
+<a name="361" href="#361">361</a> 			<strong>this</strong>.urlPrefix = <span class="string">"N"</span> + <strong>this</strong>.bundleDataHashCode*-1;
+<a name="362" href="#362">362</a> 		}
+<a name="363" href="#363">363</a> 		<strong>else</strong> urlPrefix = <span class="string">""</span>+<strong>this</strong>.bundleDataHashCode;
+<a name="364" href="#364">364</a> 		
+<a name="365" href="#365">365</a> 	}
 <a name="366" href="#366">366</a> 
-<a name="367" href="#367">367</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="368" href="#368">368</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getExplorerConditionalExpression()</em>
-<a name="369" href="#369">369</a> <em class="comment">	 */</em>
-<a name="370" href="#370">370</a> 	<strong>public</strong> String getExplorerConditionalExpression() {
-<a name="371" href="#371">371</a> 		<strong>return</strong> explorerConditionalExpression;
-<a name="372" href="#372">372</a> 	}
-<a name="373" href="#373">373</a> 
+<a name="367" href="#367">367</a> 
+<a name="368" href="#368">368</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="369" href="#369">369</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getExplorerConditionalExpression()</em>
+<a name="370" href="#370">370</a> <em class="comment">	 */</em>
+<a name="371" href="#371">371</a> 	<strong>public</strong> String getExplorerConditionalExpression() {
+<a name="372" href="#372">372</a> 		<strong>return</strong> explorerConditionalExpression;
+<a name="373" href="#373">373</a> 	}
 <a name="374" href="#374">374</a> 
-<a name="375" href="#375">375</a> 	<em>/**<em>*</em></em>
-<a name="376" href="#376">376</a> <em>	 * Set the conditional comment expression. </em>
-<a name="377" href="#377">377</a> <em>	 * @param explorerConditionalExpression</em>
-<a name="378" href="#378">378</a> <em>	 */</em>
-<a name="379" href="#379">379</a> 	<strong>public</strong> <strong>void</strong> setExplorerConditionalExpression(
-<a name="380" href="#380">380</a> 			String explorerConditionalExpression) {
-<a name="381" href="#381">381</a> 		<strong>this</strong>.explorerConditionalExpression = explorerConditionalExpression;
-<a name="382" href="#382">382</a> 	}
-<a name="383" href="#383">383</a> 	
-<a name="384" href="#384">384</a> 	<em>/**<em>*</em></em>
-<a name="385" href="#385">385</a> <em>	 * Set the list of variants for localized resources</em>
-<a name="386" href="#386">386</a> <em>	 * @param localeVariantKeys</em>
-<a name="387" href="#387">387</a> <em>	 */</em>
-<a name="388" href="#388">388</a> 	<strong>public</strong> <strong>void</strong> setLocaleVariantKeys(List localeVariantKeys) {
-<a name="389" href="#389">389</a> 		<strong>this</strong>.localeVariantKeys = localeVariantKeys;
-<a name="390" href="#390">390</a> 	}
-<a name="391" href="#391">391</a> 	
-<a name="392" href="#392">392</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="393" href="#393">393</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getLocaleVariantKeys()</em>
-<a name="394" href="#394">394</a> <em class="comment">	 */</em>
-<a name="395" href="#395">395</a> 	<strong>public</strong> List getLocaleVariantKeys(){
-<a name="396" href="#396">396</a> 		<strong>return</strong> <strong>this</strong>.localeVariantKeys;
-<a name="397" href="#397">397</a> 	}
-<a name="398" href="#398">398</a> }
+<a name="375" href="#375">375</a> 
+<a name="376" href="#376">376</a> 	<em>/**<em>*</em></em>
+<a name="377" href="#377">377</a> <em>	 * Set the conditional comment expression. </em>
+<a name="378" href="#378">378</a> <em>	 * @param explorerConditionalExpression</em>
+<a name="379" href="#379">379</a> <em>	 */</em>
+<a name="380" href="#380">380</a> 	<strong>public</strong> <strong>void</strong> setExplorerConditionalExpression(
+<a name="381" href="#381">381</a> 			String explorerConditionalExpression) {
+<a name="382" href="#382">382</a> 		<strong>this</strong>.explorerConditionalExpression = explorerConditionalExpression;
+<a name="383" href="#383">383</a> 	}
+<a name="384" href="#384">384</a> 	
+<a name="385" href="#385">385</a> 	<em>/**<em>*</em></em>
+<a name="386" href="#386">386</a> <em>	 * Set the list of variants for localized resources</em>
+<a name="387" href="#387">387</a> <em>	 * @param localeVariantKeys</em>
+<a name="388" href="#388">388</a> <em>	 */</em>
+<a name="389" href="#389">389</a> 	<strong>public</strong> <strong>void</strong> setLocaleVariantKeys(List localeVariantKeys) {
+<a name="390" href="#390">390</a> 		<strong>this</strong>.localeVariantKeys = localeVariantKeys;
+<a name="391" href="#391">391</a> 	}
+<a name="392" href="#392">392</a> 	
+<a name="393" href="#393">393</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="394" href="#394">394</a> <em class="comment">	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getLocaleVariantKeys()</em>
+<a name="395" href="#395">395</a> <em class="comment">	 */</em>
+<a name="396" href="#396">396</a> 	<strong>public</strong> List getLocaleVariantKeys(){
+<a name="397" href="#397">397</a> 		<strong>return</strong> <strong>this</strong>.localeVariantKeys;
+<a name="398" href="#398">398</a> 	}
+<a name="399" href="#399">399</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

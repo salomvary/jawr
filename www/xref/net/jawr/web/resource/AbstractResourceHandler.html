@@ -35,7 +35,7 @@
 <a name="26" href="#26">26</a>  <strong>import</strong> java.util.zip.GZIPOutputStream;
 <a name="27" href="#27">27</a>  
 <a name="28" href="#28">28</a>  <strong>import</strong> net.jawr.web.exception.ResourceNotFoundException;
-<a name="29" href="#29">29</a>  <strong>import</strong> net.jawr.web.resource.bundle.generated.GeneratorRegistry;
+<a name="29" href="#29">29</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 <a name="30" href="#30">30</a>  
 <a name="31" href="#31">31</a>  <strong>import</strong> org.apache.log4j.Logger;
 <a name="32" href="#32">32</a>  
@@ -47,7 +47,7 @@
 <a name="38" href="#38">38</a>  <em> */</em>
 <a name="39" href="#39">39</a>  <strong>public</strong> <strong>abstract</strong> <strong>class</strong> <a href="../../../../net/jawr/web/resource/AbstractResourceHandler.html">AbstractResourceHandler</a>  implements ResourceHandler{
 <a name="40" href="#40">40</a>  	<strong>private</strong> <strong>static</strong> <strong>final</strong> Logger log = Logger.getLogger(AbstractResourceHandler.<strong>class</strong>.getName());
-<a name="41" href="#41">41</a>  	<strong>private</strong> <a href="../../../../net/jawr/web/resource/bundle/generated/GeneratorRegistry.html">GeneratorRegistry</a> generatorRegistry;
+<a name="41" href="#41">41</a>  	<strong>private</strong> <a href="../../../../net/jawr/web/resource/bundle/generator/GeneratorRegistry.html">GeneratorRegistry</a> generatorRegistry;
 <a name="42" href="#42">42</a>  
 <a name="43" href="#43">43</a>  	<strong>protected</strong> <strong>static</strong> <strong>final</strong> String TEMP_SUBDIR = <span class="string">"jawrTmp"</span>;
 <a name="44" href="#44">44</a>  	<strong>protected</strong> <strong>static</strong> <strong>final</strong> String TEMP_TEXT_SUBDIR = <span class="string">"text"</span>;

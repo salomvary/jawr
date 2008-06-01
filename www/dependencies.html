@@ -72,19 +72,28 @@
         </li>
               
     <li class="none">
-              <a href="docs/facelets.html">Facelets Tag library</a>
-        </li>
-              
-    <li class="none">
               <a href="docs/modes.html">Debug and production modes</a>
         </li>
               
     <li class="none">
               <a href="docs/messages_gen.html">i18n message generator</a>
         </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Integration</dt>
+        <dd><ul>
               
     <li class="none">
-              <a href="docs/grails.html">Grails plugin</a>
+              <a href="integration/facelets.html">Facelets Tag library</a>
+        </li>
+              
+    <li class="none">
+              <a href="integration/grails.html">Grails plugin</a>
+        </li>
+              
+    <li class="none">
+              <a href="integration/dwr.html">DWR</a>
         </li>
           </ul></dd>
     </dl>
@@ -179,13 +188,14 @@
     </div>
     <div id="bodyColumn">
       <div id="contentBox">
-        <div class="section"><h2>Project Dependencies</h2><div class="section"><h3>compile</h3><p>The following is a list of compile dependencies for this project. These dependencies are required to compile and run the application:</p><table class="bodyTable"><tr class="a"><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Classifier</th><th>Type</th><th>Optional</th></tr><tr class="b"><td>javax.faces</td><td>jsf-api</td><td>1.1_02</td><td>-</td><td>jar</td><td> </td></tr></table></div><div class="section"><h3>test</h3><p>The following is a list of test dependencies for this project. These dependencies are only required to compile and run unit tests for the application:</p><table class="bodyTable"><tr class="a"><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Classifier</th><th>Type</th><th>Optional</th></tr><tr class="b"><td>junit</td><td>junit</td><td>3.8.1</td><td>-</td><td>jar</td><td> </td></tr></table></div><div class="section"><h3>provided</h3><p>The following is a list of provided dependencies for this project. These dependencies are required to compile the application, but should be provided by default when using the library:</p><table class="bodyTable"><tr class="a"><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Classifier</th><th>Type</th><th>Optional</th></tr><tr class="b"><td>com.yahoo.platform.yui</td><td>yuicompressor</td><td>2.2.5</td><td>-</td><td>jar</td><td> </td></tr><tr class="a"><td>javax.servlet</td><td>servlet-api</td><td>2.3</td><td>-</td><td>jar</td><td> </td></tr><tr class="b"><td>javax.servlet.jsp</td><td>jsp-api</td><td>2.0</td><td>-</td><td>jar</td><td> </td></tr><tr class="a"><td>log4j</td><td>log4j</td><td>1.2.9</td><td>-</td><td>jar</td><td> </td></tr></table></div></div><div class="section"><h2>Project Transitive Dependencies</h2><p>The following is a list of transitive dependencies for this project. Transitive dependencies are the dependencies of the project dependencies.</p></div><div class="section"><h2>Project Dependency Graph</h2><div class="section"><h3>Dependency Tree</h3><p><ul><li><a href="#net.jawr:jawr:jar">net.jawr:jawr:jar</a><ul><li><a href="#junit:junit:jar">junit:junit:jar</a></li><li><a href="#javax.servlet:servlet-api:jar">javax.servlet:servlet-api:jar</a></li><li><a href="#log4j:log4j:jar">log4j:log4j:jar</a></li><li><a href="#javax.faces:jsf-api:jar">javax.faces:jsf-api:jar</a></li><li><a href="#com.yahoo.platform.yui:yuicompressor:jar">com.yahoo.platform.yui:yuicompressor:jar</a></li><li><a href="#javax.servlet.jsp:jsp-api:jar">javax.servlet.jsp:jsp-api:jar</a></li></ul></li></ul></p></div><div class="section"><h3>Dependency Listings</h3><p><a name="net.jawr:jawr:jar"><b>Java web resources bundling and compression</b></a></p><p>Javascript/CSS bundling and compressing tool for java web apps.
+        <div class="section"><h2>Project Dependencies</h2><div class="section"><h3>compile</h3><p>The following is a list of compile dependencies for this project. These dependencies are required to compile and run the application:</p><table class="bodyTable"><tr class="a"><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Classifier</th><th>Type</th><th>Optional</th></tr><tr class="b"><td>javax.faces</td><td>jsf-api</td><td>1.1_02</td><td>-</td><td>jar</td><td> </td></tr><tr class="a"><td>org.directwebremoting</td><td>dwr</td><td>2.0.2</td><td>-</td><td>jar</td><td> </td></tr></table></div><div class="section"><h3>test</h3><p>The following is a list of test dependencies for this project. These dependencies are only required to compile and run unit tests for the application:</p><table class="bodyTable"><tr class="b"><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Classifier</th><th>Type</th><th>Optional</th></tr><tr class="a"><td>junit</td><td>junit</td><td>3.8.1</td><td>-</td><td>jar</td><td> </td></tr></table></div><div class="section"><h3>provided</h3><p>The following is a list of provided dependencies for this project. These dependencies are required to compile the application, but should be provided by default when using the library:</p><table class="bodyTable"><tr class="b"><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Classifier</th><th>Type</th><th>Optional</th></tr><tr class="a"><td>com.yahoo.platform.yui</td><td>yuicompressor</td><td>2.2.5</td><td>-</td><td>jar</td><td> </td></tr><tr class="b"><td>javax.servlet</td><td>servlet-api</td><td>2.3</td><td>-</td><td>jar</td><td> </td></tr><tr class="a"><td>javax.servlet.jsp</td><td>jsp-api</td><td>2.0</td><td>-</td><td>jar</td><td> </td></tr><tr class="b"><td>log4j</td><td>log4j</td><td>1.2.9</td><td>-</td><td>jar</td><td> </td></tr></table></div></div><div class="section"><h2>Project Transitive Dependencies</h2><p>The following is a list of transitive dependencies for this project. Transitive dependencies are the dependencies of the project dependencies.</p></div><div class="section"><h2>Project Dependency Graph</h2><div class="section"><h3>Dependency Tree</h3><p><ul><li><a href="#net.jawr:jawr:jar">net.jawr:jawr:jar</a><ul><li><a href="#javax.servlet:servlet-api:jar">javax.servlet:servlet-api:jar</a></li><li><a href="#junit:junit:jar">junit:junit:jar</a></li><li><a href="#log4j:log4j:jar">log4j:log4j:jar</a></li><li><a href="#javax.servlet.jsp:jsp-api:jar">javax.servlet.jsp:jsp-api:jar</a></li><li><a href="#com.yahoo.platform.yui:yuicompressor:jar">com.yahoo.platform.yui:yuicompressor:jar</a></li><li><a href="#javax.faces:jsf-api:jar">javax.faces:jsf-api:jar</a></li><li><a href="#org.directwebremoting:dwr:jar">org.directwebremoting:dwr:jar</a></li></ul></li></ul></p></div><div class="section"><h3>Dependency Listings</h3><p><a name="net.jawr:jawr:jar"><b>Java web resources bundling and compression</b></a></p><p>Javascript/CSS bundling and compressing tool for java web apps.
   	By using jawr resources are automatically bundled together and optionally minified and gzipped. 
-  	Jawr provides tag libraries to reference a generated bundle either by id or by using the name of any of its members.</p><p><a href="https://jawr.dev.java.net/">https://jawr.dev.java.net/</a></p><p><a name="junit:junit:jar"><b>JUnit</b></a></p><p>JUnit is a regression testing framework written by Erich Gamma and Kent Beck. It is used by the developer who implements unit tests in Java.</p><p><a href="http://junit.org">http://junit.org</a></p><p><a name="javax.servlet:servlet-api:jar"><b>Unnamed - javax.servlet:servlet-api:jar:2.3</b></a></p><p><a name="log4j:log4j:jar"><b>Unnamed - log4j:log4j:jar:1.2.9</b></a></p><p><a name="javax.faces:jsf-api:jar"><b>JSF API Classes</b></a></p><p>This is Sun Microsystems's JSF implementation.</p><p><a href="https://javaserverfaces.dev.java.net/">https://javaserverfaces.dev.java.net/</a></p><p><a name="com.yahoo.platform.yui:yuicompressor:jar"><b>yui compressor</b></a></p><p>The YUI Compressor is a JavaScript compressor which, in addition to removing
+  	Jawr provides tag libraries to reference a generated bundle either by id or by using the name of any of its members.</p><p><a href="https://jawr.dev.java.net/">https://jawr.dev.java.net/</a></p><p><a name="javax.servlet:servlet-api:jar"><b>Unnamed - javax.servlet:servlet-api:jar:2.3</b></a></p><p><a name="junit:junit:jar"><b>JUnit</b></a></p><p>JUnit is a regression testing framework written by Erich Gamma and Kent Beck. It is used by the developer who implements unit tests in Java.</p><p><a href="http://junit.org">http://junit.org</a></p><p><a name="log4j:log4j:jar"><b>Unnamed - log4j:log4j:jar:1.2.9</b></a></p><p><a name="javax.servlet.jsp:jsp-api:jar"><b>Unnamed - javax.servlet.jsp:jsp-api:jar:2.0</b></a></p><p><a name="com.yahoo.platform.yui:yuicompressor:jar"><b>yui compressor</b></a></p><p>The YUI Compressor is a JavaScript compressor which, in addition to removing
   comments and white-spaces, obfuscates local variables using the smallest
   possible variable name. This obfuscation is safe, even when using constructs
   such as 'eval' or 'with' (although the compression is not optimal is those
-  cases) Compared to jsmin, the average savings is around 20%.</p><p><a href="http://developer.yahoo.com/yui/compressor/">http://developer.yahoo.com/yui/compressor/</a></p><p><a name="javax.servlet.jsp:jsp-api:jar"><b>Unnamed - javax.servlet.jsp:jsp-api:jar:2.0</b></a></p></div></div>
+  cases) Compared to jsmin, the average savings is around 20%.</p><p><a href="http://developer.yahoo.com/yui/compressor/">http://developer.yahoo.com/yui/compressor/</a></p><p><a name="javax.faces:jsf-api:jar"><b>JSF API Classes</b></a></p><p>This is Sun Microsystems's JSF implementation.</p><p><a href="https://javaserverfaces.dev.java.net/">https://javaserverfaces.dev.java.net/</a></p><p><a name="org.directwebremoting:dwr:jar"><b>Direct Web Remoting</b></a></p><p>DWR is easy Ajax for Java. It makes it simple to call Java code directly from Javascript. 
+    It gets rid of almost all the boiler plate code between the web browser and your Java code.</p><p><a href="http://getahead.org/dwr">http://getahead.org/dwr</a></p></div></div>
       </div>
     </div>
     <div class="clear">
@@ -200,8 +210,8 @@
 
   
   
-  &nbsp;| Last Published: 05/19/2008
-  &nbsp;| Version: 2.1
+  &nbsp;| Last Published: 06/02/2008
+  &nbsp;| Version: 2.2
 </div>
       <div class="clear">
         <hr/>

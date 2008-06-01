@@ -8,7 +8,9 @@ net.jawr.web.resource.bundle.factory
 net.jawr.web.resource.bundle.factory.mapper
 net.jawr.web.resource.bundle.factory.processor
 net.jawr.web.resource.bundle.factory.util
-net.jawr.web.resource.bundle.generated
+net.jawr.web.resource.bundle.generator
+net.jawr.web.resource.bundle.generator.classpath
+net.jawr.web.resource.bundle.generator.dwr
 net.jawr.web.resource.bundle.handler
 net.jawr.web.resource.bundle.iexplore
 net.jawr.web.resource.bundle.iterator

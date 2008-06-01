@@ -72,19 +72,28 @@
         </li>
               
     <li class="none">
-              <a href="../docs/facelets.html">Facelets Tag library</a>
-        </li>
-              
-    <li class="none">
               <a href="../docs/modes.html">Debug and production modes</a>
         </li>
               
     <li class="none">
               <a href="../docs/messages_gen.html">i18n message generator</a>
         </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Integration</dt>
+        <dd><ul>
               
     <li class="none">
-              <a href="../docs/grails.html">Grails plugin</a>
+              <a href="../integration/facelets.html">Facelets Tag library</a>
+        </li>
+              
+    <li class="none">
+              <a href="../integration/grails.html">Grails plugin</a>
+        </li>
+              
+    <li class="none">
+              <a href="../integration/dwr.html">DWR</a>
         </li>
           </ul></dd>
     </dl>
@@ -194,7 +203,12 @@
         jawr.js.bundle.foo.mappings=/js/foo.js, /js/bar.js
         
         jawr.js.bundle.baz.id=/bundles/bazBundle.js
-        jawr.js.bundle.baz.mappings=/js/baz/**, /js/someScript.js, /js/someSubdir/              </pre></div><p>For details on how the resources are ordered within the bundle, refer to the <a href="./source_ordering.html">source ordering manual page</a>. </p></div><div class="section"><h3>Global bundles</h3><p>Global bundles are useful for including common libraries and modules used throughout you site. Any bundle defined as global will always be included before any other bundle. Most of the time you will not need to explicitly invoke it since Jawr will automatically include all global bundles before any particular bundle in a page. So when you add a link to whichever bundle in your page, links will be created to all global bundles and then one more for the bundle you specified. &#160;</p><p>To define a global bundle you would do as follows: </p><div class="source"><pre>        jawr.js.bundle.names=foo, baz, lib      
+        jawr.js.bundle.baz.mappings=/js/baz/**, /js/someScript.js, /js/someSubdir/              </pre></div><p>For details on how the resources are ordered within the bundle, refer to the <a href="./source_ordering.html">source ordering manual page</a>. </p><div class="section"><h4>Special mappings</h4><p>There are some alternative ways to get resources into bundles. These are meant to include resources that are not in the WAR file structure: some as resources that are available only through the classpath, and others as somehow generated content. This will be useful if your application uses a library that has its own javascript or CSS files. To add these a special syntax is used in the mapping definition, which consists in a prefix followed by a colon (:). </p><p>To add resources from the classpath you use <b>jar:</b> as the prefix, followed by the path to the resource using / as separator: </p><div class="source"><pre>        jawr.js.bundle.names=foo, baz   
+        
+        jawr.js.bundle.foo.id=/bundles/fooBundle.js
+        # Map to a script in the com.mycompany.myapp package and to another from the WAR 
+        jawr.js.bundle.foo.mappings=jar:/com/mycompany/myapp/foo.js, /js/bar.js
+        </pre></div><p>Note the leading slash in the mapping, which is also required. You can of course combine this kind of mappings with regular ones, so you can bundle together resources from the WAR and from the classpath. </p><p>Unlike the normal mapping, this way of referring to resources does not yet allow wildcards (i.e.: <i>jar:/com/mycompany/myapp/**</i> would not work). </p><p>Other prefixes you can use are <b>messages:</b> and <b>dwr:</b> for creating i18n javascript messages and to bundle DWR beans respectively. For these there are specific doumentation pages that you should read in order to use them: <a href="./messages_gen.html">i18n messages generator</a> and <a href="./messages_gen.html">DWR integration</a>. </p></div></div><div class="section"><h3>Global bundles</h3><p>Global bundles are useful for including common libraries and modules used throughout you site. Any bundle defined as global will always be included before any other bundle. Most of the time you will not need to explicitly invoke it since Jawr will automatically include all global bundles before any particular bundle in a page. So when you add a link to whichever bundle in your page, links will be created to all global bundles and then one more for the bundle you specified. &#160;</p><p>To define a global bundle you would do as follows: </p><div class="source"><pre>        jawr.js.bundle.names=foo, baz, lib      
         
         ...     
         jawr.js.bundle.lib.id=/lib.js
@@ -238,8 +252,8 @@ jawr.js.bundle.comp.child.names=foo, bar
 
   
   
-  &nbsp;| Last Published: 05/21/2008
-  &nbsp;| Version: 2.1
+  &nbsp;| Last Published: 06/02/2008
+  &nbsp;| Version: 2.2
 </div>
       <div class="clear">
         <hr/>
