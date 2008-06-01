@@ -26,7 +26,7 @@ import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
 
 import net.jawr.web.exception.ResourceNotFoundException;
-import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 
 import org.apache.log4j.Logger;
 

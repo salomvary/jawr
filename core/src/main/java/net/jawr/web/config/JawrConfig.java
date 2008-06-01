@@ -16,9 +16,11 @@ package net.jawr.web.config;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
+
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
-import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.locale.DefaultLocaleResolver;
 import net.jawr.web.resource.bundle.locale.LocaleResolver;
 
@@ -33,6 +35,7 @@ public class JawrConfig {
 	private static final String DEBUG_MODE_SYSTEM_FLAG = "net.jawr.debug.on"; 
 	private GeneratorRegistry generatorRegistry;
 	private LocaleResolver localeResolver;
+	private ServletContext context;
 	
 	/**
 	 * Initialize configuration using params contained in the initialization properties file. 
@@ -66,13 +69,16 @@ public class JawrConfig {
 		{			
 			setContextPathOverride(props.getProperty("jawr.url.contextpath.override"));
 		}
+		if(null != props.getProperty("jawr.dwr.mapping"))
+		{			
+			setDwrMapping(props.getProperty("jawr.dwr.mapping"));
+		}
 		
 		if(null != props.getProperty("jawr.locale.resolver")) {
 			localeResolver = (LocaleResolver) ClassLoaderResourceUtils.buildObjectInstance(props.getProperty("jawr.locale.resolver"));
 		}
 		else localeResolver = new DefaultLocaleResolver();
-			
-		this.generatorRegistry = new GeneratorRegistry();
+		
 	}
 	
 	/**
@@ -117,6 +123,11 @@ public class JawrConfig {
 	 * Used to check if a configuration has not been outdated by a new one. 
 	 */
 	private boolean isValid = true;
+	
+	/**
+	 * Mapping path to the dwr servlet, in case it is integrated with jawr. 
+	 */
+	private String dwrMapping;
 	
 		
 	/**
@@ -271,5 +282,34 @@ public class JawrConfig {
 		public LocaleResolver getLocaleResolver() {
 			return localeResolver;
 		}
+
+		/**
+		 * @return the context
+		 */
+		public ServletContext getContext() {
+			return context;
+		}
+
+		/**
+		 * @param context the context to set
+		 */
+		public void setContext(ServletContext context) {
+			this.context = context;
+		}
+
+		/**
+		 * @return the dwrMapping
+		 */
+		public String getDwrMapping() {
+			return dwrMapping;
+		}
+
+		/**
+		 * @param dwrMapping the dwrMapping to set
+		 */
+		public void setDwrMapping(String dwrMapping) {
+			this.dwrMapping = dwrMapping;
+		}
+
 	
 }

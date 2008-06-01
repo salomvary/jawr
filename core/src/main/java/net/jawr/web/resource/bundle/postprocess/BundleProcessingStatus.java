@@ -27,15 +27,15 @@ public class BundleProcessingStatus {
 	
 	final JoinableResourceBundle currentBundle;
 	final ResourceHandler rsHandler;
-	final JawrConfig jeesConfig;
+	final JawrConfig jawrConfig;
 	String lastPathAdded;
 	
 	public BundleProcessingStatus(final JoinableResourceBundle currentBundle,
-			final ResourceHandler rsHandler,final JawrConfig jeesConfig) {
+			final ResourceHandler rsHandler,final JawrConfig jawrConfig) {
 		super();
 		this.currentBundle = currentBundle;
 		this.rsHandler = rsHandler;
-		this.jeesConfig = jeesConfig;
+		this.jawrConfig = jawrConfig;
 	}
 	
 	/**
@@ -65,8 +65,8 @@ public class BundleProcessingStatus {
 	/**
 	 * @return Current config. 
 	 */
-	public JawrConfig getJeesConfig() {
-		return jeesConfig;
+	public JawrConfig getJawrConfig() {
+		return jawrConfig;
 	}
 	
 	

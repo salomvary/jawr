@@ -23,7 +23,7 @@ import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
-import net.jawr.web.resource.bundle.generated.GeneratorRegistry;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.sorting.SortFileParser;
 
@@ -123,8 +123,12 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		{
 			String pathMapping = (String) it.next();
 
+			// Handle generated resources
+			if(resourceHandler.isResourceGenerated(pathMapping)){
+				itemPathList.add(pathMapping);
+			}
 			// path ends in /, the folder is included without subfolders
-			if(pathMapping.endsWith("/")) {
+			else if(pathMapping.endsWith("/")) {
 				addItemsFromDir(pathMapping,false);
 			}
 			// path ends in /, the folder is included with all subfolders
@@ -136,9 +140,6 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 			}
 			else if(pathMapping.endsWith(LICENSES_FILENAME)){
 				licensesPathList.add(PathNormalizer.asPath(pathMapping));
-			}
-			else if(resourceHandler.isResourceGenerated(pathMapping)){
-				itemPathList.add(pathMapping);
 			}
 			else log.warn("Wrong mapping [" + pathMapping  
 							+ "] for bundle [" 

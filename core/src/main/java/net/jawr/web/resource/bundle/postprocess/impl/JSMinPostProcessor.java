@@ -50,7 +50,7 @@ public class JSMinPostProcessor extends
 	 */
 	protected StringBuffer doPostProcessBundle(BundleProcessingStatus status,StringBuffer bundleString)
 			throws IOException {
-		Charset charset = status.getJeesConfig().getResourceCharset();
+		Charset charset = status.getJawrConfig().getResourceCharset();
 		byte[] bundleBytes = bundleString.toString().getBytes(charset.name());
 		ByteArrayInputStream bIs = new ByteArrayInputStream(bundleBytes);
 		ByteArrayOutputStream bOs = new ByteArrayOutputStream();
@@ -109,7 +109,7 @@ public class JSMinPostProcessor extends
 		errorMsg.append("The error happened at this point in your javascript: \n");
 		errorMsg.append("_______________________________________________\n...");
 		try {
-			String data = byteArrayToString(status.getJeesConfig().getResourceCharset(),lastData).toString();
+			String data = byteArrayToString(status.getJawrConfig().getResourceCharset(),lastData).toString();
 			errorMsg.append(data).append("\n\n");
 		} catch (IOException e1) {
 			// Ignored, we have enaugh problems by this point. 

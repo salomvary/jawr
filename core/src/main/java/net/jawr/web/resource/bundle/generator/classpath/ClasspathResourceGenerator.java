@@ -11,29 +11,36 @@
  * either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-package net.jawr.web.resource.bundle.locale;
+package net.jawr.web.resource.bundle.generator.classpath;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.Reader;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
-import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
 
 /**
- * A generator that creates a script from message bundles.
- * The generated script can be used to reference the message literals easily from javascript.  
+ * Loads resources from the classpath.  
  * 
  * @author Jordi Hernández Sellés
- *
  */
-public class ResourceBundleMessagesGenerator implements ResourceGenerator {
+public class ClasspathResourceGenerator implements ResourceGenerator {
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
 	 */
-	public Reader createResource(String path,Charset charset) {
-		MessageBundleScriptCreator creator = new MessageBundleScriptCreator(path);
-		return creator.createScript();
+	public Reader createResource(String path, Charset charset) {
+		try {
+			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(path, this);
+			 ReadableByteChannel chan = Channels.newChannel(is);
+			 return Channels.newReader(chan,charset.newDecoder (),-1);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

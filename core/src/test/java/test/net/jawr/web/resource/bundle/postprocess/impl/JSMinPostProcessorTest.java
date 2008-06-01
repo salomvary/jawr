@@ -5,7 +5,6 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 
 import junit.framework.TestCase;
-
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 import net.jawr.web.resource.bundle.postprocess.impl.JSMinPostProcessor;

@@ -22,6 +22,7 @@ import java.util.Set;
 
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
+import net.jawr.web.resource.bundle.generator.dwr.DWRParamWriter;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
 import net.jawr.web.servlet.JawrRequestHandler;
@@ -32,6 +33,7 @@ import net.jawr.web.servlet.JawrRequestHandler;
  * @author Jordi Hernández Sellés
  */
 public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
+	private static final String ID_SCRIPT_DWR_PATH = "__dwr_path__";
     
     private ResourceBundlesHandler bundler;
     
@@ -69,6 +71,13 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     	
         if( debugOn ) {
                 addComment("Start adding members resolved by '" + requestedPath + "'. Bundle id is: '" + bundle.getName() + "'",out);
+        }
+        
+        // If DWR is being used, add a path var to the page
+        if( null != bundler.getConfig().getDwrMapping() && 
+        	includedBundles.add(ID_SCRIPT_DWR_PATH)) {
+        	StringBuffer sb = DWRParamWriter.buildRequestSpecificParams(contextPath,PathNormalizer.joinPaths(contextPath,  bundler.getConfig().getDwrMapping()));
+            out.write(sb.toString());
         }
 
         // Retrieve the name or names of bundle(s) that belong to/with the requested path. 

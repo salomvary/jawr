@@ -53,7 +53,7 @@ public class LicensesIncluderPostProcessor extends
 			StringBuffer bundleData) throws IOException {
 		
 		JoinableResourceBundle bundle = status.getCurrentBundle();
-		Charset charset = status.getJeesConfig().getResourceCharset();
+		Charset charset = status.getJawrConfig().getResourceCharset();
 		if(bundle.getLicensesPathList().size() == 0)
 			return bundleData;
 		

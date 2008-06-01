@@ -38,6 +38,7 @@ import net.jawr.web.resource.bundle.factory.util.ConfigChangeListener;
 import net.jawr.web.resource.bundle.factory.util.ConfigChangeListenerThread;
 import net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource;
 import net.jawr.web.resource.bundle.factory.util.PropsFilePropertiesSource;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 
@@ -70,7 +71,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	private ServletContext servletContext;
 	private Map initParameters;
 	private ConfigChangeListenerThread configChangeListenerThread;
-	
+	private GeneratorRegistry generatorRegistry;
 	private JawrConfig jawrConfig;
 
 	/**
@@ -124,6 +125,9 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		// Read properties from properties source
 		Properties props = propsSrc.getConfigProperties();
 		
+		// init registry 
+		generatorRegistry = new GeneratorRegistry(context);
+		
 		// Initialize config 
 		initializeJawrConfig(props);
 		
@@ -168,6 +172,9 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		resourceType = (String) initParameters.get("type");
 		resourceType = null == resourceType ? "js" : resourceType;
 		
+
+		// init registry 
+		generatorRegistry = new GeneratorRegistry(context);
 		
 		// Initialize config 
 		initializeJawrConfig(configProps);
@@ -191,6 +198,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			jawrConfig.invalidate();
 		
 		jawrConfig = new JawrConfig(props);
+		jawrConfig.setGeneratorRegistry(generatorRegistry);
 
 		// Set the content type to be used for every request. 
 		contentType = "text/";
@@ -269,7 +277,9 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			log.debug("Request received for path:" + requestedPath);
 
 		// CSS images would be requested through this handler in case servletMapping is used  
-		if( this.jawrConfig.isDebugModeOn() && !("".equals(this.jawrConfig.getServletMapping())) ) {
+		if( 	this.jawrConfig.isDebugModeOn() && 
+				!("".equals(this.jawrConfig.getServletMapping())) && 
+				null == request.getParameter(GENERATION_PARAM)) {
 			if(null == bundlesHandler.resolveBundleForPath(requestedPath)) {
 				if(log.isDebugEnabled())
 					log.debug("Path '" + requestedPath + "' does not belong to a bundle. Forwarding request to the server. ");
