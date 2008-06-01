@@ -46,7 +46,10 @@ public class OrphanResourceBundlesMapper {
 	public OrphanResourceBundlesMapper(String baseDir,
 			ResourceHandler rsHandler, List currentBundles,
 			String resourceExtension) {
-		this.baseDir = "/" + PathNormalizer.normalizePath(baseDir) + "/**";
+		if(!"".equals(baseDir) && !"/".equals(baseDir))
+			this.baseDir = "/" + PathNormalizer.normalizePath(baseDir) + "/**";
+		else this.baseDir = "/**";
+		
 		this.rsHandler = rsHandler;
 		this.currentBundles = new ArrayList();
 		if(null != currentBundles)

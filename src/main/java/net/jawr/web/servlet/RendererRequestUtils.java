@@ -55,7 +55,7 @@ public class RendererRequestUtils {
     /**
      * Determines wether gzip is suitable for the current request given the current config. 
      * @param req 
-	 * @param jeesConfig
+	 * @param jawrConfig
      * @return 
      */	
 	public static boolean isRequestGzippable(HttpServletRequest req,

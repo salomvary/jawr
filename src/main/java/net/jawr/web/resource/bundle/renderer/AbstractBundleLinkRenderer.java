@@ -22,6 +22,7 @@ import java.util.Set;
 
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
+import net.jawr.web.resource.bundle.generator.dwr.DWRParamWriter;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
 import net.jawr.web.servlet.JawrRequestHandler;
@@ -75,9 +76,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
         // If DWR is being used, add a path var to the page
         if( null != bundler.getConfig().getDwrMapping() && 
         	includedBundles.add(ID_SCRIPT_DWR_PATH)) {
-        	StringBuffer sb = new StringBuffer("<script type=\"text/javascript\">jawr_dwr_path='");
-            sb.append(PathNormalizer.joinPaths(contextPath,  bundler.getConfig().getDwrMapping()));
-            sb.append("';</script>").append("\n");
+        	StringBuffer sb = DWRParamWriter.buildRequestSpecificParams(contextPath,PathNormalizer.joinPaths(contextPath,  bundler.getConfig().getDwrMapping()));
             out.write(sb.toString());
         }
 

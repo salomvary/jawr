@@ -17,9 +17,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 
@@ -52,10 +54,13 @@ public class CSSURLPathRewriterPostProcessor extends
 		
 		String data = bundleData.toString();
 		
-		// Initial backrefs, for prefix. 
+		// Initial backrefs (number of backtracking paths needed, i.e. '../').
 		int initialBackRefs = 1;
-		if(! "".equals(status.getJeesConfig().getServletMapping()))
-			initialBackRefs++;
+		
+		if(! "".equals(status.getJawrConfig().getServletMapping())){
+			StringTokenizer tk = new StringTokenizer(status.getJawrConfig().getServletMapping(),"/");
+			initialBackRefs += tk.countTokens();
+		}
 		
 		String bundleName = status.getCurrentBundle().getName();
 		initialBackRefs += numberOfForwardReferences(bundleName);
@@ -66,7 +71,7 @@ public class CSSURLPathRewriterPostProcessor extends
 			List backRefs = new ArrayList();
 			backRefs.addAll(resourceBackRefs);
 			String url = getUrlPath(matcher.group(), initialBackRefs, backRefs);
-			matcher.appendReplacement(sb, adaptToMatcher(url));
+			matcher.appendReplacement(sb, RegexUtil.adaptReplacementToMatcher(url));
 		}
 		matcher.appendTail(sb);
 		return sb;
@@ -141,19 +146,6 @@ public class CSSURLPathRewriterPostProcessor extends
 		return urlPrefix.append(url).append(quoteStr).append(")").toString();
 	}
 	
-	/**
-	 * Rewrite a string so java's Matcher won't choke with it, by replacing
-	 * special conflicting characters. 
-	 * @param url
-	 * @return
-	 */
-	private String adaptToMatcher(String url) {
-		// Double the backslashes, so they are left as they are after replacement. 
-		url = url.replaceAll("\\\\", "\\\\\\\\");
-		// Add backslashes after dollar signs 
-		url = url.replaceAll("\\$", "\\\\\\$");
-		return url;
-	}
 	
 	/**
 	 * Gets the path names within a reource URL, exluding the resource file name. 
