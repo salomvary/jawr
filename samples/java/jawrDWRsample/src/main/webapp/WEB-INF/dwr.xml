@@ -52,10 +52,6 @@
     </create>
     <convert match="org.getahead.dwrdemo.people.Person" javascript="Person" converter="bean"/>
 
-    <!-- simpletext -->
-    <create creator="new" javascript="Demo">
-      <param name="class" value="org.getahead.dwrdemo.simpletext.Demo"/>
-    </create>
 
     <!-- resources not in this war file: java.util.Date -->
     <create creator="new" javascript="JDate" scope="session">

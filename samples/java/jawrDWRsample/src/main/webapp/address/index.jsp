@@ -1,11 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ taglib uri="http://jawr.net/tags" prefix="jwr" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Dynamic Address Entry Demo</title>
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
- 	<jwr:script src="/bundles/global.js"/>
- 	<jwr:script src="/address/index.js"/>
+	<jwr:script src="/bundles/global.js"/>
+	<jwr:script src="/address/index.js"/>
   <link rel="stylesheet" type="text/css" href="../tabs/tabs.css" />
   <link rel="stylesheet" type="text/css" href="../generic.css" />
 </head>
