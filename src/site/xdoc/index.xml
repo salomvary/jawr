@@ -170,7 +170,10 @@
 			<li> <strong>JSF/Facelets support</strong>: If you are using JSF with Facelets as the view technology, you can still use Jawr using a specific tag library.</li> 
 			
 			<li> <strong>Grails plugin</strong>: Jawr can be used seamlessly in Grails applications, using a provided plugin that includes a GSP tag library.</li> 
-						
+		
+			<li> <strong>DWR integration</strong>: You can use DWR and have Jawr handle the serving of the static and dynamic scripts DWR generates, with the 
+					added feature of being able to bundle them together and with other scripts from your application. </li> 
+					
 			<li> <strong>Library friendly</strong>: Open source javascript libraries can be used seamlessly with Jawr. Most of these are modular or have plugins: add the modules or 
 			plugins you need and bundle all together. And, even if you minify them (thus eliminating comments), you can still keep the mandatory licenses in
 			the bundle. The <a href="https://jawr.dev.java.net/tutorials/quickstart.html">libraries tutorial</a> will show you how to integrate popular js libraries such 
@@ -188,6 +191,20 @@
       </subsection>
       <subsection name="Announcements">
       <ul>
+      	<li> <strong>6/2/2008</strong>: Version 2.2 released:<br/> <strong>DWR integration</strong>: DWR users can now leverage the new integration with Jawr, 
+      	which allows bundling all DWR resources along with other static scripts. <br/>
+      	<strong>Mapping of classpath resources: </strong> bundles can now map to  resources (javascript and CSS) which are available in the classpath. 
+      	<br/>				      	
+				Also, several bugs were fixed: 
+				<ul><li> bug in i18n message generation: was failing when a dollar sign was found in a message. </li>
+				
+				<li> bug for i18n messages: in debug mode, would get 404s if the mapping was not set to attend *.js requests. </li>
+				
+				<li> bug in CSS link rewriter, which failed when Jawr mapping had several subdomains. </li>
+				
+				<li> Decreased logging verbosity of the ConcurrentCollectionsFactory. </li></ul>
+      	</li>
+
       	<li> <strong>5/19/2008</strong>: Version 2.1 released: <strong>i18n messages mapping from java ResourceBundles to javascript:</strong> 
       	your internationalized messages that you keep in properties files can be easily converted into a script that allows for easy access to 
       	every message and supports variable substitution. According tho the user's locale, the script generated will correspond to his language.   

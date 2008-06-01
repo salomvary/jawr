@@ -6,6 +6,15 @@
 
 Introduction
 
+* Developers
+
+	Jawr was originally created by Jordi Hernandez Selles, who presents himself as follows:
+	
+	I am an IT consultant with over seven years of experience in JEE and related technologies. I have a strong focus on user interaction and 
+	usability, so I have always focused on technologies such as javascript, CSS and DHTML (now called AJAX). I have engineered the web layer 
+	of several rich applications and found a lack of support for modularization of javascript code which I tried to solve with Jawr. 
+	I live in Madrid, Spain and work for {{{http://www.gfi.es/gfi/index.html}GFI}}.   
+
 * Motivation
 
 	The current trend for richer web applications has led to an increased use of javascript for most web applications. This in turn means 

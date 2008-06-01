@@ -93,6 +93,34 @@ Definition of custom bundles
 
 	For details on how the resources are ordered within the bundle, refer to the {{{./source_ordering.html}source ordering manual page}}. 
 	
+** Special mappings
+
+	There are some alternative ways to get resources into bundles. These are meant to include resources that are not in the WAR file structure: some 
+	as resources that are available only through the classpath, and others as somehow generated content. This will be useful if your application uses a 
+	library that has its own javascript or CSS files. 
+	To add these a special syntax is used in the mapping definition, which consists in a prefix followed by a colon (:). 
+	
+	To add resources from the classpath you use <<jar:>> as the prefix, followed by the path to the resource using / as separator: 
+	
++------------------------------------------+
+	jawr.js.bundle.names=foo, baz	
+	
+	jawr.js.bundle.foo.id=/bundles/fooBundle.js
+	# Map to a script in the com.mycompany.myapp package and to another from the WAR 
+	jawr.js.bundle.foo.mappings=jar:/com/mycompany/myapp/foo.js, /js/bar.js
+	
++------------------------------------------+
+
+	Note the leading slash in the mapping, which is also required. You can of course combine this kind of mappings with regular ones, so you can 
+	bundle together resources from the WAR and from the classpath. 
+	
+	Unlike the normal mapping, this way of referring to resources does not yet allow wildcards (i.e.: <jar:/com/mycompany/myapp/**> would not 
+	work). 
+	
+	Other prefixes you can use are <<messages:>> and <<dwr:>> for creating i18n javascript messages and to bundle DWR beans respectively. For these 
+	there are specific doumentation pages that you should read in order to use them: {{{./messages_gen.html}i18n messages generator}} and 
+	{{{./messages_gen.html}DWR integration}}. 
+	
 * Global bundles
 	
 	Global bundles are useful for including common libraries and modules used throughout you site. Any bundle defined as global will always be 

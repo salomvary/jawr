@@ -124,6 +124,19 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		
 	}
 
+	public void testSameLevelExtraPathMapping() {
+		// Set a path with several contexts to test if backtracking is done right. 
+		status.getJawrConfig().setServletMapping("/foo/bar/baz/");
+		// An image at the same path as the css
+		status.setLastPathAdded("/css/subpath/someCSS.css");
+		StringBuffer data = new StringBuffer("background-image:url(  'someImage.gif' );");
+		// Expected: goes 3 back for prefix , 1 back for the id having a subdir path. 
+		String expectedURL = "background-image:url('../../../../../css/subpath/someImage.gif');";
+		String result = processor.postProcessBundle(status, data).toString();	
+		assertEquals("URL was not rewritten properly",expectedURL, result);
+		
+	}
+
 	public void testSameLevelResourceLeadingDotSlash() {
 		
 		// An image at the same path as the css
@@ -217,6 +230,9 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		assertEquals("URL was not rewritten properly:" + result,data.toString(), result);
 		
 	}
+	
+	
+	
 	public void testMultiLine() {
 		StringBuffer data = new StringBuffer("\nsomeRule {");
 		data.append("\n");

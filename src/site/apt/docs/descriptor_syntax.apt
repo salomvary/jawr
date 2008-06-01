@@ -31,6 +31,8 @@ Descriptor file syntax
 | | | Using '<</>>' will cause Jawr to skip the context path altogether ('/001/bundles/mybundle.js').  |     | 
 | | | Using an empty value will cause Jawr to generate page relative urls ('001/bundles/mybundle.js').  |     | 
 *---------------*---------*--------------+----------------+
+| jawr.dwr.mapping | String | Value of the servlet-mapping that points to a DWR servlet instance. See {{{../integration/dwr.html}DWR integration}}.   | none| 
+*---------------*---------*--------------+----------------+
 
 
 	

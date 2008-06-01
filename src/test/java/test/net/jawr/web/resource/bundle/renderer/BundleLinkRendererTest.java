@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.resource.FileSystemResourceHandler;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.resource.bundle.renderer.CSSHTMLBundleLinkRenderer;
@@ -57,6 +58,7 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 	    jeesConfig = new JawrConfig(new Properties());
 	    jeesConfig.setCharsetName("UTF-8");
 	    jeesConfig.setServletMapping("/srvMapping");
+	    jeesConfig.setGeneratorRegistry(new GeneratorRegistry());
 	    ResourceBundlesHandler jsHandler = null;
 	    ResourceBundlesHandler cssHandler = null;
 	    try {

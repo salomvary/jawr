@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
  */
 public class ConcurrentCollectionsFactory {
 	private static final Logger log = Logger.getLogger(ConcurrentCollectionsFactory.class);
+	private static boolean logOnHashMap = true;
+	private static boolean logOnArray = true;
 
 	/**
 	 * Builds a ConcurrentHashMap if available either as its java.util.concurrent or 
@@ -45,17 +47,18 @@ public class ConcurrentCollectionsFactory {
 		Map syncMap = null;
 		try {
 			mapClass = Class.forName("java.util.concurrent.ConcurrentHashMap");
-			if(log.isDebugEnabled())
+			if(logOnHashMap && log.isDebugEnabled())
 				log.debug("Using JDK 5 ConcurrentHashMap. ");
 		} catch (ClassNotFoundException e) {
-			if(log.isDebugEnabled())
+			if(logOnHashMap && log.isDebugEnabled())
 				log.debug("JDK 5 ConcurrentHashMap not found, attempting to use the backport version");
 			try {
 				mapClass = Class.forName("edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap");
-				if(log.isDebugEnabled())
+				if(logOnHashMap && log.isDebugEnabled())
 					log.debug("Using backport-util-concurrent ConcurrentHashMap. ");
 			} catch (ClassNotFoundException e1) {
-				log.warn("Using synchronized map for in-memory cache. It is recommended that you use backport-util-concurrent or java 5+ to improve performance. ");
+				if(logOnHashMap)
+					log.warn("Using synchronized map for in-memory cache. It is recommended that you use backport-util-concurrent or java 5+ to improve performance. ");
 			}
 		}
 
@@ -63,16 +66,20 @@ public class ConcurrentCollectionsFactory {
 			try {
 				syncMap = (Map) mapClass.newInstance();
 			} catch (InstantiationException e) {
-				log.warn("InstantiationException creating ConcurrentHashMap. Using synchronized map for in-memory cache. ");
+				if(logOnHashMap)
+					log.warn("InstantiationException creating ConcurrentHashMap. Using synchronized map for in-memory cache. ");
 			} catch (IllegalAccessException e) {
-				log.warn("IllegalAccessException creating ConcurrentHashMap. Using synchronized map for in-memory cache.  ");
+				if(logOnHashMap)
+					log.warn("IllegalAccessException creating ConcurrentHashMap. Using synchronized map for in-memory cache.  ");
 			}
 		}
 		if(null == syncMap) {
 			syncMap = Collections.synchronizedMap(new HashMap());
-			log.warn("Synchronized map created for in-memory cache. Performance will NOT be optimal for the cache. ");
+			if(logOnHashMap)
+				log.warn("Synchronized map created for in-memory cache. Performance will NOT be optimal for the cache. ");
 		}
-		
+		// There were far too many log messages for this. 
+		logOnHashMap = false;
 		return syncMap;
 	}
 	
@@ -86,18 +93,19 @@ public class ConcurrentCollectionsFactory {
 		List cowList = null;
 		try {
 			listClass = Class.forName("java.util.concurrent.CopyOnWriteArrayList");
-			if(log.isDebugEnabled())
+			if(logOnArray && log.isDebugEnabled())
 				log.debug("Using JDK 5 CopyOnWriteArrayList. ");
 			
 		} catch (ClassNotFoundException e) {
-			if(log.isDebugEnabled())
+			if(logOnArray && log.isDebugEnabled())
 				log.debug("JDK 5 CopyOnWriteArrayList not found, attempting to use the backport version");
 			try {
 				listClass = Class.forName("edu.emory.mathcs.backport.java.util.concurrent.CopyOnWriteArrayList");
-				if(log.isDebugEnabled())
+				if(logOnArray && log.isDebugEnabled())
 					log.debug("Using backport-util-concurrent CopyOnWriteArrayList. ");
 			} catch (ClassNotFoundException e1) {
-				log.warn("Using synchronized List. It is recommended that you use backport-util-concurrent or java 5+ to improve performance. ");
+				if(logOnArray)
+					log.warn("Using synchronized List. It is recommended that you use backport-util-concurrent or java 5+ to improve performance. ");
 			}
 		}
 
@@ -105,16 +113,21 @@ public class ConcurrentCollectionsFactory {
 			try {
 				cowList = (List) listClass.newInstance();
 			} catch (InstantiationException e) {
-				log.warn("InstantiationException creating CopyOnWriteArrayList. Using synchronized map for in-memory cache. ");
+				if(logOnArray)
+					log.warn("InstantiationException creating CopyOnWriteArrayList. Using synchronized map for in-memory cache. ");
 			} catch (IllegalAccessException e) {
-				log.warn("IllegalAccessException creating CopyOnWriteArrayList. Using synchronized map for in-memory cache.  ");
+				if(logOnArray)
+					log.warn("IllegalAccessException creating CopyOnWriteArrayList. Using synchronized map for in-memory cache.  ");
 			}
 		}
 		if(null == cowList) {
 			cowList = Collections.synchronizedList(new ArrayList());
-			log.warn("Synchronized List created. ");
+			if(logOnArray)
+				log.warn("Synchronized List created. ");
 		}
 		
+		// There were far too many log messages for this. 
+		logOnArray = false;
 		return cowList;
 	}
 

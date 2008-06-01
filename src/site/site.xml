@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="Jawr">  
-	<!--skin>
+	<skin>
     <groupId>org.jvnet.maven-javanet-skin</groupId>
     <artifactId>maven-javanet-skin</artifactId>
     <version>1.0</version>
-  </skin-->
+  </skin>
   <body>
    
 	<menu name="About">
@@ -20,10 +20,14 @@
       <item name="Postprocessors" href="/docs/postprocessors.html"/>
       <item name="Licenses in resources" href="/docs/license_files.html"/>
       <item name="JSP Tag library" href="/docs/taglibs.html"/>
-      <item name="Facelets Tag library" href="/docs/facelets.html"/>
       <item name="Debug and production modes" href="/docs/modes.html"/>
       <item name="i18n message generator" href="/docs/messages_gen.html"/>
-      <item name="Grails plugin" href="/docs/grails.html"/>
+    </menu>
+    
+    <menu name="Integration">
+      <item name="Facelets Tag library" href="/integration/facelets.html"/>
+      <item name="Grails plugin" href="/integration/grails.html"/>
+      <item name="DWR" href="/integration/dwr.html"/>
     </menu>
     
     <menu name="Tutorials">

@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 
 import org.apache.log4j.Logger;
 
@@ -140,8 +141,8 @@ public class MessageBundleScriptCreator {
 		BundleStringJasonifier bsj = new BundleStringJasonifier(props);
 		String script = template.toString();
 		String messages = bsj.serializeBundles().toString();
-		script = script.replaceFirst("@namespace", namespace);
-		script = script.replaceFirst("@messages", messages);
+		script = script.replaceFirst("@namespace", RegexUtil.adaptReplacementToMatcher(namespace));
+		script = script.replaceFirst("@messages", RegexUtil.adaptReplacementToMatcher(messages));
 		
 		return new StringReader(script);
 	}
