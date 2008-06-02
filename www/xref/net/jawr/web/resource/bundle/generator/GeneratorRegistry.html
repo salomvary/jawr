@@ -31,7 +31,7 @@
 <a name="22" href="#22">22</a>  <strong>import</strong> javax.servlet.ServletContext;
 <a name="23" href="#23">23</a>  
 <a name="24" href="#24">24</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.classpath.ClasspathResourceGenerator;
-<a name="25" href="#25">25</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.dwr.DWRBeanGenerator;
+<a name="25" href="#25">25</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.dwr.DWRResourceGeneratorWrapper;
 <a name="26" href="#26">26</a>  <strong>import</strong> net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
 <a name="27" href="#27">27</a>  
 <a name="28" href="#28">28</a>  <em>/**<em>*</em></em>
@@ -63,7 +63,7 @@
 <a name="54" href="#54">54</a>  
 <a name="55" href="#55">55</a>  	<strong>public</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/GeneratorRegistry.html">GeneratorRegistry</a>(ServletContext servletContext) {
 <a name="56" href="#56">56</a>  		<strong>super</strong>();
-<a name="57" href="#57">57</a>  		registry.put(DWR_BUNDLE_PREFIX, <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/dwr/DWRBeanGenerator.html">DWRBeanGenerator</a>(servletContext));
+<a name="57" href="#57">57</a>  		registry.put(DWR_BUNDLE_PREFIX, <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/dwr/DWRResourceGeneratorWrapper.html">DWRResourceGeneratorWrapper</a>(servletContext));
 <a name="58" href="#58">58</a>  	}
 <a name="59" href="#59">59</a>  	
 <a name="60" href="#60">60</a>  	<em>/**<em>*</em></em>
