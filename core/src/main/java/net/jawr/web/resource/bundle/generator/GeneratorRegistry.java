@@ -22,7 +22,7 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 
 import net.jawr.web.resource.bundle.generator.classpath.ClasspathResourceGenerator;
-import net.jawr.web.resource.bundle.generator.dwr.DWRBeanGenerator;
+import net.jawr.web.resource.bundle.generator.dwr.DWRResourceGeneratorWrapper;
 import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
 
 /**
@@ -54,7 +54,7 @@ public class GeneratorRegistry {
 
 	public GeneratorRegistry(ServletContext servletContext) {
 		super();
-		registry.put(DWR_BUNDLE_PREFIX, new DWRBeanGenerator(servletContext));
+		registry.put(DWR_BUNDLE_PREFIX, new DWRResourceGeneratorWrapper(servletContext));
 	}
 	
 	/**
