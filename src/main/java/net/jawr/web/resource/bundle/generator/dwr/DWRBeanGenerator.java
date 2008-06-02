@@ -87,7 +87,7 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	
 	// This is a script portion stored in a static method of DWR. We store it to remove it, so it is not replicated many times.  
 	private static String ENGINE_INIT;
-	ServletContext servletContext;
+	private ServletContext servletContext;
 	
 	static {
 		ENGINE_INIT = EnginePrivate.getEngineInitScript();
