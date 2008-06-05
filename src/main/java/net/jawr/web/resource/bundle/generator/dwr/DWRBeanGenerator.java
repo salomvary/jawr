@@ -36,6 +36,7 @@ import javax.servlet.ServletContext;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
+import org.apache.log4j.Logger;
 import org.directwebremoting.Container;
 import org.directwebremoting.extend.CreatorManager;
 import org.directwebremoting.extend.DwrConstants;
@@ -43,6 +44,7 @@ import org.directwebremoting.extend.EnginePrivate;
 import org.directwebremoting.extend.Remoter;
 import org.directwebremoting.extend.ServerLoadMonitor;
 import org.directwebremoting.impl.ContainerUtil;
+import org.directwebremoting.impl.DefaultCreatorManager;
 
 /**
  * Generator that creates resources from DWR beans. 
@@ -51,6 +53,7 @@ import org.directwebremoting.impl.ContainerUtil;
  * 
  */
 public class DWRBeanGenerator implements ResourceGenerator {
+	private static final Logger log = Logger.getLogger(DWRBeanGenerator.class.getName());
 
 	// Mapping keys
 	private static final String ALL_INTERFACES_KEY = "_**";
@@ -287,14 +290,36 @@ public class DWRBeanGenerator implements ResourceGenerator {
 			
 			// The creatormanager holds the list of beans
 			CreatorManager ctManager = (CreatorManager) container.getBean(CreatorManager.class.getName());
+			
 			if(null != ctManager) {
 				// The remoter builds interface scripts. 
 				Remoter remoter = (Remoter) container.getBean(Remoter.class.getName());
 				
 				String path = getPathReplacementString(container);
-				
-				Collection c = ctManager.getCreatorNames();
-				for(Iterator names = c.iterator();names.hasNext();) {
+				boolean debugMode = ctManager.isDebug();
+				Collection creators = null;
+				if(!(ctManager instanceof DefaultCreatorManager)) {
+					if(!debugMode)
+						log.warn("The current creatormanager is a custom implementation [" 
+								+ ctManager.getClass().getName() 
+								+ "]. Debug mode is off, so the mapping dwr:_** is likely to trigger a SecurityException." +
+								" Attempting to get all published creators..." );
+					creators = ctManager.getCreatorNames();
+					
+				}
+				else {	
+					DefaultCreatorManager dfCreator = (DefaultCreatorManager) ctManager;					
+					try 
+					{
+						dfCreator.setDebug(true);
+						creators = ctManager.getCreatorNames();
+					}
+					finally{
+						// restore debug mode no matter what
+						dfCreator.setDebug(debugMode);
+					}
+				}
+				for(Iterator names = creators.iterator();names.hasNext();) {
 					String script = remoter.generateInterfaceScript((String)names.next(), path);
 					// Must remove the engine init script to avoid unneeded duplication
 					script = removeEngineInit(script);
