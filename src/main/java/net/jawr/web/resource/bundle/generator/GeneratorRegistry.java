@@ -15,14 +15,17 @@ package net.jawr.web.resource.bundle.generator;
 
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 
 import net.jawr.web.resource.bundle.generator.classpath.ClasspathResourceGenerator;
-import net.jawr.web.resource.bundle.generator.dwr.DWRResourceGeneratorWrapper;
+import net.jawr.web.resource.bundle.generator.dwr.DWRBeanGenerator;
+import net.jawr.web.resource.bundle.generator.validator.CommonsValidatorGenerator;
 import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
 
 /**
@@ -42,14 +45,18 @@ public class GeneratorRegistry {
 	public static final String MESSAGE_BUNDLE_PREFIX = "messages:";
 	public static final String CLASSPATH_BUNDLE_PREFIX = "jar:";
 	public static final String DWR_BUNDLE_PREFIX = "dwr:";
+	public static final String COMMONS_VALIDATOR_PREFIX = "acv:";
+	
 	private static final Map registry = new HashMap();
+	private static final List prefixRegistry = new ArrayList();
 	private ServletContext servletContext;
 	
 	static
 	{
-		registry.put(MESSAGE_BUNDLE_PREFIX, new ResourceBundleMessagesGenerator());
-		registry.put(CLASSPATH_BUNDLE_PREFIX, new ClasspathResourceGenerator());
-		registry.put(DWR_BUNDLE_PREFIX, new DWRResourceGeneratorWrapper());
+		prefixRegistry.add(MESSAGE_BUNDLE_PREFIX);
+		prefixRegistry.add(CLASSPATH_BUNDLE_PREFIX);
+		prefixRegistry.add(DWR_BUNDLE_PREFIX);
+		prefixRegistry.add(COMMONS_VALIDATOR_PREFIX);
 	}
 	
 
@@ -63,6 +70,27 @@ public class GeneratorRegistry {
 	 */
 	public GeneratorRegistry(){
 		super();
+	}
+	
+	/**
+	 * Lazy loads generators, to avoid the need for undesired dependencies. 
+	 * 
+	 * @param generatorKey
+	 * @return
+	 */
+	private void loadGenerator(String generatorKey) {
+		if(MESSAGE_BUNDLE_PREFIX.equals(generatorKey)){
+			registry.put(generatorKey, new ResourceBundleMessagesGenerator());
+		}
+		else if(CLASSPATH_BUNDLE_PREFIX.equals(generatorKey)){
+			registry.put(generatorKey, new ClasspathResourceGenerator());
+		}
+		else if(DWR_BUNDLE_PREFIX.equals(generatorKey)){
+			registry.put(generatorKey, new DWRBeanGenerator());
+		}
+		else if(COMMONS_VALIDATOR_PREFIX.equals(generatorKey)){
+			registry.put(generatorKey, new CommonsValidatorGenerator());
+		}
 	}
 	
 	/**
@@ -102,11 +130,15 @@ public class GeneratorRegistry {
 	 */
 	private String matchPath(String path) {
 		String rets = null;
-		for(Iterator it = registry.keySet().iterator();it.hasNext() && rets == null;) {
+		for(Iterator it = prefixRegistry.iterator();it.hasNext() && rets == null;) {
 			String prefix = (String) it.next();
 			if(path.startsWith(prefix))
 				rets = prefix;			
 		}	
+		// Lazy load generator
+		if(null != rets && !registry.containsKey(rets))
+			loadGenerator(rets);
+		
 		return rets;
 	}
 

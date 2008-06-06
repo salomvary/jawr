@@ -88,7 +88,7 @@ public interface JoinableResourceBundle {
      * 
      * @param hashCode
      */
-    public void setBundleDataHashCode(int bundleDataHashCode);
+    public void setBundleDataHashCode(String variantKey, int bundleDataHashCode);
 	
     
     /**

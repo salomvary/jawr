@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?><project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.jawr</groupId>
   <artifactId>jawr</artifactId>
@@ -86,6 +85,11 @@
       <artifactId>dwr</artifactId>
       <version>2.0.2</version>
     </dependency>
+    <dependency>
+      <groupId>commons-validator</groupId>
+      <artifactId>commons-validator</artifactId>
+      <version>1.2.0</version>
+    </dependency>
   </dependencies>
   <reporting>
     <plugins>
@@ -118,4 +122,3 @@
     </repository>
   </distributionManagement>
 </project>
-

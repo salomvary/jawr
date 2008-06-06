@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
@@ -50,6 +51,8 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	private String explorerConditionalExpression;
 	private int bundleDataHashCode;
 	
+	private Map prefixMap;
+	
 	protected List localeVariantKeys;
 	
 	
@@ -79,6 +82,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		this.itemPathList = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 		this.licensesPathList = new HashSet();
         this.fileExtension = fileExtension;
+        prefixMap = ConcurrentCollectionsFactory.buildConcurrentHashMap();
         
 	}	
 	
@@ -286,7 +290,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
     	if(null != variantKey && null != this.localeVariantKeys) {
     		String key = getAvailableLocaleVariant(variantKey);
     		if(null != key)
-    			return this.urlPrefix + "." + key + "/";
+    			return prefixMap.get(variantKey) + "." + key + "/";
     	}
     	return this.urlPrefix + "/";
     }
@@ -354,13 +358,22 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setBundleDataHashCode(int)
 	 */
-	public void setBundleDataHashCode(int bundleDataHashCode) {		
-		this.bundleDataHashCode = bundleDataHashCode;
+	public void setBundleDataHashCode(String variantKey, int bundleDataHashCode) {		
+		String prefix;
 		// Since this numbre is used as part of urls, the -sign is converted to 'N'
 		if(bundleDataHashCode < 0){
-			this.urlPrefix = "N" + this.bundleDataHashCode*-1;
+			prefix = "N" + bundleDataHashCode*-1;
 		}
-		else urlPrefix = ""+this.bundleDataHashCode;
+		else prefix = ""+bundleDataHashCode;
+		
+		if(null == variantKey){
+			this.bundleDataHashCode = bundleDataHashCode;
+			this.urlPrefix = prefix;
+		}
+		else {
+			prefixMap.put(variantKey, prefix);
+		}
+		
 		
 	}
 

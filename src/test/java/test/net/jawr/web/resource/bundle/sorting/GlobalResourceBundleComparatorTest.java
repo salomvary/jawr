@@ -76,7 +76,7 @@ public class GlobalResourceBundleComparatorTest extends TestCase {
 				return null;
 			}
 
-			public void setBundleDataHashCode(int bundleDataHashCode) {
+			public void setBundleDataHashCode(String var,int bundleDataHashCode) {
 				
 			}
 
