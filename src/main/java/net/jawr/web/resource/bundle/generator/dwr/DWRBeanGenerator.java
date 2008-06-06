@@ -63,6 +63,12 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	private static final String AUTH_KEY = "_auth";
 	private static final String WEBWORK_KEY = "_actionutil";
 	
+	// DWR 3.0 paths
+	private static final String PLAINCALLHANDLERURL = "/call/plaincall/";
+	private static final String PLAINPOLLHANDLERURL = "/call/plainpoll/";
+	private static final String HTMLCALLHANDLERURL = "/call/htmlcall/";
+	private static final String HTMLPOLLHANDLERURL = "/call/htmlpoll/";
+
 	// Path to DWR javascript files
 	private static final String ENGINE_PATH = "org/directwebremoting/engine.js";
 	private static final String UTIL_PATH = "org/directwebremoting/util.js";
@@ -74,7 +80,7 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	
 	// Script replacement to refer to a javascript var that JAWR creates
 	private static final String JS_PATH_REF = "'+JAWR.jawr_dwr_path+'";
-	private static final String JS_CTX_PATH = "'+JAWR.jawr_dwr_context+'/";
+	private static final String JS_CTX_PATH = "'+JAWR.app_context_path+'/";
 	
 	// Some names of init-params in DWR servlets
 	private static final String DWR_MAPPING_PARAM = "jawr_mapping";
@@ -82,6 +88,10 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	
 	// A patter to replace some expressions at the engine javascript
 	private static final Pattern paramsPattern = Pattern.compile("(\\$\\{allowGetForSafariButMakeForgeryEasier}|"  
+											 + "\\$\\{plainCallHandlerUrl}|"  
+											 + "\\$\\{plainPollHandlerUrl}|"  
+											 + "\\$\\{htmlCallHandlerUrl}|"  
+											 + "\\$\\{htmlPollHandlerUrl}|"  		
 											 + "\\$\\{pollWithXhr}|"  
 											 + "\\$\\{scriptSessionId}|"  
 											 + "\\$\\{sessionCookieName}|"  
@@ -90,7 +100,6 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	
 	// This is a script portion stored in a static method of DWR. We store it to remove it, so it is not replicated many times.  
 	private static String ENGINE_INIT;
-	private ServletContext servletContext;
 	
 	static {
 		ENGINE_INIT = EnginePrivate.getEngineInitScript();
@@ -100,9 +109,8 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	}
 	
 	
-	public DWRBeanGenerator(ServletContext servletContext) {
+	public DWRBeanGenerator() {
 		super();
-		this.servletContext = servletContext;		
 	}
 
 
@@ -110,23 +118,23 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
 	 */
-	public Reader createResource(String path, Charset charset) {
+	public Reader createResource(String path,ServletContext servletContext, Charset charset) {
 		StringBuffer data = null;
 		if(ENGINE_KEY.equals(path)) {
-			data = buildEngineScript(readDWRScript(ENGINE_PATH));
+			data = buildEngineScript(readDWRScript(ENGINE_PATH),servletContext);
 		}
 		else if(dwrLibraries.containsKey(path)){
 			data = readDWRScript((String)dwrLibraries.get(path));
 		}
 		else if(ALL_INTERFACES_KEY.equals(path)) {
 			data = new StringBuffer(ENGINE_INIT);
-			data.append(getAllPublishedInterfaces());
+			data.append(getAllPublishedInterfaces(servletContext));
 		}
 		else {
 			data = new StringBuffer(ENGINE_INIT);
 			StringTokenizer tk = new StringTokenizer(path,"|");
 			while(tk.hasMoreTokens()) {
-				data.append(getInterfaceScript(tk.nextToken()));
+				data.append(getInterfaceScript(tk.nextToken(),servletContext));
 			}
 		}
 		
@@ -144,12 +152,19 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	 * @param engineScript
 	 * @return
 	 */
-	private StringBuffer buildEngineScript(StringBuffer engineScript) {
+	private StringBuffer buildEngineScript(StringBuffer engineScript,ServletContext servletContext) {
 		List containers = ContainerUtil.getAllPublishedContainers(servletContext);
 		String allowGetForSafariButMakeForgeryEasier = "";
 		String scriptTagProtection = DwrConstants.SCRIPT_TAG_PROTECTION;
 		String pollWithXhr = "";
 		String sessionCookieName = "JSESSIONID";
+		
+		String plainCallHandlerUrl = PLAINCALLHANDLERURL;
+		String plainPollHandlerUrl = PLAINPOLLHANDLERURL;
+		String htmlCallHandlerUrl = HTMLCALLHANDLERURL;
+		String htmlPollHandlerUrl = HTMLPOLLHANDLERURL;
+
+		
 		for(Iterator it = containers.iterator();it.hasNext();) {
 			Container container = (Container) it.next();
 			ServerLoadMonitor monitor = (ServerLoadMonitor) container.getBean(ServerLoadMonitor.class.getName());
@@ -164,9 +179,23 @@ public class DWRBeanGenerator implements ResourceGenerator {
 			if(null != container.getBean("sessionCookieName")){
 				sessionCookieName = (String)container.getBean("sessionCookieName");
 			}			
+			if(null != container.getBean("plainCallHandlerUrl")){
+				plainCallHandlerUrl = (String)container.getBean("plainCallHandlerUrl");
+			}			
+			if(null != container.getBean("plainPollHandlerUrl")){
+				plainPollHandlerUrl = (String)container.getBean("plainPollHandlerUrl");
+			}			
+			if(null != container.getBean("htmlCallHandlerUrl")){
+				htmlCallHandlerUrl = (String)container.getBean("htmlCallHandlerUrl");
+			}			
+			if(null != container.getBean("htmlPollHandlerUrl")){
+				htmlPollHandlerUrl = (String)container.getBean("htmlPollHandlerUrl");
+			}			
 		}
 		StringBuffer sb = new StringBuffer();
 		Matcher matcher = paramsPattern.matcher(engineScript);
+		boolean useDynamicSessionId = false;
+		
 		while(matcher.find()) {
 			String match = matcher.group();
 			if("${allowGetForSafariButMakeForgeryEasier}".equals(match)){
@@ -182,13 +211,28 @@ public class DWRBeanGenerator implements ResourceGenerator {
 				matcher.appendReplacement(sb, scriptTagProtection);				
 			}
 			else if("${scriptSessionId}".equals(match)){
-				matcher.appendReplacement(sb, "\"+JAWR.dwr_scriptSessionId+\"");				
+				matcher.appendReplacement(sb, "\"+JAWR.dwr_scriptSessionId+\"");	
+				useDynamicSessionId = true;
 			}
 			else if("${defaultPath}".equals(match)){
 
 				matcher.appendReplacement(sb, "\"+JAWR.jawr_dwr_path+\"");
 			}
+			// DRW 3.x
+			else if("${plainCallHandlerUrl}".equals(match)){
+				matcher.appendReplacement(sb, plainCallHandlerUrl);
+			}
+			else if("${plainPollHandlerUrl}".equals(match)){
+				matcher.appendReplacement(sb, plainPollHandlerUrl);
+			}
+			else if("${htmlCallHandlerUrl}".equals(match)){
+				matcher.appendReplacement(sb, htmlCallHandlerUrl);
+			}
+			else if("${htmlPollHandlerUrl}".equals(match)){
+				matcher.appendReplacement(sb, htmlPollHandlerUrl);
+			}
 		}
+		DWRParamWriter.setUseDynamicSessionId(useDynamicSessionId);
 		matcher.appendTail(sb);
 		return sb;
 	}
@@ -225,7 +269,7 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	 * @param basePath
 	 * @return
 	 */
-	private StringBuffer getInterfaceScript(String scriptName) {
+	private StringBuffer getInterfaceScript(String scriptName,ServletContext servletContext) {
 		StringBuffer sb = new StringBuffer(ENGINE_INIT);
 
 		// List all containers to find all DWR interfaces
@@ -279,7 +323,7 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	 * @param basePath
 	 * @return
 	 */
-	private StringBuffer getAllPublishedInterfaces() {
+	private StringBuffer getAllPublishedInterfaces(ServletContext servletContext) {
 		
 		StringBuffer sb = new StringBuffer();
 

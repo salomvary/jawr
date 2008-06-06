@@ -24,6 +24,7 @@ import org.directwebremoting.util.IdGenerator;
 public class DWRParamWriter {
 	private static final IdGenerator generator = new IdGenerator();
 	private static final int pageIdLength = 16;
+	private static boolean useDynamicSessionId; // Should this evolve to an interceptor chain for the AbstractBundleLinkRenderer?
 	
 	
 	
@@ -35,13 +36,23 @@ public class DWRParamWriter {
 	 * @return
 	 */
 	public static StringBuffer buildRequestSpecificParams(String contextPath,String dwrPath) {
-		StringBuffer sb = new StringBuffer("<script type=\"text/javascript\">if(!JAWR){var JAWR = {};};JAWR.jawr_dwr_path='");
-        sb.append(dwrPath);
-		sb.append("';JAWR.dwr_scriptSessionId='").append(generator.generateId(pageIdLength)).append("';");
-		sb.append("JAWR.jawr_dwr_context='").append(contextPath).append("';");
+		StringBuffer sb = new StringBuffer("<script type=\"text/javascript\">if(!JAWR){var JAWR = {};};");
+		sb.append("JAWR.jawr_dwr_path='");
+        sb.append(dwrPath).append("';");
+        
+        if(useDynamicSessionId)
+        	sb.append("JAWR.dwr_scriptSessionId='").append(generator.generateId(pageIdLength)).append("';");
+		
+        sb.append("JAWR.app_context_path='").append(contextPath).append("';");
         sb.append("</script>").append("\n");
 		
 		return sb;
+	}
+
+
+
+	public static void setUseDynamicSessionId(boolean useDynamicSessionId) {
+		DWRParamWriter.useDynamicSessionId = useDynamicSessionId;
 	}
 
 	

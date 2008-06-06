@@ -16,6 +16,8 @@ package net.jawr.web.resource.bundle.generator;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
+import javax.servlet.ServletContext;
+
 /**
  * A ResourceGenerator is acomponent that generates script or CSS dynamically, instead of reading 
  * it from the contents of a WAR file. It is used for creating resources programatically or to 
@@ -34,5 +36,5 @@ public interface ResourceGenerator {
 	 * @param charset
 	 * @return
 	 */
-	public Reader createResource(String path,Charset charset);
+	public Reader createResource(String path, ServletContext servletContext, Charset charset);
 }

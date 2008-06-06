@@ -29,13 +29,12 @@ import net.jawr.web.resource.bundle.generator.ResourceGenerator;
  * 
  */
 public class DWRResourceGeneratorWrapper implements ResourceGenerator {
-	private ServletContext servletContext;
+	
 	
 	private DWRBeanGenerator generator;
 	
-	public DWRResourceGeneratorWrapper(ServletContext servletContext) {
+	public DWRResourceGeneratorWrapper() {
 		super();
-		this.servletContext = servletContext;
 	}
 
 
@@ -43,11 +42,11 @@ public class DWRResourceGeneratorWrapper implements ResourceGenerator {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
 	 */
-	public Reader createResource(String path, Charset charset) {
+	public Reader createResource(String path, ServletContext servletContext, Charset charset) {
 		if(null == generator)
-			generator = new DWRBeanGenerator(servletContext);
+			generator = new DWRBeanGenerator();
 		
-		return generator.createResource(path, charset);
+		return generator.createResource(path, servletContext, charset);
 	}
 
 }

@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -26,6 +28,8 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
+
+import javax.servlet.ServletContext;
 
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
@@ -40,6 +44,7 @@ import org.apache.log4j.Logger;
  * @author Jordi Hernández Sellés
  */
 public class MessageBundleScriptCreator {
+	public static final String GRAILS_USED_FLAG = "jawr.grails.support.on";
 	private static final Logger log = Logger.getLogger(MessageBundleScriptCreator.class.getName());
 	private static final String SCRIPT_TEMPLATE = "/net/jawr/web/resource/bundle/message/messages.js";
 	private static StringBuffer template;
@@ -50,10 +55,12 @@ public class MessageBundleScriptCreator {
 	private static final String PARENFINDER_REGEXP = ".*(\\(.*\\)).*";
 	private static final String BRACKFINDER_REGEXP = ".*(\\[.*\\]).*";
 	private List filterList;
+	private ServletContext servletContext;
 	
 	
-	public MessageBundleScriptCreator(String configParam) {
+	public MessageBundleScriptCreator(String configParam,ServletContext servletContext) {
 		super();
+		this.servletContext = servletContext;
 		if(null == template)
 			template = loadScriptTemplate();
 		
@@ -103,7 +110,7 @@ public class MessageBundleScriptCreator {
 	 * Loads the message resource bundles specified and uses a BundleStringJasonifier to generate the properties. 
 	 * @return
 	 */
-	public Reader createScript(){
+	public Reader createScript(Charset charset){
 		Locale locale = null;
 		if(configParam.indexOf('@') != -1){
 			String localeKey = configParam.substring(configParam.indexOf('@')+1);
@@ -131,11 +138,22 @@ public class MessageBundleScriptCreator {
 			else bundle = ResourceBundle.getBundle(names[x]);
 			
 			Enumeration keys = bundle.getKeys();
+			
 			while(keys.hasMoreElements()) {
 				String key = (String) keys.nextElement();
 				
 				if(matchesFilter(key))
-					props.put(key, bundle.getString(key));
+					try {
+						String value = bundle.getString(key);
+						// Grails requires a special treatment since it does funny things to the bundles encoding
+						if(null != this.servletContext.getAttribute(GRAILS_USED_FLAG))
+							value = new String( value.getBytes("LATIN1"),charset.name() );
+						
+						props.put(key, value);
+						
+					} catch (UnsupportedEncodingException enc) {
+						throw new RuntimeException(enc);
+					}
 			}
 		}
 		BundleStringJasonifier bsj = new BundleStringJasonifier(props);

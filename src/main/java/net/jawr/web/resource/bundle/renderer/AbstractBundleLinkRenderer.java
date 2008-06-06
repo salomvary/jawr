@@ -76,6 +76,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
         // If DWR is being used, add a path var to the page
         if( null != bundler.getConfig().getDwrMapping() && 
         	includedBundles.add(ID_SCRIPT_DWR_PATH)) {
+        	
         	StringBuffer sb = DWRParamWriter.buildRequestSpecificParams(contextPath,PathNormalizer.joinPaths(contextPath,  bundler.getConfig().getDwrMapping()));
             out.write(sb.toString());
         }

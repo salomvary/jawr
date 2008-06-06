@@ -16,6 +16,8 @@ package net.jawr.web.resource.bundle.locale;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
+import javax.servlet.ServletContext;
+
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
 
@@ -31,9 +33,9 @@ public class ResourceBundleMessagesGenerator implements ResourceGenerator {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
 	 */
-	public Reader createResource(String path,Charset charset) {
-		MessageBundleScriptCreator creator = new MessageBundleScriptCreator(path);
-		return creator.createScript();
+	public Reader createResource(String path, ServletContext servletContext,Charset charset) {
+		MessageBundleScriptCreator creator = new MessageBundleScriptCreator(path,servletContext);
+		return creator.createScript(charset);
 	}
 
 }

@@ -43,18 +43,19 @@ public class GeneratorRegistry {
 	public static final String CLASSPATH_BUNDLE_PREFIX = "jar:";
 	public static final String DWR_BUNDLE_PREFIX = "dwr:";
 	private static final Map registry = new HashMap();
-	
+	private ServletContext servletContext;
 	
 	static
 	{
 		registry.put(MESSAGE_BUNDLE_PREFIX, new ResourceBundleMessagesGenerator());
 		registry.put(CLASSPATH_BUNDLE_PREFIX, new ClasspathResourceGenerator());
+		registry.put(DWR_BUNDLE_PREFIX, new DWRResourceGeneratorWrapper());
 	}
 	
 
 	public GeneratorRegistry(ServletContext servletContext) {
 		super();
-		registry.put(DWR_BUNDLE_PREFIX, new DWRResourceGeneratorWrapper(servletContext));
+		this.servletContext = servletContext;
 	}
 	
 	/**
@@ -91,7 +92,7 @@ public class GeneratorRegistry {
 	 */
 	public Reader createResource(String path,Charset charset) {
 		String key = matchPath(path);
-		return ((ResourceGenerator)registry.get(key)).createResource(path.substring(key.length()),charset);
+		return ((ResourceGenerator)registry.get(key)).createResource(path.substring(key.length()),servletContext,charset);
 	}
 	
 	/**
