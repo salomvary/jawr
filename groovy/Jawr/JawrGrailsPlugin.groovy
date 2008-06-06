@@ -1,5 +1,6 @@
 import net.jawr.web.servlet.JawrRequestHandler;
 import org.codehaus.groovy.grails.commons.*;
+import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
 
 /**
  * This plugin adds Jawr (https://jawr.dev.java.net) functionality to grails applications. 
@@ -41,6 +42,7 @@ class JawrGrailsPlugin {
     	if(conf.jawr) {    		
     		Properties jawrProps = filterJawrProps(conf);
     		currentConfigHash = jawrProps.hashCode();
+    		applicationContext.servletContext.setAttribute(MessageBundleScriptCreator.GRAILS_USED_FLAG, "true");
     		
     		// Init the Javascript handler
 	    	if(conf.jawr.js){
