@@ -2,7 +2,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>    
-	<jwr:script src="/js/index/index.js" /> 
+ <jwr:style src="/bundles/all.css" />
+ <jwr:script src="/bundles/global.js"/>
 	<script>
 		jawr.index();
 	</script>
