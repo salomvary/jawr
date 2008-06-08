@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -33,6 +34,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 
+import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
@@ -63,11 +65,6 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	private static final String AUTH_KEY = "_auth";
 	private static final String WEBWORK_KEY = "_actionutil";
 	
-	// DWR 3.0 paths
-	private static final String PLAINCALLHANDLERURL = "/call/plaincall/";
-	private static final String PLAINPOLLHANDLERURL = "/call/plainpoll/";
-	private static final String HTMLCALLHANDLERURL = "/call/htmlcall/";
-	private static final String HTMLPOLLHANDLERURL = "/call/htmlpoll/";
 
 	// Path to DWR javascript files
 	private static final String ENGINE_PATH = "org/directwebremoting/engine.js";
@@ -88,10 +85,6 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	
 	// A patter to replace some expressions at the engine javascript
 	private static final Pattern paramsPattern = Pattern.compile("(\\$\\{allowGetForSafariButMakeForgeryEasier}|"  
-											 + "\\$\\{plainCallHandlerUrl}|"  
-											 + "\\$\\{plainPollHandlerUrl}|"  
-											 + "\\$\\{htmlCallHandlerUrl}|"  
-											 + "\\$\\{htmlPollHandlerUrl}|"  		
 											 + "\\$\\{pollWithXhr}|"  
 											 + "\\$\\{scriptSessionId}|"  
 											 + "\\$\\{sessionCookieName}|"  
@@ -118,7 +111,7 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
 	 */
-	public Reader createResource(String path,ServletContext servletContext, Charset charset) {
+	public Reader createResource(String path, JawrConfig config,ServletContext servletContext,Locale locale, Charset charset) {
 		StringBuffer data = null;
 		if(ENGINE_KEY.equals(path)) {
 			data = buildEngineScript(readDWRScript(ENGINE_PATH),servletContext);
@@ -159,10 +152,6 @@ public class DWRBeanGenerator implements ResourceGenerator {
 		String pollWithXhr = "";
 		String sessionCookieName = "JSESSIONID";
 		
-		String plainCallHandlerUrl = PLAINCALLHANDLERURL;
-		String plainPollHandlerUrl = PLAINPOLLHANDLERURL;
-		String htmlCallHandlerUrl = HTMLCALLHANDLERURL;
-		String htmlPollHandlerUrl = HTMLPOLLHANDLERURL;
 
 		
 		for(Iterator it = containers.iterator();it.hasNext();) {
@@ -178,24 +167,10 @@ public class DWRBeanGenerator implements ResourceGenerator {
 			}
 			if(null != container.getBean("sessionCookieName")){
 				sessionCookieName = (String)container.getBean("sessionCookieName");
-			}			
-			if(null != container.getBean("plainCallHandlerUrl")){
-				plainCallHandlerUrl = (String)container.getBean("plainCallHandlerUrl");
-			}			
-			if(null != container.getBean("plainPollHandlerUrl")){
-				plainPollHandlerUrl = (String)container.getBean("plainPollHandlerUrl");
-			}			
-			if(null != container.getBean("htmlCallHandlerUrl")){
-				htmlCallHandlerUrl = (String)container.getBean("htmlCallHandlerUrl");
-			}			
-			if(null != container.getBean("htmlPollHandlerUrl")){
-				htmlPollHandlerUrl = (String)container.getBean("htmlPollHandlerUrl");
-			}			
+			}		
 		}
 		StringBuffer sb = new StringBuffer();
 		Matcher matcher = paramsPattern.matcher(engineScript);
-		boolean useDynamicSessionId = false;
-		
 		while(matcher.find()) {
 			String match = matcher.group();
 			if("${allowGetForSafariButMakeForgeryEasier}".equals(match)){
@@ -212,27 +187,13 @@ public class DWRBeanGenerator implements ResourceGenerator {
 			}
 			else if("${scriptSessionId}".equals(match)){
 				matcher.appendReplacement(sb, "\"+JAWR.dwr_scriptSessionId+\"");	
-				useDynamicSessionId = true;
 			}
 			else if("${defaultPath}".equals(match)){
 
 				matcher.appendReplacement(sb, "\"+JAWR.jawr_dwr_path+\"");
 			}
-			// DRW 3.x
-			else if("${plainCallHandlerUrl}".equals(match)){
-				matcher.appendReplacement(sb, plainCallHandlerUrl);
-			}
-			else if("${plainPollHandlerUrl}".equals(match)){
-				matcher.appendReplacement(sb, plainPollHandlerUrl);
-			}
-			else if("${htmlCallHandlerUrl}".equals(match)){
-				matcher.appendReplacement(sb, htmlCallHandlerUrl);
-			}
-			else if("${htmlPollHandlerUrl}".equals(match)){
-				matcher.appendReplacement(sb, htmlPollHandlerUrl);
-			}
 		}
-		DWRParamWriter.setUseDynamicSessionId(useDynamicSessionId);
+		DWRParamWriter.setUseDynamicSessionId(true);
 		matcher.appendTail(sb);
 		return sb;
 	}

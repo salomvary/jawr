@@ -72,11 +72,6 @@ Javascript i18n message generator
 	ResourceBundles). 
 	
 	
-=====================
-	There is a limitation for bundles which have a messages generator: they can't be used as a child of a composite bundle. 
-
-=====================
-
 ** Defining the message namespace. 
 
 	You probably noticed that in the previous example, when referencing the messages from javascript the properties were referenced using the 

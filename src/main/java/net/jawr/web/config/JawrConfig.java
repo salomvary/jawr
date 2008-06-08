@@ -36,6 +36,7 @@ public class JawrConfig {
 	private GeneratorRegistry generatorRegistry;
 	private LocaleResolver localeResolver;
 	private ServletContext context;
+	private Properties configProperties;
 	
 	/**
 	 * Initialize configuration using params contained in the initialization properties file. 
@@ -44,7 +45,7 @@ public class JawrConfig {
 	 */
 	public JawrConfig(Properties props) 
 	{
-		
+		this.configProperties = props;
 		if(null != props.getProperty("jawr.debug.on"))
 		{			
 			setDebugModeOn(Boolean.valueOf(props.getProperty("jawr.debug.on")).booleanValue());
@@ -277,6 +278,7 @@ public class JawrConfig {
 		 */
 		public void setGeneratorRegistry(GeneratorRegistry generatorRegistry) {
 			this.generatorRegistry = generatorRegistry;
+			this.generatorRegistry.setConfig(this);
 		}
 
 		public LocaleResolver getLocaleResolver() {
@@ -309,6 +311,13 @@ public class JawrConfig {
 		 */
 		public void setDwrMapping(String dwrMapping) {
 			this.dwrMapping = dwrMapping;
+		}
+
+		/**
+		 * @return the configProperties
+		 */
+		public Properties getConfigProperties() {
+			return configProperties;
 		}
 
 	

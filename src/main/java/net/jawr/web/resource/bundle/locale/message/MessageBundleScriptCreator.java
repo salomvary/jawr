@@ -33,6 +33,7 @@ import javax.servlet.ServletContext;
 
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
+import net.jawr.web.resource.bundle.generator.GeneratorParamUtils;
 
 import org.apache.log4j.Logger;
 
@@ -52,38 +53,38 @@ public class MessageBundleScriptCreator {
 	private String namespace = "messages";
 	private String filter;
 	private Properties props;
-	private static final String PARENFINDER_REGEXP = ".*(\\(.*\\)).*";
-	private static final String BRACKFINDER_REGEXP = ".*(\\[.*\\]).*";
+	private Locale locale;
 	private List filterList;
 	private ServletContext servletContext;
 	
 	
-	public MessageBundleScriptCreator(String configParam,ServletContext servletContext) {
+	public MessageBundleScriptCreator(String configParam,ServletContext servletContext,Locale locale) {
 		super();
 		this.servletContext = servletContext;
 		if(null == template)
 			template = loadScriptTemplate();
 		
+		this.locale = locale;
 		props = new Properties();
 		
 		// Set the namespace
-		if(configParam.matches(PARENFINDER_REGEXP)) {
-			namespace = configParam.substring(configParam.indexOf('(')+1,configParam.indexOf(')'));
-			configParam = configParam.substring(configParam.indexOf(')')+1);
-		}
+		String[] namespaceValues = GeneratorParamUtils.getParenthesesParam(configParam, namespace);
+		configParam = namespaceValues[0];
+		namespace = namespaceValues[1];
+
 		// Set the filter
-		if(configParam.matches(BRACKFINDER_REGEXP)) {
-			filter = configParam.substring(configParam.indexOf('[')+1,configParam.indexOf(']'));
+		String[] filterValues = GeneratorParamUtils.getBracketsParam(configParam, null);
+		configParam = filterValues[0];
+		filter = filterValues[1];
+		if(null != filter) {
 			StringTokenizer tk = new StringTokenizer(filter,"\\|");
 			filterList = new ArrayList();
 			while(tk.hasMoreTokens())
 				filterList.add(tk.nextToken());
-			configParam = configParam.substring(configParam.indexOf(']')+1);
 		}
 		
 		this.configParam = configParam;
 	}
-	
 	
 	/**
 	 * Loads a template containing the functions which convert properties into methods. 
@@ -111,24 +112,7 @@ public class MessageBundleScriptCreator {
 	 * @return
 	 */
 	public Reader createScript(Charset charset){
-		Locale locale = null;
-		if(configParam.indexOf('@') != -1){
-			String localeKey = configParam.substring(configParam.indexOf('@')+1);
-			configParam = configParam.substring(0,configParam.indexOf('@'));
-			
-			// Resourcebundle should be doing this for me...
-			String[] params = localeKey.split("_");			
-			switch(params.length) {
-				case 3:
-					locale = new Locale(params[0],params[1],params[2]);
-					break;
-				case 2: 
-					locale = new Locale(params[0],params[1]);
-					break;
-				default:
-					locale = new Locale(localeKey);
-			}
-		}
+		
 		String[] names = configParam.split("\\|");
 		for(int x = 0;x < names.length; x++) {
 			ResourceBundle bundle;

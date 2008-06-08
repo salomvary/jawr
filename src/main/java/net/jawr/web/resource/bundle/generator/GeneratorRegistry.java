@@ -15,16 +15,17 @@ package net.jawr.web.resource.bundle.generator;
 
 import java.io.Reader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import net.jawr.web.collections.ConcurrentCollectionsFactory;
+import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.generator.classpath.ClasspathResourceGenerator;
-import net.jawr.web.resource.bundle.generator.dwr.DWRBeanGenerator;
+import net.jawr.web.resource.bundle.generator.dwr.DWRGeneratorFactory;
 import net.jawr.web.resource.bundle.generator.validator.CommonsValidatorGenerator;
 import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
 
@@ -47,9 +48,10 @@ public class GeneratorRegistry {
 	public static final String DWR_BUNDLE_PREFIX = "dwr:";
 	public static final String COMMONS_VALIDATOR_PREFIX = "acv:";
 	
-	private static final Map registry = new HashMap();
-	private static final List prefixRegistry = new ArrayList();
+	private static final Map registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+	private static final List prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 	private ServletContext servletContext;
+	private JawrConfig config;
 	
 	static
 	{
@@ -86,7 +88,7 @@ public class GeneratorRegistry {
 			registry.put(generatorKey, new ClasspathResourceGenerator());
 		}
 		else if(DWR_BUNDLE_PREFIX.equals(generatorKey)){
-			registry.put(generatorKey, new DWRBeanGenerator());
+			registry.put(generatorKey, DWRGeneratorFactory.createDWRGenerator());
 		}
 		else if(COMMONS_VALIDATOR_PREFIX.equals(generatorKey)){
 			registry.put(generatorKey, new CommonsValidatorGenerator());
@@ -118,9 +120,27 @@ public class GeneratorRegistry {
 	 * @param charset
 	 * @return
 	 */
-	public Reader createResource(String path,Charset charset) {
+	public Reader createResource(String path, Charset charset) {
 		String key = matchPath(path);
-		return ((ResourceGenerator)registry.get(key)).createResource(path.substring(key.length()),servletContext,charset);
+		Locale locale = null;
+		if(path.indexOf('@') != -1){
+			String localeKey = path.substring(path.indexOf('@')+1);
+			path = path.substring(0,path.indexOf('@'));
+			
+			// Resourcebundle should be doing this for me...
+			String[] params = localeKey.split("_");			
+			switch(params.length) {
+				case 3:
+					locale = new Locale(params[0],params[1],params[2]);
+					break;
+				case 2: 
+					locale = new Locale(params[0],params[1]);
+					break;
+				default:
+					locale = new Locale(localeKey);
+			}
+		}
+		return ((ResourceGenerator)registry.get(key)).createResource(path.substring(key.length()),config,servletContext,locale,charset);
 	}
 	
 	/**
@@ -140,6 +160,13 @@ public class GeneratorRegistry {
 			loadGenerator(rets);
 		
 		return rets;
+	}
+
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(JawrConfig config) {
+		this.config = config;
 	}
 
 }

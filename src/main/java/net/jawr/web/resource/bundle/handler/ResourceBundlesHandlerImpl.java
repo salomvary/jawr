@@ -25,8 +25,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
@@ -280,11 +282,16 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		}
 	}
 	
+	/**
+	 * Joins the members of a composite bundle in al its variants, storing in a separate file for each
+	 * variant. 
+	 * @param composite
+	 */
 	private void joinAndStoreCompositeResourcebundle(CompositeResourceBundle composite){
 		StringBuffer store;
 		
 		// Collect all variant names from child bundles
-		List variants = new ArrayList();
+		Set variants = new HashSet();
 		for(Iterator it = composite.getChildBundles().iterator();it.hasNext();) {
 			JoinableResourceBundle childbundle = (JoinableResourceBundle) it.next();
 			if(null != childbundle.getLocaleVariantKeys())
@@ -316,6 +323,10 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		resourceHandler.storeBundle(composite.getName(),store);
 	}
 	
+	/**
+	 * Joins the members of a bundle and stores it
+	 * @param bundle
+	 */
 	private void joinAndStoreBundle(JoinableResourceBundle bundle) {
 		StringBuffer store = null;
 		
