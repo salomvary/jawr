@@ -15,6 +15,10 @@
 			<param-name>configLocation</param-name>
 			<param-value>jawr.properties</param-value>
 		</init-param>
+		<init-param>
+			<param-name>mapping</param-name>
+			<param-value>/jawr/</param-value>
+		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
@@ -33,7 +37,7 @@
 	
 	<servlet-mapping>
 		<servlet-name>JavascriptServlet</servlet-name>
-		<url-pattern>*.js</url-pattern>
+		<url-pattern>/jawr/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>CssServlet</servlet-name>
