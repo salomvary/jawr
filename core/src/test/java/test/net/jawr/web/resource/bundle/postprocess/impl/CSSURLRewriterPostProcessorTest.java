@@ -313,7 +313,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 			public ResourceBundlePostProcessor getUnitaryPostProcessor() {
 				return null;
 			}
-			public void setBundleDataHashCode(int bundleDataHashCode) {
+			public void setBundleDataHashCode(String var, int bundleDataHashCode) {
 				
 			}
 			public String getExplorerConditionalExpression() {

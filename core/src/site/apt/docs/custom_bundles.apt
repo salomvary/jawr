@@ -190,9 +190,9 @@ jawr.js.bundle.names=comp
 jawr.js.bundle.comp.id=/bundles/composite.js
 jawr.js.bundle.comp.global=true
 jawr.js.bundle.comp.composite=true
-jawr.js.bundle.comp.prefix=comp_001
 
 jawr.js.bundle.comp.child.names=foo, bar
+...
 
 +------------------------------------------+
 	

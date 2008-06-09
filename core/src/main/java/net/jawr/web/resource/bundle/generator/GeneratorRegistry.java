@@ -15,14 +15,18 @@ package net.jawr.web.resource.bundle.generator;
 
 import java.io.Reader;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import net.jawr.web.collections.ConcurrentCollectionsFactory;
+import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.generator.classpath.ClasspathResourceGenerator;
-import net.jawr.web.resource.bundle.generator.dwr.DWRResourceGeneratorWrapper;
+import net.jawr.web.resource.bundle.generator.dwr.DWRGeneratorFactory;
+import net.jawr.web.resource.bundle.generator.validator.CommonsValidatorGenerator;
 import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
 
 /**
@@ -42,19 +46,25 @@ public class GeneratorRegistry {
 	public static final String MESSAGE_BUNDLE_PREFIX = "messages:";
 	public static final String CLASSPATH_BUNDLE_PREFIX = "jar:";
 	public static final String DWR_BUNDLE_PREFIX = "dwr:";
-	private static final Map registry = new HashMap();
+	public static final String COMMONS_VALIDATOR_PREFIX = "acv:";
 	
+	private static final Map registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+	private static final List prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
+	private ServletContext servletContext;
+	private JawrConfig config;
 	
 	static
 	{
-		registry.put(MESSAGE_BUNDLE_PREFIX, new ResourceBundleMessagesGenerator());
-		registry.put(CLASSPATH_BUNDLE_PREFIX, new ClasspathResourceGenerator());
+		prefixRegistry.add(MESSAGE_BUNDLE_PREFIX);
+		prefixRegistry.add(CLASSPATH_BUNDLE_PREFIX);
+		prefixRegistry.add(DWR_BUNDLE_PREFIX);
+		prefixRegistry.add(COMMONS_VALIDATOR_PREFIX);
 	}
 	
 
 	public GeneratorRegistry(ServletContext servletContext) {
 		super();
-		registry.put(DWR_BUNDLE_PREFIX, new DWRResourceGeneratorWrapper(servletContext));
+		this.servletContext = servletContext;
 	}
 	
 	/**
@@ -62,6 +72,27 @@ public class GeneratorRegistry {
 	 */
 	public GeneratorRegistry(){
 		super();
+	}
+	
+	/**
+	 * Lazy loads generators, to avoid the need for undesired dependencies. 
+	 * 
+	 * @param generatorKey
+	 * @return
+	 */
+	private void loadGenerator(String generatorKey) {
+		if(MESSAGE_BUNDLE_PREFIX.equals(generatorKey)){
+			registry.put(generatorKey, new ResourceBundleMessagesGenerator());
+		}
+		else if(CLASSPATH_BUNDLE_PREFIX.equals(generatorKey)){
+			registry.put(generatorKey, new ClasspathResourceGenerator());
+		}
+		else if(DWR_BUNDLE_PREFIX.equals(generatorKey)){
+			registry.put(generatorKey, DWRGeneratorFactory.createDWRGenerator());
+		}
+		else if(COMMONS_VALIDATOR_PREFIX.equals(generatorKey)){
+			registry.put(generatorKey, new CommonsValidatorGenerator());
+		}
 	}
 	
 	/**
@@ -89,9 +120,27 @@ public class GeneratorRegistry {
 	 * @param charset
 	 * @return
 	 */
-	public Reader createResource(String path,Charset charset) {
+	public Reader createResource(String path, Charset charset) {
 		String key = matchPath(path);
-		return ((ResourceGenerator)registry.get(key)).createResource(path.substring(key.length()),charset);
+		Locale locale = null;
+		if(path.indexOf('@') != -1){
+			String localeKey = path.substring(path.indexOf('@')+1);
+			path = path.substring(0,path.indexOf('@'));
+			
+			// Resourcebundle should be doing this for me...
+			String[] params = localeKey.split("_");			
+			switch(params.length) {
+				case 3:
+					locale = new Locale(params[0],params[1],params[2]);
+					break;
+				case 2: 
+					locale = new Locale(params[0],params[1]);
+					break;
+				default:
+					locale = new Locale(localeKey);
+			}
+		}
+		return ((ResourceGenerator)registry.get(key)).createResource(path.substring(key.length()),config,servletContext,locale,charset);
 	}
 	
 	/**
@@ -101,12 +150,23 @@ public class GeneratorRegistry {
 	 */
 	private String matchPath(String path) {
 		String rets = null;
-		for(Iterator it = registry.keySet().iterator();it.hasNext() && rets == null;) {
+		for(Iterator it = prefixRegistry.iterator();it.hasNext() && rets == null;) {
 			String prefix = (String) it.next();
 			if(path.startsWith(prefix))
 				rets = prefix;			
 		}	
+		// Lazy load generator
+		if(null != rets && !registry.containsKey(rets))
+			loadGenerator(rets);
+		
 		return rets;
+	}
+
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(JawrConfig config) {
+		this.config = config;
 	}
 
 }

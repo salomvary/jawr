@@ -53,12 +53,6 @@ public class CompositeResourceBundle extends JoinableResourceBundleImpl {
 		
 		for(Iterator it = this.childBundles.iterator();it.hasNext();) {
 			JoinableResourceBundleImpl child = (JoinableResourceBundleImpl) it.next();
-
-			if(null != child.getLocaleVariantKeys()) {
-				throw new UnsupportedOperationException("Composite bundles cannot be composed of bundles that have locale variants. " 
-														+ child.getName() + " was added to this bundle, but it has locale variants and "
-														+"thus can't belong in a composite. ");
-			}
 			
 			// Skip the child as needed
 			if( (debugModeOn && child.getInclusionPattern().isExcludeOnDebug()) || 

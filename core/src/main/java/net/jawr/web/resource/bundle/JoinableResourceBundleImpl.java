@@ -17,13 +17,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
-import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.sorting.SortFileParser;
 
@@ -48,7 +48,8 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	private String fileExtension;
 	private String urlPrefix;
 	private String explorerConditionalExpression;
-	private int bundleDataHashCode;
+	
+	private Map prefixMap;
 	
 	protected List localeVariantKeys;
 	
@@ -79,6 +80,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		this.itemPathList = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 		this.licensesPathList = new HashSet();
         this.fileExtension = fileExtension;
+        prefixMap = ConcurrentCollectionsFactory.buildConcurrentHashMap();
         
 	}	
 	
@@ -252,8 +254,8 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		
 		List rets = new ArrayList();
 		for(Iterator it = itemPathList.iterator();it.hasNext();){
-			String path = (String) it.next();
-			if(path.startsWith(GeneratorRegistry.MESSAGE_BUNDLE_PREFIX)){
+			String path = (String) it.next();			
+			if(resourceHandler.isResourceGenerated(path)){
 				rets.add(path + '@' + variantKey);
 			}
 			else rets.add(path);
@@ -286,11 +288,30 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
     	if(null != variantKey && null != this.localeVariantKeys) {
     		String key = getAvailableLocaleVariant(variantKey);
     		if(null != key)
-    			return this.urlPrefix + "." + key + "/";
+    			return prefixMap.get(variantKey) + "." + key + "/";
     	}
     	return this.urlPrefix + "/";
     }
-    
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setBundleDataHashCode(int)
+	 */
+	public void setBundleDataHashCode(String variantKey, int bundleDataHashCode) {		
+		String prefix;
+		// Since this numbre is used as part of urls, the -sign is converted to 'N'
+		if(bundleDataHashCode < 0){
+			prefix = "N" + bundleDataHashCode*-1;
+		}
+		else prefix = ""+bundleDataHashCode;
+		
+		if(null == variantKey){
+			this.urlPrefix = prefix;
+		}
+		else {
+			prefixMap.put(variantKey, prefix);
+		}
+	}   
+	
     /**
      * Resolves a registered path from a locale key, using the same algorithm used to 
      * locate ResourceBundles. 
@@ -351,18 +372,6 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 
 
 	
-	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setBundleDataHashCode(int)
-	 */
-	public void setBundleDataHashCode(int bundleDataHashCode) {		
-		this.bundleDataHashCode = bundleDataHashCode;
-		// Since this numbre is used as part of urls, the -sign is converted to 'N'
-		if(bundleDataHashCode < 0){
-			this.urlPrefix = "N" + this.bundleDataHashCode*-1;
-		}
-		else urlPrefix = ""+this.bundleDataHashCode;
-		
-	}
 
 
 	/* (non-Javadoc)

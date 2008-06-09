@@ -132,7 +132,7 @@ public class OrphanResourceBundlesMapperTest extends  ResourceHandlerBasedTest {
 				return null;
 			}
 
-			public void setBundleDataHashCode(int bundleDataHashCode) {
+			public void setBundleDataHashCode(String var,int bundleDataHashCode) {
 				
 			}
 

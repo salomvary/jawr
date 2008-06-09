@@ -19,7 +19,11 @@ import java.io.Reader;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
+import java.util.Locale;
 
+import javax.servlet.ServletContext;
+
+import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
@@ -33,7 +37,7 @@ public class ClasspathResourceGenerator implements ResourceGenerator {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
 	 */
-	public Reader createResource(String path, Charset charset) {
+	public Reader createResource(String path, JawrConfig config, ServletContext servletContext,Locale locale, Charset charset) {
 		try {
 			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(path, this);
 			 ReadableByteChannel chan = Channels.newChannel(is);
