@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -27,8 +29,11 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
+import javax.servlet.ServletContext;
+
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
+import net.jawr.web.resource.bundle.generator.GeneratorParamUtils;
 
 import org.apache.log4j.Logger;
 
@@ -40,43 +45,47 @@ import org.apache.log4j.Logger;
  * @author Jordi Hernández Sellés
  */
 public class MessageBundleScriptCreator {
+	public static final String GRAILS_USED_FLAG = "jawr.grails.support.on";
+	public static final String DEFAULT_NAMESPACE = "messages";
 	private static final Logger log = Logger.getLogger(MessageBundleScriptCreator.class.getName());
 	private static final String SCRIPT_TEMPLATE = "/net/jawr/web/resource/bundle/message/messages.js";
 	private static StringBuffer template;
 	private String configParam;
-	private String namespace = "messages";
+	private String namespace;
 	private String filter;
 	private Properties props;
-	private static final String PARENFINDER_REGEXP = ".*(\\(.*\\)).*";
-	private static final String BRACKFINDER_REGEXP = ".*(\\[.*\\]).*";
+	private Locale locale;
 	private List filterList;
+	private ServletContext servletContext;
 	
 	
-	public MessageBundleScriptCreator(String configParam) {
+	public MessageBundleScriptCreator(String configParam,ServletContext servletContext,Locale locale) {
 		super();
+		this.servletContext = servletContext;
 		if(null == template)
 			template = loadScriptTemplate();
 		
+		this.locale = locale;
 		props = new Properties();
 		
 		// Set the namespace
-		if(configParam.matches(PARENFINDER_REGEXP)) {
-			namespace = configParam.substring(configParam.indexOf('(')+1,configParam.indexOf(')'));
-			configParam = configParam.substring(configParam.indexOf(')')+1);
-		}
+		String[] namespaceValues = GeneratorParamUtils.getParenthesesParam(configParam, DEFAULT_NAMESPACE);
+		configParam = namespaceValues[0];
+		namespace = namespaceValues[1];
+
 		// Set the filter
-		if(configParam.matches(BRACKFINDER_REGEXP)) {
-			filter = configParam.substring(configParam.indexOf('[')+1,configParam.indexOf(']'));
+		String[] filterValues = GeneratorParamUtils.getBracketsParam(configParam, null);
+		configParam = filterValues[0];
+		filter = filterValues[1];
+		if(null != filter) {
 			StringTokenizer tk = new StringTokenizer(filter,"\\|");
 			filterList = new ArrayList();
 			while(tk.hasMoreTokens())
 				filterList.add(tk.nextToken());
-			configParam = configParam.substring(configParam.indexOf(']')+1);
 		}
 		
 		this.configParam = configParam;
 	}
-	
 	
 	/**
 	 * Loads a template containing the functions which convert properties into methods. 
@@ -103,25 +112,8 @@ public class MessageBundleScriptCreator {
 	 * Loads the message resource bundles specified and uses a BundleStringJasonifier to generate the properties. 
 	 * @return
 	 */
-	public Reader createScript(){
-		Locale locale = null;
-		if(configParam.indexOf('@') != -1){
-			String localeKey = configParam.substring(configParam.indexOf('@')+1);
-			configParam = configParam.substring(0,configParam.indexOf('@'));
-			
-			// Resourcebundle should be doing this for me...
-			String[] params = localeKey.split("_");			
-			switch(params.length) {
-				case 3:
-					locale = new Locale(params[0],params[1],params[2]);
-					break;
-				case 2: 
-					locale = new Locale(params[0],params[1]);
-					break;
-				default:
-					locale = new Locale(localeKey);
-			}
-		}
+	public Reader createScript(Charset charset){
+		
 		String[] names = configParam.split("\\|");
 		for(int x = 0;x < names.length; x++) {
 			ResourceBundle bundle;
@@ -131,11 +123,22 @@ public class MessageBundleScriptCreator {
 			else bundle = ResourceBundle.getBundle(names[x]);
 			
 			Enumeration keys = bundle.getKeys();
+			
 			while(keys.hasMoreElements()) {
 				String key = (String) keys.nextElement();
 				
 				if(matchesFilter(key))
-					props.put(key, bundle.getString(key));
+					try {
+						String value = bundle.getString(key);
+						// Grails requires a special treatment since it does funny things to the bundles encoding
+						if(null != this.servletContext.getAttribute(GRAILS_USED_FLAG))
+							value = new String( value.getBytes("LATIN1"),charset.name() );
+						
+						props.put(key, value);
+						
+					} catch (UnsupportedEncodingException enc) {
+						throw new RuntimeException(enc);
+					}
 			}
 		}
 		BundleStringJasonifier bsj = new BundleStringJasonifier(props);

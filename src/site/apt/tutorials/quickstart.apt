@@ -12,7 +12,7 @@ Getting started with Jawr
 	your application (typically, under WEB-INF/lib). Add log4j.jar to the path as well. 
 	
 	If you are using java 1.4, you can optionally download {{{http://backport-jsr166.sourceforge.net/}backport-util-concurrent}} and add it to 
-	the classpath as well for improved performance. This is <<not>> needed the JDK version of your server is 5 or higher. 
+	the classpath as well for improved performance. This is <<not>> needed if the JDK version of your server is 5 or higher. 
 	
 	Alternatively, if you are using Maven 2, add a dependency to Jawr in your POM file: 
 	

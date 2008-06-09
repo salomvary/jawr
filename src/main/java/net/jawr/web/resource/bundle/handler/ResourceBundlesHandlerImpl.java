@@ -25,8 +25,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
@@ -280,23 +282,54 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		}
 	}
 	
+	/**
+	 * Joins the members of a composite bundle in al its variants, storing in a separate file for each
+	 * variant. 
+	 * @param composite
+	 */
 	private void joinAndStoreCompositeResourcebundle(CompositeResourceBundle composite){
-		StringBuffer store = new StringBuffer();
+		StringBuffer store;
+		
+		// Collect all variant names from child bundles
+		Set variants = new HashSet();
+		for(Iterator it = composite.getChildBundles().iterator();it.hasNext();) {
+			JoinableResourceBundle childbundle = (JoinableResourceBundle) it.next();
+			if(null != childbundle.getLocaleVariantKeys())
+				variants.addAll(childbundle.getLocaleVariantKeys());
+		}
+		
+		// Process all variants
+		for(Iterator vars = variants.iterator();vars.hasNext();) {
+			store = new StringBuffer();
+			String variant = (String) vars.next();
+			for(Iterator it = composite.getChildBundles().iterator();it.hasNext();) {
+				JoinableResourceBundle childbundle = (JoinableResourceBundle) it.next();
+				store.append(joinandPostprocessBundle(childbundle, variant));					
+			}
+			String name = LocaleUtils.getLocalizedBundleName(composite.getName(),variant);
+			resourceHandler.storeBundle(name,store);
+			composite.setBundleDataHashCode(variant,store.toString().hashCode());
+		}
+		// Create the default bundle (the non variant one)
+		store = new StringBuffer();
 		for(Iterator it = composite.getChildBundles().iterator();it.hasNext();) {
 			JoinableResourceBundle childbundle = (JoinableResourceBundle) it.next();
 			store.append(joinandPostprocessBundle(childbundle, null));					
 		}
 		// Set the data hascode in the bundle, in case the prefix needs to be generated
-		composite.setBundleDataHashCode(store.toString().hashCode());
+		composite.setBundleDataHashCode(null,store.toString().hashCode());
 		
 		// Store the collected resources as a single file, both in text and gzip formats. 
 		resourceHandler.storeBundle(composite.getName(),store);
 	}
 	
+	/**
+	 * Joins the members of a bundle and stores it
+	 * @param bundle
+	 */
 	private void joinAndStoreBundle(JoinableResourceBundle bundle) {
 		StringBuffer store = null;
 		
-		int hash = 0;
 		// Process the locale specific variants
 		if(null != bundle.getLocaleVariantKeys()) {
 			for(Iterator it = bundle.getLocaleVariantKeys().iterator();it.hasNext();) {
@@ -304,14 +337,13 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 				String name = LocaleUtils.getLocalizedBundleName(bundle.getName(),variantKey);
 				store = joinandPostprocessBundle(bundle, variantKey);	
 				resourceHandler.storeBundle(name,store);
-				hash += store.toString().hashCode();
+				bundle.setBundleDataHashCode(variantKey,store.toString().hashCode());
 			}
 		}
 		store = joinandPostprocessBundle(bundle, null);	
-		hash += store.toString().hashCode();
 		
 		// Set the data hascode in the bundle, in case the prefix needs to be generated
-		bundle.setBundleDataHashCode(hash);
+		bundle.setBundleDataHashCode(null,store.toString().hashCode());
 		
 		// Store the collected resources as a single file, both in text and gzip formats. 
 		resourceHandler.storeBundle(bundle.getName(),store);

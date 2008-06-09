@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -33,9 +34,11 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 
+import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
+import org.apache.log4j.Logger;
 import org.directwebremoting.Container;
 import org.directwebremoting.extend.CreatorManager;
 import org.directwebremoting.extend.DwrConstants;
@@ -43,6 +46,7 @@ import org.directwebremoting.extend.EnginePrivate;
 import org.directwebremoting.extend.Remoter;
 import org.directwebremoting.extend.ServerLoadMonitor;
 import org.directwebremoting.impl.ContainerUtil;
+import org.directwebremoting.impl.DefaultCreatorManager;
 
 /**
  * Generator that creates resources from DWR beans. 
@@ -51,6 +55,7 @@ import org.directwebremoting.impl.ContainerUtil;
  * 
  */
 public class DWRBeanGenerator implements ResourceGenerator {
+	private static final Logger log = Logger.getLogger(DWRBeanGenerator.class.getName());
 
 	// Mapping keys
 	private static final String ALL_INTERFACES_KEY = "_**";
@@ -60,6 +65,7 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	private static final String AUTH_KEY = "_auth";
 	private static final String WEBWORK_KEY = "_actionutil";
 	
+
 	// Path to DWR javascript files
 	private static final String ENGINE_PATH = "org/directwebremoting/engine.js";
 	private static final String UTIL_PATH = "org/directwebremoting/util.js";
@@ -71,7 +77,7 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	
 	// Script replacement to refer to a javascript var that JAWR creates
 	private static final String JS_PATH_REF = "'+JAWR.jawr_dwr_path+'";
-	private static final String JS_CTX_PATH = "'+JAWR.jawr_dwr_context+'/";
+	private static final String JS_CTX_PATH = "'+JAWR.app_context_path+'/";
 	
 	// Some names of init-params in DWR servlets
 	private static final String DWR_MAPPING_PARAM = "jawr_mapping";
@@ -87,7 +93,6 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	
 	// This is a script portion stored in a static method of DWR. We store it to remove it, so it is not replicated many times.  
 	private static String ENGINE_INIT;
-	private ServletContext servletContext;
 	
 	static {
 		ENGINE_INIT = EnginePrivate.getEngineInitScript();
@@ -97,9 +102,8 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	}
 	
 	
-	public DWRBeanGenerator(ServletContext servletContext) {
+	public DWRBeanGenerator() {
 		super();
-		this.servletContext = servletContext;		
 	}
 
 
@@ -107,23 +111,23 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
 	 */
-	public Reader createResource(String path, Charset charset) {
+	public Reader createResource(String path, JawrConfig config,ServletContext servletContext,Locale locale, Charset charset) {
 		StringBuffer data = null;
 		if(ENGINE_KEY.equals(path)) {
-			data = buildEngineScript(readDWRScript(ENGINE_PATH));
+			data = buildEngineScript(readDWRScript(ENGINE_PATH),servletContext);
 		}
 		else if(dwrLibraries.containsKey(path)){
 			data = readDWRScript((String)dwrLibraries.get(path));
 		}
 		else if(ALL_INTERFACES_KEY.equals(path)) {
 			data = new StringBuffer(ENGINE_INIT);
-			data.append(getAllPublishedInterfaces());
+			data.append(getAllPublishedInterfaces(servletContext));
 		}
 		else {
 			data = new StringBuffer(ENGINE_INIT);
 			StringTokenizer tk = new StringTokenizer(path,"|");
 			while(tk.hasMoreTokens()) {
-				data.append(getInterfaceScript(tk.nextToken()));
+				data.append(getInterfaceScript(tk.nextToken(),servletContext));
 			}
 		}
 		
@@ -141,12 +145,15 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	 * @param engineScript
 	 * @return
 	 */
-	private StringBuffer buildEngineScript(StringBuffer engineScript) {
+	private StringBuffer buildEngineScript(StringBuffer engineScript,ServletContext servletContext) {
 		List containers = ContainerUtil.getAllPublishedContainers(servletContext);
 		String allowGetForSafariButMakeForgeryEasier = "";
 		String scriptTagProtection = DwrConstants.SCRIPT_TAG_PROTECTION;
 		String pollWithXhr = "";
 		String sessionCookieName = "JSESSIONID";
+		
+
+		
 		for(Iterator it = containers.iterator();it.hasNext();) {
 			Container container = (Container) it.next();
 			ServerLoadMonitor monitor = (ServerLoadMonitor) container.getBean(ServerLoadMonitor.class.getName());
@@ -160,7 +167,7 @@ public class DWRBeanGenerator implements ResourceGenerator {
 			}
 			if(null != container.getBean("sessionCookieName")){
 				sessionCookieName = (String)container.getBean("sessionCookieName");
-			}			
+			}		
 		}
 		StringBuffer sb = new StringBuffer();
 		Matcher matcher = paramsPattern.matcher(engineScript);
@@ -179,13 +186,14 @@ public class DWRBeanGenerator implements ResourceGenerator {
 				matcher.appendReplacement(sb, scriptTagProtection);				
 			}
 			else if("${scriptSessionId}".equals(match)){
-				matcher.appendReplacement(sb, "\"+JAWR.dwr_scriptSessionId+\"");				
+				matcher.appendReplacement(sb, "\"+JAWR.dwr_scriptSessionId+\"");	
 			}
 			else if("${defaultPath}".equals(match)){
 
 				matcher.appendReplacement(sb, "\"+JAWR.jawr_dwr_path+\"");
 			}
 		}
+		DWRParamWriter.setUseDynamicSessionId(true);
 		matcher.appendTail(sb);
 		return sb;
 	}
@@ -222,7 +230,7 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	 * @param basePath
 	 * @return
 	 */
-	private StringBuffer getInterfaceScript(String scriptName) {
+	private StringBuffer getInterfaceScript(String scriptName,ServletContext servletContext) {
 		StringBuffer sb = new StringBuffer(ENGINE_INIT);
 
 		// List all containers to find all DWR interfaces
@@ -276,7 +284,7 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	 * @param basePath
 	 * @return
 	 */
-	private StringBuffer getAllPublishedInterfaces() {
+	private StringBuffer getAllPublishedInterfaces(ServletContext servletContext) {
 		
 		StringBuffer sb = new StringBuffer();
 
@@ -287,14 +295,36 @@ public class DWRBeanGenerator implements ResourceGenerator {
 			
 			// The creatormanager holds the list of beans
 			CreatorManager ctManager = (CreatorManager) container.getBean(CreatorManager.class.getName());
+			
 			if(null != ctManager) {
 				// The remoter builds interface scripts. 
 				Remoter remoter = (Remoter) container.getBean(Remoter.class.getName());
 				
 				String path = getPathReplacementString(container);
-				
-				Collection c = ctManager.getCreatorNames();
-				for(Iterator names = c.iterator();names.hasNext();) {
+				boolean debugMode = ctManager.isDebug();
+				Collection creators = null;
+				if(!(ctManager instanceof DefaultCreatorManager)) {
+					if(!debugMode)
+						log.warn("The current creatormanager is a custom implementation [" 
+								+ ctManager.getClass().getName() 
+								+ "]. Debug mode is off, so the mapping dwr:_** is likely to trigger a SecurityException." +
+								" Attempting to get all published creators..." );
+					creators = ctManager.getCreatorNames();
+					
+				}
+				else {	
+					DefaultCreatorManager dfCreator = (DefaultCreatorManager) ctManager;					
+					try 
+					{
+						dfCreator.setDebug(true);
+						creators = ctManager.getCreatorNames();
+					}
+					finally{
+						// restore debug mode no matter what
+						dfCreator.setDebug(debugMode);
+					}
+				}
+				for(Iterator names = creators.iterator();names.hasNext();) {
 					String script = remoter.generateInterfaceScript((String)names.next(), path);
 					// Must remove the engine init script to avoid unneeded duplication
 					script = removeEngineInit(script);
