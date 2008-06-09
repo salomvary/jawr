@@ -46,11 +46,12 @@ import org.apache.log4j.Logger;
  */
 public class MessageBundleScriptCreator {
 	public static final String GRAILS_USED_FLAG = "jawr.grails.support.on";
+	public static final String DEFAULT_NAMESPACE = "messages";
 	private static final Logger log = Logger.getLogger(MessageBundleScriptCreator.class.getName());
 	private static final String SCRIPT_TEMPLATE = "/net/jawr/web/resource/bundle/message/messages.js";
 	private static StringBuffer template;
 	private String configParam;
-	private String namespace = "messages";
+	private String namespace;
 	private String filter;
 	private Properties props;
 	private Locale locale;
@@ -68,7 +69,7 @@ public class MessageBundleScriptCreator {
 		props = new Properties();
 		
 		// Set the namespace
-		String[] namespaceValues = GeneratorParamUtils.getParenthesesParam(configParam, namespace);
+		String[] namespaceValues = GeneratorParamUtils.getParenthesesParam(configParam, DEFAULT_NAMESPACE);
 		configParam = namespaceValues[0];
 		namespace = namespaceValues[1];
 

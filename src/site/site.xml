@@ -28,6 +28,7 @@
       <item name="Facelets Tag library" href="/integration/facelets.html"/>
       <item name="Grails plugin" href="/integration/grails.html"/>
       <item name="DWR" href="/integration/dwr.html"/>
+      <item name="Commons Validator - Struts" href="/integration/validator.html"/>
     </menu>
     
     <menu name="Tutorials">

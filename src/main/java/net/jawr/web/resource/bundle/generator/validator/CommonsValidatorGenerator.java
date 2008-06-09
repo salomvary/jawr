@@ -36,6 +36,7 @@ import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.GeneratorParamUtils;
 import net.jawr.web.resource.bundle.generator.JavascriptStringUtil;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
+import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
 
 import org.apache.commons.validator.Arg;
 import org.apache.commons.validator.Field;
@@ -73,7 +74,7 @@ public class CommonsValidatorGenerator implements ResourceGenerator {
 		String validators = params[0];
 		String validatorParams = params[1];
 		
-		String messagesNS = "messages";
+		String messagesNS = MessageBundleScriptCreator.DEFAULT_NAMESPACE;
 		boolean stopOnErrors = true;
 		
 		StringTokenizer valparams = new StringTokenizer(validatorParams,"|");

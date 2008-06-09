@@ -23,6 +23,20 @@ Using DWR with Jawr
 	Finally, using this approach you have a consistent way of serving all javascript, instead of using different methods to serve DWR scripts or 
 	Jawr bundles. 
 	
+	Jawr supports DWR 2.x out of the box, and it can also be used with version 3 by adding an additional plugin jar to the classpath. The plugin 
+	can be downloaded from {{{https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=9382}this page}}. Maven 2 users can also 
+	add a dependency as the following: 
+
++------------------------------------------+		
+    <dependency>
+      <groupId>net.jawr.dwr</groupId>
+      <artifactId>dwr3plugin</artifactId>
+      <version>1.0</version>
+    </dependency>
++------------------------------------------+	
+	
+	Currently this plugin is only available for a Java 5 or higher JVM. 
+	
 	There is a sample application that you can download to chek out how integration with DWR works, which you can download from 
 	{{{https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=9330}this page}}. 
 	

@@ -15,6 +15,7 @@ package net.jawr.web.resource.bundle.generator;
 
 
 /**
+ * Utilities to retrieve parameters from generator mappings. 
  * @author Jordi Hernández Sellés
  */
 public class GeneratorParamUtils {
@@ -22,6 +23,12 @@ public class GeneratorParamUtils {
 	private static final String PARENFINDER_REGEXP = ".*(\\(.*\\)).*";
 	private static final String BRACKFINDER_REGEXP = ".*(\\[.*\\]).*";
 	
+	/**
+	 * Get values in parentheses. 
+	 * @param param
+	 * @param defaultValue Default to return when there are no parentheses. 
+	 * @return
+	 */
 	public static String[] getParenthesesParam(String param, String defaultValue) {
 		if(param.matches(PARENFINDER_REGEXP)) {
 			defaultValue = param.substring(param.indexOf('(')+1,param.indexOf(')'));
@@ -32,6 +39,12 @@ public class GeneratorParamUtils {
 		return new String[]{param, defaultValue};
 	}
 
+	/**
+	 * Get values in brackets. 
+	 * @param param
+	 * @param defaultValue Default to return when there are no parentheses. 
+	 * @return
+	 */
 	public static String[] getBracketsParam(String param, String defaultValue) {
 		if(param.matches(BRACKFINDER_REGEXP)) {
 			defaultValue = param.substring(param.indexOf('[')+1,param.indexOf(']'));
