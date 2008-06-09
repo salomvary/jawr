@@ -95,6 +95,10 @@
     <li class="none">
               <a href="../integration/dwr.html">DWR</a>
         </li>
+              
+    <li class="none">
+              <a href="../integration/validator.html">Commons Validator - Struts</a>
+        </li>
           </ul></dd>
     </dl>
       <dl class=navgroup>
@@ -222,9 +226,9 @@
 jawr.js.bundle.comp.id=/bundles/composite.js
 jawr.js.bundle.comp.global=true
 jawr.js.bundle.comp.composite=true
-jawr.js.bundle.comp.prefix=comp_001
 
 jawr.js.bundle.comp.child.names=foo, bar
+...
 </pre></div><p>For this composite, we declared two children: <i>foo</i> and <i>bar</i>. The child bundles for a composite differ from normal bundles in that they do not need an id or prefix, and they cannot be declared as global. Otherwise, every other attribute can be specified individually, such as postprocessors and the <b>debugnever</b> and <b>debugonly</b> attributes: </p><div class="source"><pre>        
         jawr.js.bundle.foo.mappings=/js/foo.js, /js/bar.js
         jawr.js.bundle.foo.debugnever=true
@@ -252,8 +256,8 @@ jawr.js.bundle.comp.child.names=foo, bar
 
   
   
-  &nbsp;| Last Published: 06/02/2008
-  &nbsp;| Version: 2.2
+  &nbsp;| Last Published: 06/09/2008
+  &nbsp;| Version: 2.3
 </div>
       <div class="clear">
         <hr/>

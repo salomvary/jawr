@@ -95,6 +95,10 @@
     <li class="none">
               <strong>DWR</strong>
         </li>
+              
+    <li class="none">
+              <a href="../integration/validator.html">Commons Validator - Struts</a>
+        </li>
           </ul></dd>
     </dl>
       <dl class=navgroup>
@@ -188,7 +192,11 @@
     </div>
     <div id="bodyColumn">
       <div id="contentBox">
-        <div class="section"><h2>Using DWR with Jawr</h2><p><a href="http://getahead.org/dwr/">DWR</a> (Direct Web Remoting) is a java library which allows Javascript in a browser to interact with Java on a server and helps you manipulate web pages with the results. </p><p>DWR works by setting up one or several servlets which serve javascript and also convert AJAX requests to java class method invocations. The javascript served by DWR is either one of several static .js files or a generated javascript stub that allows method calls to be routed to the server via AJAX. </p><p>DWR already has a method to minify and compress javascript, but Jawr adds extra functionality so that you serve your resources more consistently. Specifically, with JAWR you can serve all the static .js files in one bundle. You can also combine these with other scripts. For instance, you could have a javascript bundle containng Prototype.js, script.aculo.us, your own infrastructure and the DWR static scripts. </p><p>Also, you can bundle together the generated javascript stubs which normally must be requested separately. For pages that use several remote objects, this can speed up loading. </p><p>Finally, using this approach you have a consistent way of serving all javascript, instead of using different methods to serve DWR scripts or Jawr bundles. </p><p>There is a sample application that you can download to chek out how integration with DWR works, which you can download from <a href="https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=9330">this page</a>. </p><div class="section"><h3>Set up</h3><p>The jawr servlet must be started after the DWR one. To make sure this order is followed, you must set up the <i>load-on-startup</i> parameter so that the value for the Jawr servlet is greater than the one for the DWR servlet: </p><div class="source"><pre>        &lt;servlet&gt;
+        <div class="section"><h2>Using DWR with Jawr</h2><p><a href="http://getahead.org/dwr/">DWR</a> (Direct Web Remoting) is a java library which allows Javascript in a browser to interact with Java on a server and helps you manipulate web pages with the results. </p><p>DWR works by setting up one or several servlets which serve javascript and also convert AJAX requests to java class method invocations. The javascript served by DWR is either one of several static .js files or a generated javascript stub that allows method calls to be routed to the server via AJAX. </p><p>DWR already has a method to minify and compress javascript, but Jawr adds extra functionality so that you serve your resources more consistently. Specifically, with JAWR you can serve all the static .js files in one bundle. You can also combine these with other scripts. For instance, you could have a javascript bundle containng Prototype.js, script.aculo.us, your own infrastructure and the DWR static scripts. </p><p>Also, you can bundle together the generated javascript stubs which normally must be requested separately. For pages that use several remote objects, this can speed up loading. </p><p>Finally, using this approach you have a consistent way of serving all javascript, instead of using different methods to serve DWR scripts or Jawr bundles. </p><p>Jawr supports DWR 2.x out of the box, and it can also be used with version 3 by adding an additional plugin jar to the classpath. The plugin can be downloaded from <a href="https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=9382">this page</a>. Maven 2 users can also add a dependency as the following: </p><div class="source"><pre>    &lt;dependency&gt;
+      &lt;groupId&gt;net.jawr.dwr&lt;/groupId&gt;
+      &lt;artifactId&gt;dwr3plugin&lt;/artifactId&gt;
+      &lt;version&gt;1.0&lt;/version&gt;
+    &lt;/dependency&gt;</pre></div><p>Currently this plugin is only available for a Java 5 or higher JVM. </p><p>There is a sample application that you can download to chek out how integration with DWR works, which you can download from <a href="https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=9330">this page</a>. </p><div class="section"><h3>Set up</h3><p>The jawr servlet must be started after the DWR one. To make sure this order is followed, you must set up the <i>load-on-startup</i> parameter so that the value for the Jawr servlet is greater than the one for the DWR servlet: </p><div class="source"><pre>        &lt;servlet&gt;
            &lt;servlet-name&gt;dwr-invoker&lt;/servlet-name&gt;
            &lt;display-name&gt;DWR Servlet&lt;/display-name&gt;
            &lt;description&gt;Direct Web Remoter Servlet&lt;/description&gt;
@@ -259,8 +267,8 @@
 
   
   
-  &nbsp;| Last Published: 06/02/2008
-  &nbsp;| Version: 2.2
+  &nbsp;| Last Published: 06/09/2008
+  &nbsp;| Version: 2.3
 </div>
       <div class="clear">
         <hr/>

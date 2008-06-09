@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html>
+  <head>
+    <title>Jawr - Commons Validator Integration</title>
+    <style type="text/css" media="all">
+      @import url("../css/maven-base.css");
+      @import url("../css/maven-theme.css");
+      @import url("../css/site.css");
+    </style>
+    <link rel="stylesheet" href="../css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <!-- TODO: move this into JavaScript to patch the skin
+      <div class="xright">  </div>
+    -->
+    <div id="leftColumn">
+      <div id="navcolumn">
+             <dl class=navgroup>
+        <dt>About</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../servlets/ProjectHome">Home</a>
+        </li>
+              
+    <li class="none">
+              <a href="../introduction.html">Introduction</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Documentation</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../docs/servlet.html">The Jawr servlet</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/descriptor_syntax.html">Descriptor syntax</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/custom_bundles.html">Bundle definition</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/source_ordering.html">Source order in bundles</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/postprocessors.html">Postprocessors</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/license_files.html">Licenses in resources</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/taglibs.html">JSP Tag library</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/modes.html">Debug and production modes</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/messages_gen.html">i18n message generator</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Integration</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../integration/facelets.html">Facelets Tag library</a>
+        </li>
+              
+    <li class="none">
+              <a href="../integration/grails.html">Grails plugin</a>
+        </li>
+              
+    <li class="none">
+              <a href="../integration/dwr.html">DWR</a>
+        </li>
+              
+    <li class="none">
+              <strong>Commons Validator - Struts</strong>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Tutorials</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../tutorials/quickstart.html">Quick start</a>
+        </li>
+              
+    <li class="none">
+              <a href="../tutorials/libraries.html">Using popular libraries</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>API and sources</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../nonav/apidocs/index.html">JavaDocs</a>
+        </li>
+              
+    <li class="none">
+              <a href="../nonav/xref/index.html">Source XREF</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Project tools</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../servlets/ProjectHome">Project home</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectMemberList">Membership</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectNewsList">Announcements</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectForumView">Discussion forums</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectMailingListList">Mailing lists</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectDocumentList">Documents & files</a>
+        </li>
+              
+    <li class="none">
+              <a href="../source/browse/jawr/">Subversion</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectIssues">Issue tracker</a>
+        </li>
+          </ul></dd>
+    </dl>
+        </div>
+      <script>
+        // replace the java.net project tools with the navigation bar from Maven.
+        // also get rid of "Get Involved" thingie too, while we are at it
+        var pt = document.getElementById("projecttools");
+        var nv = document.getElementById("navcolumn");
+        
+        while(pt.previousSibling!=null)
+          pt.parentNode.removeChild(pt.previousSibling);
+        
+        pt.parentNode.insertBefore(nv,pt);
+        pt.parentNode.removeChild(pt);
+      </script>
+      <script>
+        // kill "description" h3 bar
+        var ld = document.getElementById("longdescription");
+        if(ld!=null) {
+          for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
+            if(n.nodeType==1 && n.innerHTML=="Description" ) {
+              n.parentNode.removeChild(n);
+              break;
+            }
+          }
+        }
+      </script>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>Integration with Apache Commons Validator</h2><p>Commons Validator is an input validation component devised (originally) by David Winterfeldt as an addon for the Struts framework. It's functionality has since been split so that validator can serve as the basis for a independant component and is now part of Jakarta Commons. </p><p>Struts users use the html:javascript tag library to have Validator generate validation javascript for client side validation. The downside of this approach is that the javascript is generated inline, so the browser will not cache it. Also, care must be taken to avoid the &quot;static&quot; javascript (the reusable validation logic) being generated on every page. </p><p>With Jawr it is possible to have the commons validator scripts minified and compressed, and they can also be included as part of a bundle. This way, the static javascript could be included in a bundle with other infrastructure code such as libraries (Prototype.js, JQuery or others). Also, several related form validations can be bundled together, with the added benefit of minification and browser caching. </p><p>Currently, using Jawr with Validator has a couple of limitations: </p><ul><li>Multipage validators are not supported. </li><li>Form validator generation is still in beta stage. It is usable but you should test each form since bugs may appear. </li></ul><p>These caveats can be bypassed by using the html:javascript tag in pages that require it, since both approaches can coexist without interference. The static javascript however can be used normally and by itself will be a welcome improvement to any project using the Validator. </p><div class="section"><h3>How to map Validator scripts</h3><p>The first thing required to use the Validator with Jawr is to create an entry in the Jawr properties file defining the paths to Validator config files. The paths are the same used to define any Validator instance. This entry can have any name you want, as you will later use this name to define the mappings. </p><p>For instance, if the Validator plugin configuration in struts were as follows: </p><div class="source"><pre>  &lt;plug-in className=&quot;org.apache.struts.validator.ValidatorPlugIn&quot;&gt;
+    &lt;set-property property=&quot;pathnames&quot; value=&quot;/org/apache/struts/validator/validator-rules-compressed.xml,
+                                              /WEB-INF/validator/validation.xml&quot; /&gt;
+      &lt;set-property property=&quot;stopOnFirstError&quot; value=&quot;true&quot; /&gt;
+  &lt;/plug-in&gt;</pre></div><p>The config param would look like this: </p><div class="source"><pre>  jawr.validator.config=/org/apache/struts/validator/validator-rules-compressed.xml,/WEB-INF/validator/validation.xml</pre></div><p>This variable defines a Validator config instance. If you have several modules with a different validator each, you would add a similar entry for each one. This is not needed if you will only use the static javascript generation and all your modules have the same javascript validators. </p><p>The next thing you do is to add the mappings. The syntax for a mapping is the following: </p><div class="source"><pre>  acv:mapping1|mapping2([config param]|[messages namespace]|[stop on errors])</pre></div><p>The mapping starts with <b>acv:</b> followed by the mappings separated by a pipe character. The mappings are form names as defined in the Validator config files, or <b>_static</b> to get the static javascript. </p><p>After the mappings, within parentheses you write the config param name (the one you defined previously). The 'messages namespace' and 'stop on errors' params are optional and are discussed below. Here is a simple mapping sample: </p><div class="source"><pre>jawr.validator.config=/org/apache/struts/validator/validator-rules-compressed.xml,/WEB-INF/validator/validation.xml
+jawr.js.bundle.global.id=/bundles/global.js
+jawr.js.bundle.global.mappings=acv:_static|loginForm(jawr.validator.config)</pre></div><p>This creates a bundle that contains the static Validator scripts and the validator for the form named 'loginForm'. Note that this bundle may contain other mappings, so you can combine the Validator scripts with any other javascript in your project. For instance, you could combine Prototype.js, scriptaculous and the static validations: </p><div class="source"><pre>jawr.js.bundle.global.id=/bundles/global.js
+jawr.js.bundle.global.mappings=/js/protaculous/**, acv:_static(jawr.validator.config)</pre></div></div><div class="section"><h3>i18n</h3><p>The commons validator generates locale specific messages. Normally, what it does is to use the HTTPServletRequest coming to a JSP to determine the required locale and it generates javascript using a ResourceBundle which contains the localized messages for validation. For instance: </p><div class="source"><pre>errors.required={0} is required.
+errors.minlength={0} can not be less than {1} characters.
+errors.maxlength={0} can not be greater than {1} characters.
+errors.invalid={0} is invalid.</pre></div><p>As opposed to this, Jawr generates all the bundles when the application starts up (thus saving some overhead compared to the former approach). As a consecuence, the way locale specific messages are resolved needs to be different. Fortunately, Jawr has a means to transfer i18n messages to javascript, which the validator uses. Therefore, you need some familiarity with the <a href="../docs/messages_gen.html">i18n messages generator</a> to use the Validator feature. Take a look and return here if you don't know about it. </p><p>So additional to the Validator scripts, you need also an i18n script with the messages required by the validator. To do that, you creat a mapping to the ResourceBundle that contains said messages: </p><div class="source"><pre>jawr.js.bundle.global.mappings=messages:org.apache.struts.webapp.validator.MessageResources</pre></div><p>You can of course organize the way to import the scripts as you wish. You can combine the messages from the validator with your own, or you can create a bundle with both the messages and the validators: </p><div class="source"><pre>jawr.js.bundle.global.mappings=messages:org.apache.struts.webapp.validator.MessageResources,acv:_static|loginForm(jawr.validator)</pre></div><p>As stated in the <a href="../docs/messages_gen.html">i18n messages generator documentation</a>, the namespace for the messages can be configured, with 'messages' being the default. If for whatever reason you change this namespace, you will need to specify it in the validator mapping too, like this: </p><div class="source"><pre>jawr.js.bundle.msg.mappings=messages:org.apache.struts.webapp.validator.MessageResources(mynamespace)
+jawr.js.bundle.global.mappings=acv:_static|loginForm(jawr.validator|mynamespace)</pre></div></div><div class="section"><h3>Stop on errors</h3><p>There are to ways to show messages to the user with the Validator. If 'stop on errors' is set to true, then Validator will display one alert message with the first category of errors encountered. For instance, if you have a mandatory field and a date validation, only the mandatory message is displayed. If stop on errors is set to false, the user gets two alert messages, one for the mandatory field and other for the date field. </p><p>When used with Jawr, this value defaults to true (only one alert message). If you wish to change this behavior, you add a third parameter to the mapping: </p><div class="source"><pre>jawr.js.bundle.global.mappings=acv:_static|loginForm(jawr.validator|messages|false)</pre></div><p>Note that when using this parameter you must sefine the namespace. If you didn't change it the i18n bundle, just set it to the default value 'messages' as in the example. </p></div></div>
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2008
+    
+          
+  
+
+  
+  
+  &nbsp;| Last Published: 06/09/2008
+  &nbsp;| Version: 2.3
+</div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
