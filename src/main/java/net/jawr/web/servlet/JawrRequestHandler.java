@@ -14,6 +14,7 @@
 package net.jawr.web.servlet;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -61,6 +62,8 @@ public class JawrRequestHandler implements ConfigChangeListener{
         
     private static final String CONFIG_RELOAD_INTERVAL = "jawr.config.reload.interval";
     public static final String GENERATION_PARAM = "generationConfigParam";
+    
+    public static final String CLIENTSIDE_HANDLER_REQ_PATH = "/jawr/loader.js";
     
 	private static final Logger log = Logger.getLogger(JawrRequestHandler.class.getName());
 	
@@ -275,6 +278,11 @@ public class JawrRequestHandler implements ConfigChangeListener{
 
 		if(log.isDebugEnabled())
 			log.debug("Request received for path:" + requestedPath);
+		
+		if(CLIENTSIDE_HANDLER_REQ_PATH.equals(requestedPath)){
+			handleLoaderRequest(request, response);
+			return;
+		}
 
 		// CSS images would be requested through this handler in case servletMapping is used  
 		if( 	this.jawrConfig.isDebugModeOn() && 
@@ -330,6 +338,21 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	}
 	
 
+	private void handleLoaderRequest(HttpServletRequest request, HttpServletResponse response) {
+		StringBuffer script = this.bundlesHandler.getClientSideHandler().getClientSideHandler(request);
+		StringReader rd = new StringReader(script.toString());
+		int readChar;
+		try {
+			Writer writer = response.getWriter();
+			while( (readChar = rd.read()) != -1 ){
+				writer.write(readChar);
+			}
+			rd.close();
+			writer.close();
+		} catch (IOException e) {
+			throw new RuntimeException("Unexpected IOException writing loader script");
+		}
+	}
 	/**
      * Adds aggresive caching headers to the response in order to prevent browsers requesting the same file
      * twice. 

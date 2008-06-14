@@ -152,9 +152,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     	// When debug mode is on and the resource is generated the path must include a parameter
     	if( bundler.getConfig().isDebugModeOn() && 
     		bundler.getConfig().getGeneratorRegistry().isPathGenerated(bundleId)) {
-    		try {
-				bundleId = "generate.js?" + JawrRequestHandler.GENERATION_PARAM + "=" + URLEncoder.encode(bundleId, "UTF-8");
-			} catch (UnsupportedEncodingException neverHappens) {/*URLEncoder:how not to use checked exceptions...*/}
+    		bundleId = PathNormalizer.createGenerationPath(bundleId);
     	}
     	String fullPath = PathNormalizer.joinPaths(bundler.getConfig().getServletMapping(), bundleId);
     	

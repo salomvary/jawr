@@ -78,6 +78,8 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	private ResourceBundlePostProcessor postProcessor;
 	private ResourceBundlePostProcessor unitaryPostProcessor;
 	
+	private ClientSideHandlerGenerator clientSideHandlerGenerator;
+	
 	/**
 	 * Build a ResourceBundlesHandler. 
 	 * @param bundles List The JoinableResourceBundles to use for this handler. 
@@ -111,6 +113,10 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		this.bundles = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 		this.bundles.addAll(bundles);
 		splitBundlesByType(bundles);
+		
+		this.clientSideHandlerGenerator = new ClientSideHandlerGeneratorImpl(globalBundles,
+																			contextBundles,
+																			config);
 	}
 	
 	/**
@@ -449,6 +455,14 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			}
 		}
 		return theBundle;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#getClientSideHandler()
+	 */
+	public ClientSideHandlerGenerator getClientSideHandler() {
+		return this.clientSideHandlerGenerator;
 	}
 
 }
