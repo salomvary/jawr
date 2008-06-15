@@ -14,9 +14,7 @@
 package net.jawr.web.resource.bundle.renderer;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.net.URLEncoder;
 import java.util.Random;
 import java.util.Set;
 
@@ -25,7 +23,6 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.generator.dwr.DWRParamWriter;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
-import net.jawr.web.servlet.JawrRequestHandler;
 
 /**
  * Abstract base class for implementations of a link renderer. 

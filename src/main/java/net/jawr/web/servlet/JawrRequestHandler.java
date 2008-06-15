@@ -14,7 +14,6 @@
 package net.jawr.web.servlet;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.Writer;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -40,6 +39,7 @@ import net.jawr.web.resource.bundle.factory.util.ConfigChangeListenerThread;
 import net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource;
 import net.jawr.web.resource.bundle.factory.util.PropsFilePropertiesSource;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
+import net.jawr.web.resource.bundle.handler.ClientSideHandlerScriptRequestHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 
@@ -76,6 +76,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	private ConfigChangeListenerThread configChangeListenerThread;
 	private GeneratorRegistry generatorRegistry;
 	private JawrConfig jawrConfig;
+	private ClientSideHandlerScriptRequestHandler clientSideScriptRequestHandler;
 
 	/**
 	 * Reads the properties file and  initializes all configuration using the ServletConfig object. 
@@ -233,6 +234,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			servletContext.setAttribute(ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE, bundlesHandler);
 		else servletContext.setAttribute(ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE, bundlesHandler);
 		
+		this.clientSideScriptRequestHandler = new ClientSideHandlerScriptRequestHandler(bundlesHandler,jawrConfig); 
 		
 		if(log.isDebugEnabled()) {
 			log.debug("content type set to: " + contentType);
@@ -280,7 +282,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			log.debug("Request received for path:" + requestedPath);
 		
 		if(CLIENTSIDE_HANDLER_REQ_PATH.equals(requestedPath)){
-			handleLoaderRequest(request, response);
+			this.clientSideScriptRequestHandler.handleClientSideHandlerRequest(request, response);
 			return;
 		}
 
@@ -337,22 +339,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			log.debug("request succesfully attended");
 	}
 	
-
-	private void handleLoaderRequest(HttpServletRequest request, HttpServletResponse response) {
-		StringBuffer script = this.bundlesHandler.getClientSideHandler().getClientSideHandler(request);
-		StringReader rd = new StringReader(script.toString());
-		int readChar;
-		try {
-			Writer writer = response.getWriter();
-			while( (readChar = rd.read()) != -1 ){
-				writer.write(readChar);
-			}
-			rd.close();
-			writer.close();
-		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException writing loader script");
-		}
-	}
+	
 	/**
      * Adds aggresive caching headers to the response in order to prevent browsers requesting the same file
      * twice. 

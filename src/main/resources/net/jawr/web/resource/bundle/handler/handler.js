@@ -1,33 +1,46 @@
 if(!window.JAWR) 
 	JAWR = {};
 JAWR.loader = {
-	head : document.getElementsByTagName('head')[0],
-	insert : function(path){
-		for(var x = 0; x < this.jsbundles.length;x++){
-				if(this.jsbundles[x].belongsToBundle(path)){
-					this.insertScript(this.jsbundles[x].prefix + this.jsbundles[x].name);
-					//this.insertCondComment(this.jsbundles[x].name,'if IE');
+	usedBundles : {},
+	script : function(path) {
+		this.insert(this.jsbundles,'insertScript',path);
+	},
+	style: function(path,media) {
+		this.insert(this.cssbundles,'insertCSS',path,media);
+	},
+	insert : function(bundles,func,path,media){
+		for(var x = 0; x < bundles.length;x++){
+				var bundle = bundles[x];
+				if(bundle.belongsToBundle(path) && !this.usedBundles[bundle.name]){
+					this.usedBundles[bundle.name] = true;
+					if(bundle.ieExpression)
+						this.insertCondComment(bundle.ieExpression,func,bundle.prefix + bundle.name,media);
+					else this[func](bundle.prefix + bundle.name,media);					
 				}
-			}
+			}			
 	},
 	insertScript : function(path){
-			var script = document.createElement("script");
-			script.src = this.normalizePath(this.mapping + path);
-			script.type = "text/javascript";
-			JAWR.loader.head.appendChild(script);
+		document.write(' \n<script type="text/javascript" src="'+this.normalizePath(this.mapping + path)+'"> </script> \n');
 	},
-	insertCondComment : function(path,condition){
-	 path = this.normalizePath(this.mapping + path);
-	 document.write('<!--[' + condition + ']>\n<script type="text/javascript" src="'+path+'"><\/script><![endif]-->\n');
+	insertCondComment : function(condition,func,path,media){
+	 document.write('<!--[' + condition + ']>\n');
+	 this[func](path,media);
+	 document.write('<![endif]-->');
 	},
 	normalizePath : function(path) {
 		return path.replace('//','/');
+	},
+	insertCSS : function(path,media){
+		media = media ? media : 'screen';
+		document.write('<link rel="stylesheet" type="text/css" media="' + media + '" href="'+this.normalizePath(this.mapping + path)+'"></link>\n');		
 	} 	
 }
-JAWR.ResourceBundle = function(name, prefix, itemPathList){this.name = name;this.prefix = prefix;this.itemPathList = itemPathList;}
+JAWR.ResourceBundle = function(name, prefix, itemPathList,ieExpression){this.name = name;this.prefix = prefix;this.itemPathList = itemPathList;this.ieExpression=ieExpression}
 JAWR.ResourceBundle.prototype.belongsToBundle = function(path) {	
 	if(path == this.name)
 		return true;
+	if(!this.itemPathList)
+		return false;
 	for(var x = 0; x < this.itemPathList.length; x++) {
 		if(this.itemPathList[x] == path)
 			return true;

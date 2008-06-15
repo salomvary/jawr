@@ -464,5 +464,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	public ClientSideHandlerGenerator getClientSideHandler() {
 		return this.clientSideHandlerGenerator;
 	}
+	
+	
 
 }

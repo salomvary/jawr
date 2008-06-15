@@ -23,6 +23,21 @@ public interface ClientSideHandlerGenerator {
 
 	public static final String SCRIPT_TEMPLATE = "/net/jawr/web/resource/bundle/handler/handler.js";
 	public static final String DEBUG_SCRIPT_TEMPLATE = "/net/jawr/web/resource/bundle/handler/debughandler.js";
-	public StringBuffer getClientSideHandler(HttpServletRequest request);
+	
+	/**
+	 * Builds a javascript script that can be used to include bundles in non dynamic html pages. 
+	 * @param request
+	 * @return
+	 */
+	public StringBuffer getClientSideHandlerScript(HttpServletRequest request);
+	
+	/**
+	 * Returns the part of the script that creates all instances of ResourceBundle javascript objects
+	 * for a given resourcehandler.  
+	 * @param locale
+	 * @param useGzip
+	 * @return
+	 */
+	public StringBuffer getClientSideBundles(String locale, boolean useGzip);
 
 }
