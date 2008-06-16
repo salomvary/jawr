@@ -147,4 +147,11 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#getClientSideHandler()
+	 */
+	public ClientSideHandlerGenerator getClientSideHandler() {
+		return rsHandler.getClientSideHandler();
+	}
+
 }

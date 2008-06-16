@@ -84,4 +84,7 @@ public interface ResourceBundlesHandler {
 	public JawrConfig getConfig();
 	
 	
+	public ClientSideHandlerGenerator getClientSideHandler();
+	
+	
 }
