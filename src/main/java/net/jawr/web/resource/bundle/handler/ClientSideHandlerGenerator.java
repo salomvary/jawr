@@ -16,6 +16,8 @@ package net.jawr.web.resource.bundle.handler;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * Provides methods to generate a javascript equivalent of a resourcehandler, used to 
+ * generate links in a non dynamic page where taglibs cannot be used. 
  * @author jordi
  *
  */

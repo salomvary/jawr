@@ -20,7 +20,7 @@ JAWR.loader = {
 			}			
 	},
 	insertScript : function(path){
-		document.write(' \n<script type="text/javascript" src="'+this.normalizePath(this.mapping + path)+'"> </script> \n');
+		document.write(' <script type="text/javascript" src="'+this.normalizePath(this.mapping+'/'+path)+'" > </script> ');
 	},
 	insertCondComment : function(condition,func,path,media){
 	 document.write('<!--[' + condition + ']>\n');
@@ -32,7 +32,7 @@ JAWR.loader = {
 	},
 	insertCSS : function(path,media){
 		media = media ? media : 'screen';
-		document.write('<link rel="stylesheet" type="text/css" media="' + media + '" href="'+this.normalizePath(this.mapping + path)+'"></link>\n');		
+		document.write(' <link rel="stylesheet" type="text/css" media="' + media + '" href="'+this.normalizePath(this.mapping+'/'+path)+'" ></link> ');		
 	} 	
 }
 JAWR.ResourceBundle = function(name, prefix, itemPathList,ieExpression){this.name = name;this.prefix = prefix;this.itemPathList = itemPathList;this.ieExpression=ieExpression}

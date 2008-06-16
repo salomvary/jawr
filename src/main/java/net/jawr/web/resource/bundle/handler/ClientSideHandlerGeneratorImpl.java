@@ -31,10 +31,10 @@ import net.jawr.web.resource.bundle.postprocess.impl.JSMinPostProcessor;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.servlet.RendererRequestUtils;
 
-
 import org.apache.log4j.Logger;
 
 /**
+ * Implementation of ClientSideHandlerGenerator
  * 
  * @author Jordi Hernández Sellés
  */
@@ -89,6 +89,13 @@ public class ClientSideHandlerGeneratorImpl implements
 			sb.append("if(!window.DWR)window.DWR={};\nDWR.loader = JAWR.loader;\n");
 		}
 		sb.append("JAWR.loader.mapping='").append(getPathPrefix(request)).append("';\n");
+		
+		// Start an self executing function
+		sb.append("(function(){\n");
+		
+		// shorthand for creating ResourceBundles. makes the script shorter. 
+		sb.append("function r(n, p, i,ie){return new JAWR.ResourceBundle(n, p, i,ie);}\n");
+		
 		sb.append("JAWR.loader.jsbundles = [");
 		sb.append(getClientSideBundles(locale, useGzip));
 		sb.append("]\n");
@@ -109,6 +116,9 @@ public class ClientSideHandlerGeneratorImpl implements
 			}
 			else isCSSHandler = true;
 		}
+		// End self executing function
+		sb.append("})();");
+		
 		
 		// Appends extra functions for debug mode
 		if(this.config.isDebugModeOn()) {
@@ -191,7 +201,7 @@ public class ClientSideHandlerGeneratorImpl implements
 	 * @param buf
 	 */
 	private void appendBundle(JoinableResourceBundle bundle,String variantKey, StringBuffer buf,boolean useGzip){
-		buf.append("new JAWR.ResourceBundle(")
+		buf.append("r(")
 			.append(JavascriptStringUtil.quote(bundle.getName()))
 			.append(",");
 		if(useGzip){

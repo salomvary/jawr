@@ -63,7 +63,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
     private static final String CONFIG_RELOAD_INTERVAL = "jawr.config.reload.interval";
     public static final String GENERATION_PARAM = "generationConfigParam";
     
-    public static final String CLIENTSIDE_HANDLER_REQ_PATH = "/jawr/loader.js";
+    public static final String CLIENTSIDE_HANDLER_REQ_PATH = "/jawr_loader.js";
     
 	private static final Logger log = Logger.getLogger(JawrRequestHandler.class.getName());
 	

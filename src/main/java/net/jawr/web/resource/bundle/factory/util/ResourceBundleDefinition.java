@@ -15,6 +15,8 @@ package net.jawr.web.resource.bundle.factory.util;
 
 import java.util.List;
 
+import net.jawr.web.servlet.JawrRequestHandler;
+
 /**
  * Transfer object meant for a factory to use to create a JoinableResourceBundle. 
  * 
@@ -52,6 +54,10 @@ public class ResourceBundleDefinition {
 		return bundleId;
 	}
 	public void setBundleId(String bundleId) {
+		if(JawrRequestHandler.CLIENTSIDE_HANDLER_REQ_PATH.equals(bundleId))
+			throw new IllegalArgumentException("The provided id [" + 
+					JawrRequestHandler.CLIENTSIDE_HANDLER_REQ_PATH +
+						"] can't be used since it's the same as the clientside handler path. Please change this id (or the name of the script)");
 		this.bundleId = bundleId;
 	}
 	public List getMappings() {
