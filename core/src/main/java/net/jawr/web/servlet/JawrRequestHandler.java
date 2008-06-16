@@ -39,6 +39,7 @@ import net.jawr.web.resource.bundle.factory.util.ConfigChangeListenerThread;
 import net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource;
 import net.jawr.web.resource.bundle.factory.util.PropsFilePropertiesSource;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
+import net.jawr.web.resource.bundle.handler.ClientSideHandlerScriptRequestHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 
@@ -62,6 +63,8 @@ public class JawrRequestHandler implements ConfigChangeListener{
     private static final String CONFIG_RELOAD_INTERVAL = "jawr.config.reload.interval";
     public static final String GENERATION_PARAM = "generationConfigParam";
     
+    public static final String CLIENTSIDE_HANDLER_REQ_PATH = "/jawr_loader.js";
+    
 	private static final Logger log = Logger.getLogger(JawrRequestHandler.class.getName());
 	
 	private ResourceBundlesHandler bundlesHandler;
@@ -73,6 +76,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	private ConfigChangeListenerThread configChangeListenerThread;
 	private GeneratorRegistry generatorRegistry;
 	private JawrConfig jawrConfig;
+	private ClientSideHandlerScriptRequestHandler clientSideScriptRequestHandler;
 
 	/**
 	 * Reads the properties file and  initializes all configuration using the ServletConfig object. 
@@ -230,6 +234,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			servletContext.setAttribute(ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE, bundlesHandler);
 		else servletContext.setAttribute(ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE, bundlesHandler);
 		
+		this.clientSideScriptRequestHandler = new ClientSideHandlerScriptRequestHandler(bundlesHandler,jawrConfig); 
 		
 		if(log.isDebugEnabled()) {
 			log.debug("content type set to: " + contentType);
@@ -275,6 +280,11 @@ public class JawrRequestHandler implements ConfigChangeListener{
 
 		if(log.isDebugEnabled())
 			log.debug("Request received for path:" + requestedPath);
+		
+		if(CLIENTSIDE_HANDLER_REQ_PATH.equals(requestedPath)){
+			this.clientSideScriptRequestHandler.handleClientSideHandlerRequest(request, response);
+			return;
+		}
 
 		// CSS images would be requested through this handler in case servletMapping is used  
 		if( 	this.jawrConfig.isDebugModeOn() && 
@@ -329,7 +339,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			log.debug("request succesfully attended");
 	}
 	
-
+	
 	/**
      * Adds aggresive caching headers to the response in order to prevent browsers requesting the same file
      * twice. 

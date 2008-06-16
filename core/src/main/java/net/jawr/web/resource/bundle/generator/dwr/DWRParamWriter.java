@@ -37,6 +37,14 @@ public class DWRParamWriter {
 	 */
 	public static StringBuffer buildRequestSpecificParams(String contextPath,String dwrPath) {
 		StringBuffer sb = new StringBuffer("<script type=\"text/javascript\">if(!JAWR){var JAWR = {};};");
+		sb.append(buildDWRJSParams(contextPath, dwrPath));
+        sb.append("</script>").append("\n");
+		
+		return sb;
+	}
+	
+	public static StringBuffer buildDWRJSParams(String contextPath,String dwrPath) {
+		StringBuffer sb = new StringBuffer(";");
 		sb.append("JAWR.jawr_dwr_path='");
         sb.append(dwrPath).append("';");
         
@@ -44,9 +52,7 @@ public class DWRParamWriter {
         	sb.append("JAWR.dwr_scriptSessionId='").append(generator.generateId(pageIdLength)).append("';");
 		
         sb.append("JAWR.app_context_path='").append(contextPath).append("';");
-        sb.append("</script>").append("\n");
-		
-		return sb;
+        return sb;
 	}
 
 

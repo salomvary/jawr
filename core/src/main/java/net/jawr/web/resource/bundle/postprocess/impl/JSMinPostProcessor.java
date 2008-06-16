@@ -65,6 +65,25 @@ public class JSMinPostProcessor extends
 		byte[] minified = bOs.toByteArray();
 		return  byteArrayToString(charset, minified);
 	}
+	
+	/**
+	 * Utility method for components that need to use JSMin in a different context other than 
+	 * bundle postprocessing. 
+	 * 
+	 * @param sb
+	 * @return
+	 */
+	public StringBuffer minifyStringBuffer(StringBuffer sb, Charset charset) throws IOException, JSMinException {
+		byte[] bundleBytes = sb.toString().getBytes(charset.name());
+		ByteArrayInputStream bIs = new ByteArrayInputStream(bundleBytes);
+		ByteArrayOutputStream bOs = new ByteArrayOutputStream();
+		
+		// Compress data and recover it as a byte array. 
+		JSMin minifier = new JSMin(bIs,bOs);
+		minifier.jsmin();
+		byte[] minified = bOs.toByteArray();
+		return  byteArrayToString(charset, minified);
+	}
 
 	/**
 	 * @param charset

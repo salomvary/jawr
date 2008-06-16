@@ -13,10 +13,14 @@
  */
 package net.jawr.web.resource.bundle.factory.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
+
+import net.jawr.web.servlet.JawrRequestHandler;
 
 /**
  * Utility class to work with relative paths. 
@@ -98,5 +102,18 @@ public class PathNormalizer {
 			ret.add(path);
 		}
 		return ret;
+	}
+	
+	/**
+	 * converts a generation path (such as jar:/some/path/file) into 
+	 * a request path that the request handler can understand and process.  
+	 * @param path
+	 * @return
+	 */
+	public static String createGenerationPath(String path){
+		try {
+			path = "/generate.js?" + JawrRequestHandler.GENERATION_PARAM + "=" + URLEncoder.encode(path, "UTF-8");
+		} catch (UnsupportedEncodingException neverHappens) {/*URLEncoder:how not to use checked exceptions...*/}
+		return path;
 	}
 }
