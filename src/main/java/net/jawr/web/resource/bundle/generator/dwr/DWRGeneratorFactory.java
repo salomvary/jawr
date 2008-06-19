@@ -22,6 +22,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.regex.Pattern;
 
+import org.directwebremoting.util.VersionUtil;
+
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
@@ -39,24 +41,9 @@ public class DWRGeneratorFactory {
 	
 	public static ResourceGenerator createDWRGenerator() {
 		if(!isVersionDetermined) {
-			StringBuffer sb = null;
-			try {
-				InputStream is = ClassLoaderResourceUtils.getResourceAsStream(ENGINE_PATH, "");
-				ReadableByteChannel chan = Channels.newChannel(is);
-				Reader r = Channels.newReader(chan,"utf-8");
-				StringWriter sw = new StringWriter();
-				int i = 0;
-				while((i = r.read()) != -1) {
-					sw.write(i);
-				}
-				sb = sw.getBuffer();
-				
-			} catch (FileNotFoundException e) {
-				throw new RuntimeException(e);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			isV2 = Pattern.matches(sessionIdPattern, RegexUtil.adaptReplacementToMatcher(sb.toString()));
+			String versionLabel = VersionUtil.getVersion();
+			versionLabel = versionLabel.substring(0,versionLabel.indexOf('.'));
+			isV2 = (2 == Integer.valueOf(versionLabel).intValue());
 			isVersionDetermined = true;
 		}
 		if(isV2)
@@ -65,5 +52,4 @@ public class DWRGeneratorFactory {
 			return (ResourceGenerator) ClassLoaderResourceUtils.buildObjectInstance(V3_GENERATOR_CLASS);
 		}
 	}
-
 }
