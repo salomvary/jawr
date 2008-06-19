@@ -38,6 +38,7 @@ import net.jawr.web.resource.bundle.factory.util.ConfigChangeListener;
 import net.jawr.web.resource.bundle.factory.util.ConfigChangeListenerThread;
 import net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource;
 import net.jawr.web.resource.bundle.factory.util.PropsFilePropertiesSource;
+import net.jawr.web.resource.bundle.factory.util.ServletContextAware;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ClientSideHandlerScriptRequestHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
@@ -114,6 +115,9 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		// Load a custom class to set config properties
 		if(null != configPropsSourceClass) {
 			propsSrc = (ConfigPropertiesSource) ClassLoaderResourceUtils.buildObjectInstance(configPropsSourceClass);			
+			if(propsSrc instanceof ServletContextAware){
+				((ServletContextAware)propsSrc).setServletContext(context);
+			}
 		}
 		else {
 			// Default config properties source, reads from a .properties file in the classpath. 
