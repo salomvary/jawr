@@ -205,6 +205,12 @@
       </subsection>
       <subsection name="Announcements">
       <ul>
+      	<li> <strong>6/16/2008</strong>: Version 2.4.1 released:<br/> 
+      	A bug was introduced in the last releasewhich kept DWR 2 from working with Jawr. This release fixes that bug. <br/>
+      	Also, a new interface has been added which ConfigPropertiesSource custom implementations can use to get access to the servlet 
+      	context. The class is named net.jawr.web.resource.bundle.factory.util.ServletContextAware. 
+      	
+      	</li>      
       	<li> <strong>6/16/2008</strong>: Version 2.4 released:<br/> 
       	<strong>Jawr can be used in plain HTML pages</strong>: This has been a major drawback for Jawr, since many times applications are a mix of 
       	static HTML and dynamic pages. <a href="./docs/plain_html.html" > Click here to find out how this has been solved. </a>     
