@@ -69,12 +69,12 @@
       <version>2.0</version>
       <scope>provided</scope>
     </dependency>
-    <!--dependency>
-      <groupId>org.dojotoolkit</groupId>
-      <artifactId>custom_rhino</artifactId>
-      <version>0.9.0</version>
+    <dependency>
+      <groupId>com.yahoo.platform.yui</groupId>
+      <artifactId>yuicompressor</artifactId>
+      <version>2.2.5</version>
       <scope>provided</scope>
-    </dependency-->
+    </dependency>
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
