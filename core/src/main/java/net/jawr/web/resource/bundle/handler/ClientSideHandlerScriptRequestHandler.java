@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.servlet.RendererRequestUtils;
 
 import org.directwebremoting.servlet.HttpConstants;
@@ -109,12 +110,9 @@ public class ClientSideHandlerScriptRequestHandler {
 		}
 		else {
 			StringReader rd = new StringReader(handler.data.toString());
-			int readChar;
-		    try {
+			try {
 				Writer writer = response.getWriter();
-				while( (readChar = rd.read()) != -1 ){
-					writer.write(readChar);
-				}
+                IOUtils.copy(rd, writer);
 				rd.close();
 				writer.close();
 			} catch (IOException e) {

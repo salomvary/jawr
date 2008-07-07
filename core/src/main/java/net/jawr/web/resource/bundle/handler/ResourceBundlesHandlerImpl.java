@@ -35,6 +35,7 @@ import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.CompositeResourceBundle;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler;
@@ -239,11 +240,8 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			rd = resourceHandler.getResource(bundlePath);
 		else rd = resourceHandler.getResourceBundleReader(bundlePath);
 		
-		int readChar;
 	    try {
-			while( (readChar = rd.read()) != -1 ){
-				writer.write(readChar);
-			}
+            IOUtils.copy(rd, writer);
 			rd.close();
 			writer.close();
 		} catch (IOException e) {

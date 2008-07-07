@@ -28,11 +28,13 @@ JAWR.loader = {
 	 document.write('<![endif]-->');
 	},
 	normalizePath : function(path) {
-		return path.replace('//','/');
+		while(path.indexOf('//')!=-1)
+			path = path.replace('//','/');
+		return path;
 	},
 	insertCSS : function(path,media){
 		media = media ? media : 'screen';
-		document.write(' <link rel="stylesheet" type="text/css" media="' + media + '" href="'+this.normalizePath(this.mapping+'/'+path)+'" ></link> ');		
+		document.write(' <link rel="stylesheet" type="text/css" media="' + media + '" href="'+this.normalizePath(this.cssmapping+'/'+path)+'" ></link> ');		
 	} 	
 }
 JAWR.ResourceBundle = function(name, prefix, itemPathList,ieExpression){this.name = name;this.prefix = prefix;this.itemPathList = itemPathList;this.ieExpression=ieExpression}

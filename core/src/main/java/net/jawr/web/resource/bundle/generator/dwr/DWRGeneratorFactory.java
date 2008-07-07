@@ -13,20 +13,10 @@
  */
 package net.jawr.web.resource.bundle.generator.dwr;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.util.regex.Pattern;
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
 import org.directwebremoting.util.VersionUtil;
-
-import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
-import net.jawr.web.resource.bundle.factory.util.RegexUtil;
-import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
 /**
  * @author Jordi Hernández Sellés
@@ -34,10 +24,8 @@ import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 public class DWRGeneratorFactory {
 
 	private static final String V3_GENERATOR_CLASS = "net.jawr.web.resource.bundle.generator.dwr.DWR3BeanGenerator";
-	private static final String ENGINE_PATH = "org/directwebremoting/engine.js";
 	private static boolean isV2 = true;
 	private static boolean isVersionDetermined = false;
-	private static final String sessionIdPattern = "\\$\\{scriptSessionId}|";
 	
 	public static ResourceGenerator createDWRGenerator() {
 		if(!isVersionDetermined) {

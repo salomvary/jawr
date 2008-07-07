@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 
 import net.jawr.web.minification.JSMin;
 import net.jawr.web.minification.JSMin.JSMinException;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 
@@ -97,10 +98,7 @@ public class JSMinPostProcessor extends
 		ReadableByteChannel chan = Channels.newChannel(new ByteArrayInputStream(minified));
         Reader rd = Channels.newReader(chan,charset.newDecoder(),-1);
         StringWriter writer = new StringWriter();
-		int i;
-		while((i = rd.read()) != -1)
-			writer.write(i);
-		
+        IOUtils.copy(rd, writer);
 		return writer.getBuffer();
 	}
 

@@ -287,6 +287,8 @@ public class JSMin {
 	}
 
 	public abstract class JSMinException extends Exception {
+	
+		private static final long serialVersionUID = 1L;
 		private int byteIndex;
 
 		/**
