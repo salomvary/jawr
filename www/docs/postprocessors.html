@@ -114,6 +114,10 @@
         </li>
               
     <li class="none">
+              <a href="../docs/faq_howto.html">FAQ-Howto</a>
+        </li>
+              
+    <li class="none">
               <a href="../tutorials/libraries.html">Using popular libraries</a>
         </li>
           </ul></dd>
@@ -229,7 +233,7 @@ jawr.js.bundle.foo.bundlepostprocessors=license=func,license</pre></div><hr /><
             &lt;groupId&gt;com.yahoo.platform.yui&lt;/groupId&gt;
             &lt;artifactId&gt;yuicompressor&lt;/artifactId&gt;
             &lt;version&gt;2.2.5&lt;/version&gt;
-        &lt;/dependency&gt;</pre></div><p>Unfortunately, this is the only way I know to get YUI from maven, and it is somewhat ugly since it will include both the YUI compressor and rhino, which might be problematic if you already have rhino on your server's classpath. YUI overwrites some of Rhino's classes also, so keep in mind that having another copy of Rhino.jar in your classpath might be very problematic. </p><div class="section"><h3>Javascript-specific postprocessors</h3></div></div><div class="section"><h2><b>JSMin</b></h2><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: JSMin</li></ul><p>This processor uses <a href="http://www.crockford.com/javascript/jsmin.html">Douglas Crockford's JSMin</a> minificator. It will remove any comments in code and unnecesary whitespace in a very safe manner. </p><div class="section"><h3>CSS-specific postprocessors</h3></div></div><div class="section"><h2><b>CSS Minificator</b></h2><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: cssminify</li></ul><p>This processor removes comments and unneeded whitespace using search and replace with regular expressions. It is on by default and is almost as efficient as the YUI compressor. </p></div><div class="section"><h2><b>CSS Path rewriter</b></h2><ul><li><b>Type</b>: File</li><li><b>Properties Key</b>: csspathrewriter</li></ul><p>This processor rewrites relative paths in URLs for each file that is added to a bundle. A bundle will have a different URL to that of its contained resources, so in order for relative paths to image files and the like to keep working, URLs must be rewritten accordingly. </p></div>
+        &lt;/dependency&gt;</pre></div><p>Unfortunately, this is the only way I know to get YUI from maven, and it is somewhat ugly since it will include both the YUI compressor and rhino, which might be problematic if you already have rhino on your server's classpath. YUI overwrites some of Rhino's classes also, so keep in mind that having another copy of Rhino.jar in your classpath might be very problematic. </p><div class="section"><h3>Javascript-specific postprocessors</h3></div></div><div class="section"><h2><b>JSMin</b></h2><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: JSMin</li></ul><p>This processor uses <a href="http://www.crockford.com/javascript/jsmin.html">Douglas Crockford's JSMin</a> minificator. It will remove any comments in code and unnecesary whitespace in a very safe manner. </p><div class="section"><h3>CSS-specific postprocessors</h3></div></div><div class="section"><h2><b>CSS Minificator</b></h2><ul><li><b>Type</b>: Bundle</li><li><b>Properties Key</b>: cssminify</li></ul><p>This processor removes comments and unneeded whitespace using search and replace with regular expressions. It is on by default and is almost as efficient as the YUI compressor. </p></div><div class="section"><h2><b>CSS Path rewriter</b></h2><ul><li><b>Type</b>: File</li><li><b>Properties Key</b>: csspathrewriter</li></ul><p>This processor rewrites relative paths in URLs for each file that is added to a bundle. A bundle will have a different URL to that of its contained resources, so in order for relative paths to image files and the like to keep working, URLs must be rewritten accordingly. </p><div class="section"><h3>User submitted postprocessors</h3><p>Some users are so kind as to submit their own custom postprocessors. If you have one that you think may be useful to others, please post it at the support forum and they will be shared among the Jawr community of users. To use any of these, download the source file and add it to your project source. Then declare the class and a mapping key as described at the <i>custom postprocessors</i> section above and you are ready to go. You can even go ahead and customize the class to suit your own needs. </p></div></div><div class="section"><h2><b>Console Log Statement Remover</b></h2><ul><li><b>Submitted by</b>: Ryan Wilson (<a href="http://blog.augmentedfragments.com">http://blog.augmentedfragments.com</a>)</li><li><b>Source</b>: <a href="../java/ConsolePostProcessor.java">ConsolePostProcessor.java</a></li><li><b>Type</b>: Bundle</li></ul><p>This postprocessor uses a regular expression to find and remove all the statements that write to the Firebug/Safari console. Specifically, it removes statements with the form <i>window.console.log([...])</i>. If you use a different form you can change the regular expression in the source file. </p><p>Thanks to Ryan Wilson for posting this work. </p></div>
       </div>
     </div>
     <div class="clear">
@@ -244,8 +248,8 @@ jawr.js.bundle.foo.bundlepostprocessors=license=func,license</pre></div><hr /><
 
   
   
-  &nbsp;| Last Published: 06/16/2008
-  &nbsp;| Version: 2.4
+  &nbsp;| Last Published: 07/07/2008
+  &nbsp;| Version: 2.4.2
 </div>
       <div class="clear">
         <hr/>

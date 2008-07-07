@@ -296,62 +296,64 @@
 <a name="287" href="#287">287</a> 	}
 <a name="288" href="#288">288</a> 
 <a name="289" href="#289">289</a> 	<strong>public</strong> <strong>abstract</strong> <strong>class</strong> JSMinException <strong>extends</strong> Exception {
-<a name="290" href="#290">290</a> 		<strong>private</strong> <strong>int</strong> byteIndex;
-<a name="291" href="#291">291</a> 
-<a name="292" href="#292">292</a> 		<em>/**<em>*</em></em>
-<a name="293" href="#293">293</a> <em>		 * @param byteIndex</em>
-<a name="294" href="#294">294</a> <em>		 */</em>
-<a name="295" href="#295">295</a> 		<strong>public</strong> JSMinException(<strong>int</strong> byteIndex) {
-<a name="296" href="#296">296</a> 			<strong>super</strong>();
-<a name="297" href="#297">297</a> 			<strong>this</strong>.byteIndex = byteIndex;
-<a name="298" href="#298">298</a> 		}
-<a name="299" href="#299">299</a> 		
-<a name="300" href="#300">300</a> 		<strong>public</strong> <strong>int</strong> getByteIndex(){
-<a name="301" href="#301">301</a> 			<strong>return</strong> <strong>this</strong>.byteIndex;
-<a name="302" href="#302">302</a> 		}
-<a name="303" href="#303">303</a> 		
-<a name="304" href="#304">304</a> 	}
-<a name="305" href="#305">305</a> 	
-<a name="306" href="#306">306</a> 	<strong>public</strong> <strong>class</strong> UnterminatedCommentException <strong>extends</strong> JSMinException{
-<a name="307" href="#307">307</a> 
-<a name="308" href="#308">308</a> 		<strong>public</strong> UnterminatedCommentException(<strong>int</strong> byteIndex) {
-<a name="309" href="#309">309</a> 			<strong>super</strong>(byteIndex);
-<a name="310" href="#310">310</a> 		}
-<a name="311" href="#311">311</a> 
-<a name="312" href="#312">312</a> 		<em>/**<em>*</em></em>
-<a name="313" href="#313">313</a> <em>		 * </em>
-<a name="314" href="#314">314</a> <em>		 */</em>
-<a name="315" href="#315">315</a> 		<strong>private</strong> <strong>static</strong> <strong>final</strong> <strong>long</strong> serialVersionUID = -6518522022216739576L;
-<a name="316" href="#316">316</a> 	}
-<a name="317" href="#317">317</a> 
-<a name="318" href="#318">318</a> 	<strong>public</strong> <strong>class</strong> UnterminatedStringLiteralException <strong>extends</strong> JSMinException {
+<a name="290" href="#290">290</a> 	
+<a name="291" href="#291">291</a> 		<strong>private</strong> <strong>static</strong> <strong>final</strong> <strong>long</strong> serialVersionUID = 1L;
+<a name="292" href="#292">292</a> 		<strong>private</strong> <strong>int</strong> byteIndex;
+<a name="293" href="#293">293</a> 
+<a name="294" href="#294">294</a> 		<em>/**<em>*</em></em>
+<a name="295" href="#295">295</a> <em>		 * @param byteIndex</em>
+<a name="296" href="#296">296</a> <em>		 */</em>
+<a name="297" href="#297">297</a> 		<strong>public</strong> JSMinException(<strong>int</strong> byteIndex) {
+<a name="298" href="#298">298</a> 			<strong>super</strong>();
+<a name="299" href="#299">299</a> 			<strong>this</strong>.byteIndex = byteIndex;
+<a name="300" href="#300">300</a> 		}
+<a name="301" href="#301">301</a> 		
+<a name="302" href="#302">302</a> 		<strong>public</strong> <strong>int</strong> getByteIndex(){
+<a name="303" href="#303">303</a> 			<strong>return</strong> <strong>this</strong>.byteIndex;
+<a name="304" href="#304">304</a> 		}
+<a name="305" href="#305">305</a> 		
+<a name="306" href="#306">306</a> 	}
+<a name="307" href="#307">307</a> 	
+<a name="308" href="#308">308</a> 	<strong>public</strong> <strong>class</strong> UnterminatedCommentException <strong>extends</strong> JSMinException{
+<a name="309" href="#309">309</a> 
+<a name="310" href="#310">310</a> 		<strong>public</strong> UnterminatedCommentException(<strong>int</strong> byteIndex) {
+<a name="311" href="#311">311</a> 			<strong>super</strong>(byteIndex);
+<a name="312" href="#312">312</a> 		}
+<a name="313" href="#313">313</a> 
+<a name="314" href="#314">314</a> 		<em>/**<em>*</em></em>
+<a name="315" href="#315">315</a> <em>		 * </em>
+<a name="316" href="#316">316</a> <em>		 */</em>
+<a name="317" href="#317">317</a> 		<strong>private</strong> <strong>static</strong> <strong>final</strong> <strong>long</strong> serialVersionUID = -6518522022216739576L;
+<a name="318" href="#318">318</a> 	}
 <a name="319" href="#319">319</a> 
-<a name="320" href="#320">320</a> 		<strong>public</strong> UnterminatedStringLiteralException(<strong>int</strong> byteIndex) {
-<a name="321" href="#321">321</a> 			<strong>super</strong>(byteIndex);
-<a name="322" href="#322">322</a> 		}
-<a name="323" href="#323">323</a> 
-<a name="324" href="#324">324</a> 		<em>/**<em>*</em></em>
-<a name="325" href="#325">325</a> <em>		 * </em>
-<a name="326" href="#326">326</a> <em>		 */</em>
-<a name="327" href="#327">327</a> 		<strong>private</strong> <strong>static</strong> <strong>final</strong> <strong>long</strong> serialVersionUID = 6638892379183043426L;
-<a name="328" href="#328">328</a> 	}
-<a name="329" href="#329">329</a> 
-<a name="330" href="#330">330</a> 	<strong>public</strong> <strong>class</strong> UnterminatedRegExpLiteralException <strong>extends</strong> JSMinException {
+<a name="320" href="#320">320</a> 	<strong>public</strong> <strong>class</strong> UnterminatedStringLiteralException <strong>extends</strong> JSMinException {
+<a name="321" href="#321">321</a> 
+<a name="322" href="#322">322</a> 		<strong>public</strong> UnterminatedStringLiteralException(<strong>int</strong> byteIndex) {
+<a name="323" href="#323">323</a> 			<strong>super</strong>(byteIndex);
+<a name="324" href="#324">324</a> 		}
+<a name="325" href="#325">325</a> 
+<a name="326" href="#326">326</a> 		<em>/**<em>*</em></em>
+<a name="327" href="#327">327</a> <em>		 * </em>
+<a name="328" href="#328">328</a> <em>		 */</em>
+<a name="329" href="#329">329</a> 		<strong>private</strong> <strong>static</strong> <strong>final</strong> <strong>long</strong> serialVersionUID = 6638892379183043426L;
+<a name="330" href="#330">330</a> 	}
 <a name="331" href="#331">331</a> 
-<a name="332" href="#332">332</a> 		<strong>public</strong> UnterminatedRegExpLiteralException(<strong>int</strong> byteIndex) {
-<a name="333" href="#333">333</a> 			<strong>super</strong>(byteIndex);
-<a name="334" href="#334">334</a> 		}
-<a name="335" href="#335">335</a> 
-<a name="336" href="#336">336</a> 		<em>/**<em>*</em></em>
-<a name="337" href="#337">337</a> <em>		 * </em>
-<a name="338" href="#338">338</a> <em>		 */</em>
-<a name="339" href="#339">339</a> 		<strong>private</strong> <strong>static</strong> <strong>final</strong> <strong>long</strong> serialVersionUID = -853038091253773265L;
-<a name="340" href="#340">340</a> 	}
-<a name="341" href="#341">341</a> 
-<a name="342" href="#342">342</a> 
+<a name="332" href="#332">332</a> 	<strong>public</strong> <strong>class</strong> UnterminatedRegExpLiteralException <strong>extends</strong> JSMinException {
+<a name="333" href="#333">333</a> 
+<a name="334" href="#334">334</a> 		<strong>public</strong> UnterminatedRegExpLiteralException(<strong>int</strong> byteIndex) {
+<a name="335" href="#335">335</a> 			<strong>super</strong>(byteIndex);
+<a name="336" href="#336">336</a> 		}
+<a name="337" href="#337">337</a> 
+<a name="338" href="#338">338</a> 		<em>/**<em>*</em></em>
+<a name="339" href="#339">339</a> <em>		 * </em>
+<a name="340" href="#340">340</a> <em>		 */</em>
+<a name="341" href="#341">341</a> 		<strong>private</strong> <strong>static</strong> <strong>final</strong> <strong>long</strong> serialVersionUID = -853038091253773265L;
+<a name="342" href="#342">342</a> 	}
 <a name="343" href="#343">343</a> 
-<a name="344" href="#344">344</a> }
+<a name="344" href="#344">344</a> 
 <a name="345" href="#345">345</a> 
+<a name="346" href="#346">346</a> }
+<a name="347" href="#347">347</a> 
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html>
+  <head>
+    <title>Jawr - Frequently Asked Questions - Howto</title>
+    <style type="text/css" media="all">
+      @import url("../css/maven-base.css");
+      @import url("../css/maven-theme.css");
+      @import url("../css/site.css");
+    </style>
+    <link rel="stylesheet" href="../css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <!-- TODO: move this into JavaScript to patch the skin
+      <div class="xright">  </div>
+    -->
+    <div id="leftColumn">
+      <div id="navcolumn">
+             <dl class=navgroup>
+        <dt>About</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../servlets/ProjectHome">Home</a>
+        </li>
+              
+    <li class="none">
+              <a href="../introduction.html">Introduction</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Documentation</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../docs/servlet.html">The Jawr servlet</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/descriptor_syntax.html">Descriptor syntax</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/custom_bundles.html">Bundle definition</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/source_ordering.html">Source order in bundles</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/postprocessors.html">Postprocessors</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/license_files.html">Licenses in resources</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/taglibs.html">JSP Tag library</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/plain_html.html">Use in HTML pages</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/modes.html">Debug and production modes</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/messages_gen.html">i18n message generator</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Integration</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../integration/facelets.html">Facelets Tag library</a>
+        </li>
+              
+    <li class="none">
+              <a href="../integration/grails.html">Grails plugin</a>
+        </li>
+              
+    <li class="none">
+              <a href="../integration/dwr.html">DWR</a>
+        </li>
+              
+    <li class="none">
+              <a href="../integration/validator.html">Commons Validator - Struts</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Tutorials</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../tutorials/quickstart.html">Quick start</a>
+        </li>
+              
+    <li class="none">
+              <a href="../docs/faq_howto.html">FAQ-Howto</a>
+        </li>
+              
+    <li class="none">
+              <a href="../tutorials/libraries.html">Using popular libraries</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>API and sources</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../nonav/apidocs/index.html">JavaDocs</a>
+        </li>
+              
+    <li class="none">
+              <a href="../nonav/xref/index.html">Source XREF</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Project tools</dt>
+        <dd><ul>
+              
+    <li class="none">
+              <a href="../servlets/ProjectHome">Project home</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectMemberList">Membership</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectNewsList">Announcements</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectForumView">Discussion forums</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectMailingListList">Mailing lists</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectDocumentList">Documents & files</a>
+        </li>
+              
+    <li class="none">
+              <a href="../source/browse/jawr/">Subversion</a>
+        </li>
+              
+    <li class="none">
+              <a href="../servlets/ProjectIssues">Issue tracker</a>
+        </li>
+          </ul></dd>
+    </dl>
+        </div>
+      <script>
+        // replace the java.net project tools with the navigation bar from Maven.
+        // also get rid of "Get Involved" thingie too, while we are at it
+        var pt = document.getElementById("projecttools");
+        var nv = document.getElementById("navcolumn");
+        
+        while(pt.previousSibling!=null)
+          pt.parentNode.removeChild(pt.previousSibling);
+        
+        pt.parentNode.insertBefore(nv,pt);
+        pt.parentNode.removeChild(pt);
+      </script>
+      <script>
+        // kill "description" h3 bar
+        var ld = document.getElementById("longdescription");
+        if(ld!=null) {
+          for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
+            if(n.nodeType==1 && n.innerHTML=="Description" ) {
+              n.parentNode.removeChild(n);
+              break;
+            }
+          }
+        }
+      </script>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2><a name="top">Frequently Asked Questions - Howto</a></h2><p><b>Troubleshooting</b></p><ol type="1"><li><a href="#jsp-crash">
+        <strong>When I open a JSP it crashes with a <em>java.lang.IllegalStateException</em></strong>
+      </a></li><li><a href="#jsmin-crash">
+        <strong>JSMin crashes on startup</strong>
+      </a></li></ol><b>HOWTOs</b><ol type="1"><li><a href="#precompressed-libs">
+        <strong>How do I use a precompressed library?</strong>
+      </a></li></ol></div><div class="section"><h2>Troubleshooting</h2><dl><dt><a name="jsp-crash">
+        <strong>When I open a JSP it crashes with a <em>java.lang.IllegalStateException</em></strong>
+      </a></dt><dd>
+        <p>
+        Whenever there is some problem during the startup of Jawr, you will get an exception whe accessing a JSP that contains jawr tags. 
+        The trace will look as follows: 
+       </p>
+
+        <div class="source"><pre>
+        java.lang.IllegalStateException: ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or 
+        never occurred.</pre></div>
+
+        <p>To fix this problem, you must carefully check the console while the server is starting up, since surely there will be some kind of 
+        problem in the initialization process. If you can't see anything, ry and set the log level to debug for jawr so you see all that is 
+        being done. The cause for failure can be anything, but most likely there is something wrong with your configuration. 
+       </p>
+        <p>
+        Make sure that you have correctly declared the servlet you are trying to access (for instance, if you only declare a javascript servlet and 
+        then you use a CSS tag, you will get this exception). 
+       </p>
+        <p>
+        Sometimes, the error will come from a failure in a minifier. See below for solutions for this problem. 
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="jsmin-crash">
+        <strong>JSMin crashes on startup</strong>
+      </a></dt><dd>
+        <p>Ocasionally you might get an exception at startup with a trace similar to this:</p>
+        
+        <div class="source"><pre>FATAL net.jawr.web.servlet.JawrServlet  - Cause: java.lang.RuntimeException [JSMin failed to minify the 
+        bundle with id: '[...]'.</pre></div>
+        
+        <p>The problem here is that JSMin is trying to reduce the size of some of your scripts and encountered a problem with the code syntax. 
+        This problem appears especially with open source javascript libraries, which often contain tricky syntax that fools JSMin. To solve this, you 
+        need to either fix the syntax or to switch to a different minifier. 
+       </p>
+        <p>
+        To fix the syntax, check the full stacktrace of the exception, since an indication of where the error was encountered will be shown. Also, you 
+        can use <a href="http://www.jslint.com/">JSLint</a>, which is an online tool that checks the syntax of your scripts. 
+       </p>
+        <p>
+        You may want to switch to a different minifier. JSLint, while normally efficient enaugh, is more prone to fail on valid-yet-weird syntax than 
+        other alternatives such as the YUI compressor (which is also more efficient anyway). To switch to a different minifier, follow instructions at 
+        the <a href="../docs/postprocessors.html">postprocessors guide</a>. 
+       </p>
+
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table></dd></dl></div><div class="section"><h2>HOWTOs</h2><dl><dt><a name="precompressed-libs">
+        <strong>How do I use a precompressed library?</strong>
+      </a></dt><dd>
+        <p>Chances are you that are using an open source javascript library (Protoype.js, YUI, Ext, Dojo...) And while Jawr includes its own compressing 
+        features, often these libraries offer a super-compressed version which goes down to the bare minimum size possible, which Jawr can't match. 
+        Also, sometimes these libraries will fail to minify with JSMin, forcing you to switch to a different minifier. In either case, you might wish 
+        to use the pre-compressed library script instead of letting Jawr handle compression in this particular case.         
+       </p>
+        <p>
+        However, you might also want to use the uncompressed version of the library so that you can use it in your debugging sessions. Doing this with 
+        Jawr is actually pretty simple. All you need to do is to declare two bundles, one for debug mode and another for production mode, then 
+        combine both into a composite. The composite can also contain additional scripts which you may want to combine with the library, aiming for 
+        minimal HTTP request overhead in your pages. This is an example configuration in which the SoundManager2 and JQuery libraries are both used 
+        this way: 
+       </p>
+        <div class="source"><pre>
+jawr.js.bundle.lib.id=/bundles/myLibAndSomeStuff.js
+jawr.js.bundle.lib.composite=true
+jawr.js.bundle.lib.child.names=uncompressedLibrary,compressedLibrary,additionalScripts
+
+# A bundle with your own scripts
+jawr.js.bundle.additionalScripts.mappings=/myScript.js, [...] 
+
+# The uncompressed library scripts
+jawr.js.bundle.uncompressedLibrary.mappings=/js/soundmanager2.js,/js/jquery.js
+jawr.js.bundle.uncompressedLibrary.debugonly=true  # Will show only in debug mode
+
+# The compressed library scripts
+jawr.js.bundle.compressedLibrary.mappings=/js/final/soundmanager2.min.js,/js/final/jquery.min.gz.js
+jawr.js.bundle.compressedLibrary.debugnever=true # Will show only in production mode
+jawr.js.bundle.compressedLibrary.bundlepostprocessors=NONE # This line avoids minification of these scripts
+       </pre></div>
+        
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table></dd></dl></div>
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2008
+    
+          
+  
+
+  
+  
+  &nbsp;| Last Published: 07/07/2008
+  &nbsp;| Version: 2.4.2
+</div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
