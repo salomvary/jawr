@@ -34,7 +34,7 @@
     
     <menu name="Tutorials">
       <item name="Quick start" href="/tutorials/quickstart.html"/>
-      <item name="FAQ-Howto" href="/docs/faq_howto.html"/>
+      <item name="FAQ-Howto" href="/tutorials/faq_howto.html"/>
       <item name="Using popular libraries" href="/tutorials/libraries.html"/>   
     </menu>
     

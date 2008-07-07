@@ -16,8 +16,8 @@
         </p>
 
         <source>
-        java.lang.IllegalStateException: ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or 
-        never occurred.</source>
+java.lang.IllegalStateException: ResourceBundlesHandler not present in servlet context. 
+Initialization of Jawr either failed or never occurred.</source>
 
         <p>To fix this problem, you must carefully check the console while the server is starting up, since surely there will be some kind of 
         problem in the initialization process. If you can't see anything, ry and set the log level to debug for jawr so you see all that is 
@@ -40,8 +40,8 @@
       <answer>
         <p>Ocasionally you might get an exception at startup with a trace similar to this: </p>
         
-        <source>FATAL net.jawr.web.servlet.JawrServlet  - Cause: java.lang.RuntimeException [JSMin failed to minify the 
-        bundle with id: '[...]'.</source>
+        <source>FATAL net.jawr.web.servlet.JawrServlet  - Cause: java.lang.RuntimeException 
+[JSMin failed to minify the bundle with id: '[...]'.</source>
         
         <p>The problem here is that JSMin is trying to reduce the size of some of your scripts and encountered a problem with the code syntax. 
         This problem appears especially with open source javascript libraries, which often contain tricky syntax that fools JSMin. To solve this, you 
