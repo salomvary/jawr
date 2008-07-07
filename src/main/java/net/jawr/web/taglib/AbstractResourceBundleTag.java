@@ -34,6 +34,9 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 	
 	//private static final Logger log = Logger.getLogger(AbstractResourceBundleTag.class.getName());
 	
+	
+	private static final long serialVersionUID = -9114179136913388470L;
+	
 	private String src;
 	protected BundleRenderer renderer;
 	protected boolean useRandomParam = true;    

@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
@@ -210,10 +211,7 @@ public class DWRBeanGenerator implements ResourceGenerator {
 			ReadableByteChannel chan = Channels.newChannel(is);
 			Reader r = Channels.newReader(chan,"utf-8");
 			StringWriter sw = new StringWriter();
-			int i = 0;
-			while((i = r.read()) != -1) {
-				sw.write(i);
-			}
+            IOUtils.copy(r, sw);
 			sb = sw.getBuffer();
 			
 		} catch (FileNotFoundException e) {

@@ -31,6 +31,7 @@ import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.generator.GeneratorParamUtils;
@@ -95,10 +96,7 @@ public class MessageBundleScriptCreator {
 		StringWriter sw = new StringWriter();
 		try {
 			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(SCRIPT_TEMPLATE,this);
-			int i;
-			while((i = is.read()) != -1) {
-				sw.write(i);
-			}
+            IOUtils.copy(is, sw);
 		} catch (IOException e) {
 			log.fatal("a serious error occurred when initializing MessageBundleScriptCreator");
 			throw new RuntimeException("Classloading issues prevent loading the message template to be loaded. ");

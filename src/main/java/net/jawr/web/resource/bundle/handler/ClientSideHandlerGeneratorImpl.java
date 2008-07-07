@@ -88,7 +88,7 @@ public class ClientSideHandlerGeneratorImpl implements
 																						 			this.config.getDwrMapping())));
 			sb.append("if(!window.DWR)window.DWR={};\nDWR.loader = JAWR.loader;\n");
 		}
-		sb.append("JAWR.loader.mapping='").append(getPathPrefix(request)).append("';\n");
+		sb.append("JAWR.loader.mapping='").append(getPathPrefix(request, this.config)).append("';\n");
 		
 		// Start an self executing function
 		sb.append("(function(){\n");
@@ -115,6 +115,9 @@ public class ClientSideHandlerGeneratorImpl implements
 				sb.append("];\n");
 			}
 			else isCSSHandler = true;
+			
+			// Add the mapping for css resources
+			sb.append("JAWR.loader.cssmapping='").append(getPathPrefix(request,rsHandler.getConfig())).append("';\n");
 		}
 		// End self executing function
 		sb.append("})();");
@@ -167,11 +170,11 @@ public class ClientSideHandlerGeneratorImpl implements
 	 * @param request
 	 * @return
 	 */
-	private String getPathPrefix(HttpServletRequest request) {
-		if(null != this.config.getContextPathOverride()) {
-			return this.config.getContextPathOverride();
+	private String getPathPrefix(HttpServletRequest request, JawrConfig config) {
+		if(null != config.getContextPathOverride()) {
+			return config.getContextPathOverride();
 		}
-		String mapping = null == this.config.getServletMapping() ? "" : this.config.getServletMapping();
+		String mapping = null == config.getServletMapping() ? "" : config.getServletMapping();
 		String path = PathNormalizer.joinPaths(request.getContextPath(), mapping);
 		path = path.endsWith("/") ? path : path +'/';
 		return PathNormalizer.joinPaths(request.getContextPath(), mapping);
