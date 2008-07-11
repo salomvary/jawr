@@ -10,7 +10,7 @@ import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
  */
 class JawrGrailsPlugin {
     // Plugin attributes
-	def version = 2.1
+	def version = 2.4
     def dependsOn = [:]
 	def author = "Jordi Hernández Sellés"
     def authorEmail = "jordihs@dev.java.net"
