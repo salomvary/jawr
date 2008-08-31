@@ -311,7 +311,7 @@ public class DWR3BeanGenerator implements ResourceGenerator {
 				Remoter remoter = (Remoter) container.getBean(Remoter.class.getName());
 				String path = getPathReplacementString(container);
 				try {
-					String script = remoter.generateInterfaceScript(scriptName, path);
+					String script = remoter.generateInterfaceScript(scriptName, true, path);
 					// Must remove the engine init script to avoid unneeded duplication
 					script = removeEngineInit(script);
 					sb.append(script);
@@ -390,7 +390,7 @@ public class DWR3BeanGenerator implements ResourceGenerator {
 					}
 				}
 				for(String name : creators) {
-					String script = remoter.generateInterfaceScript(name, path);
+					String script = remoter.generateInterfaceScript(name, true, path);
 					// Must remove the engine init script to avoid unneeded duplication
 					script = removeEngineInit(script);
 					sb.append(script);
