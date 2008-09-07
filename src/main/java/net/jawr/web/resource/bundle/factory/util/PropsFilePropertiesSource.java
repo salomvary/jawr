@@ -13,6 +13,9 @@
  */
 package net.jawr.web.resource.bundle.factory.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -29,14 +32,19 @@ public class PropsFilePropertiesSource implements ConfigPropertiesSource {
 	
 	private String configLocation;
 	private int propsHashCode;
+	private boolean isConfigInfileSystem;
+	private static final String FILE_PREFIX = "file:";
 	
 	
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource#getConfigProperties()
 	 */
 	public Properties getConfigProperties() {
-		if(log.isDebugEnabled())
-			log.debug("Reading properties from file at classpath: " + configLocation);
+		if(log.isDebugEnabled()) {			
+			if(isConfigInfileSystem)
+				log.debug("Using filesystem properties file location at: " + configLocation);
+			else log.debug("Reading properties from file at classpath: " + configLocation);
+		}
 		
 		return readConfigProperties();
 	}
@@ -50,7 +58,11 @@ public class PropsFilePropertiesSource implements ConfigPropertiesSource {
 		
 		// Load properties file
 		try {	
-			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(configLocation,this);
+			InputStream is;
+			if(!isConfigInfileSystem)
+				is = readPropertiesFromClaspath();
+			else
+				is = readPropertiesFromFileSystem();
 			
 			// load properties into a Properties object
 			props.load(is);
@@ -62,15 +74,32 @@ public class PropsFilePropertiesSource implements ConfigPropertiesSource {
 		catch (IOException e) {
 			throw new IllegalArgumentException("jawr configuration could not be found. "
 										+ "Make sure init-param configLocation is properly set "
-										+ "in web.xml and that it points to a file in the classpath. ");
+										+ "in web.xml. ");
 		}
 		return props;
 	}
+
+	private InputStream readPropertiesFromClaspath()
+			throws FileNotFoundException {
+		InputStream is = ClassLoaderResourceUtils.getResourceAsStream(configLocation,this);
+		return is;
+	}
+	
+	private InputStream readPropertiesFromFileSystem()	throws FileNotFoundException {
+		FileInputStream is = new FileInputStream(new File(configLocation));
+		return is;
+	}	
+	
 
 	/**
 	 * @param configLocation the configLocation to set
 	 */
 	public void setConfigLocation(String configLocation) {
+		if(configLocation.startsWith(FILE_PREFIX)) {
+			isConfigInfileSystem = true;
+			configLocation = configLocation.substring(FILE_PREFIX.length());
+			
+		}
 		this.configLocation = configLocation;
 	}
 
