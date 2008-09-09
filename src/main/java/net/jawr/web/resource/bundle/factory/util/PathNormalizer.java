@@ -72,6 +72,24 @@ public class PathNormalizer {
 	}
 	
 	/**
+	 * Normalizes a dmoain name and a path and joins them as a single url. 
+	 * @param domainName
+	 * @param path
+	 * @return
+	 */
+	public static final String joinDomainToPath(String domainName,String path) {
+		if(domainName.endsWith("/")) {
+			domainName = domainName.substring(0,domainName.length()-1);
+		}
+		path = PathNormalizer.normalizePath(path);
+		StringBuffer sb = new StringBuffer(domainName);
+		sb.append(SEPARATOR).append(path);
+		
+		return sb.toString();
+		
+	}	
+	
+	/**
 	 * Removes leading and trailing separators from a path, and removes 
 	 * double separators (// is replaced by /). 
 	 * @param path
