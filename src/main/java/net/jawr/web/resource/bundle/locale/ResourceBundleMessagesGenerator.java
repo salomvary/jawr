@@ -20,6 +20,7 @@ import java.util.Locale;
 import javax.servlet.ServletContext;
 
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
 
@@ -40,4 +41,10 @@ public class ResourceBundleMessagesGenerator implements ResourceGenerator {
 		return creator.createScript(charset);
 	}
 
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#getMappingPrefix()
+	 */
+	public String getMappingPrefix() {
+		return GeneratorRegistry.MESSAGE_BUNDLE_PREFIX;
+	}
 }

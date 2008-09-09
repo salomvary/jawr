@@ -34,6 +34,7 @@ import javax.servlet.ServletContext;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.GeneratorParamUtils;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.JavascriptStringUtil;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
@@ -103,6 +104,13 @@ public class CommonsValidatorGenerator implements ResourceGenerator {
 		}
 
         return new StringReader(sb.toString() );
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#getMappingPrefix()
+	 */
+	public String getMappingPrefix() {
+		return GeneratorRegistry.COMMONS_VALIDATOR_PREFIX;
 	}
 	
 	/**

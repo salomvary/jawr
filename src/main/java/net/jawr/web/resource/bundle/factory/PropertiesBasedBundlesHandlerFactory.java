@@ -16,6 +16,7 @@ package net.jawr.web.resource.bundle.factory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -74,8 +75,10 @@ public class PropertiesBasedBundlesHandlerFactory {
 	private static final String CUSTOM_POSTPROCESSORS_NAMES = ".names";
 	private static final String CUSTOM_POSTPROCESSORS_CLASS = ".class";
 	
+	// Custom generators parameter
+	private static final String CUSTOM_GENERATORS = "jawr.custom.generators";
+	
 	// Locale variants
-
 	private static final String BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS = ".locales";
 		
 	
@@ -114,6 +117,13 @@ public class PropertiesBasedBundlesHandlerFactory {
 		// Use the automatic directory-as-bundle mapper. 
 		factory.setUseDirMapperFactory(Boolean.valueOf(props.getProperty(FACTORY_USE_DIR_MAPPER,"false")).booleanValue());
 		factory.setExludedDirMapperDirs(props.getPropertyAsSet(FACTORY_DIR_MAPPER_EXCLUSION));
+
+		// Initialize custom generators
+		Iterator generators = props.getPropertyAsSet(CUSTOM_GENERATORS).iterator();
+		while(generators.hasNext()) {
+			String generatorClass = (String) generators.next();
+			generatorRegistry.registerGenerator(generatorClass);
+		}
 		
 		// Initialize custom bundles
 		Set customBundles = null;
@@ -138,6 +148,8 @@ public class PropertiesBasedBundlesHandlerFactory {
 			factory.setCustomPostprocessors(customPostprocessors);
 			
 		}
+		
+		
 		
 		factory.setBundleDefinitions(customBundles);
 	}

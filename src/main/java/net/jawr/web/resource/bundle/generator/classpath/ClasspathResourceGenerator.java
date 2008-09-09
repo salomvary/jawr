@@ -25,6 +25,7 @@ import javax.servlet.ServletContext;
 
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
 /**
@@ -45,6 +46,13 @@ public class ClasspathResourceGenerator implements ResourceGenerator {
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#getMappingPrefix()
+	 */
+	public String getMappingPrefix() {
+		return GeneratorRegistry.CLASSPATH_BUNDLE_PREFIX;
 	}
 
 }

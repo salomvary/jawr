@@ -41,4 +41,14 @@ public interface ResourceGenerator {
 	 * @return
 	 */
 	public Reader createResource(String path,JawrConfig config, ServletContext servletContext, Locale locale, Charset charset);
+	
+	
+	/**
+	 * Returns the prefix used to create mappings to this generator. 
+	 * The mappings starting with this prefix+colon(:)+mapping will use this generator. 
+	 * For instance, if prefix is 'jar', every mapping such as jar:someString is rendered
+	 * by this generator. 
+	 * @return
+	 */
+	public String getMappingPrefix();
 }

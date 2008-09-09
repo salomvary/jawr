@@ -37,6 +37,7 @@ import javax.servlet.ServletContext;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
 import org.apache.log4j.Logger;
@@ -135,7 +136,12 @@ public class DWRBeanGenerator implements ResourceGenerator {
 		return new StringReader(data.toString());
 	}
 	
-	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#getMappingPrefix()
+	 */
+	public String getMappingPrefix() {
+		return GeneratorRegistry.DWR_BUNDLE_PREFIX;
+	}
 	
 	
 	/**
