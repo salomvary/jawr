@@ -244,7 +244,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
             IOUtils.copy(rd, writer);
 			rd.close();
 			writer.close();
-		} catch (IOException e) {
+		} catch (IOException e) {			
 			throw new RuntimeException("Unexpected IOException writing bundle[" + bundlePath + "]");
 		}
 	}
