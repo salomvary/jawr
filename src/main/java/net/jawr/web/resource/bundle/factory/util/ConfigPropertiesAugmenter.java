@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
  * @author Jordi Hernández Sellés
  */
 public class ConfigPropertiesAugmenter {
-	private Properties configProperties; 
+	private final Properties configProperties; 
 	private Set privateConfigProperties;
 	private static final Logger log = Logger.getLogger(ConfigPropertiesAugmenter.class);
 
@@ -52,7 +52,7 @@ public class ConfigPropertiesAugmenter {
 	/**
 	 * @param configProperties
 	 */
-	public ConfigPropertiesAugmenter(Properties configProperties) {
+	public ConfigPropertiesAugmenter(final Properties configProperties) {
 		super();
 		this.configProperties = configProperties;
 	}
@@ -76,14 +76,13 @@ public class ConfigPropertiesAugmenter {
 			}
 			
 			// Augment mappings
-			if(isOverridable(configKey)) {
+			if(isAugmentable(configKey)) {
 				String currentValue = configProperties.getProperty(configKey);
 				currentValue += "," + configToAdd.get(configKey);
 				configProperties.put(configKey,currentValue);
 			}
 			else // replace properties
 				configProperties.put(configKey, configToAdd.get(configKey));
-			
 		}
 	}
 
@@ -94,7 +93,7 @@ public class ConfigPropertiesAugmenter {
 	 * @param configKey
 	 * @return
 	 */
-	private boolean isOverridable(String configKey) {
+	protected boolean isAugmentable(String configKey) {
 		boolean rets = false;
 		rets = (configKey.endsWith(PropertiesBasedBundlesHandlerFactory.BUNDLE_FACTORY_CUSTOM_MAPPINGS) || 		// mappings
 				configKey.endsWith(PropertiesBasedBundlesHandlerFactory.BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES) || 	// children of composites

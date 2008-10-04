@@ -14,12 +14,6 @@
 package net.jawr.web.resource.bundle.generator;
 
 import java.io.Reader;
-import java.nio.charset.Charset;
-import java.util.Locale;
-
-import javax.servlet.ServletContext;
-
-import net.jawr.web.config.JawrConfig;
 
 /**
  * A ResourceGenerator is acomponent that generates script or CSS dynamically, instead of reading 
@@ -40,7 +34,7 @@ public interface ResourceGenerator {
 	 * @param charset
 	 * @return
 	 */
-	public Reader createResource(String path,JawrConfig config, ServletContext servletContext, Locale locale, Charset charset);
+	public Reader createResource(GeneratorContext context);
 	
 	
 	/**

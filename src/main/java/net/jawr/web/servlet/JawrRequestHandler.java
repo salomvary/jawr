@@ -134,7 +134,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		Properties props = propsSrc.getConfigProperties();
 		
 		// init registry 
-		generatorRegistry = new GeneratorRegistry(context);
+		generatorRegistry = new GeneratorRegistry();
 		
 		// Initialize config 
 		initializeJawrConfig(props);
@@ -182,7 +182,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		
 
 		// init registry 
-		generatorRegistry = new GeneratorRegistry(context);
+		generatorRegistry = new GeneratorRegistry();
 		
 		// Initialize config 
 		initializeJawrConfig(configProps);
@@ -206,6 +206,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			jawrConfig.invalidate();
 		
 		jawrConfig = new JawrConfig(props);
+		jawrConfig.setContext(servletContext);
 		jawrConfig.setGeneratorRegistry(generatorRegistry);
 
 		// Set the content type to be used for every request. 

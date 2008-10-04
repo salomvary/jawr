@@ -15,7 +15,6 @@ package net.jawr.web.resource.bundle.factory.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -31,84 +30,82 @@ public class PropsFilePropertiesSource implements ConfigPropertiesSource {
 	private static final Logger log = Logger.getLogger(PropsFilePropertiesSource.class.getName());
 	
 	private String configLocation;
-	private int propsHashCode;
-	private boolean isConfigInfileSystem;
-	private static final String FILE_PREFIX = "file:";
+	protected int propsHashCode;
+	protected static final String FILE_PREFIX = "file:";
+	private boolean checking;
 	
 	
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource#getConfigProperties()
 	 */
-	public Properties getConfigProperties() {
-		if(log.isDebugEnabled()) {			
-			if(isConfigInfileSystem)
-				log.debug("Using filesystem properties file location at: " + configLocation);
-			else log.debug("Reading properties from file at classpath: " + configLocation);
+	public final Properties getConfigProperties() {		
+		Properties props = doReadConfig();		
+		
+		// Initialize hashcode of newly loaded properties. 
+		if(0 == this.propsHashCode) {
+			this.propsHashCode = props.hashCode();
 		}
 		
-		return readConfigProperties();
-	}
-
-	/**
-	 * Reads config properties from the classpath route specified by configLocation
-	 * @return
-	 */
-	protected Properties readConfigProperties() {
-		Properties props = new Properties();	
-		
-		// Load properties file
-		try {	
-			InputStream is;
-			if(!isConfigInfileSystem)
-				is = readPropertiesFromClaspath();
-			else
-				is = readPropertiesFromFileSystem();
-			
-			// load properties into a Properties object
-			props.load(is);
-			
-			// Initialize hashcode of newly loaded properties. 
-			if(0 == this.propsHashCode)
-				this.propsHashCode = props.hashCode();
-		} 
-		catch (IOException e) {
-			throw new IllegalArgumentException("jawr configuration could not be found. "
-										+ "Make sure init-param configLocation is properly set "
-										+ "in web.xml. ");
-		}
 		return props;
 	}
 
-	private InputStream readPropertiesFromClaspath()
-			throws FileNotFoundException {
-		InputStream is = ClassLoaderResourceUtils.getResourceAsStream(configLocation,this);
-		return is;
+	/**
+	 * Implements the loic to load the properties. Subclasses will override this method to 
+	 * implement the specific logic to load their configuration properties. 
+	 * @return
+	 */
+	protected Properties doReadConfig(){
+		return  readConfigFile(this.configLocation);
 	}
 	
-	private InputStream readPropertiesFromFileSystem()	throws FileNotFoundException {
-		FileInputStream is = new FileInputStream(new File(configLocation));
-		return is;
-	}	
-	
+	/**
+	 * Reads a config file at the specified path. If the path starts with file:, it will 
+	 * be read from the filesystem. Otherwise it will be loaded from the classpath. 
+	 * 
+	 * @param path
+	 * @return
+	 */
+	protected Properties readConfigFile(String path) {
+		Properties props = new Properties();	
+		// Load properties file
+		try {	
+			InputStream is;
+			if(path.startsWith(FILE_PREFIX)) {
+				if(log.isDebugEnabled() && !checking) 			
+					log.debug("Using filesystem properties file location at: " + configLocation);
+				is = new FileInputStream(new File(path.substring(FILE_PREFIX.length())));
+			}
+			else {
+				if(log.isDebugEnabled() && !checking) 
+					log.debug("Reading properties from file at classpath: " + configLocation);				
+				is = ClassLoaderResourceUtils.getResourceAsStream(path,this);
+			}
+			// load properties into a Properties object
+			props.load(is);
+			
+			
+		} 
+		catch (IOException e) {
+			throw new IllegalArgumentException("jawr configuration could not be found at "
+					+ path + ". Make sure parameter is properly set "
+					+ "in web.xml. ");
+		}
+		return props;
+	}
 
 	/**
 	 * @param configLocation the configLocation to set
 	 */
 	public void setConfigLocation(String configLocation) {
-		if(configLocation.startsWith(FILE_PREFIX)) {
-			isConfigInfileSystem = true;
-			configLocation = configLocation.substring(FILE_PREFIX.length());
-			
-		}
 		this.configLocation = configLocation;
 	}
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource#configChanged()
 	 */
-	public boolean configChanged() {
-		int currentConfigHash = readConfigProperties().hashCode();
-		
+	public final boolean configChanged() {
+		checking = true;
+		int currentConfigHash = doReadConfig().hashCode();
 		boolean configChanged = this.propsHashCode != currentConfigHash;
 		
 		if(configChanged && log.isDebugEnabled())

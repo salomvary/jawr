@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,11 +28,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.servlet.ServletContext;
-
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
-import net.jawr.web.resource.bundle.generator.GeneratorParamUtils;
+import net.jawr.web.resource.bundle.generator.GeneratorContext;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.JavascriptStringUtil;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
@@ -69,11 +66,10 @@ public class CommonsValidatorGenerator implements ResourceGenerator {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, javax.servlet.ServletContext, java.nio.charset.Charset)
 	 */
-	public Reader createResource(String path, JawrConfig config, ServletContext servletContext, Locale locale,Charset charset) {
-		locale = null == locale ? Locale.getDefault() : locale;
-		String[] params = GeneratorParamUtils.getParenthesesParam(path, null);
-		String validators = params[0];
-		String validatorParams = params[1];
+	public Reader createResource(GeneratorContext context) {
+		Locale locale = null == context.getLocale() ? Locale.getDefault() : context.getLocale();
+		String validators = context.getPath();
+		String validatorParams = context.getParenthesesParam();
 		
 		String messagesNS = MessageBundleScriptCreator.DEFAULT_NAMESPACE;
 		boolean stopOnErrors = true;
@@ -88,7 +84,7 @@ public class CommonsValidatorGenerator implements ResourceGenerator {
 		
 		// Build the ValidatorResources if it doesn't exist yet
 		if(!validatorResourcesMap.containsKey(validatorMappingKey)){			
-			createValidatorResources(validatorMappingKey, config, servletContext);
+			createValidatorResources(validatorMappingKey, context.getConfig());
 		}
 		
 		ValidatorResources validatorResources = (ValidatorResources) validatorResourcesMap.get(validatorMappingKey);
@@ -374,7 +370,7 @@ public class CommonsValidatorGenerator implements ResourceGenerator {
         return sb;
 	}
 	
-	private void createValidatorResources(String path, JawrConfig config, ServletContext servletContext) {
+	private void createValidatorResources(String path, JawrConfig config) {
 		
 		ValidatorResources validatorResources=null;
 		String configPaths = config.getConfigProperties().getProperty(path);
@@ -396,7 +392,7 @@ public class CommonsValidatorGenerator implements ResourceGenerator {
                 	is = ClassLoaderResourceUtils.getResourceAsStream(validatorRules, this);
                 }
                 catch(FileNotFoundException fos) {
-                	is = servletContext.getResourceAsStream(validatorRules);
+                	is = config.getContext().getResourceAsStream(validatorRules);
                 }
                 inputStreams[pos] = is;
                 pos++;

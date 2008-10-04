@@ -13,9 +13,6 @@
  */
 package net.jawr.web.resource.bundle.factory.util;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,38 +39,21 @@ public class MultipleFileConfigSource extends PropsFilePropertiesSource implemen
 	 */
 	protected Set privateConfigProperties;
 
-	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource#configChanged()
-	 */
-	public boolean configChanged() {
-		return false;
-	}
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource#getConfigProperties()
 	 */
-	public Properties getConfigProperties() {
-		Properties baseConfig = super.getConfigProperties();
+	public Properties doReadConfig() {
+		Properties baseConfig = super.doReadConfig();
 		ConfigPropertiesAugmenter augmenter;
 		if(null == privateConfigProperties)
 			augmenter = new ConfigPropertiesAugmenter(baseConfig);
 		else augmenter = new ConfigPropertiesAugmenter(baseConfig,privateConfigProperties);
 		
 		for(Iterator it = propertyBaseNames.iterator(); it.hasNext();) {
-			InputStream is;
-			try {
-				is = ClassLoaderResourceUtils.getResourceAsStream((String)it.next(),this);
-				Properties additionalConfig = new Properties();
-				additionalConfig.load(is);
-				
-				augmenter.augmentConfiguration(additionalConfig);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			String nextConfigSource = (String)it.next();
+			Properties additionalConfig = readConfigFile(nextConfigSource);
+			augmenter.augmentConfiguration(additionalConfig);			
 		}
 		
 		return baseConfig;

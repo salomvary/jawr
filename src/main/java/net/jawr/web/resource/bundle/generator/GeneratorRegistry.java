@@ -14,13 +14,10 @@
 package net.jawr.web.resource.bundle.generator;
 
 import java.io.Reader;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.servlet.ServletContext;
 
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
@@ -53,7 +50,6 @@ public class GeneratorRegistry {
 	
 	private static final Map registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
 	private static final List prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
-	private ServletContext servletContext;
 	private JawrConfig config;
 	
 	static
@@ -65,11 +61,6 @@ public class GeneratorRegistry {
 	}
 	
 
-	public GeneratorRegistry(ServletContext servletContext) {
-		super();
-		this.servletContext = servletContext;
-	}
-	
 	/**
 	 * Use only for testing purposes.
 	 */
@@ -142,9 +133,10 @@ public class GeneratorRegistry {
 	 * @param charset
 	 * @return
 	 */
-	public Reader createResource(String path, Charset charset) {
+	public Reader createResource(String path) {
 		String key = matchPath(path);
 		Locale locale = null;
+		
 		if(path.indexOf('@') != -1){
 			String localeKey = path.substring(path.indexOf('@')+1);
 			path = path.substring(0,path.indexOf('@'));
@@ -162,7 +154,10 @@ public class GeneratorRegistry {
 					locale = new Locale(localeKey);
 			}
 		}
-		return ((ResourceGenerator)registry.get(key)).createResource(path.substring(key.length()),config,servletContext,locale,charset);
+		GeneratorContext context = new GeneratorContext(config, path.substring(key.length()));
+		context.setLocale(locale);
+		
+		return ((ResourceGenerator)registry.get(key)).createResource(context);
 	}
 	
 	/**
