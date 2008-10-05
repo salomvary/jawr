@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.servlet.JawrRequestHandler;
 
 /**
@@ -128,10 +129,18 @@ public class PathNormalizer {
 	 * @param path
 	 * @return
 	 */
-	public static String createGenerationPath(String path){
+	public static String createGenerationPath(String path, GeneratorRegistry registry){
 		try {
-			path = "/generate.js?" + JawrRequestHandler.GENERATION_PARAM + "=" + URLEncoder.encode(path, "UTF-8");
-		} catch (UnsupportedEncodingException neverHappens) {/*URLEncoder:how not to use checked exceptions...*/}
+			path = registry.getDebugModeGenerationPath(path) 
+				+ "?" 
+				+ JawrRequestHandler.GENERATION_PARAM 
+				+ "=" 
+				+ URLEncoder.encode(path, "UTF-8");
+		} catch (UnsupportedEncodingException neverHappens) {
+			/*URLEncoder:how not to use checked exceptions...*/
+			throw new RuntimeException("Something went unexpectedly wrong while encoding a URL for a generator. ",
+										neverHappens);
+		}
 		return path;
 	}
 }

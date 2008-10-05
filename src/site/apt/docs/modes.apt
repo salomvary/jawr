@@ -117,4 +117,8 @@ Debug and production modes
 	
 	To further protect you from this kind of problem, a warning is written to the log anytime you start Jawr in development mode. 
 	
+	<<Warning>>: Internet explorer has a {{{http://support.microsoft.com/default.aspx?scid=kb;en-us;262161}30 stylesheet limit}}. This means 
+	that in debug mode you might hit this limit if you have bundles that join over 30 stylesheets, since after the 30th IE will no longer parse and 
+	execute further stylesheets. Keep this in mind when developing your CSS files. 
+	
 	

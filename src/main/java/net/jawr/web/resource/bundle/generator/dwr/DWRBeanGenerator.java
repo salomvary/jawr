@@ -34,6 +34,7 @@ import javax.servlet.ServletContext;
 
 import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.generator.AbstractJavascriptGenerator;
 import net.jawr.web.resource.bundle.generator.GeneratorContext;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
@@ -54,7 +55,7 @@ import org.directwebremoting.impl.DefaultCreatorManager;
  * @author Jordi Hernández Sellés
  * 
  */
-public class DWRBeanGenerator implements ResourceGenerator {
+public class DWRBeanGenerator extends AbstractJavascriptGenerator implements ResourceGenerator {
 	private static final Logger log = Logger.getLogger(DWRBeanGenerator.class.getName());
 
 	// Mapping keys

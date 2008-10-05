@@ -149,7 +149,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     	// When debug mode is on and the resource is generated the path must include a parameter
     	if( bundler.getConfig().isDebugModeOn() && 
     		bundler.getConfig().getGeneratorRegistry().isPathGenerated(bundleId)) {
-    		bundleId = PathNormalizer.createGenerationPath(bundleId);
+    		bundleId = PathNormalizer.createGenerationPath(bundleId, bundler.getConfig().getGeneratorRegistry());
     	}
     	String fullPath = PathNormalizer.joinPaths(bundler.getConfig().getServletMapping(), bundleId);
     	

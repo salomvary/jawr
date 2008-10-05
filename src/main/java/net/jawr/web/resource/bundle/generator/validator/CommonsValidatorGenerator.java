@@ -30,6 +30,7 @@ import java.util.StringTokenizer;
 
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.generator.AbstractJavascriptGenerator;
 import net.jawr.web.resource.bundle.generator.GeneratorContext;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.JavascriptStringUtil;
@@ -53,7 +54,7 @@ import org.xml.sax.SAXException;
  * @author Jordi Hernández Sellés
  *
  */
-public class CommonsValidatorGenerator implements ResourceGenerator {
+public class CommonsValidatorGenerator extends AbstractJavascriptGenerator implements ResourceGenerator {
 	private static final Logger log = Logger.getLogger(CommonsValidatorGenerator.class.getName());
 	private static final String STATIC_JAVASCRIPT_KEY = "_static";
 

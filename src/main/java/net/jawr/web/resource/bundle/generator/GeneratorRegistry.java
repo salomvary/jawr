@@ -160,6 +160,17 @@ public class GeneratorRegistry {
 		return ((ResourceGenerator)registry.get(key)).createResource(context);
 	}
 	
+	
+	/**
+	 * Returns the path to use in the generation URL for debug mode. 
+	 * @param path
+	 * @return
+	 */
+	public String getDebugModeGenerationPath(String path) {
+		String key = matchPath(path);
+		return ((ResourceGenerator)registry.get(key)).getDebugModeRequestPath();
+	}
+	
 	/**
 	 * Get the key from the mappings that corresponds to the specified path. 
 	 * @param path

@@ -27,7 +27,7 @@ Descriptor file syntax
 *---------------*---------*--------------+----------------+
 | jawr.locale.resolver | String | Name of a class implementing net.jawr.web.resource.bundle.locale.LocaleResolver. An instance of this class will be created and used to determine the Locale to use for a given request when using an {{{./messages_gen.html}i18n messages generator}}.   | none| 
 *---------------*---------*--------------+----------------+
-| jawr.url.contextpath.override | URL fragment ([<</somepath >>] or [<</>>] or []). | Override the use of the application's contextpath to prefix every generated URL.  | none    | 
+| jawr.url.contextpath.override | URL (absolute or fragment) [<<http://...>>],[<</somepath >>] or [<</>>] or []. | Override the use of the application's contextpath to prefix every generated URL.  | none    | 
 | | | Using '<</>>' will cause Jawr to skip the context path altogether ('/001/bundles/mybundle.js').  |     | 
 | | | Using an empty value will cause Jawr to generate page relative urls ('001/bundles/mybundle.js').  |     | 
 *---------------*---------*--------------+----------------+
@@ -113,9 +113,20 @@ Descriptor file syntax
 *---------------+---------+--------------+----------------+
 | jawr.custom.postprocessors.names  | Comma separated list.  | List of all the custom postprocessors you wish to define in the descriptor. For every item in this list, you must define the postprocessor implementation class as defined below. Afterwards, you may use the names defined in this list to define postprocessor chains, as in: <jawr.js.bundle.factory.bundlepostprocessors=JSMin, [myUserDefinedPostprocessor], license>.   | None    | 
 *---------------+---------+--------------+----------------+
-| jawr.custom.postprocessors.[name].class | Comma separated list.  | List of all the bundles you wish to define in the descriptor. For every item in this list, you must define the postprocessor implementation class as defined below. Afterwards, you may use the names defined in this list to define postprocessor chains.   | None    | 
+| jawr.custom.postprocessors.[name].class | Comma separated list.  | Qualified classname of the postprocessor named [name], as specified in jawr.custom.postprocessors.names.  | None    | 
 *---------------+---------+--------------+----------------+
 
+* Custom generators definition properties
+
+
+*---------------+---------+--------------+----------------+
+| <<Property name>> | <<Type>>    | <<Purpose>>      | <<Default value>>  |
+*---------------+---------+--------------+----------------+
+| jawr.custom.generators  | Comma separated list.  | List of all the ResourceGenerator implementations you want to use.    | None    | 
+*---------------+---------+--------------+----------------+
+
+	
+	
 	
 * Deprecated properties
 

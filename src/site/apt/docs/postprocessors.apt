@@ -11,9 +11,14 @@ Jawr Postprocessors
 	applied to resources before adding them to the bundle. On the other hand, bundle postprocessors are applied to a whole bundle once all the files 
 	have been joined into it. \ 
 	
-	Normally, you will not need to worry about postprocessors, since Jawr will use them automatically. But still, if you have special needs you can 
-	configure which postprocessors to use. Also, in the future more of them will be added to Jawr, adding for example integration with the YUI 
-	compressor. For configuration purposes, every postprocessor has a unique name key, which you use in a comma-separated property in the descriptor, 
+	Normally, you won't need to worry about postprocessors, since Jawr will use them automatically: javascript will be minified using JSMin, and the 
+	lincense comments (if any) will be added afterwards. CSS files will also be minified ,license comments will be added, and their image URLs will 
+	be rewritten so they keep working from within a bundle. 
+	But there are countless combinations you can use, plus you may create and use your own postprocessors, so here is how to configure the filter chain 
+	applied to files and bundles. 
+	
+	For configuration purposes, every postprocessor has a unique name key, which you use in a comma-separated 
+	property in the descriptor, 
 	for instance: 
 
 +------------------------------------------+
@@ -126,7 +131,7 @@ jawr.js.bundle.foo.bundlepostprocessors=license=func,license
 
 =====================
 	Note that licenses are themselves code comments, so you should be careful to always use this processor after any minification or compression 
-	processor has executed and not before. Otherwise, the license might be eliminated from the bundle right after it was inserted. 
+	processor has executed and not before. Otherwise, the license might be deleted from the bundle right after it was inserted. 
 
 =====================
 
@@ -159,7 +164,7 @@ jawr.js.bundle.foo.bundlepostprocessors=license=func,license
 	
 	Unfortunately, this is the only way I know to get YUI from maven, and it is somewhat ugly since it will include both the YUI compressor and 
 	rhino, which might be problematic if you already have rhino on your server's classpath. YUI overwrites some of Rhino's classes also, so keep 
-	in mind that having another copy of Rhino.jar in your classpath might be very problematic. 
+	in mind that having another copy of Rhino.jar in your classpath might cause class loading issues. 
 	
 
 *	Javascript-specific postprocessors
@@ -201,4 +206,30 @@ jawr.js.bundle.foo.bundlepostprocessors=license=func,license
 	
 	This processor rewrites relative paths in URLs for each file that is added to a bundle. A bundle will have a different URL to that of its contained 
 	resources, so in order for relative paths to image files and the like to keep working, URLs must be rewritten accordingly.  
+	
+
+*	User submitted postprocessors
+
+	Some users are so kind as to submit their own custom postprocessors. If you have one that you think may be useful to others, please post it
+	at the support forum and they will be shared among the Jawr community of users. 
+	To use any of these, download the source file and add it to your project source. Then declare the class and a mapping key as described at the 
+	<custom postprocessors> section above and you are ready to go. You can even go ahead and customize the class to suit your own needs. 
+	
+	
+<<Console Log Statement Remover>>
+
+	
+	* <<Submitted by>>: Ryan Wilson ({{{http://blog.augmentedfragments.com}http://blog.augmentedfragments.com}})
+	
+	* <<Source>>: {{{../java/ConsolePostProcessor.java}ConsolePostProcessor.java}}
+	
+	* <<Type>>: Bundle
+		
+	[]
+	
+	This postprocessor uses a regular expression to find and remove all the statements that write to the Firebug/Safari console. Specifically, 
+	it removes statements with the form <window.console.log([...])>. If you use a different form you can change the regular expression in the 
+	source file. 
+	
+	Thanks to Ryan Wilson for posting this work. 
 	

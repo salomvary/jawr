@@ -65,7 +65,7 @@ public class MultipleFileConfigSource extends PropsFilePropertiesSource implemen
 	 * 
 	 * @param context
 	 */
-	protected void initPropertyBaseNames(ServletContext context) {
+	protected void initAdditionalPropertyBaseNames(ServletContext context) {
 		String propertyNames = context.getInitParameter(SERVLET_CONTEXT_ADDITIONAL_CONFIG_PARAM);
 		propertyBaseNames = new ArrayList();
 		if(null != propertyNames) {
@@ -79,7 +79,7 @@ public class MultipleFileConfigSource extends PropsFilePropertiesSource implemen
 	 * @see net.jawr.web.resource.bundle.factory.util.ServletContextAware#setServletContext(javax.servlet.ServletContext)
 	 */
 	public void setServletContext(ServletContext context) {		
-		initPropertyBaseNames(context);
+		initAdditionalPropertyBaseNames(context);
 	}
 
 }

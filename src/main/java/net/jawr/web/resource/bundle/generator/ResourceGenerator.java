@@ -25,6 +25,8 @@ import java.io.Reader;
  */
 public interface ResourceGenerator {
 
+	public static final String JAVASCRIPT_DEBUGPATH = "/jawr_generator.js";
+	public static final String CSS_DEBUGPATH = "/jawr_generator.css";
 	/**
 	 * Create a reader on a generated resource (any script not read from the war file 
 	 * structure). 
@@ -45,4 +47,15 @@ public interface ResourceGenerator {
 	 * @return
 	 */
 	public String getMappingPrefix();
+	
+	/**
+	 * Returns the request path to use when generating a URL to this generator. 
+	 * Normally it's OK to return either ResourceGenerator.JAVASCRIPT_DEBUGPATH 
+	 * or  ResourceGenerator.CSS_DEBUGPATH, but this can be modified to suit an 
+	 * application's path needs. Note that any prefix specified in the servlet mapping 
+	 * does not need to be included in the returned value. 
+	 *   
+	 * @return
+	 */
+	public String getDebugModeRequestPath();
 }

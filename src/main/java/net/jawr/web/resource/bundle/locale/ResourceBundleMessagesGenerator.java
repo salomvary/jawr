@@ -15,6 +15,7 @@ package net.jawr.web.resource.bundle.locale;
 
 import java.io.Reader;
 
+import net.jawr.web.resource.bundle.generator.AbstractJavascriptGenerator;
 import net.jawr.web.resource.bundle.generator.GeneratorContext;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
@@ -27,7 +28,7 @@ import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
  * @author Jordi Hernández Sellés
  *
  */
-public class ResourceBundleMessagesGenerator implements ResourceGenerator {
+public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator implements ResourceGenerator {
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)

@@ -20,6 +20,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.generator.AbstractJavascriptGenerator;
 import net.jawr.web.resource.bundle.generator.GeneratorContext;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
@@ -29,7 +30,7 @@ import net.jawr.web.resource.bundle.generator.ResourceGenerator;
  * 
  * @author Jordi Hernández Sellés
  */
-public class ClasspathResourceGenerator implements ResourceGenerator {
+public class ClasspathResourceGenerator extends AbstractJavascriptGenerator implements ResourceGenerator {
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)

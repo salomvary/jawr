@@ -123,8 +123,8 @@
 	<p>
 		You can download the latest release of Jawr 
 		<a href="https://jawr.dev.java.net/servlets/ProjectDocumentList?folderID=8543">here</a>. Also, check out the 
-		<a href="https://jawr.dev.java.net/tutorials/quickstart.html">quick start tutorial</a> to see how easy it is to use Jawr in your project. 
-
+		<a href="./tutorials/quickstart.html">quick start tutorial</a> to see how easy it is to use Jawr in your project. 
+		<br/>And don't forget to check the <a href="./tutorials/faq_howto.html">FAQ - Howto page</a> for tips and troubleshooting. 
 	</p>
 	
 	
@@ -163,8 +163,10 @@
 			<li> <strong>Flexible bundling scheme</strong>: Choose which files go into which bundle, and in which order. Choose wether you want a bundle minified or not. 
 			Choose wether a bundle will be used only in development mode (for adding things such as console loggers). Create partially minified bundles. 
 			Create bundles which are automatically added within an Internet Explorer conditional comment.  
-			All with a very easy to use configuration system.
+			All with a very easy to use configuration system. 
 			 <a href="./docs/custom_bundles.html" > Learn more</a>. </li> 
+			
+			<li> <strong>CDN compatible</strong>: Jawr can be used easily with a CDN for even better response times.</li> 
 			
 			
 			<li> <strong>Global bundles</strong>: Some bundles such as libraries will be needed anywhere in your site where there is javascript code. Same goes for base CSS 
@@ -205,6 +207,25 @@
       </subsection>
       <subsection name="Announcements">
       <ul>
+      	<li> <strong>10/7/2008</strong>: Version 2.5 released:<br/> 
+      		<strong>New features: </strong>
+      		 <ul><li>CDN support: Jawr can be used with a CDN by setting the parameter to an absolute URL. </li>
+      		 <li><a href="./docs/generators.html" >Generators API</a>: you can now write components that dynamically generate scripts or 
+      		 CSS during the application startup. </li>
+      		 <li>Ability to read config the file from the filesystem: instead of reading only from the classpath, the config properties file 
+      		 can now be read from the filesystem. To do it the config parameter must be prefixed with file:, followed by the absolute file path. </li>      		 
+      		 <li><a href="./integration/augmenter.html" >Multiple configuration sources</a> can be used when integrating Jawr with other frameworks.</li>
+      		 </ul>
+      		<strong>Fixed issues:</strong>
+      		<ul><li>#31:media="print" ignored when useRandomParam="false" </li>
+      		 <li>#29:Contextpath override does not work with absolute URLs (see CDN support above)</li>
+      		 <li>#19:PropsFilePropertiesSource.configChanged() doesn't work on Tomcat (now properties can be read from the filesystem)</li>
+      		 <li>Also, a new version of the DWR 3 has been published, fixing the latest incompatibilities. </li></ul>
+      	</li>   
+      	<li> <strong>7/7/2008</strong>: Version 2.4.2 released:<br/> 
+      	A performance improvement has been added: buffering is now used when using writers. Thanks to Richie for submitting a patch. <br/>
+      	There was a bug causing CSS URLs to be broken when using the static pages resource includer, which is now fixed. 
+      	</li>   
       	<li> <strong>6/16/2008</strong>: Version 2.4.1 released:<br/> 
       	A bug was introduced in the last release which kept DWR 2 from working with Jawr. This release fixes that bug. <br/>
       	Also, a new interface has been added which ConfigPropertiesSource custom implementations can use to get access to the servlet 
