@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="Jawr">  
-	<!-- skin>
+	<skin>
     <groupId>org.jvnet.maven-javanet-skin</groupId>
     <artifactId>maven-javanet-skin</artifactId>
     <version>1.0</version>
-  </skin-->
+  </skin>
   <body>
    
 	<menu name="About">
