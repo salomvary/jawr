@@ -233,7 +233,7 @@
 <a name="224" href="#224">224</a> 			<strong>for</strong>(Iterator it = bundle.getItemPathList(variantKey).iterator();it.hasNext();){
 <a name="225" href="#225">225</a> 				String path = (String) it.next();
 <a name="226" href="#226">226</a> 				<strong>if</strong>(<strong>this</strong>.config.getGeneratorRegistry().isPathGenerated(path)) {
-<a name="227" href="#227">227</a> 					path = PathNormalizer.createGenerationPath(path);
+<a name="227" href="#227">227</a> 					path = PathNormalizer.createGenerationPath(path,<strong>this</strong>.config.getGeneratorRegistry());
 <a name="228" href="#228">228</a> 				}
 <a name="229" href="#229">229</a> 				<strong>if</strong>(<span class="string">""</span>.equals(<strong>this</strong>.config.getContextPathOverride()) &amp;&amp; path.startsWith(<span class="string">"/"</span>))
 <a name="230" href="#230">230</a> 					path = path.substring(1);

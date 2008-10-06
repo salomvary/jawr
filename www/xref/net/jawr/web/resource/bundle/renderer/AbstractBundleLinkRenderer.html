@@ -158,7 +158,7 @@
 <a name="149" href="#149">149</a>     	<em class="comment">// When debug mode is on and the resource is generated the path must include a parameter</em>
 <a name="150" href="#150">150</a>     	<strong>if</strong>( bundler.getConfig().isDebugModeOn() &amp;&amp; 
 <a name="151" href="#151">151</a>     		bundler.getConfig().getGeneratorRegistry().isPathGenerated(bundleId)) {
-<a name="152" href="#152">152</a>     		bundleId = PathNormalizer.createGenerationPath(bundleId);
+<a name="152" href="#152">152</a>     		bundleId = PathNormalizer.createGenerationPath(bundleId, bundler.getConfig().getGeneratorRegistry());
 <a name="153" href="#153">153</a>     	}
 <a name="154" href="#154">154</a>     	String fullPath = PathNormalizer.joinPaths(bundler.getConfig().getServletMapping(), bundleId);
 <a name="155" href="#155">155</a>     	
@@ -169,31 +169,34 @@
 <a name="160" href="#160">160</a>     		<strong>if</strong>(<span class="string">""</span>.equals(override)) {
 <a name="161" href="#161">161</a>     			fullPath = fullPath.substring(1);
 <a name="162" href="#162">162</a>     		}
-<a name="163" href="#163">163</a>     		<strong>else</strong> fullPath = PathNormalizer.joinPaths(override,fullPath);
-<a name="164" href="#164">164</a>     	}    		
-<a name="165" href="#165">165</a>     	<strong>else</strong>
-<a name="166" href="#166">166</a>     		fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
-<a name="167" href="#167">167</a>     	
-<a name="168" href="#168">168</a>     	<strong>return</strong> renderLink(fullPath);
-<a name="169" href="#169">169</a>     }
-<a name="170" href="#170">170</a>     
-<a name="171" href="#171">171</a>     <em>/**<em>*</em></em>
-<a name="172" href="#172">172</a> <em>     * Creates a link to a bundle in the page, using its identifier. </em>
-<a name="173" href="#173">173</a> <em>     * @param bundleId</em>
-<a name="174" href="#174">174</a> <em>     * @param contextPath</em>
-<a name="175" href="#175">175</a> <em>     * @return String</em>
-<a name="176" href="#176">176</a> <em>     */</em>
-<a name="177" href="#177">177</a>     <strong>protected</strong> <strong>abstract</strong> String renderLink(String fullPath);
-<a name="178" href="#178">178</a> 
-<a name="179" href="#179">179</a>     <em>/**<em>*</em></em>
-<a name="180" href="#180">180</a> <em>     * @return ResourceBundlesHandler The resources handler.</em>
-<a name="181" href="#181">181</a> <em>     */</em>
-<a name="182" href="#182">182</a>     <strong>public</strong> <a href="../../../../../../net/jawr/web/resource/bundle/handler/ResourceBundlesHandler.html">ResourceBundlesHandler</a> getBundler() {
-<a name="183" href="#183">183</a>         <strong>return</strong> bundler;
-<a name="184" href="#184">184</a>     }
-<a name="185" href="#185">185</a> 
-<a name="186" href="#186">186</a>     
-<a name="187" href="#187">187</a> }
+<a name="163" href="#163">163</a>     		<strong>else</strong> <strong>if</strong>(bundler.getConfig().isDomainOverriden()) {
+<a name="164" href="#164">164</a>     			fullPath = PathNormalizer.joinDomainToPath(override,fullPath);
+<a name="165" href="#165">165</a>     		}
+<a name="166" href="#166">166</a>     		<strong>else</strong> fullPath = PathNormalizer.joinPaths(override,fullPath);
+<a name="167" href="#167">167</a>     	}    		
+<a name="168" href="#168">168</a>     	<strong>else</strong>
+<a name="169" href="#169">169</a>     		fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
+<a name="170" href="#170">170</a>     	
+<a name="171" href="#171">171</a>     	<strong>return</strong> renderLink(fullPath);
+<a name="172" href="#172">172</a>     }
+<a name="173" href="#173">173</a> 
+<a name="174" href="#174">174</a>     <em>/**<em>*</em></em>
+<a name="175" href="#175">175</a> <em>     * Creates a link to a bundle in the page, using its identifier. </em>
+<a name="176" href="#176">176</a> <em>     * @param bundleId</em>
+<a name="177" href="#177">177</a> <em>     * @param contextPath</em>
+<a name="178" href="#178">178</a> <em>     * @return String</em>
+<a name="179" href="#179">179</a> <em>     */</em>
+<a name="180" href="#180">180</a>     <strong>protected</strong> <strong>abstract</strong> String renderLink(String fullPath);
+<a name="181" href="#181">181</a> 
+<a name="182" href="#182">182</a>     <em>/**<em>*</em></em>
+<a name="183" href="#183">183</a> <em>     * @return ResourceBundlesHandler The resources handler.</em>
+<a name="184" href="#184">184</a> <em>     */</em>
+<a name="185" href="#185">185</a>     <strong>public</strong> <a href="../../../../../../net/jawr/web/resource/bundle/handler/ResourceBundlesHandler.html">ResourceBundlesHandler</a> getBundler() {
+<a name="186" href="#186">186</a>         <strong>return</strong> bundler;
+<a name="187" href="#187">187</a>     }
+<a name="188" href="#188">188</a> 
+<a name="189" href="#189">189</a>     
+<a name="190" href="#190">190</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

@@ -64,6 +64,10 @@
         </li>
               
     <li class="none">
+              <a href="../docs/generators.html">Generators</a>
+        </li>
+              
+    <li class="none">
               <a href="../docs/license_files.html">Licenses in resources</a>
         </li>
               
@@ -87,6 +91,10 @@
       <dl class=navgroup>
         <dt>Integration</dt>
         <dd><ul>
+              
+    <li class="none">
+              <a href="../integration/augmenter.html">Add Jawr to your framework</a>
+        </li>
               
     <li class="none">
               <a href="../integration/facelets.html">Facelets Tag library</a>
@@ -209,7 +217,7 @@
                 &lt;/init-param&gt;
                 &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
         &lt;/servlet&gt;
-        </pre></div><p>We would use this servlet to manage javascript bundles. The init params for a Jawr servlet are the following: </p><ul><li><b>configLocation</b>: This is a mandatory parameter. Its value points to a classpath resource that Jawr will use to configure itself. See the <a href="./descriptor_syntax.html">config file syntax page</a>for more information. You can use the same properties file for both instances of the servlet. </li><li><b>type</b>: Refers to the type of resource the servlet will manage. It can receive two possible values: <i>js</i> or <i>css</i>. You can omit this parameter for the javascript servlet, since <i>js</i> is the default value. &#160;</li><li><b>configPropertiesSourceClass</b>: This optional parameter holds the cualified class name of you custom implementation of ConfigPropertiesSource, in case you want to customize the way configuration is loaded when Jawr starts up. More on this below. </li><li><b>mapping</b>: In normal situations, you will have the Jawr servlet attend all requests for a certain type of resource, using a servlet-mapping like this: <div class="source"><pre>        
+        </pre></div><p>We would use this servlet to manage javascript bundles. The init params for a Jawr servlet are the following: </p><ul><li><b>configLocation</b>: This is a mandatory parameter. Its value points to a classpath resource that Jawr will use to configure itself. See the <a href="./descriptor_syntax.html">config file syntax page</a> for more information. You can use the same properties file for both instances of the servlet. Optionally, you can point to an external file instead of using the classpath. To do that, prefix the file path with <b>file:</b>. For example: file:C:\config\jawr.properties. </li><li><b>type</b>: Refers to the type of resource the servlet will manage. It can receive two possible values: <i>js</i> or <i>css</i>. You can omit this parameter for the javascript servlet, since <i>js</i> is the default value. &#160;</li><li><b>configPropertiesSourceClass</b>: This optional parameter holds the cualified class name of you custom implementation of ConfigPropertiesSource, in case you want to customize the way configuration is loaded when Jawr starts up. More on this below. </li><li><b>mapping</b>: In normal situations, you will have the Jawr servlet attend all requests for a certain type of resource, using a servlet-mapping like this: <div class="source"><pre>        
         &lt;servlet-mapping&gt;
                 &lt;servlet-name&gt;JavascriptServlet&lt;/servlet-name&gt;
                 &lt;url-pattern&gt;*.js&lt;/url-pattern&gt;
@@ -315,8 +323,8 @@
 
   
   
-  &nbsp;| Last Published: 07/08/2008
-  &nbsp;| Version: 2.4.2
+  &nbsp;| Last Published: 10/06/2008
+  &nbsp;| Version: 2.5
 </div>
       <div class="clear">
         <hr/>

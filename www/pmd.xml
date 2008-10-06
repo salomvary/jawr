@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="3.9" timestamp="2008-07-07T14:54:25.792" elapsedTime="0s">
-<file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\resource\bundle\factory\util\PathNormalizer.java">
-<violation line="116" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.resource.bundle.factory.util" class="PathNormalizer" method="createGenerationPath" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
-Avoid empty catch blocks
-</violation>
-</file>
+<pmd version="3.9" timestamp="2008-10-06T10:13:12.245" elapsedTime="0s">
 <file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\resource\bundle\handler\ClientSideHandlerScriptRequestHandler.java">
 <violation line="140" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.resource.bundle.handler" class="ClientSideHandlerScriptRequestHandler" method="useNotModifiedHeader" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
@@ -21,7 +16,7 @@ Avoid empty catch blocks
 </violation>
 </file>
 <file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\servlet\JawrRequestHandler.java">
-<violation line="297" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="net.jawr.web.servlet" class="JawrRequestHandler" method="processRequest" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<violation line="298" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="net.jawr.web.servlet" class="JawrRequestHandler" method="processRequest" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
 </file>

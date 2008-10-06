@@ -130,207 +130,222 @@
 <a name="121" href="#121">121</a> 	<strong>private</strong> String contextPathOverride;
 <a name="122" href="#122">122</a> 	
 <a name="123" href="#123">123</a> 	<em>/**<em>*</em></em>
-<a name="124" href="#124">124</a> <em>	 * Used to check if a configuration has not been outdated by a new one. </em>
+<a name="124" href="#124">124</a> <em>	 * Determines if the contextPathOverride is a full domain path (<a href="http://...." target="alexandria_uri">http://....</a> or https://...)</em>
 <a name="125" href="#125">125</a> <em>	 */</em>
-<a name="126" href="#126">126</a> 	<strong>private</strong> <strong>boolean</strong> isValid = <strong>true</strong>;
+<a name="126" href="#126">126</a> 	<strong>private</strong> <strong>boolean</strong> isDomainOverriden;
 <a name="127" href="#127">127</a> 	
 <a name="128" href="#128">128</a> 	<em>/**<em>*</em></em>
-<a name="129" href="#129">129</a> <em>	 * Mapping path to the dwr servlet, in case it is integrated with jawr. </em>
-<a name="130" href="#130">130</a> <em>	 */</em>
-<a name="131" href="#131">131</a> 	<strong>private</strong> String dwrMapping;
-<a name="132" href="#132">132</a> 	
-<a name="133" href="#133">133</a> 		
-<a name="134" href="#134">134</a> 	<em>/**<em>*</em></em>
-<a name="135" href="#135">135</a> <em>	 * Get debug mode status. </em>
-<a name="136" href="#136">136</a> <em>	 * @return boolean</em>
-<a name="137" href="#137">137</a> <em>	 */</em>
-<a name="138" href="#138">138</a> 	<strong>public</strong> <strong>boolean</strong> isDebugModeOn() {
-<a name="139" href="#139">139</a> 		<strong>return</strong> debugModeOn;
-<a name="140" href="#140">140</a> 	}
-<a name="141" href="#141">141</a> 
-<a name="142" href="#142">142</a> 	<em>/**<em>*</em></em>
-<a name="143" href="#143">143</a> <em>	 * Set debug mode. </em>
-<a name="144" href="#144">144</a> <em>	 * @param debugModeOn boolean</em>
-<a name="145" href="#145">145</a> <em>	 */</em>
-<a name="146" href="#146">146</a> 	<strong>public</strong> <strong>void</strong> setDebugModeOn(<strong>boolean</strong> debugMode) {
-<a name="147" href="#147">147</a> 		<strong>this</strong>.debugModeOn = debugMode;
-<a name="148" href="#148">148</a> 	}
-<a name="149" href="#149">149</a> 
-<a name="150" href="#150">150</a> 
-<a name="151" href="#151">151</a> 	
-<a name="152" href="#152">152</a> 	
-<a name="153" href="#153">153</a> 	<em>/**<em>*</em></em>
-<a name="154" href="#154">154</a> <em>	 * Get the charset to interpret and generate resource. </em>
-<a name="155" href="#155">155</a> <em>	 * @return Charset</em>
-<a name="156" href="#156">156</a> <em>	 */</em>
-<a name="157" href="#157">157</a> 	<strong>public</strong> Charset getResourceCharset() {
-<a name="158" href="#158">158</a> 		<strong>if</strong>(<strong>null</strong> == resourceCharset)
-<a name="159" href="#159">159</a> 		{
-<a name="160" href="#160">160</a> 			resourceCharset = Charset.forName(charsetName);
-<a name="161" href="#161">161</a> 		}
-<a name="162" href="#162">162</a> 		<strong>return</strong> resourceCharset;
-<a name="163" href="#163">163</a> 	}
+<a name="129" href="#129">129</a> <em>	 * @return the isDomainOverriden attribute, which determines if the contextPathOverride </em>
+<a name="130" href="#130">130</a> <em>	 * is a full domain path (<a href="http://...." target="alexandria_uri">http://....</a> or https://...)</em>
+<a name="131" href="#131">131</a> <em>	 */</em>
+<a name="132" href="#132">132</a> 	<strong>public</strong> <strong>boolean</strong> isDomainOverriden() {
+<a name="133" href="#133">133</a> 		<strong>return</strong> isDomainOverriden;
+<a name="134" href="#134">134</a> 	}
+<a name="135" href="#135">135</a> 
+<a name="136" href="#136">136</a> 	<em>/**<em>*</em></em>
+<a name="137" href="#137">137</a> <em>	 * Used to check if a configuration has not been outdated by a new one. </em>
+<a name="138" href="#138">138</a> <em>	 */</em>
+<a name="139" href="#139">139</a> 	<strong>private</strong> <strong>boolean</strong> isValid = <strong>true</strong>;
+<a name="140" href="#140">140</a> 	
+<a name="141" href="#141">141</a> 	<em>/**<em>*</em></em>
+<a name="142" href="#142">142</a> <em>	 * Mapping path to the dwr servlet, in case it is integrated with jawr. </em>
+<a name="143" href="#143">143</a> <em>	 */</em>
+<a name="144" href="#144">144</a> 	<strong>private</strong> String dwrMapping;
+<a name="145" href="#145">145</a> 	
+<a name="146" href="#146">146</a> 		
+<a name="147" href="#147">147</a> 	<em>/**<em>*</em></em>
+<a name="148" href="#148">148</a> <em>	 * Get debug mode status. </em>
+<a name="149" href="#149">149</a> <em>	 * @return boolean</em>
+<a name="150" href="#150">150</a> <em>	 */</em>
+<a name="151" href="#151">151</a> 	<strong>public</strong> <strong>boolean</strong> isDebugModeOn() {
+<a name="152" href="#152">152</a> 		<strong>return</strong> debugModeOn;
+<a name="153" href="#153">153</a> 	}
+<a name="154" href="#154">154</a> 
+<a name="155" href="#155">155</a> 	<em>/**<em>*</em></em>
+<a name="156" href="#156">156</a> <em>	 * Set debug mode. </em>
+<a name="157" href="#157">157</a> <em>	 * @param debugModeOn boolean</em>
+<a name="158" href="#158">158</a> <em>	 */</em>
+<a name="159" href="#159">159</a> 	<strong>public</strong> <strong>void</strong> setDebugModeOn(<strong>boolean</strong> debugMode) {
+<a name="160" href="#160">160</a> 		<strong>this</strong>.debugModeOn = debugMode;
+<a name="161" href="#161">161</a> 	}
+<a name="162" href="#162">162</a> 
+<a name="163" href="#163">163</a> 
 <a name="164" href="#164">164</a> 	
-<a name="165" href="#165">165</a> 	<em>/**<em>*</em></em>
-<a name="166" href="#166">166</a> <em>	 * Set the charsetname to be used to interpret and generate resource. </em>
-<a name="167" href="#167">167</a> <em>	 * @param charsetName</em>
-<a name="168" href="#168">168</a> <em>	 */</em>
-<a name="169" href="#169">169</a> 	<strong>public</strong> <strong>void</strong> setCharsetName(String charsetName) {
-<a name="170" href="#170">170</a> 		<strong>if</strong>(!Charset.isSupported(charsetName))
-<a name="171" href="#171">171</a> 			<strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"The specified charset ["</span> + charsetName + <span class="string">"] is not supported by the jvm."</span>);
-<a name="172" href="#172">172</a> 		<strong>this</strong>.charsetName = charsetName;
-<a name="173" href="#173">173</a> 	}
-<a name="174" href="#174">174</a> 	
-<a name="175" href="#175">175</a> 
-<a name="176" href="#176">176</a> 	<em>/**<em>*</em></em>
-<a name="177" href="#177">177</a> <em>	 * Get the servlet mapping corresponding to this config. </em>
-<a name="178" href="#178">178</a> <em>	 * @return</em>
-<a name="179" href="#179">179</a> <em>	 */</em>
-<a name="180" href="#180">180</a> 	<strong>public</strong> String getServletMapping() {
-<a name="181" href="#181">181</a> 		<strong>return</strong> servletMapping;
-<a name="182" href="#182">182</a> 	}
-<a name="183" href="#183">183</a> 
-<a name="184" href="#184">184</a> 	<em>/**<em>*</em></em>
-<a name="185" href="#185">185</a> <em>	 * Set the servlet mapping corresponding to this config. </em>
-<a name="186" href="#186">186</a> <em>	 * @param servletMapping</em>
-<a name="187" href="#187">187</a> <em>	 */</em>
-<a name="188" href="#188">188</a> 	<strong>public</strong> <strong>void</strong> setServletMapping(String servletMapping) {
-<a name="189" href="#189">189</a> 		<strong>this</strong>.servletMapping = PathNormalizer.normalizePath(servletMapping);
-<a name="190" href="#190">190</a> 	}
-<a name="191" href="#191">191</a> 
-<a name="192" href="#192">192</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
-<a name="193" href="#193">193</a> <em class="comment">	 * @see java.lang.Object#toString()</em>
-<a name="194" href="#194">194</a> <em class="comment">	 */</em>
-<a name="195" href="#195">195</a> 	<strong>public</strong> String toString(){
-<a name="196" href="#196">196</a> 		StringBuffer sb = <strong>new</strong> StringBuffer();
-<a name="197" href="#197">197</a> 		sb.append(<span class="string">"[JawrConfig:'"</span>)
-<a name="198" href="#198">198</a> 			.append(<span class="string">"charset name:'"</span>)
-<a name="199" href="#199">199</a> 			.append(<strong>this</strong>.charsetName)
-<a name="200" href="#200">200</a> 			.append(<span class="string">"'\n"</span>)
-<a name="201" href="#201">201</a> 			.append(<span class="string">"debugModeOn:'"</span>)
-<a name="202" href="#202">202</a> 			.append(isDebugModeOn())
-<a name="203" href="#203">203</a> 			.append(<span class="string">"'\n"</span>)
-<a name="204" href="#204">204</a> 			.append(<span class="string">"servletMapping:'"</span>)
-<a name="205" href="#205">205</a> 			.append(getServletMapping())
-<a name="206" href="#206">206</a> 			.append(<span class="string">"' ]"</span>);
-<a name="207" href="#207">207</a> 		<strong>return</strong> sb.toString();
-<a name="208" href="#208">208</a> 	}
-<a name="209" href="#209">209</a> 
-<a name="210" href="#210">210</a> 	<em>/**<em>*</em></em>
-<a name="211" href="#211">211</a> <em>	 * @return the gzipResourcesModeOn</em>
-<a name="212" href="#212">212</a> <em>	 */</em>
-<a name="213" href="#213">213</a> 	<strong>public</strong> <strong>boolean</strong> isGzipResourcesModeOn() {
-<a name="214" href="#214">214</a> 		<strong>return</strong> gzipResourcesModeOn;
-<a name="215" href="#215">215</a> 	}
-<a name="216" href="#216">216</a> 
-<a name="217" href="#217">217</a> 	<em>/**<em>*</em></em>
-<a name="218" href="#218">218</a> <em>	 * @param gzipResourcesModeOn the gzipResourcesModeOn to set</em>
-<a name="219" href="#219">219</a> <em>	 */</em>
-<a name="220" href="#220">220</a> 	<strong>public</strong> <strong>void</strong> setGzipResourcesModeOn(<strong>boolean</strong> gzipResourcesModeOn) {
-<a name="221" href="#221">221</a> 		<strong>this</strong>.gzipResourcesModeOn = gzipResourcesModeOn;
-<a name="222" href="#222">222</a> 	}
-<a name="223" href="#223">223</a>     
-<a name="224" href="#224">224</a>         <em>/**<em>*</em></em>
-<a name="225" href="#225">225</a> <em>	 * @return Wether gzipping for IE6 or less is on. </em>
-<a name="226" href="#226">226</a> <em>	 */</em>
-<a name="227" href="#227">227</a>         <strong>public</strong> <strong>boolean</strong> isGzipResourcesForIESixOn() {
-<a name="228" href="#228">228</a>             <strong>return</strong> gzipResourcesForIESixOn;
-<a name="229" href="#229">229</a>         }
-<a name="230" href="#230">230</a> 
-<a name="231" href="#231">231</a>         <em>/**<em>*</em></em>
-<a name="232" href="#232">232</a> <em>	 * @param Wether gzipping for IE6 or less will be on. </em>
-<a name="233" href="#233">233</a> <em>	 */</em>
-<a name="234" href="#234">234</a>         <strong>public</strong> <strong>void</strong> setGzipResourcesForIESixOn(<strong>boolean</strong> gzipResourcesForIESixOn) {
-<a name="235" href="#235">235</a>             <strong>this</strong>.gzipResourcesForIESixOn = gzipResourcesForIESixOn;
-<a name="236" href="#236">236</a>         }
-<a name="237" href="#237">237</a> 
-<a name="238" href="#238">238</a> 		<em>/**<em>*</em></em>
-<a name="239" href="#239">239</a> <em>		 * @return The string to use instead of the regular context path. </em>
-<a name="240" href="#240">240</a> <em>		 */</em>
-<a name="241" href="#241">241</a> 		<strong>public</strong> String getContextPathOverride() {
-<a name="242" href="#242">242</a> 			<strong>return</strong> contextPathOverride;
-<a name="243" href="#243">243</a> 		}
-<a name="244" href="#244">244</a> 
-<a name="245" href="#245">245</a> 		<em>/**<em>*</em></em>
-<a name="246" href="#246">246</a> <em>		 * Set the string to use instead of the regular context path. If it is an empty string, </em>
-<a name="247" href="#247">247</a> <em>		 * urls will be relative to the path (i.e, not start with a slash). </em>
-<a name="248" href="#248">248</a> <em>		 * @param contextPathOverride The string to use instead of the regular context path. </em>
-<a name="249" href="#249">249</a> <em>		 */</em>
-<a name="250" href="#250">250</a> 		<strong>public</strong> <strong>void</strong> setContextPathOverride(String contextPathOverride) {
-<a name="251" href="#251">251</a> 			<strong>this</strong>.contextPathOverride = contextPathOverride;
-<a name="252" href="#252">252</a> 		}
-<a name="253" href="#253">253</a> 
-<a name="254" href="#254">254</a> 		<em>/**<em>*</em></em>
-<a name="255" href="#255">255</a> <em>		 * Invalidate this configuration. Used to signal objects that have a hold on this instance but </em>
-<a name="256" href="#256">256</a> <em>		 * cannot be explicitly notified when the configuration is reloaded. </em>
-<a name="257" href="#257">257</a> <em>		 */</em>
-<a name="258" href="#258">258</a> 		<strong>public</strong> <strong>void</strong> invalidate() {
-<a name="259" href="#259">259</a> 			<strong>this</strong>.isValid = false;
-<a name="260" href="#260">260</a> 		}
-<a name="261" href="#261">261</a> 		
-<a name="262" href="#262">262</a> 		<em>/**<em>*</em></em>
-<a name="263" href="#263">263</a> <em>		 * @return Whether this configuration has been invalidated. </em>
-<a name="264" href="#264">264</a> <em>		 */</em>
-<a name="265" href="#265">265</a> 		<strong>public</strong> <strong>boolean</strong> isValid() {
-<a name="266" href="#266">266</a> 			<strong>return</strong> <strong>this</strong>.isValid;
+<a name="165" href="#165">165</a> 	
+<a name="166" href="#166">166</a> 	<em>/**<em>*</em></em>
+<a name="167" href="#167">167</a> <em>	 * Get the charset to interpret and generate resource. </em>
+<a name="168" href="#168">168</a> <em>	 * @return Charset</em>
+<a name="169" href="#169">169</a> <em>	 */</em>
+<a name="170" href="#170">170</a> 	<strong>public</strong> Charset getResourceCharset() {
+<a name="171" href="#171">171</a> 		<strong>if</strong>(<strong>null</strong> == resourceCharset)
+<a name="172" href="#172">172</a> 		{
+<a name="173" href="#173">173</a> 			resourceCharset = Charset.forName(charsetName);
+<a name="174" href="#174">174</a> 		}
+<a name="175" href="#175">175</a> 		<strong>return</strong> resourceCharset;
+<a name="176" href="#176">176</a> 	}
+<a name="177" href="#177">177</a> 	
+<a name="178" href="#178">178</a> 	<em>/**<em>*</em></em>
+<a name="179" href="#179">179</a> <em>	 * Set the charsetname to be used to interpret and generate resource. </em>
+<a name="180" href="#180">180</a> <em>	 * @param charsetName</em>
+<a name="181" href="#181">181</a> <em>	 */</em>
+<a name="182" href="#182">182</a> 	<strong>public</strong> <strong>void</strong> setCharsetName(String charsetName) {
+<a name="183" href="#183">183</a> 		<strong>if</strong>(!Charset.isSupported(charsetName))
+<a name="184" href="#184">184</a> 			<strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"The specified charset ["</span> + charsetName + <span class="string">"] is not supported by the jvm."</span>);
+<a name="185" href="#185">185</a> 		<strong>this</strong>.charsetName = charsetName;
+<a name="186" href="#186">186</a> 	}
+<a name="187" href="#187">187</a> 	
+<a name="188" href="#188">188</a> 
+<a name="189" href="#189">189</a> 	<em>/**<em>*</em></em>
+<a name="190" href="#190">190</a> <em>	 * Get the servlet mapping corresponding to this config. </em>
+<a name="191" href="#191">191</a> <em>	 * @return</em>
+<a name="192" href="#192">192</a> <em>	 */</em>
+<a name="193" href="#193">193</a> 	<strong>public</strong> String getServletMapping() {
+<a name="194" href="#194">194</a> 		<strong>return</strong> servletMapping;
+<a name="195" href="#195">195</a> 	}
+<a name="196" href="#196">196</a> 
+<a name="197" href="#197">197</a> 	<em>/**<em>*</em></em>
+<a name="198" href="#198">198</a> <em>	 * Set the servlet mapping corresponding to this config. </em>
+<a name="199" href="#199">199</a> <em>	 * @param servletMapping</em>
+<a name="200" href="#200">200</a> <em>	 */</em>
+<a name="201" href="#201">201</a> 	<strong>public</strong> <strong>void</strong> setServletMapping(String servletMapping) {
+<a name="202" href="#202">202</a> 		<strong>this</strong>.servletMapping = PathNormalizer.normalizePath(servletMapping);
+<a name="203" href="#203">203</a> 	}
+<a name="204" href="#204">204</a> 
+<a name="205" href="#205">205</a> 	<em class="comment">/*<em class="comment"> (non-Javadoc)</em></em>
+<a name="206" href="#206">206</a> <em class="comment">	 * @see java.lang.Object#toString()</em>
+<a name="207" href="#207">207</a> <em class="comment">	 */</em>
+<a name="208" href="#208">208</a> 	<strong>public</strong> String toString(){
+<a name="209" href="#209">209</a> 		StringBuffer sb = <strong>new</strong> StringBuffer();
+<a name="210" href="#210">210</a> 		sb.append(<span class="string">"[JawrConfig:'"</span>)
+<a name="211" href="#211">211</a> 			.append(<span class="string">"charset name:'"</span>)
+<a name="212" href="#212">212</a> 			.append(<strong>this</strong>.charsetName)
+<a name="213" href="#213">213</a> 			.append(<span class="string">"'\n"</span>)
+<a name="214" href="#214">214</a> 			.append(<span class="string">"debugModeOn:'"</span>)
+<a name="215" href="#215">215</a> 			.append(isDebugModeOn())
+<a name="216" href="#216">216</a> 			.append(<span class="string">"'\n"</span>)
+<a name="217" href="#217">217</a> 			.append(<span class="string">"servletMapping:'"</span>)
+<a name="218" href="#218">218</a> 			.append(getServletMapping())
+<a name="219" href="#219">219</a> 			.append(<span class="string">"' ]"</span>);
+<a name="220" href="#220">220</a> 		<strong>return</strong> sb.toString();
+<a name="221" href="#221">221</a> 	}
+<a name="222" href="#222">222</a> 
+<a name="223" href="#223">223</a> 	<em>/**<em>*</em></em>
+<a name="224" href="#224">224</a> <em>	 * @return the gzipResourcesModeOn</em>
+<a name="225" href="#225">225</a> <em>	 */</em>
+<a name="226" href="#226">226</a> 	<strong>public</strong> <strong>boolean</strong> isGzipResourcesModeOn() {
+<a name="227" href="#227">227</a> 		<strong>return</strong> gzipResourcesModeOn;
+<a name="228" href="#228">228</a> 	}
+<a name="229" href="#229">229</a> 
+<a name="230" href="#230">230</a> 	<em>/**<em>*</em></em>
+<a name="231" href="#231">231</a> <em>	 * @param gzipResourcesModeOn the gzipResourcesModeOn to set</em>
+<a name="232" href="#232">232</a> <em>	 */</em>
+<a name="233" href="#233">233</a> 	<strong>public</strong> <strong>void</strong> setGzipResourcesModeOn(<strong>boolean</strong> gzipResourcesModeOn) {
+<a name="234" href="#234">234</a> 		<strong>this</strong>.gzipResourcesModeOn = gzipResourcesModeOn;
+<a name="235" href="#235">235</a> 	}
+<a name="236" href="#236">236</a>     
+<a name="237" href="#237">237</a>         <em>/**<em>*</em></em>
+<a name="238" href="#238">238</a> <em>	 * @return Wether gzipping for IE6 or less is on. </em>
+<a name="239" href="#239">239</a> <em>	 */</em>
+<a name="240" href="#240">240</a>         <strong>public</strong> <strong>boolean</strong> isGzipResourcesForIESixOn() {
+<a name="241" href="#241">241</a>             <strong>return</strong> gzipResourcesForIESixOn;
+<a name="242" href="#242">242</a>         }
+<a name="243" href="#243">243</a> 
+<a name="244" href="#244">244</a>         <em>/**<em>*</em></em>
+<a name="245" href="#245">245</a> <em>	 * @param Wether gzipping for IE6 or less will be on. </em>
+<a name="246" href="#246">246</a> <em>	 */</em>
+<a name="247" href="#247">247</a>         <strong>public</strong> <strong>void</strong> setGzipResourcesForIESixOn(<strong>boolean</strong> gzipResourcesForIESixOn) {
+<a name="248" href="#248">248</a>             <strong>this</strong>.gzipResourcesForIESixOn = gzipResourcesForIESixOn;
+<a name="249" href="#249">249</a>         }
+<a name="250" href="#250">250</a> 
+<a name="251" href="#251">251</a> 		<em>/**<em>*</em></em>
+<a name="252" href="#252">252</a> <em>		 * @return The string to use instead of the regular context path. </em>
+<a name="253" href="#253">253</a> <em>		 */</em>
+<a name="254" href="#254">254</a> 		<strong>public</strong> String getContextPathOverride() {
+<a name="255" href="#255">255</a> 			<strong>return</strong> contextPathOverride;
+<a name="256" href="#256">256</a> 		}
+<a name="257" href="#257">257</a> 
+<a name="258" href="#258">258</a> 		<em>/**<em>*</em></em>
+<a name="259" href="#259">259</a> <em>		 * Set the string to use instead of the regular context path. If it is an empty string, </em>
+<a name="260" href="#260">260</a> <em>		 * urls will be relative to the path (i.e, not start with a slash). </em>
+<a name="261" href="#261">261</a> <em>		 * @param contextPathOverride The string to use instead of the regular context path. </em>
+<a name="262" href="#262">262</a> <em>		 */</em>
+<a name="263" href="#263">263</a> 		<strong>public</strong> <strong>void</strong> setContextPathOverride(String contextPathOverride) {
+<a name="264" href="#264">264</a> 			<strong>this</strong>.contextPathOverride = contextPathOverride;
+<a name="265" href="#265">265</a> 			<strong>if</strong>(<strong>null</strong> != contextPathOverride &amp;&amp; (contextPathOverride.startsWith(<span class="string">"http://"</span>) || contextPathOverride.startsWith(<span class="string">"https://"</span>)))
+<a name="266" href="#266">266</a> 				<strong>this</strong>.isDomainOverriden = <strong>true</strong>;
 <a name="267" href="#267">267</a> 		}
 <a name="268" href="#268">268</a> 
 <a name="269" href="#269">269</a> 		<em>/**<em>*</em></em>
-<a name="270" href="#270">270</a> <em>		 * @return the generatorRegistry</em>
-<a name="271" href="#271">271</a> <em>		 */</em>
-<a name="272" href="#272">272</a> 		<strong>public</strong> <a href="../../../../net/jawr/web/resource/bundle/generator/GeneratorRegistry.html">GeneratorRegistry</a> getGeneratorRegistry() {
-<a name="273" href="#273">273</a> 			<strong>return</strong> generatorRegistry;
-<a name="274" href="#274">274</a> 		}
-<a name="275" href="#275">275</a> 
-<a name="276" href="#276">276</a> 		<em>/**<em>*</em></em>
-<a name="277" href="#277">277</a> <em>		 * @param generatorRegistry the generatorRegistry to set</em>
-<a name="278" href="#278">278</a> <em>		 */</em>
-<a name="279" href="#279">279</a> 		<strong>public</strong> <strong>void</strong> setGeneratorRegistry(<a href="../../../../net/jawr/web/resource/bundle/generator/GeneratorRegistry.html">GeneratorRegistry</a> generatorRegistry) {
-<a name="280" href="#280">280</a> 			<strong>this</strong>.generatorRegistry = generatorRegistry;
-<a name="281" href="#281">281</a> 			<strong>this</strong>.generatorRegistry.setConfig(<strong>this</strong>);
+<a name="270" href="#270">270</a> <em>		 * Invalidate this configuration. Used to signal objects that have a hold on this instance but </em>
+<a name="271" href="#271">271</a> <em>		 * cannot be explicitly notified when the configuration is reloaded. </em>
+<a name="272" href="#272">272</a> <em>		 */</em>
+<a name="273" href="#273">273</a> 		<strong>public</strong> <strong>void</strong> invalidate() {
+<a name="274" href="#274">274</a> 			<strong>this</strong>.isValid = false;
+<a name="275" href="#275">275</a> 		}
+<a name="276" href="#276">276</a> 		
+<a name="277" href="#277">277</a> 		<em>/**<em>*</em></em>
+<a name="278" href="#278">278</a> <em>		 * @return Whether this configuration has been invalidated. </em>
+<a name="279" href="#279">279</a> <em>		 */</em>
+<a name="280" href="#280">280</a> 		<strong>public</strong> <strong>boolean</strong> isValid() {
+<a name="281" href="#281">281</a> 			<strong>return</strong> <strong>this</strong>.isValid;
 <a name="282" href="#282">282</a> 		}
 <a name="283" href="#283">283</a> 
-<a name="284" href="#284">284</a> 		<strong>public</strong> <a href="../../../../net/jawr/web/resource/bundle/locale/LocaleResolver.html">LocaleResolver</a> getLocaleResolver() {
-<a name="285" href="#285">285</a> 			<strong>return</strong> localeResolver;
-<a name="286" href="#286">286</a> 		}
-<a name="287" href="#287">287</a> 
-<a name="288" href="#288">288</a> 		<em>/**<em>*</em></em>
-<a name="289" href="#289">289</a> <em>		 * @return the context</em>
-<a name="290" href="#290">290</a> <em>		 */</em>
-<a name="291" href="#291">291</a> 		<strong>public</strong> ServletContext getContext() {
-<a name="292" href="#292">292</a> 			<strong>return</strong> context;
-<a name="293" href="#293">293</a> 		}
-<a name="294" href="#294">294</a> 
-<a name="295" href="#295">295</a> 		<em>/**<em>*</em></em>
-<a name="296" href="#296">296</a> <em>		 * @param context the context to set</em>
-<a name="297" href="#297">297</a> <em>		 */</em>
-<a name="298" href="#298">298</a> 		<strong>public</strong> <strong>void</strong> setContext(ServletContext context) {
-<a name="299" href="#299">299</a> 			<strong>this</strong>.context = context;
-<a name="300" href="#300">300</a> 		}
-<a name="301" href="#301">301</a> 
-<a name="302" href="#302">302</a> 		<em>/**<em>*</em></em>
-<a name="303" href="#303">303</a> <em>		 * @return the dwrMapping</em>
-<a name="304" href="#304">304</a> <em>		 */</em>
-<a name="305" href="#305">305</a> 		<strong>public</strong> String getDwrMapping() {
-<a name="306" href="#306">306</a> 			<strong>return</strong> dwrMapping;
-<a name="307" href="#307">307</a> 		}
-<a name="308" href="#308">308</a> 
-<a name="309" href="#309">309</a> 		<em>/**<em>*</em></em>
-<a name="310" href="#310">310</a> <em>		 * @param dwrMapping the dwrMapping to set</em>
-<a name="311" href="#311">311</a> <em>		 */</em>
-<a name="312" href="#312">312</a> 		<strong>public</strong> <strong>void</strong> setDwrMapping(String dwrMapping) {
-<a name="313" href="#313">313</a> 			<strong>this</strong>.dwrMapping = dwrMapping;
-<a name="314" href="#314">314</a> 		}
-<a name="315" href="#315">315</a> 
-<a name="316" href="#316">316</a> 		<em>/**<em>*</em></em>
-<a name="317" href="#317">317</a> <em>		 * @return the configProperties</em>
-<a name="318" href="#318">318</a> <em>		 */</em>
-<a name="319" href="#319">319</a> 		<strong>public</strong> Properties getConfigProperties() {
-<a name="320" href="#320">320</a> 			<strong>return</strong> configProperties;
-<a name="321" href="#321">321</a> 		}
-<a name="322" href="#322">322</a> 
-<a name="323" href="#323">323</a> 	
-<a name="324" href="#324">324</a> }
+<a name="284" href="#284">284</a> 		<em>/**<em>*</em></em>
+<a name="285" href="#285">285</a> <em>		 * @return the generatorRegistry</em>
+<a name="286" href="#286">286</a> <em>		 */</em>
+<a name="287" href="#287">287</a> 		<strong>public</strong> <a href="../../../../net/jawr/web/resource/bundle/generator/GeneratorRegistry.html">GeneratorRegistry</a> getGeneratorRegistry() {
+<a name="288" href="#288">288</a> 			<strong>return</strong> generatorRegistry;
+<a name="289" href="#289">289</a> 		}
+<a name="290" href="#290">290</a> 
+<a name="291" href="#291">291</a> 		<em>/**<em>*</em></em>
+<a name="292" href="#292">292</a> <em>		 * @param generatorRegistry the generatorRegistry to set</em>
+<a name="293" href="#293">293</a> <em>		 */</em>
+<a name="294" href="#294">294</a> 		<strong>public</strong> <strong>void</strong> setGeneratorRegistry(<a href="../../../../net/jawr/web/resource/bundle/generator/GeneratorRegistry.html">GeneratorRegistry</a> generatorRegistry) {
+<a name="295" href="#295">295</a> 			<strong>this</strong>.generatorRegistry = generatorRegistry;
+<a name="296" href="#296">296</a> 			<strong>this</strong>.generatorRegistry.setConfig(<strong>this</strong>);
+<a name="297" href="#297">297</a> 		}
+<a name="298" href="#298">298</a> 
+<a name="299" href="#299">299</a> 		<strong>public</strong> <a href="../../../../net/jawr/web/resource/bundle/locale/LocaleResolver.html">LocaleResolver</a> getLocaleResolver() {
+<a name="300" href="#300">300</a> 			<strong>return</strong> localeResolver;
+<a name="301" href="#301">301</a> 		}
+<a name="302" href="#302">302</a> 
+<a name="303" href="#303">303</a> 		<em>/**<em>*</em></em>
+<a name="304" href="#304">304</a> <em>		 * @return the context</em>
+<a name="305" href="#305">305</a> <em>		 */</em>
+<a name="306" href="#306">306</a> 		<strong>public</strong> ServletContext getContext() {
+<a name="307" href="#307">307</a> 			<strong>return</strong> context;
+<a name="308" href="#308">308</a> 		}
+<a name="309" href="#309">309</a> 
+<a name="310" href="#310">310</a> 		<em>/**<em>*</em></em>
+<a name="311" href="#311">311</a> <em>		 * @param context the context to set</em>
+<a name="312" href="#312">312</a> <em>		 */</em>
+<a name="313" href="#313">313</a> 		<strong>public</strong> <strong>void</strong> setContext(ServletContext context) {
+<a name="314" href="#314">314</a> 			<strong>this</strong>.context = context;
+<a name="315" href="#315">315</a> 		}
+<a name="316" href="#316">316</a> 
+<a name="317" href="#317">317</a> 		<em>/**<em>*</em></em>
+<a name="318" href="#318">318</a> <em>		 * @return the dwrMapping</em>
+<a name="319" href="#319">319</a> <em>		 */</em>
+<a name="320" href="#320">320</a> 		<strong>public</strong> String getDwrMapping() {
+<a name="321" href="#321">321</a> 			<strong>return</strong> dwrMapping;
+<a name="322" href="#322">322</a> 		}
+<a name="323" href="#323">323</a> 
+<a name="324" href="#324">324</a> 		<em>/**<em>*</em></em>
+<a name="325" href="#325">325</a> <em>		 * @param dwrMapping the dwrMapping to set</em>
+<a name="326" href="#326">326</a> <em>		 */</em>
+<a name="327" href="#327">327</a> 		<strong>public</strong> <strong>void</strong> setDwrMapping(String dwrMapping) {
+<a name="328" href="#328">328</a> 			<strong>this</strong>.dwrMapping = dwrMapping;
+<a name="329" href="#329">329</a> 		}
+<a name="330" href="#330">330</a> 
+<a name="331" href="#331">331</a> 		<em>/**<em>*</em></em>
+<a name="332" href="#332">332</a> <em>		 * @return the configProperties</em>
+<a name="333" href="#333">333</a> <em>		 */</em>
+<a name="334" href="#334">334</a> 		<strong>public</strong> Properties getConfigProperties() {
+<a name="335" href="#335">335</a> 			<strong>return</strong> configProperties;
+<a name="336" href="#336">336</a> 		}
+<a name="337" href="#337">337</a> 
+<a name="338" href="#338">338</a> 	
+<a name="339" href="#339">339</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

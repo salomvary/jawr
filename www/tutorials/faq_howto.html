@@ -64,6 +64,10 @@
         </li>
               
     <li class="none">
+              <a href="../docs/generators.html">Generators</a>
+        </li>
+              
+    <li class="none">
               <a href="../docs/license_files.html">Licenses in resources</a>
         </li>
               
@@ -87,6 +91,10 @@
       <dl class=navgroup>
         <dt>Integration</dt>
         <dd><ul>
+              
+    <li class="none">
+              <a href="../integration/augmenter.html">Add Jawr to your framework</a>
+        </li>
               
     <li class="none">
               <a href="../integration/facelets.html">Facelets Tag library</a>
@@ -204,6 +212,8 @@
         <strong>When I open a JSP it crashes with a <em>java.lang.IllegalStateException</em></strong>
       </a></li><li><a href="#jsmin-crash">
         <strong>JSMin crashes on startup</strong>
+      </a></li><li><a href="#jsmin-crash">
+        <strong>Can I use Jawr with a CDN?</strong>
       </a></li></ol><b>HOWTOs</b><ol type="1"><li><a href="#precompressed-libs">
         <strong>How do I use a precompressed library?</strong>
       </a></li></ol></div><div class="section"><h2>Troubleshooting</h2><dl><dt><a name="jsp-crash">
@@ -251,6 +261,10 @@ Initialization of Jawr either failed or never occurred.</pre></div>
         the <a href="../docs/postprocessors.html">postprocessors guide</a>. 
        </p>
 
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="jsmin-crash">
+        <strong>Can I use Jawr with a CDN?</strong>
+      </a></dt><dd>
+      Yes, you can. Use the <em>jawr.url.contextpath.override</em> config param to make all generated URLs point to the CDN address. 
       <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table></dd></dl></div><div class="section"><h2>HOWTOs</h2><dl><dt><a name="precompressed-libs">
         <strong>How do I use a precompressed library?</strong>
       </a></dt><dd>
@@ -299,8 +313,8 @@ jawr.js.bundle.compressedLibrary.bundlepostprocessors=none # This line avoids mi
 
   
   
-  &nbsp;| Last Published: 07/08/2008
-  &nbsp;| Version: 2.4.2
+  &nbsp;| Last Published: 10/06/2008
+  &nbsp;| Version: 2.5
 </div>
       <div class="clear">
         <hr/>
