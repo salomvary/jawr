@@ -14,12 +14,10 @@
 package net.jawr.web.resource.bundle.locale;
 
 import java.io.Reader;
-import java.nio.charset.Charset;
-import java.util.Locale;
 
-import javax.servlet.ServletContext;
-
-import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.bundle.generator.AbstractJavascriptGenerator;
+import net.jawr.web.resource.bundle.generator.GeneratorContext;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
 
@@ -30,14 +28,20 @@ import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
  * @author Jordi Hernández Sellés
  *
  */
-public class ResourceBundleMessagesGenerator implements ResourceGenerator {
+public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator implements ResourceGenerator {
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
 	 */
-	public Reader createResource(String path, JawrConfig config, ServletContext servletContext, Locale locale,Charset charset) {
-		MessageBundleScriptCreator creator = new MessageBundleScriptCreator(path,servletContext,locale);
-		return creator.createScript(charset);
+	public Reader createResource(GeneratorContext context) {
+		MessageBundleScriptCreator creator = new MessageBundleScriptCreator(context);
+		return creator.createScript(context.getCharset());
 	}
 
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#getMappingPrefix()
+	 */
+	public String getMappingPrefix() {
+		return GeneratorRegistry.MESSAGE_BUNDLE_PREFIX;
+	}
 }

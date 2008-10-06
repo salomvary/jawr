@@ -45,11 +45,13 @@ public class JawrServlet extends HttpServlet {
 			requestHandler = new JawrRequestHandler(getServletContext(),getServletConfig());
 		}catch (ServletException e) {
 			log.fatal("Jawr servlet with name" +  getServletConfig().getServletName() +" failed to initialize properly. ");
-			log.fatal("Cause:" + e.getMessage());
+			log.fatal("Cause:");
+			log.fatal(e.getMessage(),e);
 			throw e;
 		}catch (RuntimeException e) {
 			log.fatal("Jawr servlet with name" +  getServletConfig().getServletName() +" failed to initialize properly. ");
-			log.fatal("Cause: " + e.getClass().getName() +" [" + e.getMessage() +"]");
+			log.fatal("Cause: ");
+			log.fatal(e.getMessage(),e);
 			throw new ServletException(e);
 		}
 	}

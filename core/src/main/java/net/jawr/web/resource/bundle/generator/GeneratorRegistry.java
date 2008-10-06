@@ -14,16 +14,14 @@
 package net.jawr.web.resource.bundle.generator;
 
 import java.io.Reader;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.classpath.ClasspathResourceGenerator;
 import net.jawr.web.resource.bundle.generator.dwr.DWRGeneratorFactory;
 import net.jawr.web.resource.bundle.generator.validator.CommonsValidatorGenerator;
@@ -43,30 +41,26 @@ import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
  */
 public class GeneratorRegistry {
 	
-	public static final String MESSAGE_BUNDLE_PREFIX = "messages:";
-	public static final String CLASSPATH_BUNDLE_PREFIX = "jar:";
-	public static final String DWR_BUNDLE_PREFIX = "dwr:";
-	public static final String COMMONS_VALIDATOR_PREFIX = "acv:";
+	public static final String MESSAGE_BUNDLE_PREFIX = "messages";
+	public static final String CLASSPATH_BUNDLE_PREFIX = "jar";
+	public static final String DWR_BUNDLE_PREFIX = "dwr";
+	public static final String COMMONS_VALIDATOR_PREFIX = "acv";
+	
+	public static final String PREFIX_SEPARATOR = ":";
 	
 	private static final Map registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
 	private static final List prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
-	private ServletContext servletContext;
 	private JawrConfig config;
 	
 	static
 	{
-		prefixRegistry.add(MESSAGE_BUNDLE_PREFIX);
-		prefixRegistry.add(CLASSPATH_BUNDLE_PREFIX);
-		prefixRegistry.add(DWR_BUNDLE_PREFIX);
-		prefixRegistry.add(COMMONS_VALIDATOR_PREFIX);
+		prefixRegistry.add(MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+		prefixRegistry.add(CLASSPATH_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+		prefixRegistry.add(DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+		prefixRegistry.add(COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR);
 	}
 	
 
-	public GeneratorRegistry(ServletContext servletContext) {
-		super();
-		this.servletContext = servletContext;
-	}
-	
 	/**
 	 * Use only for testing purposes.
 	 */
@@ -81,16 +75,16 @@ public class GeneratorRegistry {
 	 * @return
 	 */
 	private void loadGenerator(String generatorKey) {
-		if(MESSAGE_BUNDLE_PREFIX.equals(generatorKey)){
+		if((MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, new ResourceBundleMessagesGenerator());
 		}
-		else if(CLASSPATH_BUNDLE_PREFIX.equals(generatorKey)){
+		else if((CLASSPATH_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, new ClasspathResourceGenerator());
 		}
-		else if(DWR_BUNDLE_PREFIX.equals(generatorKey)){
+		else if((DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, DWRGeneratorFactory.createDWRGenerator());
 		}
-		else if(COMMONS_VALIDATOR_PREFIX.equals(generatorKey)){
+		else if((COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, new CommonsValidatorGenerator());
 		}
 	}
@@ -98,12 +92,31 @@ public class GeneratorRegistry {
 	/**
 	 * Register a generator mapping it to the specified prefix. 
 	 * 
-	 * @param prefix
-	 * @param clazz
-	
-	public void registerGenerator(String prefix, Class clazz){
+	 * @param clazz String Qualified classname of the generator
+	 */
+	public void registerGenerator(String clazz){
+		ResourceGenerator generator = (ResourceGenerator) ClassLoaderResourceUtils.buildObjectInstance(clazz);
 		
-	} */
+		if(null == generator.getMappingPrefix() || "".equals(generator.getMappingPrefix()) )
+			throw new IllegalStateException("The getMappingPrefix() method must return something at " + clazz);
+		
+		String fullPrefix = generator.getMappingPrefix() + PREFIX_SEPARATOR;
+		
+		// Verify this prefix is unused
+		if(prefixRegistry.contains(fullPrefix)) {
+			String generatorName = registry.get(fullPrefix).getClass().getName();
+			if(!clazz.equals(generatorName)) {
+				String errorMsg = "Cannot register the generator of class " 
+								+ generator.getClass().getName()
+								+ " using the prefix " + generator.getMappingPrefix() + " since such prefix is being used by "
+								+ generatorName + ". Please pecify a different return value at the getMappingPrefix() method.";
+				throw new IllegalStateException(errorMsg);
+			}
+		}
+		
+		prefixRegistry.add(generator.getMappingPrefix() + PREFIX_SEPARATOR);
+		registry.put(generator.getMappingPrefix() + PREFIX_SEPARATOR, generator);
+	}
 	
 	/**
 	 * Determines wether a path is to be handled by a generator. 
@@ -120,9 +133,10 @@ public class GeneratorRegistry {
 	 * @param charset
 	 * @return
 	 */
-	public Reader createResource(String path, Charset charset) {
+	public Reader createResource(String path) {
 		String key = matchPath(path);
 		Locale locale = null;
+		
 		if(path.indexOf('@') != -1){
 			String localeKey = path.substring(path.indexOf('@')+1);
 			path = path.substring(0,path.indexOf('@'));
@@ -140,7 +154,21 @@ public class GeneratorRegistry {
 					locale = new Locale(localeKey);
 			}
 		}
-		return ((ResourceGenerator)registry.get(key)).createResource(path.substring(key.length()),config,servletContext,locale,charset);
+		GeneratorContext context = new GeneratorContext(config, path.substring(key.length()));
+		context.setLocale(locale);
+		
+		return ((ResourceGenerator)registry.get(key)).createResource(context);
+	}
+	
+	
+	/**
+	 * Returns the path to use in the generation URL for debug mode. 
+	 * @param path
+	 * @return
+	 */
+	public String getDebugModeGenerationPath(String path) {
+		String key = matchPath(path);
+		return ((ResourceGenerator)registry.get(key)).getDebugModeRequestPath();
 	}
 	
 	/**

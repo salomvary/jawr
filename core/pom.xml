@@ -1,9 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.jawr</groupId>
   <artifactId>jawr</artifactId>
   <name>Java web resources bundling and compression</name>
-  <version>2.4.2</version>
+  <version>2.5</version>
   <description>Javascript/CSS bundling and compressing tool for java web apps.
   	By using jawr resources are automatically bundled together and optionally minified and gzipped. 
   	Jawr provides tag libraries to reference a generated bundle either by id or by using the name of any of its members.</description>
@@ -36,6 +38,34 @@
         <version>1.8</version>
       </extension>
     </extensions>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+             <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+		<plugins>
+		<plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<configuration>
+			<source>1.4</source>
+			<target>1.4</target>
+		</configuration>
+		</plugin>
+		</plugins>
+		</pluginManagement>
   </build>
   <repositories>
     <repository>

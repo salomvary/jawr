@@ -121,6 +121,19 @@ public class JawrConfig {
 	private String contextPathOverride;
 	
 	/**
+	 * Determines if the contextPathOverride is a full domain path (http://.... or https://...)
+	 */
+	private boolean isDomainOverriden;
+	
+	/**
+	 * @return the isDomainOverriden attribute, which determines if the contextPathOverride 
+	 * is a full domain path (http://.... or https://...)
+	 */
+	public boolean isDomainOverriden() {
+		return isDomainOverriden;
+	}
+
+	/**
 	 * Used to check if a configuration has not been outdated by a new one. 
 	 */
 	private boolean isValid = true;
@@ -249,6 +262,8 @@ public class JawrConfig {
 		 */
 		public void setContextPathOverride(String contextPathOverride) {
 			this.contextPathOverride = contextPathOverride;
+			if(null != contextPathOverride && (contextPathOverride.startsWith("http://") || contextPathOverride.startsWith("https://")))
+				this.isDomainOverriden = true;
 		}
 
 		/**

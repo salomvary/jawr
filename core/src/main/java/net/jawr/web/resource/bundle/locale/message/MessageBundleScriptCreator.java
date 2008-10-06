@@ -34,7 +34,7 @@ import javax.servlet.ServletContext;
 import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
-import net.jawr.web.resource.bundle.generator.GeneratorParamUtils;
+import net.jawr.web.resource.bundle.generator.GeneratorContext;
 
 import org.apache.log4j.Logger;
 
@@ -60,24 +60,22 @@ public class MessageBundleScriptCreator {
 	private ServletContext servletContext;
 	
 	
-	public MessageBundleScriptCreator(String configParam,ServletContext servletContext,Locale locale) {
+	public MessageBundleScriptCreator(GeneratorContext context) {
 		super();
-		this.servletContext = servletContext;
+		this.servletContext = context.getServletContext();
 		if(null == template)
 			template = loadScriptTemplate();
 		
-		this.locale = locale;
+		this.locale = context.getLocale();
 		props = new Properties();
 		
 		// Set the namespace
-		String[] namespaceValues = GeneratorParamUtils.getParenthesesParam(configParam, DEFAULT_NAMESPACE);
-		configParam = namespaceValues[0];
-		namespace = namespaceValues[1];
+		namespace = context.getParenthesesParam();
+		namespace = null == namespace ? DEFAULT_NAMESPACE : namespace;
+		
 
 		// Set the filter
-		String[] filterValues = GeneratorParamUtils.getBracketsParam(configParam, null);
-		configParam = filterValues[0];
-		filter = filterValues[1];
+		filter = context.getBracketsParam();
 		if(null != filter) {
 			StringTokenizer tk = new StringTokenizer(filter,"\\|");
 			filterList = new ArrayList();
@@ -85,7 +83,7 @@ public class MessageBundleScriptCreator {
 				filterList.add(tk.nextToken());
 		}
 		
-		this.configParam = configParam;
+		this.configParam = context.getPath();
 	}
 	
 	/**

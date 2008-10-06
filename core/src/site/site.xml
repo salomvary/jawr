@@ -18,6 +18,7 @@
       <item name="Bundle definition" href="/docs/custom_bundles.html"/>
       <item name="Source order in bundles" href="/docs/source_ordering.html"/>
       <item name="Postprocessors" href="/docs/postprocessors.html"/>
+      <item name="Generators" href="/docs/generators.html"/>
       <item name="Licenses in resources" href="/docs/license_files.html"/>
       <item name="JSP Tag library" href="/docs/taglibs.html"/>
       <item name="Use in HTML pages" href="/docs/plain_html.html"/>
@@ -26,6 +27,7 @@
     </menu>
     
     <menu name="Integration">
+      <item name="Add Jawr to your framework" href="/integration/augmenter.html"/>
       <item name="Facelets Tag library" href="/integration/facelets.html"/>
       <item name="Grails plugin" href="/integration/grails.html"/>
       <item name="DWR" href="/integration/dwr.html"/>
@@ -38,7 +40,7 @@
       <item name="Using popular libraries" href="/tutorials/libraries.html"/>   
     </menu>
     
-		<menu name="API and sources">
+	<menu name="API and sources">
       <item name="JavaDocs" href="/nonav/apidocs/index.html"/>
       <item name="Source XREF" href="/nonav/xref/index.html"/>
     </menu>

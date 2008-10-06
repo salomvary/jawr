@@ -16,6 +16,7 @@ package net.jawr.web.resource.bundle.factory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -38,45 +39,47 @@ import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
  */
 public class PropertiesBasedBundlesHandlerFactory {
 	
-	private static final String RESOURCES_BASEDIR = "bundle.basedir";
-	private static final String RESOURCES_USE_CACHE = "use.cache";
+	public static final String RESOURCES_BASEDIR = "bundle.basedir";
+	public static final String RESOURCES_USE_CACHE = "use.cache";
 	
 	// Single bundle switch and param. 
-	private static final String FACTORY_USE_SINGLE_BUNDLE = "factory.use.singlebundle";
-	private static final String FACTORY_SINGLE_FILE_NAME = "factory.singlebundle.bundlename";
+	public static final String FACTORY_USE_SINGLE_BUNDLE = "factory.use.singlebundle";
+	public static final String FACTORY_SINGLE_FILE_NAME = "factory.singlebundle.bundlename";
 	
 	// Dir mapper switch
-	private static final String FACTORY_USE_DIR_MAPPER = "factory.use.dirmapper";
-	private static final String FACTORY_DIR_MAPPER_EXCLUSION = "factory.dirmapper.excluded";
+	public static final String FACTORY_USE_DIR_MAPPER = "factory.use.dirmapper";
+	public static final String FACTORY_DIR_MAPPER_EXCLUSION = "factory.dirmapper.excluded";
 
 
 	// Which postprocessors to use. 
-	private static final String BUNDLE_FACTORY_POSTPROCESSOR = "bundle.factory.bundlepostprocessors";
-	private static final String BUNDLE_FACTORY_FILE_POSTPROCESSOR = "bundle.factory.filepostprocessors";
+	public static final String BUNDLE_FACTORY_POSTPROCESSOR = "bundle.factory.bundlepostprocessors";
+	public static final String BUNDLE_FACTORY_FILE_POSTPROCESSOR = "bundle.factory.filepostprocessors";
 	
 	// Custom bundle factory parameters
-	private static final String BUNDLE_FACTORY_CUSTOM_NAMES = "bundle.names";
-	private static final String BUNDLE_FACTORY_CUSTOM_ID = ".id";
-	private static final String BUNDLE_FACTORY_CUSTOM_MAPPINGS = ".mappings";
-	private static final String BUNDLE_FACTORY_CUSTOM_GLOBAL_FLAG = ".global";
-	private static final String BUNDLE_FACTORY_CUSTOM_ORDER = ".order";
-	private static final String BUNDLE_FACTORY_CUSTOM_DEBUGONLY = ".debugonly";
-	private static final String BUNDLE_FACTORY_CUSTOM_DEBUGNEVER = ".debugnever";
-	private static final String BUNDLE_FACTORY_CUSTOM_POSTPROCESSOR = ".bundlepostprocessors";
-	private static final String BUNDLE_FACTORY_CUSTOM_FILE_POSTPROCESSOR = ".filepostprocessors";
-	private static final String BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION = ".ieonly.condition";
+	public static final String BUNDLE_FACTORY_CUSTOM_NAMES = "bundle.names";
+	public static final String BUNDLE_FACTORY_CUSTOM_ID = ".id";
+	public static final String BUNDLE_FACTORY_CUSTOM_MAPPINGS = ".mappings";
+	public static final String BUNDLE_FACTORY_CUSTOM_GLOBAL_FLAG = ".global";
+	public static final String BUNDLE_FACTORY_CUSTOM_ORDER = ".order";
+	public static final String BUNDLE_FACTORY_CUSTOM_DEBUGONLY = ".debugonly";
+	public static final String BUNDLE_FACTORY_CUSTOM_DEBUGNEVER = ".debugnever";
+	public static final String BUNDLE_FACTORY_CUSTOM_POSTPROCESSOR = ".bundlepostprocessors";
+	public static final String BUNDLE_FACTORY_CUSTOM_FILE_POSTPROCESSOR = ".filepostprocessors";
+	public static final String BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION = ".ieonly.condition";
 
-	private static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG = ".composite";
-	private static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES = ".child.names";
+	public static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG = ".composite";
+	public static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES = ".child.names";
 	
 	// Custom postprocessors factory parameters
-	private static final String CUSTOM_POSTPROCESSORS = "jawr.custom.postprocessors";
-	private static final String CUSTOM_POSTPROCESSORS_NAMES = ".names";
-	private static final String CUSTOM_POSTPROCESSORS_CLASS = ".class";
+	public static final String CUSTOM_POSTPROCESSORS = "jawr.custom.postprocessors";
+	public static final String CUSTOM_POSTPROCESSORS_NAMES = ".names";
+	public static final String CUSTOM_POSTPROCESSORS_CLASS = ".class";
+	
+	// Custom generators parameter
+	public static final String CUSTOM_GENERATORS = "jawr.custom.generators";
 	
 	// Locale variants
-
-	private static final String BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS = ".locales";
+	public static final String BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS = ".locales";
 		
 	
 	private PropertiesConfigHelper props;
@@ -114,6 +117,13 @@ public class PropertiesBasedBundlesHandlerFactory {
 		// Use the automatic directory-as-bundle mapper. 
 		factory.setUseDirMapperFactory(Boolean.valueOf(props.getProperty(FACTORY_USE_DIR_MAPPER,"false")).booleanValue());
 		factory.setExludedDirMapperDirs(props.getPropertyAsSet(FACTORY_DIR_MAPPER_EXCLUSION));
+
+		// Initialize custom generators
+		Iterator generators = props.getPropertyAsSet(CUSTOM_GENERATORS).iterator();
+		while(generators.hasNext()) {
+			String generatorClass = (String) generators.next();
+			generatorRegistry.registerGenerator(generatorClass);
+		}
 		
 		// Initialize custom bundles
 		Set customBundles = null;
@@ -138,6 +148,8 @@ public class PropertiesBasedBundlesHandlerFactory {
 			factory.setCustomPostprocessors(customPostprocessors);
 			
 		}
+		
+		
 		
 		factory.setBundleDefinitions(customBundles);
 	}

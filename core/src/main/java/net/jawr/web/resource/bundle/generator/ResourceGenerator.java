@@ -14,12 +14,6 @@
 package net.jawr.web.resource.bundle.generator;
 
 import java.io.Reader;
-import java.nio.charset.Charset;
-import java.util.Locale;
-
-import javax.servlet.ServletContext;
-
-import net.jawr.web.config.JawrConfig;
 
 /**
  * A ResourceGenerator is acomponent that generates script or CSS dynamically, instead of reading 
@@ -31,6 +25,8 @@ import net.jawr.web.config.JawrConfig;
  */
 public interface ResourceGenerator {
 
+	public static final String JAVASCRIPT_DEBUGPATH = "/jawr_generator.js";
+	public static final String CSS_DEBUGPATH = "/jawr_generator.css";
 	/**
 	 * Create a reader on a generated resource (any script not read from the war file 
 	 * structure). 
@@ -40,5 +36,26 @@ public interface ResourceGenerator {
 	 * @param charset
 	 * @return
 	 */
-	public Reader createResource(String path,JawrConfig config, ServletContext servletContext, Locale locale, Charset charset);
+	public Reader createResource(GeneratorContext context);
+	
+	
+	/**
+	 * Returns the prefix used to create mappings to this generator. 
+	 * The mappings starting with this prefix+colon(:)+mapping will use this generator. 
+	 * For instance, if prefix is 'jar', every mapping such as jar:someString is rendered
+	 * by this generator. 
+	 * @return
+	 */
+	public String getMappingPrefix();
+	
+	/**
+	 * Returns the request path to use when generating a URL to this generator. 
+	 * Normally it's OK to return either ResourceGenerator.JAVASCRIPT_DEBUGPATH 
+	 * or  ResourceGenerator.CSS_DEBUGPATH, but this can be modified to suit an 
+	 * application's path needs. Note that any prefix specified in the servlet mapping 
+	 * does not need to be included in the returned value. 
+	 *   
+	 * @return
+	 */
+	public String getDebugModeRequestPath();
 }

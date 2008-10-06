@@ -54,7 +54,7 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 	 */
 	public final Reader getResource(String resourceName) throws ResourceNotFoundException {
 		if(generatorRegistry.isPathGenerated(resourceName)) {			
-			return generatorRegistry.createResource(resourceName,charset);
+			return generatorRegistry.createResource(resourceName);
 		}
 		else return doGetResource(resourceName);
 	}

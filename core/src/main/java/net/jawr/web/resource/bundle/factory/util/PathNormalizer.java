@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.servlet.JawrRequestHandler;
 
 /**
@@ -72,6 +73,24 @@ public class PathNormalizer {
 	}
 	
 	/**
+	 * Normalizes a dmoain name and a path and joins them as a single url. 
+	 * @param domainName
+	 * @param path
+	 * @return
+	 */
+	public static final String joinDomainToPath(String domainName,String path) {
+		if(domainName.endsWith("/")) {
+			domainName = domainName.substring(0,domainName.length()-1);
+		}
+		path = PathNormalizer.normalizePath(path);
+		StringBuffer sb = new StringBuffer(domainName);
+		sb.append(SEPARATOR).append(path);
+		
+		return sb.toString();
+		
+	}	
+	
+	/**
 	 * Removes leading and trailing separators from a path, and removes 
 	 * double separators (// is replaced by /). 
 	 * @param path
@@ -110,10 +129,18 @@ public class PathNormalizer {
 	 * @param path
 	 * @return
 	 */
-	public static String createGenerationPath(String path){
+	public static String createGenerationPath(String path, GeneratorRegistry registry){
 		try {
-			path = "/generate.js?" + JawrRequestHandler.GENERATION_PARAM + "=" + URLEncoder.encode(path, "UTF-8");
-		} catch (UnsupportedEncodingException neverHappens) {/*URLEncoder:how not to use checked exceptions...*/}
+			path = registry.getDebugModeGenerationPath(path) 
+				+ "?" 
+				+ JawrRequestHandler.GENERATION_PARAM 
+				+ "=" 
+				+ URLEncoder.encode(path, "UTF-8");
+		} catch (UnsupportedEncodingException neverHappens) {
+			/*URLEncoder:how not to use checked exceptions...*/
+			throw new RuntimeException("Something went unexpectedly wrong while encoding a URL for a generator. ",
+										neverHappens);
+		}
 		return path;
 	}
 }

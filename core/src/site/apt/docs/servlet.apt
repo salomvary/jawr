@@ -35,7 +35,10 @@ The Jawr servlet
 	We would use this servlet to manage javascript bundles. The init params for a Jawr servlet are the following: 
 	
 	* <<configLocation>>: This is a mandatory parameter. Its value points to a classpath resource that Jawr will use to configure itself. See the 
-	{{{./descriptor_syntax.html}config file syntax page}}for more information. You can use the same properties file for both instances of the servlet. 
+	{{{./descriptor_syntax.html}config file syntax page}} for more information. You can use the same properties file for both instances of the 
+	servlet. Optionally, you can point to an external file instead of using the classpath. To do that, prefix the file path with <<file:>>. For 
+	example: file:C:\config\jawr.properties.  
+	 
 	
 	* <<type>>: Refers to the type of resource the servlet will manage. It can receive two possible values: <js> or <css>. You can omit this parameter 
 	for the javascript servlet, since <js> is the default value. \ 

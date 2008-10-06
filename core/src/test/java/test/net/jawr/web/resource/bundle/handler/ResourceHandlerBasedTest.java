@@ -30,7 +30,7 @@ public abstract class ResourceHandlerBasedTest  extends  TestCase {
 	    File tmp = FileUtils.createDir(rootDir + TMP_DIR);
 
 	    String work = FileUtils.createDir(rootDir + WORK_DIR).getCanonicalPath().replaceAll("%20", " ");
-	    return new FileSystemResourceHandler(work, tmp, charset, new GeneratorRegistry(null));
+	    return new FileSystemResourceHandler(work, tmp, charset, new GeneratorRegistry());
 	} catch (Exception ex) {
 	     ex.printStackTrace();
 	   throw new RuntimeException(ex);

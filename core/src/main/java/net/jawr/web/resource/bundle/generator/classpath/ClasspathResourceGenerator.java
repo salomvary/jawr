@@ -18,13 +18,11 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.Charset;
-import java.util.Locale;
 
-import javax.servlet.ServletContext;
-
-import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.generator.AbstractJavascriptGenerator;
+import net.jawr.web.resource.bundle.generator.GeneratorContext;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
 /**
@@ -32,19 +30,26 @@ import net.jawr.web.resource.bundle.generator.ResourceGenerator;
  * 
  * @author Jordi Hernández Sellés
  */
-public class ClasspathResourceGenerator implements ResourceGenerator {
+public class ClasspathResourceGenerator extends AbstractJavascriptGenerator implements ResourceGenerator {
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
 	 */
-	public Reader createResource(String path, JawrConfig config, ServletContext servletContext,Locale locale, Charset charset) {
+	public Reader createResource(GeneratorContext context) {
 		try {
-			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(path, this);
+			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(context.getPath(), this);
 			 ReadableByteChannel chan = Channels.newChannel(is);
-			 return Channels.newReader(chan,charset.newDecoder (),-1);
+			 return Channels.newReader(chan,context.getCharset().newDecoder (),-1);
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#getMappingPrefix()
+	 */
+	public String getMappingPrefix() {
+		return GeneratorRegistry.CLASSPATH_BUNDLE_PREFIX;
 	}
 
 }

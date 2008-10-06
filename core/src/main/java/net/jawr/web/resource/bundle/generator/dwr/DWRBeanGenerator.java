@@ -21,12 +21,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -34,9 +32,11 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 
-import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.generator.AbstractJavascriptGenerator;
+import net.jawr.web.resource.bundle.generator.GeneratorContext;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
 import org.apache.log4j.Logger;
@@ -55,7 +55,7 @@ import org.directwebremoting.impl.DefaultCreatorManager;
  * @author Jordi Hernández Sellés
  * 
  */
-public class DWRBeanGenerator implements ResourceGenerator {
+public class DWRBeanGenerator extends AbstractJavascriptGenerator implements ResourceGenerator {
 	private static final Logger log = Logger.getLogger(DWRBeanGenerator.class.getName());
 
 	// Mapping keys
@@ -112,8 +112,10 @@ public class DWRBeanGenerator implements ResourceGenerator {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
 	 */
-	public Reader createResource(String path, JawrConfig config,ServletContext servletContext,Locale locale, Charset charset) {
+	public Reader createResource(GeneratorContext context) {
+		ServletContext servletContext = context.getServletContext();
 		StringBuffer data = null;
+		String path = context.getPath();
 		if(ENGINE_KEY.equals(path)) {
 			data = buildEngineScript(readDWRScript(ENGINE_PATH),servletContext);
 		}
@@ -135,7 +137,12 @@ public class DWRBeanGenerator implements ResourceGenerator {
 		return new StringReader(data.toString());
 	}
 	
-	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#getMappingPrefix()
+	 */
+	public String getMappingPrefix() {
+		return GeneratorRegistry.DWR_BUNDLE_PREFIX;
+	}
 	
 	
 	/**

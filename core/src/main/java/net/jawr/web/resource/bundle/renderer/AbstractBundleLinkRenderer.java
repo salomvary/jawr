@@ -149,7 +149,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     	// When debug mode is on and the resource is generated the path must include a parameter
     	if( bundler.getConfig().isDebugModeOn() && 
     		bundler.getConfig().getGeneratorRegistry().isPathGenerated(bundleId)) {
-    		bundleId = PathNormalizer.createGenerationPath(bundleId);
+    		bundleId = PathNormalizer.createGenerationPath(bundleId, bundler.getConfig().getGeneratorRegistry());
     	}
     	String fullPath = PathNormalizer.joinPaths(bundler.getConfig().getServletMapping(), bundleId);
     	
@@ -160,6 +160,9 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     		if("".equals(override)) {
     			fullPath = fullPath.substring(1);
     		}
+    		else if(bundler.getConfig().isDomainOverriden()) {
+    			fullPath = PathNormalizer.joinDomainToPath(override,fullPath);
+    		}
     		else fullPath = PathNormalizer.joinPaths(override,fullPath);
     	}    		
     	else
@@ -167,7 +170,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     	
     	return renderLink(fullPath);
     }
-    
+
     /**
      * Creates a link to a bundle in the page, using its identifier. 
      * @param bundleId

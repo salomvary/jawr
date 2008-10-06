@@ -30,6 +30,8 @@ JAWR.loader = {
 	normalizePath : function(path) {
 		while(path.indexOf('//')!=-1)
 			path = path.replace('//','/');
+		if(path.indexOf("http") == 0)
+			path = path.replace(/http:\/(\w)/g,"http://$1").replace(/https:\/(\w)/g,"https://$1");
 		return path;
 	},
 	insertCSS : function(path,media){

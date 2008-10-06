@@ -59,6 +59,14 @@ Initialization of Jawr either failed or never occurred.</source>
 
       </answer>
     </faq>
+    <faq id="jsmin-crash">
+      <question>
+        <strong>Can I use Jawr with a CDN?</strong>
+      </question>
+      <answer>
+      Yes, you can. Use the <em>jawr.url.contextpath.override</em> config param to make all generated URLs point to the CDN address. 
+      </answer>
+    </faq>
   </part>
 
   <part id="HOWTOs">
