@@ -207,9 +207,9 @@
       </subsection>
       <subsection name="Announcements">
       <ul>
-      	<li> <strong>10/7/2008</strong>: Version 2.5 released:<br/> 
+      	<li> <strong>10/6/2008</strong>: Version 2.5 released:<br/> 
       		<strong>New features: </strong>
-      		 <ul><li>CDN support: Jawr can be used with a CDN by setting the parameter to an absolute URL. </li>
+      		 <ul><li>CDN support: Jawr can be used with a CDN by setting the 'jawr.url.contextpath.override' parameter to an absolute URL. </li>
       		 <li><a href="./docs/generators.html" >Generators API</a>: you can now write components that dynamically generate scripts or 
       		 CSS during the application startup. </li>
       		 <li>Ability to read config the file from the filesystem: instead of reading only from the classpath, the config properties file 
@@ -221,10 +221,6 @@
       		 <li>#29:Contextpath override does not work with absolute URLs (see CDN support above)</li>
       		 <li>#19:PropsFilePropertiesSource.configChanged() doesn't work on Tomcat (now properties can be read from the filesystem)</li>
       		 <li>Also, a new version of the DWR 3 has been published, fixing the latest incompatibilities. </li></ul>
-      	</li>   
-      	<li> <strong>7/7/2008</strong>: Version 2.4.2 released:<br/> 
-      	A performance improvement has been added: buffering is now used when using writers. Thanks to Richie for submitting a patch. <br/>
-      	There was a bug causing CSS URLs to be broken when using the static pages resource includer, which is now fixed. 
       	</li>   
       	<li> <strong>7/7/2008</strong>: Version 2.4.2 released:<br/> 
       	A performance improvement has been added: buffering is now used when using writers. Thanks to Richie for submitting a patch. <br/>
