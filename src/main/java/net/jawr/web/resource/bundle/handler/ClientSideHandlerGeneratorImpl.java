@@ -255,7 +255,7 @@ public class ClientSideHandlerGeneratorImpl implements
 			}
 		} catch (IOException e) {
 			log.fatal("a serious error occurred when initializing ClientSideHandlerGeneratorImpl");
-			throw new RuntimeException("Classloading issues prevent loading the loader template to be loaded. ");
+			throw new RuntimeException("Classloading issues prevent loading the loader template to be loaded. ",e);
 		}
 		
 		return sw.getBuffer();

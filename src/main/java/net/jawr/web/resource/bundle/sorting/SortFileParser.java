@@ -68,7 +68,7 @@ public class SortFileParser {
 				}
 			}
 		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException reading sort file");
+			throw new RuntimeException("Unexpected IOException reading sort file",e);
 		}
 		return resources;
 	}

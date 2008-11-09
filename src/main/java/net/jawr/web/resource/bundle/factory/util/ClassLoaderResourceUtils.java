@@ -107,7 +107,35 @@ public class ClassLoaderResourceUtils {
 										+ classname 
 										+ " could not be instantiated, check wether it is available on the classpath and" 
 										+ " verify that it has a zero-arg constructor].\n" 
-										+ " The specific error message is: " + e.getClass().getName() + ":" + e.getMessage());
+										+ " The specific error message is: " + e.getClass().getName() + ":" + e.getMessage(),e);
+		}
+		return rets;
+	}
+	
+	/**
+	 * Builds a class instance using reflection, by using its classname. The class must have a zero-arg constructor. 
+	 * @param classname the class to build an instance of. 
+	 * @return
+	 */
+	public static Object buildObjectInstance(String classname, Object[] params) {
+		Object rets = null;
+		
+		Class[] paramTypes = new Class[params.length];
+		for(int x = 0; x < params.length; x++){
+			paramTypes[x] = params[x].getClass();
+		}
+		
+		try {
+			Class clazz = Class.forName(classname);
+			rets = clazz.getConstructor(paramTypes).newInstance(params);
+			
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage() 
+										+ " [The custom class " 
+										+ classname 
+										+ " could not be instantiated, check wether it is available on the classpath and" 
+										+ " verify that it has a zero-arg constructor].\n" 
+										+ " The specific error message is: " + e.getClass().getName() + ":" + e.getMessage(),e);
 		}
 		return rets;
 	}

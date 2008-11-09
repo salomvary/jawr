@@ -24,7 +24,7 @@ public class CSSHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer implem
     
     private static final String PRE_TAG = "<link rel=\"stylesheet\" type=\"text/css\" media=\"";
     private static final String MID_TAG = "\" href=\"";
-    private static final String POST_TAG = "\"></link>\n";
+    private static final String POST_TAG = "\" />\n";
     private String media;
     
     /** Creates a new instance of CSSHTMLBundleLinkRenderer */

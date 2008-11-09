@@ -65,7 +65,7 @@ public class FileSystemResourceHandler extends AbstractResourceHandler implement
 	        FileChannel inchannel = fis.getChannel();
 	        rd = Channels.newReader(inchannel,charset.newDecoder (),-1);			
 		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException reading resource file with path [" + baseDir +  resourceName + "]");
+			throw new RuntimeException("Unexpected IOException reading resource file with path [" + baseDir +  resourceName + "]",e);
 		}
 		
 		return rd;

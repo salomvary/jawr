@@ -115,7 +115,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 				out.write(gzip.get(x)); // Use absolute get method
 		
 		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException writing bundle[" + bundlePath + "]");
+			throw new RuntimeException("Unexpected IOException writing bundle[" + bundlePath + "]",e);
 		}
 
 	}
@@ -143,7 +143,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 			writer.close();
 			
 		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException writing bundle[" + bundlePath + "]");
+			throw new RuntimeException("Unexpected IOException writing bundle[" + bundlePath + "]",e);
 		}
 	}
 
