@@ -222,6 +222,16 @@ jawr.js.bundle.comp.child.names=foo, bar
 	You may choose not to define any bundle at all, so <<all>> resources will be orphan. Typically, you would want this if you want Jawr to act as 
 	a traditional (yet powerful) resources compressor. \ 
 	
+=====================
+	<<Warning:>> When working with Jawr, bear in mind that <<all>> bundles need to be referenced using the {{{./taglibs.html}tag library}} or the 
+	{{{./plain_html.html}javascript link generator for non-JSP pages}}. 
+	Something that usually fools unaware Jawr users is the fact that using regular \<script\> or \<link\> tags with orphans will work in debug 
+	mode. However, when going into production mode, things start breaking badly because the URLs remain the same in both modes and they should 
+	actually contain extra path information for production.  
+	 
+=====================
+
+
 	You can configure Jawr to do one of two things with orphans: 
 	
 	* <<Create one-file bundles with each orphan resource>>: This is what Jawr will do by default. Even for files you don't need to serve within a bundle, 

@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -46,18 +45,17 @@ import org.apache.log4j.Logger;
  * @author Jordi Hernández Sellés
  */
 public class MessageBundleScriptCreator {
-	public static final String GRAILS_USED_FLAG = "jawr.grails.support.on";
+
 	public static final String DEFAULT_NAMESPACE = "messages";
 	private static final Logger log = Logger.getLogger(MessageBundleScriptCreator.class.getName());
 	private static final String SCRIPT_TEMPLATE = "/net/jawr/web/resource/bundle/message/messages.js";
-	private static StringBuffer template;
-	private String configParam;
-	private String namespace;
+	protected static StringBuffer template;
+	protected String configParam;
+	protected String namespace;
 	private String filter;
-	private Properties props;
-	private Locale locale;
+	protected Locale locale;
 	private List filterList;
-	private ServletContext servletContext;
+	protected ServletContext servletContext;
 	
 	
 	public MessageBundleScriptCreator(GeneratorContext context) {
@@ -67,7 +65,7 @@ public class MessageBundleScriptCreator {
 			template = loadScriptTemplate();
 		
 		this.locale = context.getLocale();
-		props = new Properties();
+		
 		
 		// Set the namespace
 		namespace = context.getParenthesesParam();
@@ -97,7 +95,7 @@ public class MessageBundleScriptCreator {
             IOUtils.copy(is, sw);
 		} catch (IOException e) {
 			log.fatal("a serious error occurred when initializing MessageBundleScriptCreator");
-			throw new RuntimeException("Classloading issues prevent loading the message template to be loaded. ");
+			throw new RuntimeException("Classloading issues prevent loading the message template to be loaded. ",e);
 		}
 		
 		return sw.getBuffer();
@@ -111,6 +109,7 @@ public class MessageBundleScriptCreator {
 	public Reader createScript(Charset charset){
 		
 		String[] names = configParam.split("\\|");
+		Properties props = new Properties();
 		for(int x = 0;x < names.length; x++) {
 			ResourceBundle bundle;
 			
@@ -123,20 +122,19 @@ public class MessageBundleScriptCreator {
 			while(keys.hasMoreElements()) {
 				String key = (String) keys.nextElement();
 				
-				if(matchesFilter(key))
-					try {
+				if(matchesFilter(key)) {
 						String value = bundle.getString(key);
-						// Grails requires a special treatment since it does funny things to the bundles encoding
-						if(null != this.servletContext.getAttribute(GRAILS_USED_FLAG))
-							value = new String( value.getBytes("LATIN1"),charset.name() );
-						
 						props.put(key, value);
-						
-					} catch (UnsupportedEncodingException enc) {
-						throw new RuntimeException(enc);
-					}
+				}
 			}
 		}
+		return doCreateScript(props);
+	}
+
+	/**
+	 * @return
+	 */
+	protected Reader doCreateScript(Properties props) {
 		BundleStringJasonifier bsj = new BundleStringJasonifier(props);
 		String script = template.toString();
 		String messages = bsj.serializeBundles().toString();
@@ -151,7 +149,7 @@ public class MessageBundleScriptCreator {
 	 * @param key
 	 * @return
 	 */
-	private boolean matchesFilter(String key) {
+	protected boolean matchesFilter(String key) {
 		boolean rets = (null == filterList);
 		if(!rets) {
 			for(Iterator it = filterList.iterator();it.hasNext() && !rets; )

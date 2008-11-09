@@ -44,7 +44,7 @@ public class ConditionalCommentRenderer implements ConditionalCommentCallbackHan
 		try {
 			out.write(sb.toString());
 		} catch (IOException e) {
-			throw new RuntimeException(e.getMessage());
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -55,7 +55,7 @@ public class ConditionalCommentRenderer implements ConditionalCommentCallbackHan
 		try {
 			out.write(CLOSING_TAG);
 		} catch (IOException e) {
-			throw new RuntimeException(e.getMessage());
+			throw new RuntimeException(e);
 		}
 	}
 

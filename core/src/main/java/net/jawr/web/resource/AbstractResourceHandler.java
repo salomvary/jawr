@@ -107,7 +107,7 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 			
 			
 		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException creating temporary jawr directory");
+			throw new RuntimeException("Unexpected IOException creating temporary jawr directory",e);
 		}
 	}
 
@@ -133,7 +133,7 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 	        rd = Channels.newReader(inchannel,charset.newDecoder (),-1);
 			
 		}catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException reading temporary jawr file with path:" + tempFileName);
+			throw new RuntimeException("Unexpected IOException reading temporary jawr file with path:" + tempFileName,e);
 		}
 		return rd;
 	}
@@ -181,7 +181,7 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 			return fis.getChannel();
 			
 		}catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException reading temporary jawr file with path:" + tempFileName);
+			throw new RuntimeException("Unexpected IOException reading temporary jawr file with path:" + tempFileName,e);
 		}
 	}
 

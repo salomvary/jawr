@@ -43,7 +43,7 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 	
 	private static final String CSS_PRE_TAG = "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"";
 	private static final String CSS_PRE_PR_TAG = "<link rel=\"stylesheet\" type=\"text/css\" media=\"print\" href=\"";
-    private static final String CSS_POST_TAG = "\"></link>";
+    private static final String CSS_POST_TAG = "\" />";
 	
 	private CSSHTMLBundleLinkRenderer cssRenderer;
 	private CSSHTMLBundleLinkRenderer cssPrintRenderer;

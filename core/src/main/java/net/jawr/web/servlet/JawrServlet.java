@@ -35,7 +35,7 @@ public class JawrServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -7628137098513776342L;
 	
-	private JawrRequestHandler requestHandler;
+	protected JawrRequestHandler requestHandler;
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.GenericServlet#init()

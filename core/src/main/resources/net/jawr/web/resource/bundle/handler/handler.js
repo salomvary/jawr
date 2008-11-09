@@ -36,7 +36,7 @@ JAWR.loader = {
 	},
 	insertCSS : function(path,media){
 		media = media ? media : 'screen';
-		document.write(' <link rel="stylesheet" type="text/css" media="' + media + '" href="'+this.normalizePath(this.cssmapping+'/'+path)+'" ></link> ');		
+		document.write(' <link rel="stylesheet" type="text/css" media="' + media + '" href="'+this.normalizePath(this.cssmapping+'/'+path)+'" /> ');		
 	} 	
 }
 JAWR.ResourceBundle = function(name, prefix, itemPathList,ieExpression){this.name = name;this.prefix = prefix;this.itemPathList = itemPathList;this.ieExpression=ieExpression}

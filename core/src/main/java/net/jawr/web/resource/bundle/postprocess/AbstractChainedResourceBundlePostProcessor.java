@@ -40,7 +40,7 @@ public abstract class AbstractChainedResourceBundlePostProcessor implements
 				log.debug("postprocessing bundle:" + status.getCurrentBundle().getName());
 			processedBundle = doPostProcessBundle(status,bundleData);
 		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException during execution of a postprocessor.");
+			throw new RuntimeException("Unexpected IOException during execution of a postprocessor.",e);
 		}
 		if(null != nextProcessor) {
 			processedBundle = nextProcessor.postProcessBundle(status,processedBundle);

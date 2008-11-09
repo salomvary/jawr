@@ -8,6 +8,14 @@ Jawr plugin for Grails
 
 	For a Grails user, it is easy to instal Jawr and start using it. The steps to follow are to install the plugin, configure it with the same 
 	properties format used in the standard version, and add a couple of URL mapping statements.     
+	
+=====================
+	<<Warning:>>	If you are upgrading from a version prior to 2.51, be aware that Jawr now uses a servlet instead of a controller to serve its files. 
+	This has several advantages: it is faster, there is no need to fiddle with the grails.mime.file.extensions property, and no controller mappings 
+	need to be added. So if you are upgrading, you need to remove the controller mappings, reset the grails.mime.file.extensions property and then 
+	follow URL mapping instructions below.   
+
+=====================
 
 * Installing the plugin
 
@@ -35,7 +43,7 @@ Jawr plugin for Grails
 	
 	* <<jawr.charset.name>>: The value set for grails.views.gsp.encoding will be used for this attribute (which is 'utf-8' by default in Grails). 
 	
-	* <<jawr.locale.resolver>>: Jawr will use Grails' Locale resolution strategy whe it applies.  
+	* <<jawr.locale.resolver>>: Jawr will use Grails' Locale resolution strategy when it applies.  
 	
 	[]
 	
@@ -51,61 +59,27 @@ Jawr plugin for Grails
 
 	There are two ways to map Jawr to requests:  
 	
-	* You can have Jawr respond to all requests ending in .js and .css, thus letting Jawr control all requests to your resources. There are two 
-	drawbacks to this: 
+	* You can have Jawr respond to all requests ending in .js and .css, thus letting Jawr control all requests to your resources. This is the 
+	default behavior, and you don't need to configure anything at all for it to work, simply omit the jawr.js.mapping/jawr.css.mapping properties 
+	from your config and you are ready to go. 
 	
-		* You may want to bundle only part of your code and serve the rest normally. This is specially useful if you are adding Jawr to an 
+		* This is the usual 
+		approach, but you may want to bundle only part of your code and serve the rest normally. This is specially useful if you are adding Jawr to an 
 		existing application and you do not want to change every existing script tag. Note that Jawr handles individual files (you don't need to 
-		explicitly define a bundle for every file you want to serve standalone), so that should not keep you from using this method of serving.
-		
-			 
-	 * Because of the way Grails handles content negotiation by default (removing extensions before resolving the controller), you must 
-	 	disable it by setting the grails.mime.file.extensions option to <<false>> in Config.groovy. 	
-	 	
-	Aside from 	setting grails.mime.file.extension to false, you must add mappings to the Jawr controllers to the UrlMappings.groovy file, like this: 
-
-+------------------------------------------+	
-class UrlMappings {
-    static mappings = {
-      "/$controller/$action?/$id?"{
-	      constraints {
-				//...
-		  }
-	  }
-	 "/**.js"(controller:'jawrJavascript')
-	 "/**.css"(controller:'jawrCSS')
-	  "500"(view:'/error')
-	}
-}
-+------------------------------------------+	
-		
-	* You can define a URL fragment as a prefix (such as '/jawr') to prefix every URL. Jawr will only serve requests containing this prefix. To 
+		explicitly define a bundle for every file you want to compress and serve standalone), so that should not keep you from using this mapping 
+		method.
+			
+	* You can define a URL fragment as a prefix (such as '/jawr/') to prefix every URL. Jawr will only serve requests containing this prefix. To 
 	use this you must add two special parameters to your Config.groovy file, to specify the prefixes for js and css: 
 		
 +------------------------------------------+	
-jawr.js.mapping = '/script' // The value can be anything you want for the prefix
-jawr.css.mapping = '/style'
+jawr.js.mapping = '/script/' // The value can be anything you want for the prefix
+jawr.css.mapping = '/style/'
 +------------------------------------------+
 	
-	Also, you will have to add matching mappings to the UrlMappings.groovy file, like this: 
-
-+------------------------------------------+	
-class UrlMappings {
-    static mappings = {
-      "/$controller/$action?/$id?"{
-	      constraints {
-			 // ...
-		  }
-	  }
-	 "/script/**"(controller:'jawrJavascript') // Whatever prefix you chose, followed by '/**'
-   	 "/style/**"(controller:'jawrCSS')
-	  "500"(view:'/error')
-	}
-}
-+------------------------------------------+	
-
-	With either method, once you have filled out the properties and established the mappings, you will be ready to start adding Jawr tags 
-	to your pages. 
+	Note that the value for these properties <<must>> be a url-mapping string without the wildcard (i.e. with no asterisk). 
+	
+	With either method, once you have filled out the properties, you will be ready to start adding Jawr tags to your pages. 
 	 
 * Using the tag library
 

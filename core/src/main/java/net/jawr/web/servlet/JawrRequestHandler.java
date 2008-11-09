@@ -56,6 +56,8 @@ public class JawrRequestHandler implements ConfigChangeListener{
     private static final String CACHE_CONTROL_HEADER = "Cache-Control";
     private static final String CACHE_CONTROL_VALUE = "public, max-age=315360000, post-check=315360000, pre-check=315360000";
     private static final String LAST_MODIFIED_HEADER = "Last-Modified";
+    private static final String IF_MODIFIED_SINCE_HEADER = "If-Modified-Since";
+    private static final String IF_NONE_MATCH_HEADER = "If-None-Match";
     private static final String LAST_MODIFIED_VALUE = "Sun, 06 Nov 2005 12:00:00 GMT";
     private static final String ETAG_HEADER = "ETag";
     private static final String ETAG_VALUE = "2740050219";
@@ -303,10 +305,11 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			}
 		}
 		
-		// If debug mode is off, check for If-Modified-Since header and set response caching headers. 
+		// If debug mode is off, check for If-Modified-Since and If-none-match headers and set response caching headers. 
 		if(!this.jawrConfig.isDebugModeOn()) {
 	        // If a browser checks for changes, always respond 'no changes'. 
-	        if(null != request.getHeader("If-Modified-Since")) {
+	        if( null != request.getHeader(IF_MODIFIED_SINCE_HEADER) ||
+	        	null != request.getHeader(IF_NONE_MATCH_HEADER) ) {
 	            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
 	            if(log.isDebugEnabled())
 					log.debug("Returning 'not modified' header. ");
@@ -379,7 +382,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		try {
 			initializeJawrConfig(newConfig);
 		} catch (ServletException e) {
-			throw new RuntimeException("Error reloading Jawr config: " + e.getMessage());
+			throw new RuntimeException("Error reloading Jawr config: " + e.getMessage(),e);
 		}
 		if(log.isDebugEnabled())
 			log.debug("Jawr configuration succesfully reloaded. ");

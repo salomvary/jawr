@@ -245,7 +245,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			rd.close();
 			writer.close();
 		} catch (IOException e) {			
-			throw new RuntimeException("Unexpected IOException writing bundle[" + bundlePath + "]");
+			throw new RuntimeException("Unexpected IOException writing bundle[" + bundlePath + "]",e);
 		}
 	}
 
@@ -261,7 +261,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			data.close();
 			channel.close();
 		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException writing bundle [" + bundlePath + "]");
+			throw new RuntimeException("Unexpected IOException writing bundle [" + bundlePath + "]",e);
 		}
 	}
 
@@ -434,7 +434,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			else store = bundleData;
 			
 		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException generating collected file [" + bundle.getName() + "].");
+			throw new RuntimeException("Unexpected IOException generating collected file [" + bundle.getName() + "].",e);
 		}
 		return store;
 	}
