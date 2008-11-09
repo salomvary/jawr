@@ -21,11 +21,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -33,8 +31,10 @@ import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 
-import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.generator.AbstractJavascriptGenerator;
+import net.jawr.web.resource.bundle.generator.GeneratorContext;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 
 import org.apache.log4j.Logger;
@@ -50,7 +50,7 @@ import org.directwebremoting.util.VersionUtil;
 /**
  * @author Jordi Hernández Sellés
  */
-public class DWR3BeanGenerator implements ResourceGenerator {
+public class DWR3BeanGenerator extends AbstractJavascriptGenerator implements ResourceGenerator {
 
 	private static final Logger log = Logger.getLogger(DWR3BeanGenerator.class.getName());
 
@@ -72,8 +72,8 @@ public class DWR3BeanGenerator implements ResourceGenerator {
 
 	// Path to DWR javascript files
 	private static final String ENGINE_PATH = "org/directwebremoting/engine.js";
-	private static final String UTIL_PATH = "org/directwebremoting/util.js";
-	private static final String AUTH_PATH = "org/directwebremoting/auth.js";
+	private static final String UTIL_PATH = "org/directwebremoting/ui/servlet/util.js";
+	private static final String AUTH_PATH = "org/directwebremoting/auth/auth.js";
 	private static final String WEBWORK_PATH = "org/directwebremoting/webwork/DWRActionUtil.js";
 	private static final String GI_PATH = "org/directwebremoting/gi.js";
 	private static final String BAYEUX_PATH = "org/directwebremoting/dwr-bayeux.js";
@@ -121,25 +121,25 @@ public class DWR3BeanGenerator implements ResourceGenerator {
 
 
 	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
+	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(net.jawr.web.resource.bundle.generator.GeneratorContext)
 	 */
-	public Reader createResource(String path, JawrConfig config,ServletContext servletContext,Locale locale, Charset charset) {
+	public Reader createResource(GeneratorContext context) {
 		StringBuffer data = null;
-		if(ENGINE_KEY.equals(path)) {
-			data = buildEngineScript(readDWRScript(ENGINE_PATH),servletContext);
+		if(ENGINE_KEY.equals(context.getPath())) {
+			data = buildEngineScript(readDWRScript(ENGINE_PATH),context.getServletContext());
 		}
-		else if(dwrLibraries.containsKey(path)){
-			data = readDWRScript((String)dwrLibraries.get(path));
+		else if(dwrLibraries.containsKey(context.getPath())){
+			data = readDWRScript((String)dwrLibraries.get(context.getPath()));
 		}
-		else if(ALL_INTERFACES_KEY.equals(path)) {
+		else if(ALL_INTERFACES_KEY.equals(context.getPath())) {
 			data = new StringBuffer(ENGINE_INIT);
-			data.append(getAllPublishedInterfaces(servletContext));
+			data.append(getAllPublishedInterfaces(context.getServletContext()));
 		}
 		else {
 			data = new StringBuffer(ENGINE_INIT);
-			StringTokenizer tk = new StringTokenizer(path,"|");
+			StringTokenizer tk = new StringTokenizer(context.getPath(),"|");
 			while(tk.hasMoreTokens()) {
-				data.append(getInterfaceScript(tk.nextToken(),servletContext));
+				data.append(getInterfaceScript(tk.nextToken(),context.getServletContext()));
 			}
 		}
 		
@@ -417,6 +417,13 @@ public class DWR3BeanGenerator implements ResourceGenerator {
 		
 		
 		return rets.toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#getMappingPrefix()
+	 */
+	public String getMappingPrefix() {
+		return GeneratorRegistry.DWR_BUNDLE_PREFIX;
 	}
 	
 
