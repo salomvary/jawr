@@ -53,7 +53,7 @@
 <a name="44" href="#44">44</a>  		<strong>try</strong> {
 <a name="45" href="#45">45</a>  			out.write(sb.toString());
 <a name="46" href="#46">46</a>  		} <strong>catch</strong> (IOException e) {
-<a name="47" href="#47">47</a>  			<strong>throw</strong> <strong>new</strong> RuntimeException(e.getMessage());
+<a name="47" href="#47">47</a>  			<strong>throw</strong> <strong>new</strong> RuntimeException(e);
 <a name="48" href="#48">48</a>  		}
 <a name="49" href="#49">49</a>  	}
 <a name="50" href="#50">50</a>  	
@@ -64,7 +64,7 @@
 <a name="55" href="#55">55</a>  		<strong>try</strong> {
 <a name="56" href="#56">56</a>  			out.write(CLOSING_TAG);
 <a name="57" href="#57">57</a>  		} <strong>catch</strong> (IOException e) {
-<a name="58" href="#58">58</a>  			<strong>throw</strong> <strong>new</strong> RuntimeException(e.getMessage());
+<a name="58" href="#58">58</a>  			<strong>throw</strong> <strong>new</strong> RuntimeException(e);
 <a name="59" href="#59">59</a>  		}
 <a name="60" href="#60">60</a>  	}
 <a name="61" href="#61">61</a>  

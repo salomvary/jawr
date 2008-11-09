@@ -74,7 +74,7 @@
 <a name="65" href="#65">65</a>  	        FileChannel inchannel = fis.getChannel();
 <a name="66" href="#66">66</a>  	        rd = Channels.newReader(inchannel,charset.newDecoder (),-1);			
 <a name="67" href="#67">67</a>  		} <strong>catch</strong> (IOException e) {
-<a name="68" href="#68">68</a>  			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException reading resource file with path ["</span> + baseDir +  resourceName + <span class="string">"]"</span>);
+<a name="68" href="#68">68</a>  			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException reading resource file with path ["</span> + baseDir +  resourceName + <span class="string">"]"</span>,e);
 <a name="69" href="#69">69</a>  		}
 <a name="70" href="#70">70</a>  		
 <a name="71" href="#71">71</a>  		<strong>return</strong> rd;

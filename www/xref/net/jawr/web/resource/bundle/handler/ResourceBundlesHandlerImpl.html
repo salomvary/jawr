@@ -254,7 +254,7 @@
 <a name="245" href="#245">245</a> 			rd.close();
 <a name="246" href="#246">246</a> 			writer.close();
 <a name="247" href="#247">247</a> 		} <strong>catch</strong> (IOException e) {			
-<a name="248" href="#248">248</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException writing bundle["</span> + bundlePath + <span class="string">"]"</span>);
+<a name="248" href="#248">248</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException writing bundle["</span> + bundlePath + <span class="string">"]"</span>,e);
 <a name="249" href="#249">249</a> 		}
 <a name="250" href="#250">250</a> 	}
 <a name="251" href="#251">251</a> 
@@ -270,7 +270,7 @@
 <a name="261" href="#261">261</a> 			data.close();
 <a name="262" href="#262">262</a> 			channel.close();
 <a name="263" href="#263">263</a> 		} <strong>catch</strong> (IOException e) {
-<a name="264" href="#264">264</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException writing bundle ["</span> + bundlePath + <span class="string">"]"</span>);
+<a name="264" href="#264">264</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException writing bundle ["</span> + bundlePath + <span class="string">"]"</span>,e);
 <a name="265" href="#265">265</a> 		}
 <a name="266" href="#266">266</a> 	}
 <a name="267" href="#267">267</a> 
@@ -443,7 +443,7 @@
 <a name="434" href="#434">434</a> 			<strong>else</strong> store = bundleData;
 <a name="435" href="#435">435</a> 			
 <a name="436" href="#436">436</a> 		} <strong>catch</strong> (IOException e) {
-<a name="437" href="#437">437</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException generating collected file ["</span> + bundle.getName() + <span class="string">"]."</span>);
+<a name="437" href="#437">437</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException generating collected file ["</span> + bundle.getName() + <span class="string">"]."</span>,e);
 <a name="438" href="#438">438</a> 		}
 <a name="439" href="#439">439</a> 		<strong>return</strong> store;
 <a name="440" href="#440">440</a> 	}

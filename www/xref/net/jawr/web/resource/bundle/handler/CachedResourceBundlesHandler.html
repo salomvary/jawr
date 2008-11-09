@@ -124,7 +124,7 @@
 <a name="115" href="#115">115</a> 				out.write(gzip.get(x)); <em class="comment">// Use absolute get method</em>
 <a name="116" href="#116">116</a> 		
 <a name="117" href="#117">117</a> 		} <strong>catch</strong> (IOException e) {
-<a name="118" href="#118">118</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException writing bundle["</span> + bundlePath + <span class="string">"]"</span>);
+<a name="118" href="#118">118</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException writing bundle["</span> + bundlePath + <span class="string">"]"</span>,e);
 <a name="119" href="#119">119</a> 		}
 <a name="120" href="#120">120</a> 
 <a name="121" href="#121">121</a> 	}
@@ -152,7 +152,7 @@
 <a name="143" href="#143">143</a> 			writer.close();
 <a name="144" href="#144">144</a> 			
 <a name="145" href="#145">145</a> 		} <strong>catch</strong> (IOException e) {
-<a name="146" href="#146">146</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException writing bundle["</span> + bundlePath + <span class="string">"]"</span>);
+<a name="146" href="#146">146</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException writing bundle["</span> + bundlePath + <span class="string">"]"</span>,e);
 <a name="147" href="#147">147</a> 		}
 <a name="148" href="#148">148</a> 	}
 <a name="149" href="#149">149</a> 

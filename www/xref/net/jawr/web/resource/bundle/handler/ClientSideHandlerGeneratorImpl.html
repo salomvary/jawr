@@ -264,7 +264,7 @@
 <a name="255" href="#255">255</a> 			}
 <a name="256" href="#256">256</a> 		} <strong>catch</strong> (IOException e) {
 <a name="257" href="#257">257</a> 			log.fatal(<span class="string">"a serious error occurred when initializing ClientSideHandlerGeneratorImpl"</span>);
-<a name="258" href="#258">258</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Classloading issues prevent loading the loader template to be loaded. "</span>);
+<a name="258" href="#258">258</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Classloading issues prevent loading the loader template to be loaded. "</span>,e);
 <a name="259" href="#259">259</a> 		}
 <a name="260" href="#260">260</a> 		
 <a name="261" href="#261">261</a> 		<strong>return</strong> sw.getBuffer();

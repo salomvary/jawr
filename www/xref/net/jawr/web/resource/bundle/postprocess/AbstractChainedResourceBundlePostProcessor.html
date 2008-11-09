@@ -49,7 +49,7 @@
 <a name="40" href="#40">40</a>  				log.debug(<span class="string">"postprocessing bundle:"</span> + status.getCurrentBundle().getName());
 <a name="41" href="#41">41</a>  			processedBundle = doPostProcessBundle(status,bundleData);
 <a name="42" href="#42">42</a>  		} <strong>catch</strong> (IOException e) {
-<a name="43" href="#43">43</a>  			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException during execution of a postprocessor."</span>);
+<a name="43" href="#43">43</a>  			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException during execution of a postprocessor."</span>,e);
 <a name="44" href="#44">44</a>  		}
 <a name="45" href="#45">45</a>  		<strong>if</strong>(<strong>null</strong> != nextProcessor) {
 <a name="46" href="#46">46</a>  			processedBundle = nextProcessor.postProcessBundle(status,processedBundle);

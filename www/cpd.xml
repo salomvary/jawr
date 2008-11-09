@@ -1,2 +1,30 @@
-<?xml version="1.0"  encoding="UTF-8"?><pmd-cpd>
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd-cpd>
+<duplication lines="19" tokens="108">
+<file line="60" path="C:\Proyectos\Jawr\branches\development\src\main\java\net\jawr\web\servlet\JawrGrailsServlet.java"/>
+<file line="45" path="C:\Proyectos\Jawr\branches\development\src\main\java\net\jawr\web\servlet\JawrServlet.java"/>
+<codefragment>
+<![CDATA[
+			requestHandler = new JawrRequestHandler(getServletContext(),getServletConfig());
+		}catch (ServletException e) {
+			log.fatal("Jawr servlet with name" +  getServletConfig().getServletName() +" failed to initialize properly. ");
+			log.fatal("Cause:");
+			log.fatal(e.getMessage(),e);
+			throw e;
+		}catch (RuntimeException e) {
+			log.fatal("Jawr servlet with name" +  getServletConfig().getServletName() +" failed to initialize properly. ");
+			log.fatal("Cause: ");
+			log.fatal(e.getMessage(),e);
+			throw new ServletException(e);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+]]>
+</codefragment>
+</duplication>
 </pmd-cpd>
