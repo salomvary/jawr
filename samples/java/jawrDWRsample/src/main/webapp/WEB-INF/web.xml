@@ -111,6 +111,23 @@
 		</init-param>
 		<load-on-startup>3</load-on-startup>
 	</servlet>
+	<servlet>
+		<servlet-name>CSServlet</servlet-name>
+		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
+		<init-param>
+			<param-name>configLocation</param-name>
+			<param-value>jawr.properties</param-value>
+		</init-param>
+		<init-param>
+			<param-name>type</param-name>
+			<param-value>css</param-value>
+		</init-param>
+		<init-param>
+			<param-name>mapping</param-name>
+			<param-value>/css/</param-value>
+		</init-param>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
   <servlet-mapping>
     <servlet-name>dwr-invoker</servlet-name>
     <url-pattern>/dwr/*</url-pattern>
@@ -123,5 +140,9 @@
 		<servlet-name>JavascriptServlet</servlet-name>
 		<url-pattern>/jawr/*</url-pattern>
 	</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>CSServlet</servlet-name>
+    <url-pattern>/css/*</url-pattern>
+  </servlet-mapping>
 
 </web-app>

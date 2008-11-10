@@ -11,12 +11,12 @@
     <dependency>
       <groupId>net.jawr</groupId>
       <artifactId>jawr</artifactId>
-      <version>2.4</version>
+      <version>2.4.2</version>
     </dependency>
     <dependency>
       <groupId>net.jawr.dwr</groupId>
       <artifactId>dwr3plugin</artifactId>
-      <version>1.0</version>
+      <version>1.1</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

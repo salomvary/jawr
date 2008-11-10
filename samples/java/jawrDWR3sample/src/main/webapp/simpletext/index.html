@@ -3,13 +3,12 @@
 <head>
   <title>Simple Text Generation Demo</title>
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
-  <script type="text/javascript" src="../jawr/jawr/loader.js" ></script>
+  <script type="text/javascript" src="../jawr/jawr_loader.js" ></script>
 	<script>
 		DWR.loader.script('/bundles/global.js');
 		DWR.loader.script('/simpletext/index.js');		
+		DWR.loader.style('/bundles/global.css');
 	</script>
-  <link rel="stylesheet" type="text/css" href="../tabs/tabs.css" />
-  <link rel="stylesheet" type="text/css" href="../generic.css" />
 </head>
 <body onload="dwr.util.useLoadingMessage();Tabs.init('tabList', 'tabContents');">
 <div id="page-title">[
@@ -146,6 +145,18 @@ public class Demo {
   &lt;allow&gt;
     &lt;create creator="new" javascript="Demo"&gt;
       &lt;param name="class" value="org.getahead.dwrdemo.simpletext.Demo"/&gt;
+    &lt;/create&gt;
+  &lt;/allow&gt;
+&lt;/dwr&gt;
+</pre>
+
+  </div>
+
+</div>
+
+</body>
+</html>
+rg.getahead.dwrdemo.simpletext.Demo"/&gt;
     &lt;/create&gt;
   &lt;/allow&gt;
 &lt;/dwr&gt;

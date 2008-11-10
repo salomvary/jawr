@@ -2,6 +2,7 @@
 
 body { margin:60px 40px 0px 40px; color:#666; line-height:1.3em;
   font-family:'Century Gothic', Helvetica, Arial, clean, sans-serif;
+  background-image:url(logo.gif);
 }
 
 select, textarea, input[type='text'], input[type='password'] {
@@ -69,3 +70,4 @@ pre { background:#f4f4f4; padding:10px; }
 
 #gidemo table { border-collapse:separate; border-spacing:0; }
 #gidemo table, #gidemo td, #gidemo th { border:0; padding:0; }
+

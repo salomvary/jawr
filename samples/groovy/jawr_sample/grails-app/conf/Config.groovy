@@ -68,7 +68,7 @@ log4j {
     additivity.StackTrace=false
 }
 
-jawr.debug.on=false;
+jawr.debug.on=true;
 jawr.gzip.on=false
 jawr.config.reload.interval='10'
 jawr.gzip.ie6.on=false
@@ -79,7 +79,7 @@ jawr.js.bundle.basedir='/js'
 jawr.js.bundle.names='yui'
 
 jawr.js.bundle.yui.id='/bundles/yui.js'
-jawr.js.bundle.yui.mappings='/js/**'
+jawr.js.bundle.yui.mappings='messages:grails-app.i18n.messages,/js/prototype/,/js/lib,/js/application.js'
 
 jawr.css.use.cache=true;
 jawr.css.bundle.basedir='/js'
@@ -88,8 +88,8 @@ jawr.css.bundle.names='all'
 jawr.css.bundle.all.mappings='/css/**'
 jawr.css.bundle.all.id='/bundles/all.css'
 
-jawr.js.mapping = '/script'
-jawr.css.mapping = '/style'
+//jawr.js.mapping = '/script/'
+jawr.css.mapping = '/style/'
 //grails.mime.file.extensions = false;
 foo = 'bar';
 
