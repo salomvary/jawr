@@ -22,7 +22,8 @@ import java.util.Map;
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
-import net.jawr.web.resource.bundle.generator.classpath.ClasspathResourceGenerator;
+import net.jawr.web.resource.bundle.generator.classpath.ClassPathCSSGenerator;
+import net.jawr.web.resource.bundle.generator.classpath.ClasspathJSGenerator;
 import net.jawr.web.resource.bundle.generator.dwr.DWRGeneratorFactory;
 import net.jawr.web.resource.bundle.generator.validator.CommonsValidatorGenerator;
 import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
@@ -42,7 +43,8 @@ import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
 public class GeneratorRegistry {
 	
 	public static final String MESSAGE_BUNDLE_PREFIX = "messages";
-	public static final String CLASSPATH_BUNDLE_PREFIX = "jar";
+	public static final String CLASSPATH_JS_BUNDLE_PREFIX = "jar";
+	public static final String CLASSPATH_CSS_BUNDLE_PREFIX = "jar_css";
 	public static final String DWR_BUNDLE_PREFIX = "dwr";
 	public static final String COMMONS_VALIDATOR_PREFIX = "acv";
 	
@@ -55,7 +57,8 @@ public class GeneratorRegistry {
 	static
 	{
 		prefixRegistry.add(MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR);
-		prefixRegistry.add(CLASSPATH_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+		prefixRegistry.add(CLASSPATH_JS_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+		prefixRegistry.add(CLASSPATH_CSS_BUNDLE_PREFIX + PREFIX_SEPARATOR);
 		prefixRegistry.add(DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR);
 		prefixRegistry.add(COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR);
 	}
@@ -78,8 +81,11 @@ public class GeneratorRegistry {
 		if((MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, new ResourceBundleMessagesGenerator());
 		}
-		else if((CLASSPATH_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
-			registry.put(generatorKey, new ClasspathResourceGenerator());
+		else if((CLASSPATH_JS_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+			registry.put(generatorKey, new ClasspathJSGenerator());
+		}
+		else if((CLASSPATH_CSS_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+			registry.put(generatorKey, new ClassPathCSSGenerator());
 		}
 		else if((DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, DWRGeneratorFactory.createDWRGenerator());

@@ -140,7 +140,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 			
 			// Write the text to the outputstream
 			writer.write(text);
-			writer.close();
+			writer.flush();
 			
 		} catch (IOException e) {
 			throw new RuntimeException("Unexpected IOException writing bundle[" + bundlePath + "]",e);

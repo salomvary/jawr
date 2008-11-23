@@ -100,8 +100,6 @@ Definition of custom bundles
 	library that has its own javascript or CSS files. 
 	To add these a special syntax is used in the mapping definition, which consists in a prefix followed by a colon (:). 
 	
-	To add resources from the classpath you use <<jar:>> as the prefix, followed by the path to the resource using / as separator: 
-	
 +------------------------------------------+
 	jawr.js.bundle.names=foo, baz	
 	
@@ -109,17 +107,12 @@ Definition of custom bundles
 	# Map to a script in the com.mycompany.myapp package and to another from the WAR 
 	jawr.js.bundle.foo.mappings=jar:/com/mycompany/myapp/foo.js, /js/bar.js
 	
-+------------------------------------------+
-
-	Note the leading slash in the mapping, which is also required. You can of course combine this kind of mappings with regular ones, so you can 
-	bundle together resources from the WAR and from the classpath. 
++------------------------------------------+	
 	
-	Unlike the normal mapping, this way of referring to resources does not yet allow wildcards (i.e.: <jar:/com/mycompany/myapp/**> would not 
-	work). 
+	The full documentation for the available generators and instructions on how to create your own are 
+	{{{./generators.html}here}}.
 	
-	Other prefixes you can use are <<messages:>> and <<dwr:>> for creating i18n javascript messages and to bundle DWR beans respectively. For these 
-	there are specific doumentation pages that you should read in order to use them: {{{./messages_gen.html}i18n messages generator}} and 
-	{{{./messages_gen.html}DWR integration}}. 
+	
 	
 * Global bundles
 	

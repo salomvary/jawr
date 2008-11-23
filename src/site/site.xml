@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="Jawr">  
-	<skin>
+	<!-- <skin>
     <groupId>org.jvnet.maven-javanet-skin</groupId>
     <artifactId>maven-javanet-skin</artifactId>
     <version>1.0</version>
-  </skin>
+  </skin>-->
   <body>
    
 	<menu name="About">
 		<item name="Home" href="/servlets/ProjectHome"/>
-    <item name="Introduction" href="/introduction.html"/>
+    	<item name="Introduction" href="/introduction.html"/>
+    	<item name="Features" href="/features.html"/>
+    	<item name="Change history" href="/changes.html"/>
 	</menu>
 		
     <menu name="Documentation">
@@ -28,6 +30,7 @@
     
     <menu name="Integration">
       <item name="Add Jawr to your framework" href="/integration/augmenter.html"/>
+      <item name="Spring MVC" href="/integration/spring.html"/>
       <item name="Facelets Tag library" href="/integration/facelets.html"/>
       <item name="Grails plugin" href="/integration/grails.html"/>
       <item name="DWR" href="/integration/dwr.html"/>

@@ -23,6 +23,7 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.locale.DefaultLocaleResolver;
 import net.jawr.web.resource.bundle.locale.LocaleResolver;
+import net.jawr.web.resource.bundle.renderer.CSSHTMLBundleLinkRenderer;
 
 
 /**
@@ -79,6 +80,10 @@ public class JawrConfig {
 			localeResolver = (LocaleResolver) ClassLoaderResourceUtils.buildObjectInstance(props.getProperty("jawr.locale.resolver"));
 		}
 		else localeResolver = new DefaultLocaleResolver();
+		
+		if(null != props.getProperty("jawr.csslinks.flavor")) {
+			setCssLinkFlavor(props.getProperty("jawr.csslinks.flavor").trim());
+		}
 		
 	}
 	
@@ -142,6 +147,12 @@ public class JawrConfig {
 	 * Mapping path to the dwr servlet, in case it is integrated with jawr. 
 	 */
 	private String dwrMapping;
+	
+	
+	/**
+	 * Style to use when rendering CSS LINK tags
+	 */
+	private String cssLinkFlavor;
 	
 		
 	/**
@@ -333,6 +344,26 @@ public class JawrConfig {
 		 */
 		public Properties getConfigProperties() {
 			return configProperties;
+		}
+
+		/**
+		 * @return the cssLinkFlavor
+		 */
+		public String getCssLinkFlavor() {
+			return cssLinkFlavor;
+		}
+
+		/**
+		 * @param cssLinkFlavor the cssLinkFlavor to set
+		 */
+		public void setCssLinkFlavor(String cssLinkFlavor) {
+			if(	CSSHTMLBundleLinkRenderer.FLAVORS_HTML.equalsIgnoreCase(cssLinkFlavor) ||
+				CSSHTMLBundleLinkRenderer.FLAVORS_XHTML.equalsIgnoreCase(cssLinkFlavor) ||	
+				CSSHTMLBundleLinkRenderer.FLAVORS_XHTML_EXTENDED.equalsIgnoreCase(cssLinkFlavor))
+				this.cssLinkFlavor = cssLinkFlavor;
+			else throw new IllegalArgumentException("The value for the jawr.csslinks.flavor " +
+													"property [" + cssLinkFlavor +"] is invalid. " +
+													"Please check the docs for valid values ");
 		}
 
 	

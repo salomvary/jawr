@@ -25,11 +25,27 @@ public class CSSHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer implem
     private static final String PRE_TAG = "<link rel=\"stylesheet\" type=\"text/css\" media=\"";
     private static final String MID_TAG = "\" href=\"";
     private static final String POST_TAG = "\" />\n";
+    private static final String POST_HTML_TAG = "\" >\n";
+    private static final String POST_XHTML_EXT_TAG = "\" ></link>\n";
+    public static final String FLAVORS_XHTML = "xhtml";
+    public static final String FLAVORS_XHTML_EXTENDED = "xhtml_ext";
+    public static final String FLAVORS_HTML = "html";
+    
+    private String closingFlavor;
     private String media;
     
     /** Creates a new instance of CSSHTMLBundleLinkRenderer */
     public CSSHTMLBundleLinkRenderer(ResourceBundlesHandler bundler, boolean useRandomParam, String media) {
         super(bundler, useRandomParam);
+        closingFlavor = POST_TAG;
+        String flavor = bundler.getConfig().getCssLinkFlavor();
+        
+        if(FLAVORS_XHTML_EXTENDED.equalsIgnoreCase(flavor)) {
+        	closingFlavor = POST_XHTML_EXT_TAG;
+        }
+        else if(FLAVORS_HTML.equalsIgnoreCase(flavor))
+        	closingFlavor = POST_HTML_TAG;
+        
         this.media = null == media ? "screen" : media;
     }
 
@@ -41,7 +57,7 @@ public class CSSHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer implem
         StringBuffer sb = new StringBuffer(PRE_TAG);
 		sb.append(media).append(MID_TAG)
 						.append(fullPath)	
-						.append(POST_TAG); 
+						.append(closingFlavor); 
         return sb.toString();
     }
     

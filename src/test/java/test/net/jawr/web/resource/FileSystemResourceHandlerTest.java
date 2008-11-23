@@ -45,7 +45,7 @@ public class FileSystemResourceHandlerTest extends ResourceHandlerBasedTest {
 			assertNotNull(TEST_FILENAME + " was not found by the handler. ",rd);
 			String readData = fullyReadReader(rd);
 			
-			assertEquals("Reader returned wrong or badly encoded text. ","αινσϊ€", readData);
+			assertEquals("Reader returned wrong or badly encoded text. ","αινσϊ¤", readData);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
