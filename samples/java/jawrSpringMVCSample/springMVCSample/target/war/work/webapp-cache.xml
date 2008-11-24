@@ -1,0 +1,31 @@
+<webapp-structure>
+  <registeredFiles>
+    <entry>
+      <string>currentBuild</string>
+      <path-set>
+        <pathsSet class="linked-hash-set">
+          <string>index.jsp</string>
+          <string>WEB-INF/web.xml</string>
+          <string>WEB-INF/dispatcher-servlet.xml</string>
+          <string>META-INF/MANIFEST.MF</string>
+          <string>js/global/module.js</string>
+          <string>js/global/jawr.js</string>
+          <string>js/index/index.js</string>
+          <string>css/two.css</string>
+          <string>css/one.css</string>
+          <string>WEB-INF/classes/jawr.properties</string>
+          <string>WEB-INF/classes/log4j.properties</string>
+          <string>WEB-INF/classes/messages.properties</string>
+          <string>WEB-INF/classes/messages_es.properties</string>
+          <string>WEB-INF/lib/log4j-1.2.9.jar</string>
+          <string>WEB-INF/lib/spring-2.0.2.jar</string>
+          <string>WEB-INF/lib/commons-logging-1.1.jar</string>
+          <string>WEB-INF/lib/logkit-1.0.1.jar</string>
+          <string>WEB-INF/lib/avalon-framework-4.1.3.jar</string>
+          <string>WEB-INF/lib/servlet-api-2.3.jar</string>
+          <string>WEB-INF/lib/jawr-2.5.2.jar</string>
+        </pathsSet>
+      </path-set>
+    </entry>
+  </registeredFiles>
+</webapp-structure>
