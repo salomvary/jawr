@@ -128,6 +128,17 @@ Jawr JSP tag libraries
 	
 +------------------------------------------+
 
+	Depending on which type of pages you are serving (html or xhtml) you might need the link tags to be closed in different ways in order 
+	for your pages to validate or even work properly across all browsers. To change the way the tags are closed, you can set a configuration
+	property (at your jawr.properties file), named <<jawr.csslinks.flavor>>. The possible values and their result is: 
+	
+	* <<xhtml>>: this is the default, so you don't really need to set the property unless you need to be explicit about it. 
+	With this value, the tags are closed inline as in the previous example (/>). 
+	
+	* <<xhtml_ext>>: tags will be closed with a separate closing tab (></link>). 
+	
+	* <<html>>: tags will not be closed, as determined by the HTML spec (>).    
+
 * How to skip/modify the context path
 	
 	The context path can be replaced or removed from all generated URLs if you set the <<jawr.url.contextpath.override>> configuration

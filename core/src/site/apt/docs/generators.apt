@@ -46,6 +46,47 @@ Jawr Generators
 	Note that if you use the parameters, the order must always be paraentheses firs, brackets last. If you need only one parameter, you can omit 
 	the brackets param. 
 		 
+*	Jawr generators
+
+	Jawr comes with several generators, each accomplishing a special kind of task. The currently provided generators are: 
+	
+	
+	* <<i18n messages script generator>>: generates javascript code with locale specifica variants which are loaded depending on the user's 
+	specific language. Full documentation is {{{./messages_gen.html}here}}. 
+	
+	* <<DWR scripts generator>>: allows you to bundle and compress together DWR generated interfaces, plus all the utility scripts required 
+	by them. Full documentation is {{{../integration/dwr.html}here}}. 
+	
+	* <<Commons Validator generator>>: this one will let you generate compressed and cacheable versions of the validation scripts 
+	generated in Struts by the Apache Commons Validator taglib. Full docs  {{{../integration/validator.html}here}}. 
+	
+	[]
+	
+	Also available is the <<classpath resource generator>>. It allows you to include resources present within jar files or simply located 
+	anywhere in the application classpath. You will need to use different prefixes if you are generating js or css files. 
+	To add javascript resources from the classpath you use <<jar:>> as the prefix, followed by the path to the resource using / as separator: 
+	
++------------------------------------------+
+	jawr.js.bundle.names=foo, baz	
+	
+	jawr.js.bundle.foo.id=/bundles/fooBundle.js
+	# Map to a script in the com.mycompany.myapp package and to another from the WAR 
+	jawr.js.bundle.foo.mappings=jar:/com/mycompany/myapp/foo.js, /js/bar.js
+	
++------------------------------------------+
+
+	Note the leading slash in the mapping, which is also required. You can of course combine this kind of mappings with regular ones, so you can 
+	bundle together resources from the WAR and from the classpath. 
+	
+	If you need to load CSS files from the classpath, you would use the exact same syntax, only changing the prefix from <<jar:>> 
+	to <<jar_css:>> 
+	
++------------------------------------------+
+	jawr.css.bundle.styles.mappings=jar_css:/com/mycompany/myapp/stylesheet.css, /css/bar.css	
++------------------------------------------+
+	
+	Unlike the normal mapping, this way of referring to resources does not yet allow wildcards (i.e.: <jar:/com/mycompany/myapp/**> would not 
+	work).  
 	
 *	Implementing a generator
 

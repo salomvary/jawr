@@ -109,6 +109,8 @@ public ConfigPropertiesAugmenter(Properties configProperties,Set privateConfigPr
 	
 	The augmentable properties are the following: 
 	
+	* Bundle definitions  (jawr.[type].bundle.names). 
+	
 	* Bundle mappings (jawr.[type].bundle.[name].mappings). 
 	
 	* Composite bundles child members (jawr.[type].bundle.[name].child.names).

@@ -95,7 +95,8 @@ public class ConfigPropertiesAugmenter {
 	 */
 	protected boolean isAugmentable(String configKey) {
 		boolean rets = false;
-		rets = (configKey.endsWith(PropertiesBasedBundlesHandlerFactory.BUNDLE_FACTORY_CUSTOM_MAPPINGS) || 		// mappings
+		rets = (configKey.endsWith(PropertiesBasedBundlesHandlerFactory.BUNDLE_FACTORY_CUSTOM_NAMES) || // Bundles
+				configKey.endsWith(PropertiesBasedBundlesHandlerFactory.BUNDLE_FACTORY_CUSTOM_MAPPINGS) || 		// mappings
 				configKey.endsWith(PropertiesBasedBundlesHandlerFactory.BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES) || 	// children of composites
 				configKey.equals(PropertiesBasedBundlesHandlerFactory.CUSTOM_POSTPROCESSORS + 
 								PropertiesBasedBundlesHandlerFactory.CUSTOM_POSTPROCESSORS_NAMES) || 		// Postprocessors definition

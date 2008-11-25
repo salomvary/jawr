@@ -13,13 +13,8 @@
  */
 package net.jawr.web.resource.bundle.generator.classpath;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.Reader;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 
-import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.AbstractJavascriptGenerator;
 import net.jawr.web.resource.bundle.generator.GeneratorContext;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
@@ -30,26 +25,26 @@ import net.jawr.web.resource.bundle.generator.ResourceGenerator;
  * 
  * @author Jordi Hernández Sellés
  */
-public class ClasspathResourceGenerator extends AbstractJavascriptGenerator implements ResourceGenerator {
+public class ClasspathJSGenerator extends AbstractJavascriptGenerator implements ResourceGenerator {
 
+	private ClassPathGeneratorHelper helper;
+	
+	public ClasspathJSGenerator() {
+		helper = new ClassPathGeneratorHelper();
+	}
+	
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
 	 */
 	public Reader createResource(GeneratorContext context) {
-		try {
-			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(context.getPath(), this);
-			 ReadableByteChannel chan = Channels.newChannel(is);
-			 return Channels.newReader(chan,context.getCharset().newDecoder (),-1);
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+		return helper.createResource(context);
 	}
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#getMappingPrefix()
 	 */
 	public String getMappingPrefix() {
-		return GeneratorRegistry.CLASSPATH_BUNDLE_PREFIX;
+		return GeneratorRegistry.CLASSPATH_JS_BUNDLE_PREFIX;
 	}
 
 }

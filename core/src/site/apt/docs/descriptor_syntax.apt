@@ -31,6 +31,8 @@ Descriptor file syntax
 | | | Using '<</>>' will cause Jawr to skip the context path altogether ('/001/bundles/mybundle.js').  |     | 
 | | | Using an empty value will cause Jawr to generate page relative urls ('001/bundles/mybundle.js').  |     | 
 *---------------*---------*--------------+----------------+
+| jawr.csslinks.flavor | String | Sets how the LINK tags are rendered by the style tag. See the {{{./taglibs.html}taglib docs.}}   | xhtml | 
+*---------------*---------*--------------+----------------+
 | jawr.dwr.mapping | String | Value of the servlet-mapping that points to a DWR servlet instance. See {{{../integration/dwr.html}DWR integration}}.   | none| 
 *---------------*---------*--------------+----------------+
 
@@ -98,6 +100,8 @@ Descriptor file syntax
 | jawr.[type].bundle.[name].debugonly  | Boolean  | If set to true, the bundle will only be included in pages when development mode is on. Useful for debugging script such as console writers.   | false    | 
 *---------------+---------+--------------+----------------+
 | jawr.[type].bundle.[name].debugnever  | Boolean  | If set to true, the bundle will never be included in pages when development mode is on. Useful for  empty debugging script replacements (faux console writers, for instance).   | false    | 
+*---------------+---------+--------------+----------------+
+| jawr.js.bundle.[name].locales  | Comma separated list.  | Defines the locale variants to generate for this bundle, which will be available whenever a locale resolver returns a key matching any of the specified values.    | None    | 
 *---------------+---------+--------------+----------------+
 | jawr.[type].bundle.[name].ieonly.condition  | IE expression  | If set, the bundle will be included within a conditional comment for internet explorer. The value must correspond to a conditional comment selector expression (such as 'if lt IE 6').  | None    | 
 *---------------+---------+--------------+----------------+
