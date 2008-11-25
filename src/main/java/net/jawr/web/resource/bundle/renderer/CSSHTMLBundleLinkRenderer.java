@@ -31,22 +31,30 @@ public class CSSHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer implem
     public static final String FLAVORS_XHTML_EXTENDED = "xhtml_ext";
     public static final String FLAVORS_HTML = "html";
     
-    private String closingFlavor;
+    private static String closingFlavor;
     private String media;
     
     /** Creates a new instance of CSSHTMLBundleLinkRenderer */
     public CSSHTMLBundleLinkRenderer(ResourceBundlesHandler bundler, boolean useRandomParam, String media) {
         super(bundler, useRandomParam);
-        closingFlavor = POST_TAG;
-        String flavor = bundler.getConfig().getCssLinkFlavor();
         
-        if(FLAVORS_XHTML_EXTENDED.equalsIgnoreCase(flavor)) {
+        this.media = null == media ? "screen" : media;
+    }
+    
+    /**
+     * Utility method to get the closing tag value based on 
+     * a config parameter. 
+     * @param flavor
+     * @return
+     */
+    public static String setClosingTag(String flavor) {
+    	closingFlavor = POST_TAG;
+    	if(FLAVORS_XHTML_EXTENDED.equalsIgnoreCase(flavor)) {
         	closingFlavor = POST_XHTML_EXT_TAG;
         }
         else if(FLAVORS_HTML.equalsIgnoreCase(flavor))
         	closingFlavor = POST_HTML_TAG;
-        
-        this.media = null == media ? "screen" : media;
+    	return closingFlavor;
     }
 
     /* (non-Javadoc)

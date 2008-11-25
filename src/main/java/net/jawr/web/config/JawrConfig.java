@@ -148,13 +148,7 @@ public class JawrConfig {
 	 */
 	private String dwrMapping;
 	
-	
-	/**
-	 * Style to use when rendering CSS LINK tags
-	 */
-	private String cssLinkFlavor;
-	
-		
+			
 	/**
 	 * Get debug mode status. 
 	 * @return boolean
@@ -347,20 +341,13 @@ public class JawrConfig {
 		}
 
 		/**
-		 * @return the cssLinkFlavor
-		 */
-		public String getCssLinkFlavor() {
-			return cssLinkFlavor;
-		}
-
-		/**
 		 * @param cssLinkFlavor the cssLinkFlavor to set
 		 */
 		public void setCssLinkFlavor(String cssLinkFlavor) {
 			if(	CSSHTMLBundleLinkRenderer.FLAVORS_HTML.equalsIgnoreCase(cssLinkFlavor) ||
 				CSSHTMLBundleLinkRenderer.FLAVORS_XHTML.equalsIgnoreCase(cssLinkFlavor) ||	
 				CSSHTMLBundleLinkRenderer.FLAVORS_XHTML_EXTENDED.equalsIgnoreCase(cssLinkFlavor))
-				this.cssLinkFlavor = cssLinkFlavor;
+				CSSHTMLBundleLinkRenderer.setClosingTag(cssLinkFlavor);
 			else throw new IllegalArgumentException("The value for the jawr.csslinks.flavor " +
 													"property [" + cssLinkFlavor +"] is invalid. " +
 													"Please check the docs for valid values ");
