@@ -9,7 +9,8 @@
 
 
 
-<html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Jawr - Changes and new features in version 2.0</title>
     <style type="text/css" media="all">
@@ -21,194 +22,253 @@
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
       </head>
   <body class="composite">
-    <!-- TODO: move this into JavaScript to patch the skin
-      <div class="xright">  </div>
-    -->
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            Java web resources bundling and compression
+    
+            </span>
+                    <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+    
+            <div class="xleft">
+        Last Published: 2008-11-25
+                      </div>
+            <div class="xright">      
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
     <div id="leftColumn">
       <div id="navcolumn">
-             <dl class=navgroup>
-        <dt>About</dt>
-        <dd><ul>
+           
+  
+
+  
+    
+  
+  
+    
+                   <h5>About</h5>
+            <ul>
               
     <li class="none">
-              <a href="../servlets/ProjectHome">Home</a>
-        </li>
+                    <a href="../servlets/ProjectHome">Home</a>
+          </li>
               
     <li class="none">
-              <a href="../introduction.html">Introduction</a>
-        </li>
-          </ul></dd>
-    </dl>
-      <dl class=navgroup>
-        <dt>Documentation</dt>
-        <dd><ul>
+                    <a href="../introduction.html">Introduction</a>
+          </li>
               
     <li class="none">
-              <a href="../docs/servlet.html">The Jawr servlet</a>
-        </li>
+                    <a href="../features.html">Features</a>
+          </li>
               
     <li class="none">
-              <a href="../docs/descriptor_syntax.html">Descriptor syntax</a>
-        </li>
+                    <a href="../changes.html">Change history</a>
+          </li>
+          </ul>
+              <h5>Documentation</h5>
+            <ul>
               
     <li class="none">
-              <a href="../docs/custom_bundles.html">Bundle definition</a>
-        </li>
+                    <a href="../docs/servlet.html">The Jawr servlet</a>
+          </li>
               
     <li class="none">
-              <a href="../docs/source_ordering.html">Source order in bundles</a>
-        </li>
+                    <a href="../docs/descriptor_syntax.html">Descriptor syntax</a>
+          </li>
               
     <li class="none">
-              <a href="../docs/postprocessors.html">Postprocessors</a>
-        </li>
+                    <a href="../docs/custom_bundles.html">Bundle definition</a>
+          </li>
               
     <li class="none">
-              <a href="../docs/generators.html">Generators</a>
-        </li>
+                    <a href="../docs/source_ordering.html">Source order in bundles</a>
+          </li>
               
     <li class="none">
-              <a href="../docs/license_files.html">Licenses in resources</a>
-        </li>
+                    <a href="../docs/postprocessors.html">Postprocessors</a>
+          </li>
               
     <li class="none">
-              <a href="../docs/taglibs.html">JSP Tag library</a>
-        </li>
+                    <a href="../docs/generators.html">Generators</a>
+          </li>
               
     <li class="none">
-              <a href="../docs/plain_html.html">Use in HTML pages</a>
-        </li>
+                    <a href="../docs/license_files.html">Licenses in resources</a>
+          </li>
               
     <li class="none">
-              <a href="../docs/modes.html">Debug and production modes</a>
-        </li>
+                    <a href="../docs/taglibs.html">JSP Tag library</a>
+          </li>
               
     <li class="none">
-              <a href="../docs/messages_gen.html">i18n message generator</a>
-        </li>
-          </ul></dd>
-    </dl>
-      <dl class=navgroup>
-        <dt>Integration</dt>
-        <dd><ul>
+                    <a href="../docs/plain_html.html">Use in HTML pages</a>
+          </li>
               
     <li class="none">
-              <a href="../integration/augmenter.html">Add Jawr to your framework</a>
-        </li>
+                    <a href="../docs/modes.html">Debug and production modes</a>
+          </li>
               
     <li class="none">
-              <a href="../integration/facelets.html">Facelets Tag library</a>
-        </li>
+                    <a href="../docs/messages_gen.html">i18n message generator</a>
+          </li>
+          </ul>
+              <h5>Integration</h5>
+            <ul>
               
     <li class="none">
-              <a href="../integration/grails.html">Grails plugin</a>
-        </li>
+                    <a href="../integration/augmenter.html">Add Jawr to your framework</a>
+          </li>
               
     <li class="none">
-              <a href="../integration/dwr.html">DWR</a>
-        </li>
+                    <a href="../integration/spring.html">Spring MVC</a>
+          </li>
               
     <li class="none">
-              <a href="../integration/validator.html">Commons Validator - Struts</a>
-        </li>
-          </ul></dd>
-    </dl>
-      <dl class=navgroup>
-        <dt>Tutorials</dt>
-        <dd><ul>
+                    <a href="../integration/facelets.html">Facelets Tag library</a>
+          </li>
               
     <li class="none">
-              <a href="../tutorials/quickstart.html">Quick start</a>
-        </li>
+                    <a href="../integration/grails.html">Grails plugin</a>
+          </li>
               
     <li class="none">
-              <a href="../tutorials/faq_howto.html">FAQ-Howto</a>
-        </li>
+                    <a href="../integration/dwr.html">DWR</a>
+          </li>
               
     <li class="none">
-              <a href="../tutorials/libraries.html">Using popular libraries</a>
-        </li>
-          </ul></dd>
-    </dl>
-      <dl class=navgroup>
-        <dt>API and sources</dt>
-        <dd><ul>
+                    <a href="../integration/validator.html">Commons Validator - Struts</a>
+          </li>
+          </ul>
+              <h5>Tutorials</h5>
+            <ul>
               
     <li class="none">
-              <a href="../nonav/apidocs/index.html">JavaDocs</a>
-        </li>
+                    <a href="../tutorials/quickstart.html">Quick start</a>
+          </li>
               
     <li class="none">
-              <a href="../nonav/xref/index.html">Source XREF</a>
-        </li>
-          </ul></dd>
-    </dl>
-      <dl class=navgroup>
-        <dt>Project tools</dt>
-        <dd><ul>
+                    <a href="../tutorials/faq_howto.html">FAQ-Howto</a>
+          </li>
               
     <li class="none">
-              <a href="../servlets/ProjectHome">Project home</a>
-        </li>
+                    <a href="../tutorials/libraries.html">Using popular libraries</a>
+          </li>
+          </ul>
+              <h5>API and sources</h5>
+            <ul>
               
     <li class="none">
-              <a href="../servlets/ProjectMemberList">Membership</a>
-        </li>
+                    <a href="../nonav/apidocs/index.html">JavaDocs</a>
+          </li>
               
     <li class="none">
-              <a href="../servlets/ProjectNewsList">Announcements</a>
-        </li>
+                    <a href="../nonav/xref/index.html">Source XREF</a>
+          </li>
+          </ul>
+              <h5>Project tools</h5>
+            <ul>
               
     <li class="none">
-              <a href="../servlets/ProjectForumView">Discussion forums</a>
-        </li>
+                    <a href="../servlets/ProjectHome">Project home</a>
+          </li>
               
     <li class="none">
-              <a href="../servlets/ProjectMailingListList">Mailing lists</a>
-        </li>
+                    <a href="../servlets/ProjectMemberList">Membership</a>
+          </li>
               
     <li class="none">
-              <a href="../servlets/ProjectDocumentList">Documents & files</a>
-        </li>
+                    <a href="../servlets/ProjectNewsList">Announcements</a>
+          </li>
               
     <li class="none">
-              <a href="../source/browse/jawr/">Subversion</a>
-        </li>
+                    <a href="../servlets/ProjectForumView">Discussion forums</a>
+          </li>
               
     <li class="none">
-              <a href="../servlets/ProjectIssues">Issue tracker</a>
-        </li>
-          </ul></dd>
-    </dl>
+                    <a href="../servlets/ProjectMailingListList">Mailing lists</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../servlets/ProjectDocumentList">Documents & files</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../source/browse/jawr/">Subversion</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../servlets/ProjectIssues">Issue tracker</a>
+          </li>
+          </ul>
+                                           <a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy">
+            <img alt="Built by Maven" src="../images/logos/maven-feather.png"></img>
+          </a>
+                       
+  
+
+  
+    
+  
+  
+    
         </div>
-      <script>
-        // replace the java.net project tools with the navigation bar from Maven.
-        // also get rid of "Get Involved" thingie too, while we are at it
-        var pt = document.getElementById("projecttools");
-        var nv = document.getElementById("navcolumn");
-        
-        while(pt.previousSibling!=null)
-          pt.parentNode.removeChild(pt.previousSibling);
-        
-        pt.parentNode.insertBefore(nv,pt);
-        pt.parentNode.removeChild(pt);
-      </script>
-      <script>
-        // kill "description" h3 bar
-        var ld = document.getElementById("longdescription");
-        if(ld!=null) {
-          for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
-            if(n.nodeType==1 && n.innerHTML=="Description" ) {
-              n.parentNode.removeChild(n);
-              break;
-            }
-          }
-        }
-      </script>
     </div>
     <div id="bodyColumn">
       <div id="contentBox">
-        <div class="section"><h2>Changes and new features in version 2.0</h2><div class="section"><h3>New features</h3><ul><li><b>Bundle prefixes are now automatic</b>: It will no longer necessary to keep a track on bundle prefixes when deploying new versions. Jawr will generate prefixes based on the hash of generated bundles. The prefix will change only when changes are made to members of a bundle, so unchanged bundles will keep the previous bundle (thanks to frankern for the idea). </li><li><b>Minification and obfuscation using the YUI compressor</b>: Now the YUI Compressor is available as a postprocessor to minify both js and CSS files. It can also obfuscate javascript. </li><li><b>Grails support</b>: a plugin has been created to use with Grails (AKA Groovy on rails). Documentation can be found at <a href="./grails.html">this page</a>. </li><li><b>Facelets support</b>: Jawr can now be used wiithin Facelets applications, using a newly created, specific tag library. Check <a href="./facelets.html">the documentation</a>.</li><li><b>Internet Explorer only bundles</b>: now a bundle can be declared with a conditional comment expression, using the property jawr.[type].bundle.[name].ieonly.condition (for instance, 'jawr.js.bundle.mybundle.ieonly.condition=if lte IE 6'). When imported to a page, Jawr will generate a conditional comment around the bundle, using the provided expression. </li><li>It is now possible to use <b>-Dnet.jawr.debug.on</b> as a jvm startup option to override debug mode configuration. Useful to add to production server startup script, avoiding to set debug mode in production by mistake. </li><li>Better error reporting for JSmin errors. A trace shows the line where the error happened, plus some of The previous content. </li></ul></div><div class="section"><h3>Bug fixes</h3><ul><li>From the first release there has been an issue with css images when using a mapping to the servlet ('/somepath/*' instead of '/*.css'). The paths were broken in debug mode and now this has been fixed. </li><li>Issue #7: Fixed random parameter skipping when debug and gzip options are activated. </li><li>Issue #14: Domain relative URLs in CSS files are left unchanged by the postprocessor. </li><li>Issue #16: CSS rules with whitespace other than spaces were being joined by the minifier. </li><li>Issue #17: Using HTML comments was problematic when using conditional IE comments. Now Jawr generates a script tag with an embedded comment instead of an HTML comment. </li><li>Issue #19: Classloader problem in Tomcat made config reloading impossible. </li><li>NPE in Tomcat during Jawr servlet init process. </li><li>Fixed a bug in config system, by which jawr.[].use.cache had no effect in config. </li><li>Fixed a bug in CachedResourceBundlesHandler, non-gzipped files were being served empty upon a first request. It's a fix for a problem known as 'works for debug only' in the forums. </li></ul></div></div>
+        <div class="section"><h2>Changes and new features in version 2.0</h2>
+<div class="section"><h3>New features</h3>
+<ul><li><b>Bundle prefixes are now automatic</b>
+: It will no longer necessary to keep a track on bundle prefixes when deploying new versions. Jawr will generate prefixes based on the hash of generated bundles. The prefix will change only when changes are made to members of a bundle, so unchanged bundles will keep the previous bundle (thanks to frankern for the idea). </li>
+<li><b>Minification and obfuscation using the YUI compressor</b>
+: Now the YUI Compressor is available as a postprocessor to minify both js and CSS files. It can also obfuscate javascript. </li>
+<li><b>Grails support</b>
+: a plugin has been created to use with Grails (AKA Groovy on rails). Documentation can be found at <a href="./grails.html">this page</a>
+. </li>
+<li><b>Facelets support</b>
+: Jawr can now be used wiithin Facelets applications, using a newly created, specific tag library. Check <a href="./facelets.html">the documentation</a>
+.</li>
+<li><b>Internet Explorer only bundles</b>
+: now a bundle can be declared with a conditional comment expression, using the property jawr.[type].bundle.[name].ieonly.condition (for instance, 'jawr.js.bundle.mybundle.ieonly.condition=if lte IE 6'). When imported to a page, Jawr will generate a conditional comment around the bundle, using the provided expression. </li>
+<li>It is now possible to use <b>-Dnet.jawr.debug.on</b>
+ as a jvm startup option to override debug mode configuration. Useful to add to production server startup script, avoiding to set debug mode in production by mistake. </li>
+<li>Better error reporting for JSmin errors. A trace shows the line where the error happened, plus some of The previous content. </li>
+</ul>
+</div>
+<div class="section"><h3>Bug fixes</h3>
+<ul><li>From the first release there has been an issue with css images when using a mapping to the servlet ('/somepath/*' instead of '/*.css'). The paths were broken in debug mode and now this has been fixed. </li>
+<li>Issue #7: Fixed random parameter skipping when debug and gzip options are activated. </li>
+<li>Issue #14: Domain relative URLs in CSS files are left unchanged by the postprocessor. </li>
+<li>Issue #16: CSS rules with whitespace other than spaces were being joined by the minifier. </li>
+<li>Issue #17: Using HTML comments was problematic when using conditional IE comments. Now Jawr generates a script tag with an embedded comment instead of an HTML comment. </li>
+<li>Issue #19: Classloader problem in Tomcat made config reloading impossible. </li>
+<li>NPE in Tomcat during Jawr servlet init process. </li>
+<li>Fixed a bug in config system, by which jawr.[].use.cache had no effect in config. </li>
+<li>Fixed a bug in CachedResourceBundlesHandler, non-gzipped files were being served empty upon a first request. It's a fix for a problem known as 'works for debug only' in the forums. </li>
+</ul>
+</div>
+</div>
+
       </div>
     </div>
     <div class="clear">
@@ -222,10 +282,11 @@
   
 
   
+    
   
-  &nbsp;| Last Published: 11/09/2008
-  &nbsp;| Version: 2.5.1
-</div>
+  
+    
+  </div>
       <div class="clear">
         <hr/>
       </div>

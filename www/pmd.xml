@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="4.1" timestamp="2008-11-09T22:32:19.218">
-<file name="C:\Proyectos\Jawr\branches\development\src\main\java\net\jawr\web\resource\bundle\handler\ClientSideHandlerScriptRequestHandler.java">
-<violation beginline="140" endline="140" begincolumn="9" endcolumn="37" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.resource.bundle.handler" class="ClientSideHandlerScriptRequestHandler" method="useNotModifiedHeader" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<pmd version="3.9" timestamp="2008-11-25T10:04:04.466" elapsedTime="0s">
+<file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\resource\bundle\handler\ClientSideHandlerScriptRequestHandler.java">
+<violation line="140" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.resource.bundle.handler" class="ClientSideHandlerScriptRequestHandler" method="useNotModifiedHeader" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
 </file>
-<file name="C:\Proyectos\Jawr\branches\development\src\main\java\net\jawr\web\resource\bundle\iterator\DebugModePathsIteratorImpl.java">
-<violation beginline="62" endline="63" begincolumn="25" endcolumn="81" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="net.jawr.web.resource.bundle.iterator" class="DebugModePathsIteratorImpl" method="hasNext" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\resource\bundle\iterator\DebugModePathsIteratorImpl.java">
+<violation line="62" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="net.jawr.web.resource.bundle.iterator" class="DebugModePathsIteratorImpl" method="hasNext" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
 </file>
-<file name="C:\Proyectos\Jawr\branches\development\src\main\java\net\jawr\web\resource\bundle\postprocess\impl\JSMinPostProcessor.java">
-<violation beginline="131" endline="133" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.resource.bundle.postprocess.impl" class="JSMinPostProcessor" method="formatAndThrowJSLintError" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\resource\bundle\postprocess\impl\JSMinPostProcessor.java">
+<violation line="131" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.resource.bundle.postprocess.impl" class="JSMinPostProcessor" method="formatAndThrowJSLintError" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
 </file>
-<file name="C:\Proyectos\Jawr\branches\development\src\main\java\net\jawr\web\servlet\JawrRequestHandler.java">
-<violation beginline="300" endline="305" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="net.jawr.web.servlet" class="JawrRequestHandler" method="processRequest" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\servlet\JawrRequestHandler.java">
+<violation line="300" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="net.jawr.web.servlet" class="JawrRequestHandler" method="processRequest" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
 </file>

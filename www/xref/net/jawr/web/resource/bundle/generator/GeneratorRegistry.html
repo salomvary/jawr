@@ -31,182 +31,188 @@
 <a name="22" href="#22">22</a>  <strong>import</strong> net.jawr.web.collections.ConcurrentCollectionsFactory;
 <a name="23" href="#23">23</a>  <strong>import</strong> net.jawr.web.config.JawrConfig;
 <a name="24" href="#24">24</a>  <strong>import</strong> net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
-<a name="25" href="#25">25</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.classpath.ClasspathResourceGenerator;
-<a name="26" href="#26">26</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.dwr.DWRGeneratorFactory;
-<a name="27" href="#27">27</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.validator.CommonsValidatorGenerator;
-<a name="28" href="#28">28</a>  <strong>import</strong> net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
-<a name="29" href="#29">29</a>  
-<a name="30" href="#30">30</a>  <em>/**<em>*</em></em>
-<a name="31" href="#31">31</a>  <em> * Registry for resource generators, which create scripts or CSS data dynamically, </em>
-<a name="32" href="#32">32</a>  <em> * as opposed to the usual behavior of reading a resource from the war file. </em>
-<a name="33" href="#33">33</a>  <em> * It provides methods to determine if a path mapping should be handled by a generator, </em>
-<a name="34" href="#34">34</a>  <em> * and to actually render the resource using the appropiate generator. </em>
-<a name="35" href="#35">35</a>  <em> * Path mappings which require generation will use a prefix (preferrably one which ends with </em>
-<a name="36" href="#36">36</a>  <em> * a colon, such as 'messages:'). </em>
-<a name="37" href="#37">37</a>  <em> * Generators provided with Jawr will be automatically mapped. </em>
-<a name="38" href="#38">38</a>  <em> * </em>
-<a name="39" href="#39">39</a>  <em> * @author Jordi Hernández Sellés</em>
-<a name="40" href="#40">40</a>  <em> *</em>
-<a name="41" href="#41">41</a>  <em> */</em>
-<a name="42" href="#42">42</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/GeneratorRegistry.html">GeneratorRegistry</a> {
-<a name="43" href="#43">43</a>  	
-<a name="44" href="#44">44</a>  	<strong>public</strong> <strong>static</strong> <strong>final</strong> String MESSAGE_BUNDLE_PREFIX = <span class="string">"messages"</span>;
-<a name="45" href="#45">45</a>  	<strong>public</strong> <strong>static</strong> <strong>final</strong> String CLASSPATH_BUNDLE_PREFIX = <span class="string">"jar"</span>;
-<a name="46" href="#46">46</a>  	<strong>public</strong> <strong>static</strong> <strong>final</strong> String DWR_BUNDLE_PREFIX = <span class="string">"dwr"</span>;
-<a name="47" href="#47">47</a>  	<strong>public</strong> <strong>static</strong> <strong>final</strong> String COMMONS_VALIDATOR_PREFIX = <span class="string">"acv"</span>;
-<a name="48" href="#48">48</a>  	
-<a name="49" href="#49">49</a>  	<strong>public</strong> <strong>static</strong> <strong>final</strong> String PREFIX_SEPARATOR = <span class="string">":"</span>;
+<a name="25" href="#25">25</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.classpath.ClassPathCSSGenerator;
+<a name="26" href="#26">26</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.classpath.ClasspathJSGenerator;
+<a name="27" href="#27">27</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.dwr.DWRGeneratorFactory;
+<a name="28" href="#28">28</a>  <strong>import</strong> net.jawr.web.resource.bundle.generator.validator.CommonsValidatorGenerator;
+<a name="29" href="#29">29</a>  <strong>import</strong> net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
+<a name="30" href="#30">30</a>  
+<a name="31" href="#31">31</a>  <em>/**<em>*</em></em>
+<a name="32" href="#32">32</a>  <em> * Registry for resource generators, which create scripts or CSS data dynamically, </em>
+<a name="33" href="#33">33</a>  <em> * as opposed to the usual behavior of reading a resource from the war file. </em>
+<a name="34" href="#34">34</a>  <em> * It provides methods to determine if a path mapping should be handled by a generator, </em>
+<a name="35" href="#35">35</a>  <em> * and to actually render the resource using the appropiate generator. </em>
+<a name="36" href="#36">36</a>  <em> * Path mappings which require generation will use a prefix (preferrably one which ends with </em>
+<a name="37" href="#37">37</a>  <em> * a colon, such as 'messages:'). </em>
+<a name="38" href="#38">38</a>  <em> * Generators provided with Jawr will be automatically mapped. </em>
+<a name="39" href="#39">39</a>  <em> * </em>
+<a name="40" href="#40">40</a>  <em> * @author Jordi Hernández Sellés</em>
+<a name="41" href="#41">41</a>  <em> *</em>
+<a name="42" href="#42">42</a>  <em> */</em>
+<a name="43" href="#43">43</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/GeneratorRegistry.html">GeneratorRegistry</a> {
+<a name="44" href="#44">44</a>  	
+<a name="45" href="#45">45</a>  	<strong>public</strong> <strong>static</strong> <strong>final</strong> String MESSAGE_BUNDLE_PREFIX = <span class="string">"messages"</span>;
+<a name="46" href="#46">46</a>  	<strong>public</strong> <strong>static</strong> <strong>final</strong> String CLASSPATH_JS_BUNDLE_PREFIX = <span class="string">"jar"</span>;
+<a name="47" href="#47">47</a>  	<strong>public</strong> <strong>static</strong> <strong>final</strong> String CLASSPATH_CSS_BUNDLE_PREFIX = <span class="string">"jar_css"</span>;
+<a name="48" href="#48">48</a>  	<strong>public</strong> <strong>static</strong> <strong>final</strong> String DWR_BUNDLE_PREFIX = <span class="string">"dwr"</span>;
+<a name="49" href="#49">49</a>  	<strong>public</strong> <strong>static</strong> <strong>final</strong> String COMMONS_VALIDATOR_PREFIX = <span class="string">"acv"</span>;
 <a name="50" href="#50">50</a>  	
-<a name="51" href="#51">51</a>  	<strong>private</strong> <strong>static</strong> <strong>final</strong> Map registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
-<a name="52" href="#52">52</a>  	<strong>private</strong> <strong>static</strong> <strong>final</strong> List prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
-<a name="53" href="#53">53</a>  	<strong>private</strong> <a href="../../../../../../net/jawr/web/config/JawrConfig.html">JawrConfig</a> config;
-<a name="54" href="#54">54</a>  	
-<a name="55" href="#55">55</a>  	<strong>static</strong>
-<a name="56" href="#56">56</a>  	{
-<a name="57" href="#57">57</a>  		prefixRegistry.add(MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR);
-<a name="58" href="#58">58</a>  		prefixRegistry.add(CLASSPATH_BUNDLE_PREFIX + PREFIX_SEPARATOR);
-<a name="59" href="#59">59</a>  		prefixRegistry.add(DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR);
-<a name="60" href="#60">60</a>  		prefixRegistry.add(COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR);
-<a name="61" href="#61">61</a>  	}
-<a name="62" href="#62">62</a>  	
-<a name="63" href="#63">63</a>  
-<a name="64" href="#64">64</a>  	<em>/**<em>*</em></em>
-<a name="65" href="#65">65</a>  <em>	 * Use only for testing purposes.</em>
-<a name="66" href="#66">66</a>  <em>	 */</em>
-<a name="67" href="#67">67</a>  	<strong>public</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/GeneratorRegistry.html">GeneratorRegistry</a>(){
-<a name="68" href="#68">68</a>  		<strong>super</strong>();
-<a name="69" href="#69">69</a>  	}
-<a name="70" href="#70">70</a>  	
-<a name="71" href="#71">71</a>  	<em>/**<em>*</em></em>
-<a name="72" href="#72">72</a>  <em>	 * Lazy loads generators, to avoid the need for undesired dependencies. </em>
-<a name="73" href="#73">73</a>  <em>	 * </em>
-<a name="74" href="#74">74</a>  <em>	 * @param generatorKey</em>
-<a name="75" href="#75">75</a>  <em>	 * @return</em>
-<a name="76" href="#76">76</a>  <em>	 */</em>
-<a name="77" href="#77">77</a>  	<strong>private</strong> <strong>void</strong> loadGenerator(String generatorKey) {
-<a name="78" href="#78">78</a>  		<strong>if</strong>((MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
-<a name="79" href="#79">79</a>  			registry.put(generatorKey, <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/locale/ResourceBundleMessagesGenerator.html">ResourceBundleMessagesGenerator</a>());
-<a name="80" href="#80">80</a>  		}
-<a name="81" href="#81">81</a>  		<strong>else</strong> <strong>if</strong>((CLASSPATH_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
-<a name="82" href="#82">82</a>  			registry.put(generatorKey, <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/classpath/ClasspathResourceGenerator.html">ClasspathResourceGenerator</a>());
+<a name="51" href="#51">51</a>  	<strong>public</strong> <strong>static</strong> <strong>final</strong> String PREFIX_SEPARATOR = <span class="string">":"</span>;
+<a name="52" href="#52">52</a>  	
+<a name="53" href="#53">53</a>  	<strong>private</strong> <strong>static</strong> <strong>final</strong> Map registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+<a name="54" href="#54">54</a>  	<strong>private</strong> <strong>static</strong> <strong>final</strong> List prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
+<a name="55" href="#55">55</a>  	<strong>private</strong> <a href="../../../../../../net/jawr/web/config/JawrConfig.html">JawrConfig</a> config;
+<a name="56" href="#56">56</a>  	
+<a name="57" href="#57">57</a>  	<strong>static</strong>
+<a name="58" href="#58">58</a>  	{
+<a name="59" href="#59">59</a>  		prefixRegistry.add(MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+<a name="60" href="#60">60</a>  		prefixRegistry.add(CLASSPATH_JS_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+<a name="61" href="#61">61</a>  		prefixRegistry.add(CLASSPATH_CSS_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+<a name="62" href="#62">62</a>  		prefixRegistry.add(DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+<a name="63" href="#63">63</a>  		prefixRegistry.add(COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR);
+<a name="64" href="#64">64</a>  	}
+<a name="65" href="#65">65</a>  	
+<a name="66" href="#66">66</a>  
+<a name="67" href="#67">67</a>  	<em>/**<em>*</em></em>
+<a name="68" href="#68">68</a>  <em>	 * Use only for testing purposes.</em>
+<a name="69" href="#69">69</a>  <em>	 */</em>
+<a name="70" href="#70">70</a>  	<strong>public</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/GeneratorRegistry.html">GeneratorRegistry</a>(){
+<a name="71" href="#71">71</a>  		<strong>super</strong>();
+<a name="72" href="#72">72</a>  	}
+<a name="73" href="#73">73</a>  	
+<a name="74" href="#74">74</a>  	<em>/**<em>*</em></em>
+<a name="75" href="#75">75</a>  <em>	 * Lazy loads generators, to avoid the need for undesired dependencies. </em>
+<a name="76" href="#76">76</a>  <em>	 * </em>
+<a name="77" href="#77">77</a>  <em>	 * @param generatorKey</em>
+<a name="78" href="#78">78</a>  <em>	 * @return</em>
+<a name="79" href="#79">79</a>  <em>	 */</em>
+<a name="80" href="#80">80</a>  	<strong>private</strong> <strong>void</strong> loadGenerator(String generatorKey) {
+<a name="81" href="#81">81</a>  		<strong>if</strong>((MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+<a name="82" href="#82">82</a>  			registry.put(generatorKey, <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/locale/ResourceBundleMessagesGenerator.html">ResourceBundleMessagesGenerator</a>());
 <a name="83" href="#83">83</a>  		}
-<a name="84" href="#84">84</a>  		<strong>else</strong> <strong>if</strong>((DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
-<a name="85" href="#85">85</a>  			registry.put(generatorKey, DWRGeneratorFactory.createDWRGenerator());
+<a name="84" href="#84">84</a>  		<strong>else</strong> <strong>if</strong>((CLASSPATH_JS_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+<a name="85" href="#85">85</a>  			registry.put(generatorKey, <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/classpath/ClasspathJSGenerator.html">ClasspathJSGenerator</a>());
 <a name="86" href="#86">86</a>  		}
-<a name="87" href="#87">87</a>  		<strong>else</strong> <strong>if</strong>((COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
-<a name="88" href="#88">88</a>  			registry.put(generatorKey, <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/validator/CommonsValidatorGenerator.html">CommonsValidatorGenerator</a>());
+<a name="87" href="#87">87</a>  		<strong>else</strong> <strong>if</strong>((CLASSPATH_CSS_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+<a name="88" href="#88">88</a>  			registry.put(generatorKey, <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/classpath/ClassPathCSSGenerator.html">ClassPathCSSGenerator</a>());
 <a name="89" href="#89">89</a>  		}
-<a name="90" href="#90">90</a>  	}
-<a name="91" href="#91">91</a>  	
-<a name="92" href="#92">92</a>  	<em>/**<em>*</em></em>
-<a name="93" href="#93">93</a>  <em>	 * Register a generator mapping it to the specified prefix. </em>
-<a name="94" href="#94">94</a>  <em>	 * </em>
-<a name="95" href="#95">95</a>  <em>	 * @param clazz String Qualified classname of the generator</em>
-<a name="96" href="#96">96</a>  <em>	 */</em>
-<a name="97" href="#97">97</a>  	<strong>public</strong> <strong>void</strong> registerGenerator(String clazz){
-<a name="98" href="#98">98</a>  		ResourceGenerator generator = (ResourceGenerator) ClassLoaderResourceUtils.buildObjectInstance(clazz);
-<a name="99" href="#99">99</a>  		
-<a name="100" href="#100">100</a> 		<strong>if</strong>(<strong>null</strong> == generator.getMappingPrefix() || <span class="string">""</span>.equals(generator.getMappingPrefix()) )
-<a name="101" href="#101">101</a> 			<strong>throw</strong> <strong>new</strong> IllegalStateException(<span class="string">"The getMappingPrefix() method must return something at "</span> + clazz);
-<a name="102" href="#102">102</a> 		
-<a name="103" href="#103">103</a> 		String fullPrefix = generator.getMappingPrefix() + PREFIX_SEPARATOR;
-<a name="104" href="#104">104</a> 		
-<a name="105" href="#105">105</a> 		<em class="comment">// Verify this prefix is unused</em>
-<a name="106" href="#106">106</a> 		<strong>if</strong>(prefixRegistry.contains(fullPrefix)) {
-<a name="107" href="#107">107</a> 			String generatorName = registry.get(fullPrefix).getClass().getName();
-<a name="108" href="#108">108</a> 			<strong>if</strong>(!clazz.equals(generatorName)) {
-<a name="109" href="#109">109</a> 				String errorMsg = <span class="string">"Cannot register the generator of class "</span> 
-<a name="110" href="#110">110</a> 								+ generator.getClass().getName()
-<a name="111" href="#111">111</a> 								+ <span class="string">" using the prefix "</span> + generator.getMappingPrefix() + <span class="string">" since such prefix is being used by "</span>
-<a name="112" href="#112">112</a> 								+ generatorName + <span class="string">". Please pecify a different return value at the getMappingPrefix() method."</span>;
-<a name="113" href="#113">113</a> 				<strong>throw</strong> <strong>new</strong> IllegalStateException(errorMsg);
-<a name="114" href="#114">114</a> 			}
-<a name="115" href="#115">115</a> 		}
-<a name="116" href="#116">116</a> 		
-<a name="117" href="#117">117</a> 		prefixRegistry.add(generator.getMappingPrefix() + PREFIX_SEPARATOR);
-<a name="118" href="#118">118</a> 		registry.put(generator.getMappingPrefix() + PREFIX_SEPARATOR, generator);
-<a name="119" href="#119">119</a> 	}
-<a name="120" href="#120">120</a> 	
-<a name="121" href="#121">121</a> 	<em>/**<em>*</em></em>
-<a name="122" href="#122">122</a> <em>	 * Determines wether a path is to be handled by a generator. </em>
-<a name="123" href="#123">123</a> <em>	 * @param path</em>
-<a name="124" href="#124">124</a> <em>	 * @return</em>
-<a name="125" href="#125">125</a> <em>	 */</em>
-<a name="126" href="#126">126</a> 	<strong>public</strong> <strong>boolean</strong> isPathGenerated(String path) {
-<a name="127" href="#127">127</a> 		<strong>return</strong> <strong>null</strong> != matchPath(path);
-<a name="128" href="#128">128</a> 	}
-<a name="129" href="#129">129</a> 	
-<a name="130" href="#130">130</a> 	<em>/**<em>*</em></em>
-<a name="131" href="#131">131</a> <em>	 * Creates the contents corresponding to a path, by using the appropiate generator. </em>
-<a name="132" href="#132">132</a> <em>	 * @param path</em>
-<a name="133" href="#133">133</a> <em>	 * @param charset</em>
-<a name="134" href="#134">134</a> <em>	 * @return</em>
-<a name="135" href="#135">135</a> <em>	 */</em>
-<a name="136" href="#136">136</a> 	<strong>public</strong> Reader createResource(String path) {
-<a name="137" href="#137">137</a> 		String key = matchPath(path);
-<a name="138" href="#138">138</a> 		Locale locale = <strong>null</strong>;
-<a name="139" href="#139">139</a> 		
-<a name="140" href="#140">140</a> 		<strong>if</strong>(path.indexOf('@') != -1){
-<a name="141" href="#141">141</a> 			String localeKey = path.substring(path.indexOf('@')+1);
-<a name="142" href="#142">142</a> 			path = path.substring(0,path.indexOf('@'));
-<a name="143" href="#143">143</a> 			
-<a name="144" href="#144">144</a> 			<em class="comment">// Resourcebundle should be doing this for me...</em>
-<a name="145" href="#145">145</a> 			String[] params = localeKey.split(<span class="string">"_"</span>);			
-<a name="146" href="#146">146</a> 			<strong>switch</strong>(params.length) {
-<a name="147" href="#147">147</a> 				<strong>case</strong> 3:
-<a name="148" href="#148">148</a> 					locale = <strong>new</strong> Locale(params[0],params[1],params[2]);
-<a name="149" href="#149">149</a> 					<strong>break</strong>;
-<a name="150" href="#150">150</a> 				<strong>case</strong> 2: 
-<a name="151" href="#151">151</a> 					locale = <strong>new</strong> Locale(params[0],params[1]);
-<a name="152" href="#152">152</a> 					<strong>break</strong>;
-<a name="153" href="#153">153</a> 				<strong>default</strong>:
-<a name="154" href="#154">154</a> 					locale = <strong>new</strong> Locale(localeKey);
-<a name="155" href="#155">155</a> 			}
-<a name="156" href="#156">156</a> 		}
-<a name="157" href="#157">157</a> 		GeneratorContext context = <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/GeneratorContext.html">GeneratorContext</a>(config, path.substring(key.length()));
-<a name="158" href="#158">158</a> 		context.setLocale(locale);
-<a name="159" href="#159">159</a> 		
-<a name="160" href="#160">160</a> 		<strong>return</strong> ((ResourceGenerator)registry.get(key)).createResource(context);
-<a name="161" href="#161">161</a> 	}
-<a name="162" href="#162">162</a> 	
-<a name="163" href="#163">163</a> 	
-<a name="164" href="#164">164</a> 	<em>/**<em>*</em></em>
-<a name="165" href="#165">165</a> <em>	 * Returns the path to use in the generation URL for debug mode. </em>
-<a name="166" href="#166">166</a> <em>	 * @param path</em>
-<a name="167" href="#167">167</a> <em>	 * @return</em>
-<a name="168" href="#168">168</a> <em>	 */</em>
-<a name="169" href="#169">169</a> 	<strong>public</strong> String getDebugModeGenerationPath(String path) {
-<a name="170" href="#170">170</a> 		String key = matchPath(path);
-<a name="171" href="#171">171</a> 		<strong>return</strong> ((ResourceGenerator)registry.get(key)).getDebugModeRequestPath();
-<a name="172" href="#172">172</a> 	}
-<a name="173" href="#173">173</a> 	
-<a name="174" href="#174">174</a> 	<em>/**<em>*</em></em>
-<a name="175" href="#175">175</a> <em>	 * Get the key from the mappings that corresponds to the specified path. </em>
-<a name="176" href="#176">176</a> <em>	 * @param path</em>
-<a name="177" href="#177">177</a> <em>	 * @return</em>
-<a name="178" href="#178">178</a> <em>	 */</em>
-<a name="179" href="#179">179</a> 	<strong>private</strong> String matchPath(String path) {
-<a name="180" href="#180">180</a> 		String rets = <strong>null</strong>;
-<a name="181" href="#181">181</a> 		<strong>for</strong>(Iterator it = prefixRegistry.iterator();it.hasNext() &amp;&amp; rets == <strong>null</strong>;) {
-<a name="182" href="#182">182</a> 			String prefix = (String) it.next();
-<a name="183" href="#183">183</a> 			<strong>if</strong>(path.startsWith(prefix))
-<a name="184" href="#184">184</a> 				rets = prefix;			
-<a name="185" href="#185">185</a> 		}	
-<a name="186" href="#186">186</a> 		<em class="comment">// Lazy load generator</em>
-<a name="187" href="#187">187</a> 		<strong>if</strong>(<strong>null</strong> != rets &amp;&amp; !registry.containsKey(rets))
-<a name="188" href="#188">188</a> 			loadGenerator(rets);
-<a name="189" href="#189">189</a> 		
-<a name="190" href="#190">190</a> 		<strong>return</strong> rets;
-<a name="191" href="#191">191</a> 	}
-<a name="192" href="#192">192</a> 
-<a name="193" href="#193">193</a> 	<em>/**<em>*</em></em>
-<a name="194" href="#194">194</a> <em>	 * @param config the config to set</em>
-<a name="195" href="#195">195</a> <em>	 */</em>
-<a name="196" href="#196">196</a> 	<strong>public</strong> <strong>void</strong> setConfig(<a href="../../../../../../net/jawr/web/config/JawrConfig.html">JawrConfig</a> config) {
-<a name="197" href="#197">197</a> 		<strong>this</strong>.config = config;
-<a name="198" href="#198">198</a> 	}
-<a name="199" href="#199">199</a> 
-<a name="200" href="#200">200</a> }
+<a name="90" href="#90">90</a>  		<strong>else</strong> <strong>if</strong>((DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+<a name="91" href="#91">91</a>  			registry.put(generatorKey, DWRGeneratorFactory.createDWRGenerator());
+<a name="92" href="#92">92</a>  		}
+<a name="93" href="#93">93</a>  		<strong>else</strong> <strong>if</strong>((COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+<a name="94" href="#94">94</a>  			registry.put(generatorKey, <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/validator/CommonsValidatorGenerator.html">CommonsValidatorGenerator</a>());
+<a name="95" href="#95">95</a>  		}
+<a name="96" href="#96">96</a>  	}
+<a name="97" href="#97">97</a>  	
+<a name="98" href="#98">98</a>  	<em>/**<em>*</em></em>
+<a name="99" href="#99">99</a>  <em>	 * Register a generator mapping it to the specified prefix. </em>
+<a name="100" href="#100">100</a> <em>	 * </em>
+<a name="101" href="#101">101</a> <em>	 * @param clazz String Qualified classname of the generator</em>
+<a name="102" href="#102">102</a> <em>	 */</em>
+<a name="103" href="#103">103</a> 	<strong>public</strong> <strong>void</strong> registerGenerator(String clazz){
+<a name="104" href="#104">104</a> 		ResourceGenerator generator = (ResourceGenerator) ClassLoaderResourceUtils.buildObjectInstance(clazz);
+<a name="105" href="#105">105</a> 		
+<a name="106" href="#106">106</a> 		<strong>if</strong>(<strong>null</strong> == generator.getMappingPrefix() || <span class="string">""</span>.equals(generator.getMappingPrefix()) )
+<a name="107" href="#107">107</a> 			<strong>throw</strong> <strong>new</strong> IllegalStateException(<span class="string">"The getMappingPrefix() method must return something at "</span> + clazz);
+<a name="108" href="#108">108</a> 		
+<a name="109" href="#109">109</a> 		String fullPrefix = generator.getMappingPrefix() + PREFIX_SEPARATOR;
+<a name="110" href="#110">110</a> 		
+<a name="111" href="#111">111</a> 		<em class="comment">// Verify this prefix is unused</em>
+<a name="112" href="#112">112</a> 		<strong>if</strong>(prefixRegistry.contains(fullPrefix)) {
+<a name="113" href="#113">113</a> 			String generatorName = registry.get(fullPrefix).getClass().getName();
+<a name="114" href="#114">114</a> 			<strong>if</strong>(!clazz.equals(generatorName)) {
+<a name="115" href="#115">115</a> 				String errorMsg = <span class="string">"Cannot register the generator of class "</span> 
+<a name="116" href="#116">116</a> 								+ generator.getClass().getName()
+<a name="117" href="#117">117</a> 								+ <span class="string">" using the prefix "</span> + generator.getMappingPrefix() + <span class="string">" since such prefix is being used by "</span>
+<a name="118" href="#118">118</a> 								+ generatorName + <span class="string">". Please pecify a different return value at the getMappingPrefix() method."</span>;
+<a name="119" href="#119">119</a> 				<strong>throw</strong> <strong>new</strong> IllegalStateException(errorMsg);
+<a name="120" href="#120">120</a> 			}
+<a name="121" href="#121">121</a> 		}
+<a name="122" href="#122">122</a> 		
+<a name="123" href="#123">123</a> 		prefixRegistry.add(generator.getMappingPrefix() + PREFIX_SEPARATOR);
+<a name="124" href="#124">124</a> 		registry.put(generator.getMappingPrefix() + PREFIX_SEPARATOR, generator);
+<a name="125" href="#125">125</a> 	}
+<a name="126" href="#126">126</a> 	
+<a name="127" href="#127">127</a> 	<em>/**<em>*</em></em>
+<a name="128" href="#128">128</a> <em>	 * Determines wether a path is to be handled by a generator. </em>
+<a name="129" href="#129">129</a> <em>	 * @param path</em>
+<a name="130" href="#130">130</a> <em>	 * @return</em>
+<a name="131" href="#131">131</a> <em>	 */</em>
+<a name="132" href="#132">132</a> 	<strong>public</strong> <strong>boolean</strong> isPathGenerated(String path) {
+<a name="133" href="#133">133</a> 		<strong>return</strong> <strong>null</strong> != matchPath(path);
+<a name="134" href="#134">134</a> 	}
+<a name="135" href="#135">135</a> 	
+<a name="136" href="#136">136</a> 	<em>/**<em>*</em></em>
+<a name="137" href="#137">137</a> <em>	 * Creates the contents corresponding to a path, by using the appropiate generator. </em>
+<a name="138" href="#138">138</a> <em>	 * @param path</em>
+<a name="139" href="#139">139</a> <em>	 * @param charset</em>
+<a name="140" href="#140">140</a> <em>	 * @return</em>
+<a name="141" href="#141">141</a> <em>	 */</em>
+<a name="142" href="#142">142</a> 	<strong>public</strong> Reader createResource(String path) {
+<a name="143" href="#143">143</a> 		String key = matchPath(path);
+<a name="144" href="#144">144</a> 		Locale locale = <strong>null</strong>;
+<a name="145" href="#145">145</a> 		
+<a name="146" href="#146">146</a> 		<strong>if</strong>(path.indexOf('@') != -1){
+<a name="147" href="#147">147</a> 			String localeKey = path.substring(path.indexOf('@')+1);
+<a name="148" href="#148">148</a> 			path = path.substring(0,path.indexOf('@'));
+<a name="149" href="#149">149</a> 			
+<a name="150" href="#150">150</a> 			<em class="comment">// Resourcebundle should be doing this for me...</em>
+<a name="151" href="#151">151</a> 			String[] params = localeKey.split(<span class="string">"_"</span>);			
+<a name="152" href="#152">152</a> 			<strong>switch</strong>(params.length) {
+<a name="153" href="#153">153</a> 				<strong>case</strong> 3:
+<a name="154" href="#154">154</a> 					locale = <strong>new</strong> Locale(params[0],params[1],params[2]);
+<a name="155" href="#155">155</a> 					<strong>break</strong>;
+<a name="156" href="#156">156</a> 				<strong>case</strong> 2: 
+<a name="157" href="#157">157</a> 					locale = <strong>new</strong> Locale(params[0],params[1]);
+<a name="158" href="#158">158</a> 					<strong>break</strong>;
+<a name="159" href="#159">159</a> 				<strong>default</strong>:
+<a name="160" href="#160">160</a> 					locale = <strong>new</strong> Locale(localeKey);
+<a name="161" href="#161">161</a> 			}
+<a name="162" href="#162">162</a> 		}
+<a name="163" href="#163">163</a> 		GeneratorContext context = <strong>new</strong> <a href="../../../../../../net/jawr/web/resource/bundle/generator/GeneratorContext.html">GeneratorContext</a>(config, path.substring(key.length()));
+<a name="164" href="#164">164</a> 		context.setLocale(locale);
+<a name="165" href="#165">165</a> 		
+<a name="166" href="#166">166</a> 		<strong>return</strong> ((ResourceGenerator)registry.get(key)).createResource(context);
+<a name="167" href="#167">167</a> 	}
+<a name="168" href="#168">168</a> 	
+<a name="169" href="#169">169</a> 	
+<a name="170" href="#170">170</a> 	<em>/**<em>*</em></em>
+<a name="171" href="#171">171</a> <em>	 * Returns the path to use in the generation URL for debug mode. </em>
+<a name="172" href="#172">172</a> <em>	 * @param path</em>
+<a name="173" href="#173">173</a> <em>	 * @return</em>
+<a name="174" href="#174">174</a> <em>	 */</em>
+<a name="175" href="#175">175</a> 	<strong>public</strong> String getDebugModeGenerationPath(String path) {
+<a name="176" href="#176">176</a> 		String key = matchPath(path);
+<a name="177" href="#177">177</a> 		<strong>return</strong> ((ResourceGenerator)registry.get(key)).getDebugModeRequestPath();
+<a name="178" href="#178">178</a> 	}
+<a name="179" href="#179">179</a> 	
+<a name="180" href="#180">180</a> 	<em>/**<em>*</em></em>
+<a name="181" href="#181">181</a> <em>	 * Get the key from the mappings that corresponds to the specified path. </em>
+<a name="182" href="#182">182</a> <em>	 * @param path</em>
+<a name="183" href="#183">183</a> <em>	 * @return</em>
+<a name="184" href="#184">184</a> <em>	 */</em>
+<a name="185" href="#185">185</a> 	<strong>private</strong> String matchPath(String path) {
+<a name="186" href="#186">186</a> 		String rets = <strong>null</strong>;
+<a name="187" href="#187">187</a> 		<strong>for</strong>(Iterator it = prefixRegistry.iterator();it.hasNext() &amp;&amp; rets == <strong>null</strong>;) {
+<a name="188" href="#188">188</a> 			String prefix = (String) it.next();
+<a name="189" href="#189">189</a> 			<strong>if</strong>(path.startsWith(prefix))
+<a name="190" href="#190">190</a> 				rets = prefix;			
+<a name="191" href="#191">191</a> 		}	
+<a name="192" href="#192">192</a> 		<em class="comment">// Lazy load generator</em>
+<a name="193" href="#193">193</a> 		<strong>if</strong>(<strong>null</strong> != rets &amp;&amp; !registry.containsKey(rets))
+<a name="194" href="#194">194</a> 			loadGenerator(rets);
+<a name="195" href="#195">195</a> 		
+<a name="196" href="#196">196</a> 		<strong>return</strong> rets;
+<a name="197" href="#197">197</a> 	}
+<a name="198" href="#198">198</a> 
+<a name="199" href="#199">199</a> 	<em>/**<em>*</em></em>
+<a name="200" href="#200">200</a> <em>	 * @param config the config to set</em>
+<a name="201" href="#201">201</a> <em>	 */</em>
+<a name="202" href="#202">202</a> 	<strong>public</strong> <strong>void</strong> setConfig(<a href="../../../../../../net/jawr/web/config/JawrConfig.html">JawrConfig</a> config) {
+<a name="203" href="#203">203</a> 		<strong>this</strong>.config = config;
+<a name="204" href="#204">204</a> 	}
+<a name="205" href="#205">205</a> 
+<a name="206" href="#206">206</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

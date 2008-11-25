@@ -149,7 +149,7 @@
 <a name="140" href="#140">140</a> 			
 <a name="141" href="#141">141</a> 			<em class="comment">// Write the text to the outputstream</em>
 <a name="142" href="#142">142</a> 			writer.write(text);
-<a name="143" href="#143">143</a> 			writer.close();
+<a name="143" href="#143">143</a> 			writer.flush();
 <a name="144" href="#144">144</a> 			
 <a name="145" href="#145">145</a> 		} <strong>catch</strong> (IOException e) {
 <a name="146" href="#146">146</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Unexpected IOException writing bundle["</span> + bundlePath + <span class="string">"]"</span>,e);

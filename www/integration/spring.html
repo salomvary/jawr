@@ -1,0 +1,351 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Jawr - Spring MVC integration</title>
+    <style type="text/css" media="all">
+      @import url("../css/maven-base.css");
+      @import url("../css/maven-theme.css");
+      @import url("../css/site.css");
+    </style>
+    <link rel="stylesheet" href="../css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            Java web resources bundling and compression
+    
+            </span>
+                    <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+    
+            <div class="xleft">
+        Last Published: 2008-11-25
+                      </div>
+            <div class="xright">      
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+    
+                   <h5>About</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="../servlets/ProjectHome">Home</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../introduction.html">Introduction</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../features.html">Features</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../changes.html">Change history</a>
+          </li>
+          </ul>
+              <h5>Documentation</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="../docs/servlet.html">The Jawr servlet</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../docs/descriptor_syntax.html">Descriptor syntax</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../docs/custom_bundles.html">Bundle definition</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../docs/source_ordering.html">Source order in bundles</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../docs/postprocessors.html">Postprocessors</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../docs/generators.html">Generators</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../docs/license_files.html">Licenses in resources</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../docs/taglibs.html">JSP Tag library</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../docs/plain_html.html">Use in HTML pages</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../docs/modes.html">Debug and production modes</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../docs/messages_gen.html">i18n message generator</a>
+          </li>
+          </ul>
+              <h5>Integration</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="../integration/augmenter.html">Add Jawr to your framework</a>
+          </li>
+              
+    <li class="none">
+              <strong>Spring MVC</strong>
+        </li>
+              
+    <li class="none">
+                    <a href="../integration/facelets.html">Facelets Tag library</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../integration/grails.html">Grails plugin</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../integration/dwr.html">DWR</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../integration/validator.html">Commons Validator - Struts</a>
+          </li>
+          </ul>
+              <h5>Tutorials</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="../tutorials/quickstart.html">Quick start</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../tutorials/faq_howto.html">FAQ-Howto</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../tutorials/libraries.html">Using popular libraries</a>
+          </li>
+          </ul>
+              <h5>API and sources</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="../nonav/apidocs/index.html">JavaDocs</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../nonav/xref/index.html">Source XREF</a>
+          </li>
+          </ul>
+              <h5>Project tools</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="../servlets/ProjectHome">Project home</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../servlets/ProjectMemberList">Membership</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../servlets/ProjectNewsList">Announcements</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../servlets/ProjectForumView">Discussion forums</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../servlets/ProjectMailingListList">Mailing lists</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../servlets/ProjectDocumentList">Documents & files</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../source/browse/jawr/">Subversion</a>
+          </li>
+              
+    <li class="none">
+                    <a href="../servlets/ProjectIssues">Issue tracker</a>
+          </li>
+          </ul>
+                                           <a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy">
+            <img alt="Built by Maven" src="../images/logos/maven-feather.png"></img>
+          </a>
+                       
+  
+
+  
+    
+  
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>Spring MVC integration</h2>
+<p>Jawr includes a Spring MVC Controller implementation which you can use instead of the usual Jawr servlet. This way, you can keep all your configuration in a single consistent format and benefit with the incredibly flexible configuration system that ships with Spring. </p>
+<p>Note that if you are new to Jawr, reading this guide alone will not suffice to understand how Jawr works, so do chek out the rest of the documentation because here you will only find the instructions to plug it into Spring. </p>
+<div class="section"><h3>Basic configuration</h3>
+<p>Assuming you have an up and running Spring web application, you will first need to add a bean definition for the class <i>net.jawr.web.servlet.JawrSpringController</i>
+. You will need an instance for each resource type (.js and .css), so it will be best if you declare an abstract bean and then you create two instances from it. Take a look at this full example and find all the details below: </p>
+<div class="source"><pre>&lt;!-- Base Jawr config --&gt;
+&lt;bean abstract=&quot;true&quot; id=&quot;jawrBase&quot;  class=&quot;net.jawr.web.servlet.JawrSpringController&quot; &gt;
+        &lt;!-- This must match the servlet-mapping to which the spring servlet is bound --&gt;
+        &lt;property name=&quot;mapping&quot; value=&quot;/spring/&quot;/&gt;
+
+        &lt;property name=&quot;configuration&quot;&gt;
+                &lt;util:properties location=&quot;classpath:jawr.properties&quot;/&gt;
+        &lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;!-- JS controller --&gt;
+&lt;bean id=&quot;jawrJsController&quot; parent=&quot;jawrBase&quot; /&gt;
+  
+&lt;!-- CSS controller --&gt;
+&lt;bean id=&quot;jawrCSSController&quot;  parent=&quot;jawrBase&quot;&gt;
+        &lt;property name=&quot;type&quot; value=&quot;css&quot; /&gt;
+&lt;/bean&gt;</pre>
+</div>
+<p>As you can see, the abstract bean holds most of the configuration details, which is common to both Jawr controllers. The properties which are being set configure the controllers in the following way: </p>
+<ul><li><b>mapping</b>
+ is needed only if the dispatcher servlet is mapped to some subpath in the server (i.e., anything other than /*). So if the spring servlet-mapping property has a value of '/spring/*', the mapping attribute should be '/spring/' (without the '*'). </li>
+<li><b>configuration</b>
+ is a Properties object holding the usual Jawr configuration values. Check the descriptor syntax page for an overview of what goes here. Of course, while the example uses the simplest possible form (reading a properties file from the classpath), you can declare it inline, extend its properties, and generally do all that the Spring configuration system allows to do about Properties objects. </li>
+<li><b>type</b>
+ tells the controller wether it is serving .js or .css files. Since by default .js is assumed, you only need to set it at the CSS controller declaration. <p>There are two additional properties you might need to set: </p>
+</li>
+<li><b>configPropertiesSourceClass</b>
+: This optional parameter holds the qualified class name of you custom implementation of ConfigPropertiesSource, in case you want to customize the way configuration is loaded when Jawr starts up. Now, this doesn't make much sense when using Spring, since it already makes config loading much more flexible, but since this is available when using the servlet it doesn't hurt to make it available for Spring users as well. </li>
+<li><b>controllerMapping</b>
+: Depending on how you map the controllers, you might need to set this property. See below for more info. </li>
+</ul>
+</div>
+<div class="section"><h3>Mapping the controllers</h3>
+<p>Once you have set up the controllers to your liking, you need to add mappings in the URL handler mapping bean of the servlet. The simplest and possibly best form to do it is to simply map all .js or .css requests to the controllers: </p>
+<div class="source"><pre>&lt;bean id=&quot;urlMapping&quot;
+          class=&quot;org.springframework.web.servlet.handler.SimpleUrlHandlerMapping&quot;&gt;
+         &lt;property name=&quot;mappings&quot;&gt;
+          &lt;props&gt;
+          &lt;prop key=&quot;/**/*.js&quot;&gt;jawrJsController&lt;/prop&gt;
+          &lt;prop key=&quot;/**/*.css&quot;&gt;jawrCSSController&lt;/prop&gt;
+          &lt;/props&gt;
+         &lt;/property&gt;
+&lt;/bean&gt;</pre>
+</div>
+<p>If for some reason you need to add some kinf of prefixing to the mappings, there is extra work to be done. For instance, if you mapped like this: </p>
+<div class="source"><pre>&lt;bean id=&quot;urlMapping&quot;
+          class=&quot;org.springframework.web.servlet.handler.SimpleUrlHandlerMapping&quot;&gt;
+         &lt;property name=&quot;mappings&quot;&gt;
+          &lt;props&gt;
+          &lt;prop key=&quot;/jawr/**/*.js&quot;&gt;jawrJsController&lt;/prop&gt;
+          &lt;prop key=&quot;/jawr/**/*.css&quot;&gt;jawrCSSController&lt;/prop&gt;
+          &lt;/props&gt;
+         &lt;/property&gt;
+&lt;/bean&gt;</pre>
+</div>
+<p>For this configuration, you will need to let the controllers know the extra path information. The reason for this is that Jawr needs not only to attend to requests, but also to generate URLs which will match its own controllers (incidentially, that's the same reason to need the <i>mapping</i>
+ configuration attribute too). This is where the <b>controllerMapping</b>
+ configuration attribute comes into play. You will need to set it with the value of the additional prefixing: </p>
+<div class="source"><pre>&lt;!-- Base Jawr config --&gt;
+&lt;bean abstract=&quot;true&quot; id=&quot;jawrBase&quot;  class=&quot;net.jawr.web.servlet.JawrSpringController&quot; &gt;
+        &lt;!-- This must match the servlet-mapping to which the spring servlet is bound --&gt;
+        &lt;property name=&quot;mapping&quot; value=&quot;/spring/&quot;/&gt;
+        
+        &lt;!-- This must match the controller mapping prefix to which the 
+                        jawr controllers are bound at the urlMapping bean  --&gt;
+        &lt;property name=&quot;controllerMapping&quot; value=&quot;/jawr/&quot;/&gt;
+        
+        
+        &lt;property name=&quot;configuration&quot;&gt;
+                &lt;util:properties location=&quot;classpath:jawr.properties&quot;/&gt;
+        &lt;/property&gt;
+&lt;/bean&gt;
+</pre>
+</div>
+<p>With controllers in place and mappings set, you are ready to start using the Jawr tag library in your pages to get really fast loading times. </p>
+</div>
+<div class="section"><h3>Using Spring's LocaleResolver with the i18n generator. </h3>
+<p>If you will be using Spring's i18n facilities and want to generate 18n message scripts (check the 18n generator docs), you can integrate boths systems by letting Jawr use Spring's LocaleResolver. Jawr has its own way of resolving the locale of a request and a bit of extra configuration is needed to have it delegate in Spring. Actually, this single line in your jawr.properties file will do: </p>
+<div class="source"><pre>jawr.locale.resolver=net.jawr.web.resource.bundle.locale.SpringLocaleResolver</pre>
+</div>
+</div>
+</div>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2008
+    
+          
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
