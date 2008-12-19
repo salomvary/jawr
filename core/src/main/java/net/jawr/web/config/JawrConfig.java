@@ -267,7 +267,7 @@ public class JawrConfig {
 		 */
 		public void setContextPathOverride(String contextPathOverride) {
 			this.contextPathOverride = contextPathOverride;
-			if(null != contextPathOverride && (contextPathOverride.startsWith("http://") || contextPathOverride.startsWith("https://")))
+			if(null != contextPathOverride && (contextPathOverride.startsWith("http://") || contextPathOverride.startsWith("https://") || contextPathOverride.startsWith("//")))
 				this.isDomainOverriden = true;
 		}
 
