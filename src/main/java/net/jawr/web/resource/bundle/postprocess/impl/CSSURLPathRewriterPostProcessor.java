@@ -70,7 +70,7 @@ public class CSSURLPathRewriterPostProcessor extends
 		while(matcher.find()) {
 			List backRefs = new ArrayList();
 			backRefs.addAll(resourceBackRefs);
-			String url = getUrlPath(matcher.group(), initialBackRefs, backRefs);
+			String url = getUrlPath(matcher.group(), initialBackRefs, backRefs, status.getJawrConfig().getCssImagePathOverride());
 			matcher.appendReplacement(sb, RegexUtil.adaptReplacementToMatcher(url));
 		}
 		matcher.appendTail(sb);
@@ -84,7 +84,7 @@ public class CSSURLPathRewriterPostProcessor extends
 	 * @param initialBackRefs
 	 * @return
 	 */
-	private String getUrlPath(String match, int initialBackRefs, List resourceBackRefs) {
+	private String getUrlPath(String match, int initialBackRefs, List resourceBackRefs, String imagePathOverride) {
 
 		String url = match.substring(match.indexOf('(')+1,match.lastIndexOf(')'))
 					.trim();
@@ -116,6 +116,13 @@ public class CSSURLPathRewriterPostProcessor extends
 			url = url.substring(1,url.length());
 		else if(url.startsWith("./"))
 			url = url.substring(2,url.length());
+		
+		// append the override url here if need be
+		if(imagePathOverride != null){
+			StringBuffer sb = new StringBuffer("url(");
+			sb.append(quoteStr).append(imagePathOverride).append(url).append(quoteStr).append(")");
+			return sb.toString();
+		}
 		
 		// Adjust the forward pathnames according to the backrefs in the url
 		if(backRefsInURL > 0 && resourceBackRefs.size() > 0) {

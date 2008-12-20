@@ -85,6 +85,10 @@ public class JawrConfig {
 			setCssLinkFlavor(props.getProperty("jawr.csslinks.flavor").trim());
 		}
 		
+		if(null != props.getProperty("jawr.css.imagepath.override")) {
+			setCssImagePathOverride(props.getProperty("jawr.css.imagepath.override").trim());
+		}
+		
 	}
 	
 	/**
@@ -130,6 +134,16 @@ public class JawrConfig {
 	 */
 	private boolean isDomainOverriden;
 	
+	/**
+	 * Override value to use instead of the relative path of the application when css urls paths are re-written.
+	 * urls are generated to be relative if this is not set. (//cssbackgroundimageserverlocation)
+	 * 
+	 * Note that absolute urls will not be re-written in the css files.
+	 */
+	private String cssImagePathOverride;
+	
+	
+
 	/**
 	 * @return the isDomainOverriden attribute, which determines if the contextPathOverride 
 	 * is a full domain path (http://.... or https://...)
@@ -259,6 +273,25 @@ public class JawrConfig {
 		public String getContextPathOverride() {
 			return contextPathOverride;
 		}
+		
+		/**
+		 * @return The string that will be prepended to css url paths after the ../'s have been removed.
+		 * 
+		 * So: background:transparent url(../../img/bkrnd/header_1_sprite.gif) no-repeat 0 0;
+		 * Becomes: background:transparent url(getCssImagePathOverride()+img/bkrnd/header_1_sprite.gif) no-repeat 0 0;
+		 */
+		public String getCssImagePathOverride() {
+			return cssImagePathOverride;
+		}
+		/**
+		 * @param The string that will be prepended to css url paths after the ../'s have been removed.
+		 * 
+		 * So: background:transparent url(../../img/bkrnd/header_1_sprite.gif) no-repeat 0 0;
+		 * Becomes: background:transparent url(getCssImagePathOverride()+img/bkrnd/header_1_sprite.gif) no-repeat 0 0;
+		 */
+		public void setCssImagePathOverride(String cssImagePathOverride) {
+			this.cssImagePathOverride = cssImagePathOverride;
+		}
 
 		/**
 		 * Set the string to use instead of the regular context path. If it is an empty string, 
@@ -267,7 +300,7 @@ public class JawrConfig {
 		 */
 		public void setContextPathOverride(String contextPathOverride) {
 			this.contextPathOverride = contextPathOverride;
-			if(null != contextPathOverride && (contextPathOverride.startsWith("http://") || contextPathOverride.startsWith("https://")))
+			if(null != contextPathOverride && (contextPathOverride.startsWith("http://") || contextPathOverride.startsWith("https://") || contextPathOverride.startsWith("//")))
 				this.isDomainOverriden = true;
 		}
 
