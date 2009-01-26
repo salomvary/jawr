@@ -61,7 +61,8 @@ public class JawrSpringController implements Controller, ServletContextAware, In
 	 */
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		String requestedPath = helper.getPathWithinServletMapping(request);
+		String requestedPath = (null == mapping) ? helper.getPathWithinApplication(request) : 
+												 helper.getPathWithinServletMapping(request);
 		
 		if(null != controllerMapping)
 			requestedPath = request.getPathInfo().substring(controllerMapping.length());
