@@ -94,12 +94,7 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
             if(tempDirPath.indexOf("%20") != -1)
                 tempDirPath = tempDirPath.replaceAll("%20"," ");
             
-            // Delete tempDir just in case
-            File tempfile = new File(tempDirPath);
-            if(tempfile.exists())
-            	tempfile.delete();
-            
-			this.textDirPath = tempDirPath + File.separator + TEMP_TEXT_SUBDIR;
+            this.textDirPath = tempDirPath + File.separator + TEMP_TEXT_SUBDIR;
 			this.gzipDirPath = tempDirPath + File.separator + TEMP_GZIP_SUBDIR;
 			createDir(tempDirPath);
 			createDir(textDirPath);

@@ -23,17 +23,23 @@ public class FileSystemResourceHandlerTest extends ResourceHandlerBasedTest {
 	
 	private static Charset charsetUtf = Charset.forName("UTF-8"); 
 	
+	private final String testStr;
+	
 	FileSystemResourceHandler subject;
 	
    	public FileSystemResourceHandlerTest(){
+   		String temp = null;
 		try {			
-			
+			// bytes for "αινσϊ¤" in utf-8. Best way to avoid garbled class from wrongly encoded SVN commits
+			byte[] data = {-61,-95,-61,-87,	-61,-83,-61,-77,-61,-70,-30,-126,-84};
+			temp = new String(data,"UTF-8");
 			
 			subject = createResourceHandler(ROOT_TESTDIR,charsetUtf);
 		} catch (Exception e) {
-			System.out.println("Error in test constructor");
-			e.printStackTrace();
+			fail("Error in test constructor " + e.getClass().getName() + ":"+ e.getMessage());
 		}
+		testStr = temp;
+		
 	}
 
         /**
@@ -45,7 +51,7 @@ public class FileSystemResourceHandlerTest extends ResourceHandlerBasedTest {
 			assertNotNull(TEST_FILENAME + " was not found by the handler. ",rd);
 			String readData = fullyReadReader(rd);
 			
-			assertEquals("Reader returned wrong or badly encoded text. ","αινσϊ¤", readData);
+			assertEquals("Reader returned wrong or badly encoded text. ",testStr, readData);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -124,8 +130,8 @@ public class FileSystemResourceHandlerTest extends ResourceHandlerBasedTest {
 	 * Test if data is properly stored in a file. 
 	 */
 	public void testStoreBundle() {
-		String testData = "€αι";
-		StringBuffer sb = new StringBuffer(testData);
+		
+		StringBuffer sb = new StringBuffer(testStr);
 		try {
 			// Store data
 			subject.storeBundle("/somepath/somesubpath/store/testCollection.js", sb);
@@ -134,7 +140,7 @@ public class FileSystemResourceHandlerTest extends ResourceHandlerBasedTest {
 			Reader rd = subject.getResourceBundleReader("/somepath/somesubpath/store/testCollection.js");
 			assertNotNull("'testCollection.js' was not found by the handler. ",rd);
 			String readData = fullyReadReader(rd);
-			assertEquals("Reader returned invalid data. ",testData, readData);
+			assertEquals("Reader returned invalid data. ",testStr, readData);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Retrieving file threw exception: " + e.getClass().getName() + ":"+ e.getMessage());

@@ -155,7 +155,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 
 		if(log.isInfoEnabled()) {
 			long totaltime = System.currentTimeMillis() - initialTime;
-			log.info("Init method sucesful. jawr started in " + (totaltime/1000) + " seconds....");
+			log.info("Init method succesful. jawr started in " + (totaltime/1000) + " seconds....");
 		}
 
 	}
@@ -193,7 +193,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 
 		if(log.isInfoEnabled()) {
 			long totaltime = System.currentTimeMillis() - initialTime;
-			log.info("Init method sucesful. jawr started in " + (totaltime/1000) + " seconds....");
+			log.info("Init method succesful. jawr started in " + (totaltime/1000) + " seconds....");
 		}
 	}
 
