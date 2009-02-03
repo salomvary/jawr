@@ -52,8 +52,6 @@ Javascript i18n message generator
 	declared. A simple mapping would look as this: 
 
 +------------------------------------------+
-    jawr.js.bundle.names=lib
-
     jawr.js.bundle.lib.id=/bundles/global.js
     jawr.js.bundle.lib.mappings=messages:com.myapp.jsmessages,/js/lib/**
     jawr.js.bundle.lib.locales=es

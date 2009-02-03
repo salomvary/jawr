@@ -149,9 +149,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 		// Check if we should use the bundle names property or
 		// find the bundle name using the bundle id declaration :
 		// jawr.<type>.bundle.<name>.id
-		boolean useBundleName = Boolean.valueOf(properties.getProperty(
-				USE_BUNDLE_NAMES, "false")).booleanValue();
-		if (useBundleName) {
+		if(null != props.getProperty(BUNDLE_FACTORY_CUSTOM_NAMES)) {
 			StringTokenizer tk = new StringTokenizer(props
 					.getProperty(BUNDLE_FACTORY_CUSTOM_NAMES), ",");
 			while (tk.hasMoreTokens()) {
