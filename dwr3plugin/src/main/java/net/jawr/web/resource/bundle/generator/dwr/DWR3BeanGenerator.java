@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 
@@ -42,10 +40,9 @@ import org.directwebremoting.Container;
 import org.directwebremoting.extend.CreatorManager;
 import org.directwebremoting.extend.EnginePrivate;
 import org.directwebremoting.extend.Remoter;
-import org.directwebremoting.extend.ServerLoadMonitor;
 import org.directwebremoting.impl.DefaultCreatorManager;
 import org.directwebremoting.impl.StartupUtil;
-import org.directwebremoting.util.VersionUtil;
+import org.directwebremoting.servlet.EngineHandler;
 
 /**
  * @author Jordi Hernández Sellés
@@ -64,12 +61,6 @@ public class DWR3BeanGenerator extends AbstractJavascriptGenerator implements Re
 	private static final String BAYEUX_KEY = "_bayeux";
 	private static final String GI_KEY = "_gi";
 	
-	// DWR 3.0 paths
-	private static final String PLAINCALLHANDLERURL = "/call/plaincall/";
-	private static final String PLAINPOLLHANDLERURL = "/call/plainpoll/";
-	private static final String HTMLCALLHANDLERURL = "/call/htmlcall/";
-	private static final String HTMLPOLLHANDLERURL = "/call/htmlpoll/";
-
 	// Path to DWR javascript files
 	private static final String ENGINE_PATH = "org/directwebremoting/engine.js";
 	private static final String UTIL_PATH = "org/directwebremoting/ui/servlet/util.js";
@@ -88,19 +79,7 @@ public class DWR3BeanGenerator extends AbstractJavascriptGenerator implements Re
 	// Some names of init-params in DWR servlets
 	private static final String DWR_MAPPING_PARAM = "jawr_mapping";
 	private static final String DWR_OVERRIDEPATH_PARAM = "overridePath";
-	
-	// A patter to replace some expressions at the engine javascript
-	private static final Pattern paramsPattern = Pattern.compile("(\\$\\{allowGetForSafariButMakeForgeryEasier}|"  
-											 + "\\$\\{plainCallHandlerUrl}|"  
-											 + "\\$\\{plainPollHandlerUrl}|"  
-											 + "\\$\\{htmlCallHandlerUrl}|"  
-											 + "\\$\\{htmlPollHandlerUrl}|"  		
-											 + "\\$\\{pollWithXhr}|"  
-											 + "\\$\\{sessionCookieName}|"  
-											 + "\\$\\{scriptTagProtection}|" 
-											 + "\\$\\{pathToDwrServlet}|"  
-											 + "\\$\\{defaultToAsync})" );
-	
+		
 	// This is a script portion stored in a static method of DWR. We store it to remove it, so it is not replicated many times.  
 	private static String ENGINE_INIT;
 	
@@ -160,108 +139,31 @@ public class DWR3BeanGenerator extends AbstractJavascriptGenerator implements Re
 	private StringBuffer buildEngineScript(StringBuffer engineScript,ServletContext servletContext) {
 		
 		List<Container> containers = StartupUtil.getAllPublishedContainers(servletContext);
-		String allowGetForSafariButMakeForgeryEasier = "";
-		String scriptTagProtection = "throw 'allowScriptTagRemoting is false.';";
-		String pollWithXhr = "";
-		String sessionCookieName = "JSESSIONID";
-		
-		String plainCallHandlerUrl = PLAINCALLHANDLERURL;
-		String plainPollHandlerUrl = PLAINPOLLHANDLERURL;
-		String htmlCallHandlerUrl = HTMLCALLHANDLERURL;
-		String htmlPollHandlerUrl = HTMLPOLLHANDLERURL;
-		
-		String defaultToAsync = "true";
-
 		
 		for(Container container :containers ) {
+			EngineHandler engHandler = (EngineHandler) container.getBean("url:/engine.js");
+			Map<String, String> replace = engHandler.getSearchReplacePairs();
 			
-			ServerLoadMonitor monitor = (ServerLoadMonitor) container.getBean(ServerLoadMonitor.class.getName());
-			pollWithXhr = monitor.supportsStreaming() ? "false" : "true";
+			// Adds replacement for the DWR servlet path. 
+			replace.put("${pathToDwrServlet}","\"+JAWR.jawr_dwr_path+\"");
 			
-			if(null != container.getBean("allowGetForSafariButMakeForgeryEasier")){
-				allowGetForSafariButMakeForgeryEasier = (String)container.getBean("allowGetForSafariButMakeForgeryEasier");
-			}
-			if(null != container.getBean("scriptTagProtection")){
-				scriptTagProtection = (String)container.getBean("scriptTagProtection");
-			}
-			if(null != container.getBean("sessionCookieName")){
-				sessionCookieName = (String)container.getBean("sessionCookieName");
-			}			
-			if(null != container.getBean("plainCallHandlerUrl")){
-				plainCallHandlerUrl = (String)container.getBean("plainCallHandlerUrl");
-			}			
-			if(null != container.getBean("plainPollHandlerUrl")){
-				plainPollHandlerUrl = (String)container.getBean("plainPollHandlerUrl");
-			}			
-			if(null != container.getBean("htmlCallHandlerUrl")){
-				htmlCallHandlerUrl = (String)container.getBean("htmlCallHandlerUrl");
-			}			
-			if(null != container.getBean("htmlPollHandlerUrl")){
-				htmlPollHandlerUrl = (String)container.getBean("htmlPollHandlerUrl");
-			}				
-			if(null != container.getBean("defaultToAsync")){
-				defaultToAsync = (String)container.getBean("defaultToAsync");
-			}			
+			
+			String template = engineScript.toString();
+			if (replace != null)
+	        {
+	            for (Map.Entry<String, String> entry : replace.entrySet())
+	            {
+	                String search = entry.getKey();
+	                if (template.contains(search))
+	                {
+	                    template = template.replace(search, entry.getValue());
+	                }
+	            }
+	        }
+			return new StringBuffer(template);
 		}
-		StringBuffer sb = new StringBuffer();
-		Matcher matcher = paramsPattern.matcher(engineScript);
+		return null;
 		
-		
-		while(matcher.find()) {
-			String match = matcher.group();
-			if("${allowGetForSafariButMakeForgeryEasier}".equals(match)){
-				matcher.appendReplacement(sb, allowGetForSafariButMakeForgeryEasier);				
-			}
-			else if("${pollWithXhr}".equals(match)){
-				matcher.appendReplacement(sb, pollWithXhr);				
-			}
-			else if("${sessionCookieName}".equals(match)){
-				matcher.appendReplacement(sb, sessionCookieName);				
-			}
-			else if("${scriptTagProtection}".equals(match)){
-				matcher.appendReplacement(sb, scriptTagProtection);				
-			}
-			else if("${pathToDwrServlet}".equals(match)){
-				matcher.appendReplacement(sb, "\"+JAWR.jawr_dwr_path+\"");
-			}
-			// DRW 3.x
-			else if("${plainCallHandlerUrl}".equals(match)){
-				matcher.appendReplacement(sb, plainCallHandlerUrl);
-			}
-			else if("${plainPollHandlerUrl}".equals(match)){
-				matcher.appendReplacement(sb, plainPollHandlerUrl);
-			}
-			else if("${htmlCallHandlerUrl}".equals(match)){
-				matcher.appendReplacement(sb, htmlCallHandlerUrl);
-			}
-			else if("${htmlPollHandlerUrl}".equals(match)){
-				matcher.appendReplacement(sb, htmlPollHandlerUrl);
-			}
-			else if("${defaultToAsync}".equals(match)){
-				matcher.appendReplacement(sb, defaultToAsync);
-			}
-			else if("${versionMajor}".equals(match)){
-				matcher.appendReplacement(sb, String.valueOf(VersionUtil.getMajor()));
-			}
-			else if("${versionMinor}".equals(match)){
-				matcher.appendReplacement(sb, String.valueOf(VersionUtil.getMinor()));
-			}
-			else if("${versionRevision}".equals(match)){
-				matcher.appendReplacement(sb, String.valueOf(VersionUtil.getRevision()));
-			}
-			else if("${versionBuild}".equals(match)){
-				matcher.appendReplacement(sb, String.valueOf(VersionUtil.getBuild()));
-			}
-			else if("${versionTitle}".equals(match)){
-				matcher.appendReplacement(sb, String.valueOf(VersionUtil.getTitle()));
-			}
-			else if("${versionLabel}".equals(match)){
-				matcher.appendReplacement(sb, String.valueOf(VersionUtil.getLabel()));
-			}
-		}
-		DWRParamWriter.setUseDynamicSessionId(false);
-		matcher.appendTail(sb);
-		return sb;
 	}
 	
 	/**
@@ -287,7 +189,6 @@ public class DWR3BeanGenerator extends AbstractJavascriptGenerator implements Re
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		
 		return sb;
 	}
 	
@@ -390,11 +291,16 @@ public class DWR3BeanGenerator extends AbstractJavascriptGenerator implements Re
 					}
 				}
 				for(String name : creators) {
-					String script = remoter.generateInterfaceScript(name, true, path);
+					if(log.isDebugEnabled())
+						log.debug("_** mapping: generating found interface named: " + name);
+					
+					String script = remoter.generateInterfaceScript(name, false, path);
 					// Must remove the engine init script to avoid unneeded duplication
 					script = removeEngineInit(script);
 					sb.append(script);
 				}
+				// Generates all DTOs separately to avoid duplication. 
+				sb.append("; ").append(remoter.generateAllDtoScripts());
 			}
 		}
 		return sb;
