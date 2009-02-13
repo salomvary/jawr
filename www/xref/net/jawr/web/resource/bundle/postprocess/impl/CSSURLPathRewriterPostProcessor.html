@@ -79,7 +79,7 @@
 <a name="70" href="#70">70</a>  		<strong>while</strong>(matcher.find()) {
 <a name="71" href="#71">71</a>  			List backRefs = <strong>new</strong> ArrayList();
 <a name="72" href="#72">72</a>  			backRefs.addAll(resourceBackRefs);
-<a name="73" href="#73">73</a>  			String url = getUrlPath(matcher.group(), initialBackRefs, backRefs);
+<a name="73" href="#73">73</a>  			String url = getUrlPath(matcher.group(), initialBackRefs, backRefs, status.getJawrConfig().getCssImagePathOverride());
 <a name="74" href="#74">74</a>  			matcher.appendReplacement(sb, RegexUtil.adaptReplacementToMatcher(url));
 <a name="75" href="#75">75</a>  		}
 <a name="76" href="#76">76</a>  		matcher.appendTail(sb);
@@ -93,7 +93,7 @@
 <a name="84" href="#84">84</a>  <em>	 * @param initialBackRefs</em>
 <a name="85" href="#85">85</a>  <em>	 * @return</em>
 <a name="86" href="#86">86</a>  <em>	 */</em>
-<a name="87" href="#87">87</a>  	<strong>private</strong> String getUrlPath(String match, <strong>int</strong> initialBackRefs, List resourceBackRefs) {
+<a name="87" href="#87">87</a>  	<strong>private</strong> String getUrlPath(String match, <strong>int</strong> initialBackRefs, List resourceBackRefs, String imagePathOverride) {
 <a name="88" href="#88">88</a>  
 <a name="89" href="#89">89</a>  		String url = match.substring(match.indexOf('(')+1,match.lastIndexOf(')'))
 <a name="90" href="#90">90</a>  					.trim();
@@ -126,72 +126,79 @@
 <a name="117" href="#117">117</a> 		<strong>else</strong> <strong>if</strong>(url.startsWith(<span class="string">"./"</span>))
 <a name="118" href="#118">118</a> 			url = url.substring(2,url.length());
 <a name="119" href="#119">119</a> 		
-<a name="120" href="#120">120</a> 		<em class="comment">// Adjust the forward pathnames according to the backrefs in the url</em>
-<a name="121" href="#121">121</a> 		<strong>if</strong>(backRefsInURL > 0 &amp;&amp; resourceBackRefs.size() > 0) {
-<a name="122" href="#122">122</a> 			<strong>int</strong> size = resourceBackRefs.size();
-<a name="123" href="#123">123</a> 			<strong>int</strong> counter = 0;
-<a name="124" href="#124">124</a> 			<strong>while</strong>(size > 0) {
-<a name="125" href="#125">125</a> 				counter++;
-<a name="126" href="#126">126</a> 				<strong>if</strong>(counter >= 50)
-<a name="127" href="#127">127</a> 					<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Infinite loop on url: "</span> + url + <span class="string">" :size:"</span> + size);
-<a name="128" href="#128">128</a> 				size--;
-<a name="129" href="#129">129</a> 				backRefsInURL--;
-<a name="130" href="#130">130</a> 				resourceBackRefs.remove(size);
-<a name="131" href="#131">131</a> 				<strong>if</strong>(backRefsInURL == 0)
-<a name="132" href="#132">132</a> 					<strong>break</strong>;
-<a name="133" href="#133">133</a> 			}
-<a name="134" href="#134">134</a> 		}		
-<a name="135" href="#135">135</a> 		
-<a name="136" href="#136">136</a> 		<em class="comment">// Start rendering the result, starting by the initial quote, if any. </em>
-<a name="137" href="#137">137</a> 		StringBuffer urlPrefix = <strong>new</strong> StringBuffer(<span class="string">"url("</span>).append(quoteStr);
-<a name="138" href="#138">138</a> 		
-<a name="139" href="#139">139</a> 		<em class="comment">// Add the back references as needed</em>
-<a name="140" href="#140">140</a> 		<strong>for</strong> (<strong>int</strong> i = 0; i &lt; initialBackRefs; i++) {
-<a name="141" href="#141">141</a> 			urlPrefix.append(<span class="string">"../"</span>);
-<a name="142" href="#142">142</a> 		}		
-<a name="143" href="#143">143</a> 		<strong>for</strong>(Iterator it = resourceBackRefs.iterator();it.hasNext(); ) {
-<a name="144" href="#144">144</a> 			urlPrefix.append(it.next()).append(<span class="string">"/"</span>);			
-<a name="145" href="#145">145</a> 		}
-<a name="146" href="#146">146</a> 		<strong>return</strong> urlPrefix.append(url).append(quoteStr).append(<span class="string">")"</span>).toString();
-<a name="147" href="#147">147</a> 	}
-<a name="148" href="#148">148</a> 	
-<a name="149" href="#149">149</a> 	
-<a name="150" href="#150">150</a> 	<em>/**<em>*</em></em>
-<a name="151" href="#151">151</a> <em>	 * Gets the path names within a reource URL, exluding the resource file name. </em>
-<a name="152" href="#152">152</a> <em>	 * @param resourceURL</em>
-<a name="153" href="#153">153</a> <em>	 * @return</em>
-<a name="154" href="#154">154</a> <em>	 */</em>
-<a name="155" href="#155">155</a> 	<strong>private</strong> List getPathNamesInResource(String resourceURL) {
-<a name="156" href="#156">156</a> 		List names = <strong>new</strong> ArrayList();
-<a name="157" href="#157">157</a> 		String[] namesArray = resourceURL.split(<span class="string">"/"</span>);
-<a name="158" href="#158">158</a> 		
-<a name="159" href="#159">159</a> 		<em class="comment">// Add all but the last pathname</em>
-<a name="160" href="#160">160</a> 		<strong>for</strong> (<strong>int</strong> i = 0; i &lt; namesArray.length -1 ; i++) {
-<a name="161" href="#161">161</a> 			<strong>if</strong>(!<span class="string">""</span>.equals(namesArray[i]))
-<a name="162" href="#162">162</a> 				names.add(namesArray[i]);
-<a name="163" href="#163">163</a> 		}
-<a name="164" href="#164">164</a> 		
-<a name="165" href="#165">165</a> 		<strong>return</strong> names;
-<a name="166" href="#166">166</a> 	}
-<a name="167" href="#167">167</a> 	
-<a name="168" href="#168">168</a> 	<em>/**<em>*</em></em>
-<a name="169" href="#169">169</a> <em>	 * Find the number of occurrences of / within a url. </em>
-<a name="170" href="#170">170</a> <em>	 * @param url</em>
-<a name="171" href="#171">171</a> <em>	 * @return</em>
-<a name="172" href="#172">172</a> <em>	 */</em>
-<a name="173" href="#173">173</a> 	<strong>private</strong> <strong>int</strong> numberOfForwardReferences(String url) {
-<a name="174" href="#174">174</a> 		Matcher backUrls = URLSeparatorPattern.matcher(url);
-<a name="175" href="#175">175</a> 		<strong>int</strong> numMatches = 0;
-<a name="176" href="#176">176</a> 		<strong>while</strong>(backUrls.find())
-<a name="177" href="#177">177</a> 			numMatches++;
-<a name="178" href="#178">178</a> 		
-<a name="179" href="#179">179</a> 		<strong>if</strong>(url.startsWith(<span class="string">"/"</span>))
-<a name="180" href="#180">180</a> 			numMatches--;
-<a name="181" href="#181">181</a> 		
-<a name="182" href="#182">182</a> 		<strong>return</strong> numMatches;
-<a name="183" href="#183">183</a> 	}
-<a name="184" href="#184">184</a> 	
-<a name="185" href="#185">185</a> }
+<a name="120" href="#120">120</a> 		<em class="comment">// append the override url here if need be</em>
+<a name="121" href="#121">121</a> 		<strong>if</strong>(imagePathOverride != <strong>null</strong>){
+<a name="122" href="#122">122</a> 			StringBuffer sb = <strong>new</strong> StringBuffer(<span class="string">"url("</span>);
+<a name="123" href="#123">123</a> 			sb.append(quoteStr).append(imagePathOverride).append(url).append(quoteStr).append(<span class="string">")"</span>);
+<a name="124" href="#124">124</a> 			<strong>return</strong> sb.toString();
+<a name="125" href="#125">125</a> 		}
+<a name="126" href="#126">126</a> 		
+<a name="127" href="#127">127</a> 		<em class="comment">// Adjust the forward pathnames according to the backrefs in the url</em>
+<a name="128" href="#128">128</a> 		<strong>if</strong>(backRefsInURL > 0 &amp;&amp; resourceBackRefs.size() > 0) {
+<a name="129" href="#129">129</a> 			<strong>int</strong> size = resourceBackRefs.size();
+<a name="130" href="#130">130</a> 			<strong>int</strong> counter = 0;
+<a name="131" href="#131">131</a> 			<strong>while</strong>(size > 0) {
+<a name="132" href="#132">132</a> 				counter++;
+<a name="133" href="#133">133</a> 				<strong>if</strong>(counter >= 50)
+<a name="134" href="#134">134</a> 					<strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"Infinite loop on url: "</span> + url + <span class="string">" :size:"</span> + size);
+<a name="135" href="#135">135</a> 				size--;
+<a name="136" href="#136">136</a> 				backRefsInURL--;
+<a name="137" href="#137">137</a> 				resourceBackRefs.remove(size);
+<a name="138" href="#138">138</a> 				<strong>if</strong>(backRefsInURL == 0)
+<a name="139" href="#139">139</a> 					<strong>break</strong>;
+<a name="140" href="#140">140</a> 			}
+<a name="141" href="#141">141</a> 		}		
+<a name="142" href="#142">142</a> 		
+<a name="143" href="#143">143</a> 		<em class="comment">// Start rendering the result, starting by the initial quote, if any. </em>
+<a name="144" href="#144">144</a> 		StringBuffer urlPrefix = <strong>new</strong> StringBuffer(<span class="string">"url("</span>).append(quoteStr);
+<a name="145" href="#145">145</a> 		
+<a name="146" href="#146">146</a> 		<em class="comment">// Add the back references as needed</em>
+<a name="147" href="#147">147</a> 		<strong>for</strong> (<strong>int</strong> i = 0; i &lt; initialBackRefs; i++) {
+<a name="148" href="#148">148</a> 			urlPrefix.append(<span class="string">"../"</span>);
+<a name="149" href="#149">149</a> 		}		
+<a name="150" href="#150">150</a> 		<strong>for</strong>(Iterator it = resourceBackRefs.iterator();it.hasNext(); ) {
+<a name="151" href="#151">151</a> 			urlPrefix.append(it.next()).append(<span class="string">"/"</span>);			
+<a name="152" href="#152">152</a> 		}
+<a name="153" href="#153">153</a> 		<strong>return</strong> urlPrefix.append(url).append(quoteStr).append(<span class="string">")"</span>).toString();
+<a name="154" href="#154">154</a> 	}
+<a name="155" href="#155">155</a> 	
+<a name="156" href="#156">156</a> 	
+<a name="157" href="#157">157</a> 	<em>/**<em>*</em></em>
+<a name="158" href="#158">158</a> <em>	 * Gets the path names within a reource URL, exluding the resource file name. </em>
+<a name="159" href="#159">159</a> <em>	 * @param resourceURL</em>
+<a name="160" href="#160">160</a> <em>	 * @return</em>
+<a name="161" href="#161">161</a> <em>	 */</em>
+<a name="162" href="#162">162</a> 	<strong>private</strong> List getPathNamesInResource(String resourceURL) {
+<a name="163" href="#163">163</a> 		List names = <strong>new</strong> ArrayList();
+<a name="164" href="#164">164</a> 		String[] namesArray = resourceURL.split(<span class="string">"/"</span>);
+<a name="165" href="#165">165</a> 		
+<a name="166" href="#166">166</a> 		<em class="comment">// Add all but the last pathname</em>
+<a name="167" href="#167">167</a> 		<strong>for</strong> (<strong>int</strong> i = 0; i &lt; namesArray.length -1 ; i++) {
+<a name="168" href="#168">168</a> 			<strong>if</strong>(!<span class="string">""</span>.equals(namesArray[i]))
+<a name="169" href="#169">169</a> 				names.add(namesArray[i]);
+<a name="170" href="#170">170</a> 		}
+<a name="171" href="#171">171</a> 		
+<a name="172" href="#172">172</a> 		<strong>return</strong> names;
+<a name="173" href="#173">173</a> 	}
+<a name="174" href="#174">174</a> 	
+<a name="175" href="#175">175</a> 	<em>/**<em>*</em></em>
+<a name="176" href="#176">176</a> <em>	 * Find the number of occurrences of / within a url. </em>
+<a name="177" href="#177">177</a> <em>	 * @param url</em>
+<a name="178" href="#178">178</a> <em>	 * @return</em>
+<a name="179" href="#179">179</a> <em>	 */</em>
+<a name="180" href="#180">180</a> 	<strong>private</strong> <strong>int</strong> numberOfForwardReferences(String url) {
+<a name="181" href="#181">181</a> 		Matcher backUrls = URLSeparatorPattern.matcher(url);
+<a name="182" href="#182">182</a> 		<strong>int</strong> numMatches = 0;
+<a name="183" href="#183">183</a> 		<strong>while</strong>(backUrls.find())
+<a name="184" href="#184">184</a> 			numMatches++;
+<a name="185" href="#185">185</a> 		
+<a name="186" href="#186">186</a> 		<strong>if</strong>(url.startsWith(<span class="string">"/"</span>))
+<a name="187" href="#187">187</a> 			numMatches--;
+<a name="188" href="#188">188</a> 		
+<a name="189" href="#189">189</a> 		<strong>return</strong> numMatches;
+<a name="190" href="#190">190</a> 	}
+<a name="191" href="#191">191</a> 	
+<a name="192" href="#192">192</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

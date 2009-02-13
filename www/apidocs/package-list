@@ -24,4 +24,5 @@ net.jawr.web.resource.bundle.renderer
 net.jawr.web.resource.bundle.sorting
 net.jawr.web.servlet
 net.jawr.web.taglib
+net.jawr.web.taglib.el
 net.jawr.web.taglib.jsf

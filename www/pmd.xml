@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="3.9" timestamp="2008-11-25T10:26:23.668" elapsedTime="0s">
+<pmd version="3.9" timestamp="2009-02-13T13:15:50.697" elapsedTime="0s">
+<file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\resource\bundle\factory\util\ClassLoaderResourceUtils.java">
+<violation line="119" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.resource.bundle.factory.util" class="ClassLoaderResourceUtils" method="locateClass" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+Avoid empty catch blocks
+</violation>
+</file>
 <file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\resource\bundle\handler\ClientSideHandlerScriptRequestHandler.java">
 <violation line="140" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.resource.bundle.handler" class="ClientSideHandlerScriptRequestHandler" method="useNotModifiedHeader" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
@@ -18,6 +23,25 @@ Avoid empty catch blocks
 <file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\servlet\JawrRequestHandler.java">
 <violation line="300" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="net.jawr.web.servlet" class="JawrRequestHandler" method="processRequest" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
+</violation>
+</file>
+<file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\taglib\el\ELCSSBundleTagBeanInfo.java">
+<violation line="42" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.taglib.el" class="ELCSSBundleTagBeanInfo" method="getPropertyDescriptors" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+Avoid empty catch blocks
+</violation>
+<violation line="47" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.taglib.el" class="ELCSSBundleTagBeanInfo" method="getPropertyDescriptors" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+Avoid empty catch blocks
+</violation>
+<violation line="52" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.taglib.el" class="ELCSSBundleTagBeanInfo" method="getPropertyDescriptors" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+Avoid empty catch blocks
+</violation>
+</file>
+<file name="C:\Proyectos\Jawr\trunk jawr\core\src\main\java\net\jawr\web\taglib\el\ELJavascriptBundleTagBeanInfo.java">
+<violation line="42" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.taglib.el" class="ELJavascriptBundleTagBeanInfo" method="getPropertyDescriptors" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+Avoid empty catch blocks
+</violation>
+<violation line="47" rule="EmptyCatchBlock" ruleset="Basic Rules" package="net.jawr.web.taglib.el" class="ELJavascriptBundleTagBeanInfo" method="getPropertyDescriptors" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+Avoid empty catch blocks
 </violation>
 </file>
 </pmd>

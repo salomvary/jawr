@@ -9,8 +9,7 @@
 
 
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <title>Jawr - Tutorial: quick start</title>
     <style type="text/css" media="all">
@@ -22,217 +21,202 @@
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
       </head>
   <body class="composite">
-    <div id="banner">
-                    <span id="bannerLeft">
-    
-            Java web resources bundling and compression
-    
-            </span>
-                    <div class="clear">
-        <hr/>
-      </div>
-    </div>
-    <div id="breadcrumbs">
-          
-  
-
-  
-    
-  
-  
-    
-            <div class="xleft">
-        Last Published: 2008-11-25
-                      </div>
-            <div class="xright">      
-  
-
-  
-    
-  
-  
-    
-  </div>
-      <div class="clear">
-        <hr/>
-      </div>
-    </div>
+    <!-- TODO: move this into JavaScript to patch the skin
+      <div class="xright">  </div>
+    -->
     <div id="leftColumn">
       <div id="navcolumn">
-           
-  
-
-  
-    
-  
-  
-    
-                   <h5>About</h5>
-            <ul>
+             <dl class=navgroup>
+        <dt>About</dt>
+        <dd><ul>
               
     <li class="none">
-                    <a href="../servlets/ProjectHome">Home</a>
-          </li>
+              <a href="../servlets/ProjectHome">Home</a>
+        </li>
               
     <li class="none">
-                    <a href="../introduction.html">Introduction</a>
-          </li>
+              <a href="../introduction.html">Introduction</a>
+        </li>
               
     <li class="none">
-                    <a href="../features.html">Features</a>
-          </li>
+              <a href="../features.html">Features</a>
+        </li>
               
     <li class="none">
-                    <a href="../changes.html">Change history</a>
-          </li>
-          </ul>
-              <h5>Documentation</h5>
-            <ul>
+              <a href="../changes.html">Change history</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Documentation</dt>
+        <dd><ul>
               
     <li class="none">
-                    <a href="../docs/servlet.html">The Jawr servlet</a>
-          </li>
+              <a href="../docs/servlet.html">The Jawr servlet</a>
+        </li>
               
     <li class="none">
-                    <a href="../docs/descriptor_syntax.html">Descriptor syntax</a>
-          </li>
+              <a href="../docs/descriptor_syntax.html">Descriptor syntax</a>
+        </li>
               
     <li class="none">
-                    <a href="../docs/custom_bundles.html">Bundle definition</a>
-          </li>
+              <a href="../docs/custom_bundles.html">Bundle definition</a>
+        </li>
               
     <li class="none">
-                    <a href="../docs/source_ordering.html">Source order in bundles</a>
-          </li>
+              <a href="../docs/source_ordering.html">Source order in bundles</a>
+        </li>
               
     <li class="none">
-                    <a href="../docs/postprocessors.html">Postprocessors</a>
-          </li>
+              <a href="../docs/postprocessors.html">Postprocessors</a>
+        </li>
               
     <li class="none">
-                    <a href="../docs/generators.html">Generators</a>
-          </li>
+              <a href="../docs/generators.html">Generators</a>
+        </li>
               
     <li class="none">
-                    <a href="../docs/license_files.html">Licenses in resources</a>
-          </li>
+              <a href="../docs/license_files.html">Licenses in resources</a>
+        </li>
               
     <li class="none">
-                    <a href="../docs/taglibs.html">JSP Tag library</a>
-          </li>
+              <a href="../docs/taglibs.html">JSP Tag library</a>
+        </li>
               
     <li class="none">
-                    <a href="../docs/plain_html.html">Use in HTML pages</a>
-          </li>
+              <a href="../docs/plain_html.html">Use in HTML pages</a>
+        </li>
               
     <li class="none">
-                    <a href="../docs/modes.html">Debug and production modes</a>
-          </li>
+              <a href="../docs/modes.html">Debug and production modes</a>
+        </li>
               
     <li class="none">
-                    <a href="../docs/messages_gen.html">i18n message generator</a>
-          </li>
-          </ul>
-              <h5>Integration</h5>
-            <ul>
+              <a href="../docs/messages_gen.html">i18n message generator</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Integration</dt>
+        <dd><ul>
               
     <li class="none">
-                    <a href="../integration/augmenter.html">Add Jawr to your framework</a>
-          </li>
+              <a href="../integration/augmenter.html">Add Jawr to your framework</a>
+        </li>
               
     <li class="none">
-                    <a href="../integration/spring.html">Spring MVC</a>
-          </li>
+              <a href="../integration/spring.html">Spring MVC</a>
+        </li>
               
     <li class="none">
-                    <a href="../integration/facelets.html">Facelets Tag library</a>
-          </li>
+              <a href="../integration/facelets.html">Facelets Tag library</a>
+        </li>
               
     <li class="none">
-                    <a href="../integration/grails.html">Grails plugin</a>
-          </li>
+              <a href="../integration/grails.html">Grails plugin</a>
+        </li>
               
     <li class="none">
-                    <a href="../integration/dwr.html">DWR</a>
-          </li>
+              <a href="../integration/dwr.html">DWR</a>
+        </li>
               
     <li class="none">
-                    <a href="../integration/validator.html">Commons Validator - Struts</a>
-          </li>
-          </ul>
-              <h5>Tutorials</h5>
-            <ul>
+              <a href="../integration/validator.html">Commons Validator - Struts</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Tutorials</dt>
+        <dd><ul>
               
     <li class="none">
               <strong>Quick start</strong>
         </li>
               
     <li class="none">
-                    <a href="../tutorials/faq_howto.html">FAQ-Howto</a>
-          </li>
+              <a href="../tutorials/faq_howto.html">FAQ-Howto</a>
+        </li>
               
     <li class="none">
-                    <a href="../tutorials/libraries.html">Using popular libraries</a>
-          </li>
-          </ul>
-              <h5>API and sources</h5>
-            <ul>
+              <a href="../tutorials/libraries.html">Using popular libraries</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>API and sources</dt>
+        <dd><ul>
               
     <li class="none">
-                    <a href="../nonav/apidocs/index.html">JavaDocs</a>
-          </li>
+              <a href="../nonav/apidocs/index.html">JavaDocs</a>
+        </li>
               
     <li class="none">
-                    <a href="../nonav/xref/index.html">Source XREF</a>
-          </li>
-          </ul>
-              <h5>Project tools</h5>
-            <ul>
+              <a href="../nonav/xref/index.html">Source XREF</a>
+        </li>
+          </ul></dd>
+    </dl>
+      <dl class=navgroup>
+        <dt>Project tools</dt>
+        <dd><ul>
               
     <li class="none">
-                    <a href="../servlets/ProjectHome">Project home</a>
-          </li>
+              <a href="../servlets/ProjectHome">Project home</a>
+        </li>
               
     <li class="none">
-                    <a href="../servlets/ProjectMemberList">Membership</a>
-          </li>
+              <a href="../servlets/ProjectMemberList">Membership</a>
+        </li>
               
     <li class="none">
-                    <a href="../servlets/ProjectNewsList">Announcements</a>
-          </li>
+              <a href="../servlets/ProjectNewsList">Announcements</a>
+        </li>
               
     <li class="none">
-                    <a href="../servlets/ProjectForumView">Discussion forums</a>
-          </li>
+              <a href="../servlets/ProjectForumView">Discussion forums</a>
+        </li>
               
     <li class="none">
-                    <a href="../servlets/ProjectMailingListList">Mailing lists</a>
-          </li>
+              <a href="../servlets/ProjectMailingListList">Mailing lists</a>
+        </li>
               
     <li class="none">
-                    <a href="../servlets/ProjectDocumentList">Documents & files</a>
-          </li>
+              <a href="../servlets/ProjectDocumentList">Documents & files</a>
+        </li>
               
     <li class="none">
-                    <a href="../source/browse/jawr/">Subversion</a>
-          </li>
+              <a href="../source/browse/jawr/">Subversion</a>
+        </li>
               
     <li class="none">
-                    <a href="../servlets/ProjectIssues">Issue tracker</a>
-          </li>
-          </ul>
-                                           <a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy">
-            <img alt="Built by Maven" src="../images/logos/maven-feather.png"></img>
-          </a>
-                       
-  
-
-  
-    
-  
-  
-    
+              <a href="../servlets/ProjectIssues">Issue tracker</a>
+        </li>
+          </ul></dd>
+    </dl>
         </div>
+      <script>
+        // replace the java.net project tools with the navigation bar from Maven.
+        // also get rid of "Get Involved" thingie too, while we are at it
+        var pt = document.getElementById("projecttools");
+        var nv = document.getElementById("navcolumn");
+        
+        while(pt.previousSibling!=null)
+          pt.parentNode.removeChild(pt.previousSibling);
+        
+        pt.parentNode.insertBefore(nv,pt);
+        pt.parentNode.removeChild(pt);
+      </script>
+      <script>
+        // kill "description" h3 bar
+        var ld = document.getElementById("longdescription");
+        if(ld!=null) {
+          for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
+            if(n.nodeType==1 && n.innerHTML=="Description" ) {
+              n.parentNode.removeChild(n);
+              break;
+            }
+          }
+        }
+      </script>
     </div>
     <div id="bodyColumn">
       <div id="contentBox">
@@ -326,9 +310,6 @@ jawr.charset.name=UTF-8
 # Javascript properties and mappings
 jawr.js.bundle.basedir=/js
 
-# Javascript properties and mappings
-jawr.js.bundle.names=lib
-
 # All files within /js/lib will be together in a bundle. 
 # The remaining scripts will be served sepparately. 
 jawr.js.bundle.lib.id=/bundles/lib.js
@@ -394,17 +375,16 @@ log4j.logger.net.jawr=INFO</pre>
     </div>
     <div id="footer">
       <div class="xright">&#169;  
-          2008
+          2009
     
           
   
 
   
-    
   
-  
-    
-  </div>
+  &nbsp;| Last Published: 02/13/2009
+  &nbsp;| Version: 2.7
+</div>
       <div class="clear">
         <hr/>
       </div>

@@ -106,49 +106,71 @@
 <a name="97" href="#97">97</a>  <em>	 */</em>
 <a name="98" href="#98">98</a>  	<strong>public</strong> <strong>static</strong> Object buildObjectInstance(String classname) {
 <a name="99" href="#99">99</a>  		Object rets = <strong>null</strong>;
-<a name="100" href="#100">100</a> 		<strong>try</strong> {
-<a name="101" href="#101">101</a> 			Class clazz = Class.forName(classname);
+<a name="100" href="#100">100</a> 		Class clazz = locateClass(classname);
+<a name="101" href="#101">101</a> 		<strong>try</strong> {
 <a name="102" href="#102">102</a> 			rets = clazz.newInstance();
-<a name="103" href="#103">103</a> 			
-<a name="104" href="#104">104</a> 		} <strong>catch</strong> (Exception e) {
-<a name="105" href="#105">105</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(e.getMessage() 
-<a name="106" href="#106">106</a> 										+ <span class="string">" [The custom class "</span> 
-<a name="107" href="#107">107</a> 										+ classname 
-<a name="108" href="#108">108</a> 										+ <span class="string">" could not be instantiated, check wether it is available on the classpath and"</span> 
-<a name="109" href="#109">109</a> 										+ <span class="string">" verify that it has a zero-arg constructor].\n"</span> 
-<a name="110" href="#110">110</a> 										+ <span class="string">" The specific error message is: "</span> + e.getClass().getName() + <span class="string">":"</span> + e.getMessage(),e);
-<a name="111" href="#111">111</a> 		}
-<a name="112" href="#112">112</a> 		<strong>return</strong> rets;
-<a name="113" href="#113">113</a> 	}
-<a name="114" href="#114">114</a> 	
-<a name="115" href="#115">115</a> 	<em>/**<em>*</em></em>
-<a name="116" href="#116">116</a> <em>	 * Builds a class instance using reflection, by using its classname. The class must have a zero-arg constructor. </em>
-<a name="117" href="#117">117</a> <em>	 * @param classname the class to build an instance of. </em>
-<a name="118" href="#118">118</a> <em>	 * @return</em>
-<a name="119" href="#119">119</a> <em>	 */</em>
-<a name="120" href="#120">120</a> 	<strong>public</strong> <strong>static</strong> Object buildObjectInstance(String classname, Object[] params) {
-<a name="121" href="#121">121</a> 		Object rets = <strong>null</strong>;
-<a name="122" href="#122">122</a> 		
-<a name="123" href="#123">123</a> 		Class[] paramTypes = <strong>new</strong> Class[params.length];
-<a name="124" href="#124">124</a> 		<strong>for</strong>(<strong>int</strong> x = 0; x &lt; params.length; x++){
-<a name="125" href="#125">125</a> 			paramTypes[x] = params[x].getClass();
-<a name="126" href="#126">126</a> 		}
-<a name="127" href="#127">127</a> 		
-<a name="128" href="#128">128</a> 		<strong>try</strong> {
-<a name="129" href="#129">129</a> 			Class clazz = Class.forName(classname);
-<a name="130" href="#130">130</a> 			rets = clazz.getConstructor(paramTypes).newInstance(params);
-<a name="131" href="#131">131</a> 			
-<a name="132" href="#132">132</a> 		} <strong>catch</strong> (Exception e) {
-<a name="133" href="#133">133</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(e.getMessage() 
-<a name="134" href="#134">134</a> 										+ <span class="string">" [The custom class "</span> 
-<a name="135" href="#135">135</a> 										+ classname 
-<a name="136" href="#136">136</a> 										+ <span class="string">" could not be instantiated, check wether it is available on the classpath and"</span> 
-<a name="137" href="#137">137</a> 										+ <span class="string">" verify that it has a zero-arg constructor].\n"</span> 
-<a name="138" href="#138">138</a> 										+ <span class="string">" The specific error message is: "</span> + e.getClass().getName() + <span class="string">":"</span> + e.getMessage(),e);
-<a name="139" href="#139">139</a> 		}
-<a name="140" href="#140">140</a> 		<strong>return</strong> rets;
-<a name="141" href="#141">141</a> 	}
-<a name="142" href="#142">142</a> }
+<a name="103" href="#103">103</a> 		}<strong>catch</strong>(Exception e) {
+<a name="104" href="#104">104</a> 				<strong>throw</strong> <strong>new</strong> RuntimeException(e.getMessage() 
+<a name="105" href="#105">105</a> 											+ <span class="string">" [The custom class "</span> 
+<a name="106" href="#106">106</a> 											+ classname 
+<a name="107" href="#107">107</a> 											+ <span class="string">" could not be instantiated, check wether it is available on the classpath and"</span> 
+<a name="108" href="#108">108</a> 											+ <span class="string">" verify that it has a zero-arg constructor].\n"</span> 
+<a name="109" href="#109">109</a> 											+ <span class="string">" The specific error message is: "</span> + e.getClass().getName() + <span class="string">":"</span> + e.getMessage(),e);			
+<a name="110" href="#110">110</a> 		}
+<a name="111" href="#111">111</a> 		<strong>return</strong> rets;
+<a name="112" href="#112">112</a> 	}
+<a name="113" href="#113">113</a> 	
+<a name="114" href="#114">114</a> 	<strong>private</strong> <strong>static</strong> Class locateClass(String classname) {
+<a name="115" href="#115">115</a> 		Class clazz = <strong>null</strong>;
+<a name="116" href="#116">116</a> 		<strong>try</strong> {
+<a name="117" href="#117">117</a> 			clazz = Class.forName(classname);
+<a name="118" href="#118">118</a> 			
+<a name="119" href="#119">119</a> 		} <strong>catch</strong> (Exception e) {
+<a name="120" href="#120">120</a> 			<em class="comment">// Try the second approach </em>
+<a name="121" href="#121">121</a> 		}
+<a name="122" href="#122">122</a> 		<strong>if</strong>(<strong>null</strong> == clazz) {
+<a name="123" href="#123">123</a> 			<strong>try</strong> {
+<a name="124" href="#124">124</a> 				clazz = Class.forName(classname, <strong>true</strong>, <strong>new</strong> <a href="../../../../../../../net/jawr/web/resource/bundle/factory/util/ClassLoaderResourceUtils.html">ClassLoaderResourceUtils</a>().getClass().getClassLoader());
+<a name="125" href="#125">125</a> 			} <strong>catch</strong> (Exception e) {
+<a name="126" href="#126">126</a> 				<strong>throw</strong> <strong>new</strong> RuntimeException(e.getMessage() 
+<a name="127" href="#127">127</a> 											+ <span class="string">" [The custom class "</span> 
+<a name="128" href="#128">128</a> 											+ classname 
+<a name="129" href="#129">129</a> 											+ <span class="string">" could not be instantiated, check wether it is available on the classpath and"</span> 
+<a name="130" href="#130">130</a> 											+ <span class="string">" verify that it has a zero-arg constructor].\n"</span> 
+<a name="131" href="#131">131</a> 											+ <span class="string">" The specific error message is: "</span> + e.getClass().getName() + <span class="string">":"</span> + e.getMessage(),e);
+<a name="132" href="#132">132</a> 		  }
+<a name="133" href="#133">133</a> 		}
+<a name="134" href="#134">134</a> 		<strong>return</strong> clazz;
+<a name="135" href="#135">135</a> 	}
+<a name="136" href="#136">136</a> 	
+<a name="137" href="#137">137</a> 	<em>/**<em>*</em></em>
+<a name="138" href="#138">138</a> <em>	 * Builds a class instance using reflection, by using its classname. The class must have a zero-arg constructor. </em>
+<a name="139" href="#139">139</a> <em>	 * @param classname the class to build an instance of. </em>
+<a name="140" href="#140">140</a> <em>	 * @return</em>
+<a name="141" href="#141">141</a> <em>	 */</em>
+<a name="142" href="#142">142</a> 	<strong>public</strong> <strong>static</strong> Object buildObjectInstance(String classname, Object[] params) {
+<a name="143" href="#143">143</a> 		Object rets = <strong>null</strong>;
+<a name="144" href="#144">144</a> 		
+<a name="145" href="#145">145</a> 		Class[] paramTypes = <strong>new</strong> Class[params.length];
+<a name="146" href="#146">146</a> 		<strong>for</strong>(<strong>int</strong> x = 0; x &lt; params.length; x++){
+<a name="147" href="#147">147</a> 			paramTypes[x] = params[x].getClass();
+<a name="148" href="#148">148</a> 		}
+<a name="149" href="#149">149</a> 		
+<a name="150" href="#150">150</a> 		<strong>try</strong> {
+<a name="151" href="#151">151</a> 			Class clazz = locateClass(classname);
+<a name="152" href="#152">152</a> 			rets = clazz.getConstructor(paramTypes).newInstance(params);
+<a name="153" href="#153">153</a> 			
+<a name="154" href="#154">154</a> 		} <strong>catch</strong> (Exception e) {
+<a name="155" href="#155">155</a> 			<strong>throw</strong> <strong>new</strong> RuntimeException(e.getMessage() 
+<a name="156" href="#156">156</a> 										+ <span class="string">" [The custom class "</span> 
+<a name="157" href="#157">157</a> 										+ classname 
+<a name="158" href="#158">158</a> 										+ <span class="string">" could not be instantiated, check wether it is available on the classpath and"</span> 
+<a name="159" href="#159">159</a> 										+ <span class="string">" verify that it has a zero-arg constructor].\n"</span> 
+<a name="160" href="#160">160</a> 										+ <span class="string">" The specific error message is: "</span> + e.getClass().getName() + <span class="string">":"</span> + e.getMessage(),e);
+<a name="161" href="#161">161</a> 		}
+<a name="162" href="#162">162</a> 		<strong>return</strong> rets;
+<a name="163" href="#163">163</a> 	}
+<a name="164" href="#164">164</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
