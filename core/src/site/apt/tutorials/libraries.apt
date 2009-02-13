@@ -47,7 +47,6 @@ Using popular open source libraries with Jawr
 +------------------------------------------+
 
 # Our composite bundle
-jawr.js.bundle.names=lib
 jawr.js.bundle.lib.id=/bundles/lib.js
 jawr.js.bundle.lib.global=true
 jawr.js.bundle.lib.composite=true
@@ -63,7 +62,6 @@ jawr.js.bundle.jquery.bundlepostprocessors=none
 jawr.js.bundle.jqueryplugins.mappings=/js/lib/plugins/**
 
 # An 'all in one' css bundle
-jawr.css.bundle.names=all 
 
 jawr.css.bundle.all.id=/bundles/all.css
 jawr.css.bundle.all.mappings=/css/**
@@ -187,7 +185,6 @@ $(function()
 	Now the last thing you need to have everything set up is to add a mapping to the Jawr configuration file. It would go like this: 
 	
 +------------------------------------------+
-jawr.js.bundle.names=lib
 jawr.js.bundle.lib.id=/bundles/lib.js
 jawr.js.bundle.lib.global=true
 jawr.js.bundle.lib.mappings=/js/lib/**
@@ -337,8 +334,6 @@ Event.observe(window, 'load', attachFadeOutBehavior);
 	defined as global. First thing to do is declare a CSS bundle for the required assets: 
 
 +------------------------------------------+	
-	jawr.css.bundle.names=yui 
-
 	jawr.css.bundle.yui.id=/bundles/yui.css
 	jawr.css.bundle.yui.mappings=/css/assets/**
 	jawr.css.bundle.yui.global=true
@@ -349,7 +344,6 @@ Event.observe(window, 'load', attachFadeOutBehavior);
 	we are using the pre-minified YUI scripts: 
 
 +------------------------------------------+	
-	jawr.js.bundle.names=yui, yuidebug
 	
 	# Define the production yui library
 	jawr.js.bundle.yui.id=/bundles/yui.js

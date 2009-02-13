@@ -37,8 +37,6 @@ Debug and production modes
 	For this structure, we define two bundles in the following form: 
 			
 +------------------------------------------+
-	jawr.js.bundle.names=globalBundle, fooBundle
-	
 	jawr.js.bundle.globalBundle.id=/bundles/global.js
 	jawr.js.bundle.globalBundle.global=true
 	jawr.js.bundle.globalBundle.mappings=/js/lib/**	

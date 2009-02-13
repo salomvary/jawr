@@ -41,7 +41,6 @@ License files
 	you could map as follows: 
 	
 +------------------------------------------+
-	jawr.js.bundle.names=fooBundle, barBundle
 	
 	...	
 	jawr.js.bundle.fooBundle.id=/bundles/fooBundle.js

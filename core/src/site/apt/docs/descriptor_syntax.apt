@@ -27,9 +27,11 @@ Descriptor file syntax
 *---------------*---------*--------------+----------------+
 | jawr.locale.resolver | String | Name of a class implementing net.jawr.web.resource.bundle.locale.LocaleResolver. An instance of this class will be created and used to determine the Locale to use for a given request when using an {{{./messages_gen.html}i18n messages generator}}.   | none| 
 *---------------*---------*--------------+----------------+
-| jawr.url.contextpath.override | URL (absolute or fragment) [<<http://...>>],[<</somepath >>] or [<</>>] or []. | Override the use of the application's contextpath to prefix every generated URL.  | none    | 
+| jawr.url.contextpath.override | URL (absolute or fragment) [<<http://...>>],[<<//somepath>> protocol relative],[<</somepath >>] or [<</>>] or []. | Override the use of the application's contextpath to prefix every generated URL.  | none    | 
 | | | Using '<</>>' will cause Jawr to skip the context path altogether ('/001/bundles/mybundle.js').  |     | 
 | | | Using an empty value will cause Jawr to generate page relative urls ('001/bundles/mybundle.js').  |     | 
+*---------------*---------*--------------+----------------+
+| jawr.css.imagepath.override | String | Value to prepend to normalized css urls.  So css background: url(../../img/bkrnd/bg.gif); will = background: url(${jawr.css.imagepath.override}img/bkrnd/bg.gif); | none| 
 *---------------*---------*--------------+----------------+
 | jawr.csslinks.flavor | String | Sets how the LINK tags are rendered by the style tag. See the {{{./taglibs.html}taglib docs.}}   | xhtml | 
 *---------------*---------*--------------+----------------+
@@ -78,10 +80,7 @@ Descriptor file syntax
 *---------------+---------+--------------+----------------+
 | <<Property name>> | <<Type>>    | <<Purpose>>      | <<Default value>>  |
 *---------------+---------+--------------+----------------+
-| jawr.js.bundle.names  | Comma separated list.  | List of all the bundles you wish to define in the descriptor. For every item in this list, you must define bundle properties in the form 'jawr.[type].bundle.[name].[property]', where [type] is either js or css, [name] is the name defined in this list, and [property] is any of the bundle parameters defined below.   | None    | 
-| jawr.css.bundle.names |	    		| 																																											 |     | 
-*---------------+---------+--------------+----------------+
-| jawr.[type].bundle.[name].id  | URL fragment (ex: '/bundles/global.js')   | A path name for the bundle, which is mandatory for each name defined in the bundle.names property, and must be unique. For members of a composite, this property has no effect and is not mandatory.  | None    | 
+| jawr.[type].bundle.[name].id  | URL fragment (ex: '/bundles/global.js')   | Defines a bundle by giving it a name (the [name] part of the property) and a path, which must be unique. For members of a composite, this property must NOT be defined.  | None    | 
 *---------------+---------+--------------+----------------+
 | jawr.[type].bundle.[name].mappings  | Comma separated list.  | Mapping of the resources to include in the bundle. Values can be either a directory path ('/someDir'), a directory path with wildcards to include subdirs ('/someDir/**'), or a single resource path ('/js/foo.js'). It is mandatory for each custom bundle unless it is a child of a composite.   | None    | 
 *---------------+---------+--------------+----------------+
@@ -91,7 +90,7 @@ Descriptor file syntax
 *---------------+---------+--------------+----------------+
 | jawr.[type].bundle.[name].composite  | Boolean  | Set wether a bundle is a composite or not. If it is, the mappings attribute must not be set and instead, the child.names property will be used.  | false    | 
 *---------------+---------+--------------+----------------+
-| jawr.[type].bundle.[name].child.names  |  Comma separated list.   | For a composite bundle, this property is simmilar to the jawr.[type].bundle.names in that it sets the names of bundles that must be defined in further properties. for each name in this list you must specify properties for a child bundle that must have no id and cannot be global.   | None    | 
+| jawr.[type].bundle.[name].child.names  |  Comma separated list.   | For a composite bundle, this property sets the names of bundles that must be defined in further properties. For each name in this list you must specify properties for a child bundle that must have no id and cannot be global.   | None    | 
 *---------------+---------+--------------+----------------+
 | jawr.[type].bundle.[name].bundlepostprocessors  |  Comma separated list.   | Overrides the global bundles postprocessor.    | None    | 
 *---------------+---------+--------------+----------------+
@@ -143,4 +142,7 @@ Descriptor file syntax
 | jawr.css.commonURLPrefix | The prefixes '/static' and '/gzip_' are reserved, so you can't use any prefix starting with either string. The prefix can't denote more than one path name ('/foo/bar' would be wrong, for instance). |  This prefix is mandatory, Jawr will not start up without it.   							|     | 							 																				 |     		 | 
 *---------------*---------*--------------+----------------+
 | jawr.[type].bundle.[name].prefix  | URL fragment ('/V001', for instance).  | Overrides the globalPrefix attribute for individual bundles, for increased control over client caching of versions. It has the same constraints as globalPreffix (prefixes starting with '/static' and '/gzip_' are not allowed)    | None    |  2.0 |
+*---------------+---------+--------------+----------------+
+| jawr.js.bundle.names  | Comma separated list.  | List of all the bundles you wish to define in the descriptor. For every item in this list, you must define bundle properties in the form 'jawr.[type].bundle.[name].[property]', where [type] is either js or css, [name] is the name defined in this list, and [property] is any of the bundle parameters defined below.   | None    |  2.7 |
+| jawr.css.bundle.names |	    		| 																																											 |     | 
 *---------------+---------+--------------+----------------+

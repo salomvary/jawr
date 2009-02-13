@@ -20,11 +20,13 @@ Definition of custom bundles
 	file would create a bundle named /bundles/fooBundle.js: 
 	
 +------------------------------------------+
-	jawr.js.bundle.names=foo	
 	jawr.js.bundle.foo.id=/bundles/fooBundle.js
 	jawr.js.bundle.foo.mappings=/js/foo.js, /js/bar.js
 +------------------------------------------+
 
+	Note that the property <jawr.js.bundle.foo.id> is declaring two different identifiers: the identifier <foo>, which is used within other property 
+	declarations (such as <jawr.js.bundle.foo.mappings>), and a path identifier for script tags (</bundles/fooBundle.js>). 
+	
 	The newly created bundle would be the union of foo.js and bar.js. Once created, you could then use any of three ways to import the whole bundle to 
 	your pages: 
 
@@ -82,8 +84,6 @@ Definition of custom bundles
 	/js/someScript.js, and every file directly under /js/someSubdir/. 
 	
 +------------------------------------------+
-	jawr.js.bundle.names=foo, baz	
-	
 	jawr.js.bundle.foo.id=/bundles/fooBundle.js
 	jawr.js.bundle.foo.mappings=/js/foo.js, /js/bar.js
 	
@@ -101,8 +101,6 @@ Definition of custom bundles
 	To add these a special syntax is used in the mapping definition, which consists in a prefix followed by a colon (:). 
 	
 +------------------------------------------+
-	jawr.js.bundle.names=foo, baz	
-	
 	jawr.js.bundle.foo.id=/bundles/fooBundle.js
 	# Map to a script in the com.mycompany.myapp package and to another from the WAR 
 	jawr.js.bundle.foo.mappings=jar:/com/mycompany/myapp/foo.js, /js/bar.js
@@ -124,9 +122,6 @@ Definition of custom bundles
 	To define a global bundle you would do as follows: 
 	
 +------------------------------------------+
-	jawr.js.bundle.names=foo, baz, lib	
-	
-	...	
 	jawr.js.bundle.lib.id=/lib.js
 	jawr.js.bundle.lib.mappings=/js/lib/**
 	jawr.js.bundle.lib.global=true
@@ -178,7 +173,6 @@ Definition of custom bundles
 	attribute to true: 
 	
 +------------------------------------------+
-jawr.js.bundle.names=comp
 
 jawr.js.bundle.comp.id=/bundles/composite.js
 jawr.js.bundle.comp.global=true
@@ -189,8 +183,8 @@ jawr.js.bundle.comp.child.names=foo, bar
 
 +------------------------------------------+
 	
-	For this composite, we declared two children: <foo> and <bar>. The child bundles for a composite differ from normal bundles in that they do not 
-	need an id or prefix, and they cannot be declared as global. Otherwise, every other attribute can be specified individually, such as 
+	For this composite, we declared two children: <foo> and <bar>. The child bundles for a composite differ from normal bundles in that they are not 
+	declared with an id property, and they cannot be declared as global. Otherwise, every other attribute can be specified individually, such as 
 	postprocessors and the <<debugnever>> and <<debugonly>> attributes: 
 
 +------------------------------------------+	

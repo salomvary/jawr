@@ -23,10 +23,6 @@ Source ordering within bundles
 	Jawr will add files to bundles in the same order you specify in the mappings attribute: 
 	
 +------------------------------------------+
-
-
-	jawr.js.bundle.names=lib
-	
 	jawr.js.bundle.foo.id=/bundles/lib.js
 	 # Add all files in needed ordering.  
 	jawr.js.bundle.foo.mappings=/js/lib/Protoype.js, /js/lib/scriptaculous.js, ...	
@@ -45,8 +41,6 @@ Source ordering within bundles
 	Your mapping could then change to this: 
 		
 +------------------------------------------+
-	jawr.js.bundle.names=lib
-	
 	jawr.js.bundle.foo.id=/bundles/lib.js
 	jawr.js.bundle.foo.mappings=/js/lib/**	
 +------------------------------------------+

@@ -78,12 +78,17 @@ Spring MVC integration
 	  <props>
 	  <prop key="/**/*.js">jawrJsController</prop>
 	  <prop key="/**/*.css">jawrCSSController</prop>
+	  <prop key="/**/*.jpg">jawrCSSController</prop>
+	  <prop key="/**/*.png">jawrCSSController</prop>
 	  </props>
 	 </property>
 </bean>
 +------------------------------------------+
 	 
-	 If for some reason you need to add some kinf of prefixing to the mappings, there is extra work to be done. For instance, if you mapped 
+	 You may have noticed the *.jpg and *.png mappings in the example. The reason for adding these is to handle background images referenced 
+	 at css files, when Jawr is in debug mode. This is due to a known problem which will be addressed in future versions. 
+	 
+	 If for some reason you need to add some kind of prefixing to the mappings, there is extra work to be done. For instance, if you mapped 
 	 like this: 
 
 +------------------------------------------+
@@ -93,6 +98,7 @@ Spring MVC integration
 	  <props>
 	  <prop key="/jawr/**/*.js">jawrJsController</prop>
 	  <prop key="/jawr/**/*.css">jawrCSSController</prop>
+	  <prop key="/jawr/**/*">jawrCSSController</prop>
 	  </props>
 	 </property>
 </bean>
@@ -100,7 +106,8 @@ Spring MVC integration
 
 	For this configuration, you will need to let the controllers know the extra path information. The reason for this is that Jawr needs not  
 	only to attend to requests, but also to generate URLs which will match its own controllers (incidentially, that's the same reason to need 
-	the <mapping> configuration attribute too). This is where the <<controllerMapping>> configuration attribute comes into play. You will need 
+	the <mapping> configuration attribute too). Note that the additional images mapping is simpler now, reduced to '/jawr/**/*' to cover all 
+	types. The <<controllerMapping>> configuration attribute comes into play under this configuration. You will need 
 	to set it with the value of the additional prefixing: 
 	
 +------------------------------------------+	

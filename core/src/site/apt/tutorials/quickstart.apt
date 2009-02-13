@@ -111,9 +111,6 @@ jawr.charset.name=UTF-8
 # Javascript properties and mappings
 jawr.js.bundle.basedir=/js
 
-# Javascript properties and mappings
-jawr.js.bundle.names=lib
-
 # All files within /js/lib will be together in a bundle. 
 # The remaining scripts will be served sepparately. 
 jawr.js.bundle.lib.id=/bundles/lib.js

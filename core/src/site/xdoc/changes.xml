@@ -8,6 +8,43 @@
 	
     <section name="Announcementes and change log">
     <ul>
+    <li> <strong>2/13/2009</strong>: Version 2.7 released:<br/> 
+      		<strong>New features/ fixed issues: </strong>
+      		 <ul>
+      		 <li>
+      		 EL expressions in tag libraries are now supported on older servlet containers, thanks to a patch 
+      		 submitted by Ibrahim Chaehoi. 
+      		 </li>
+      		 <li>
+      		 The jawr.*.bundle.names property is now deprecated, also thanks to a patch submitted by Ibrahim Chaehoi. 
+      		 <strong>You may remove all jawr.js.bundle.names and jawr.css.bundle.names from your descriptors</strong>. 
+      		 You can still use them if you feel more comfortable that way. 
+      		 </li>
+      		 <li>
+      		 Jawr now supports jawr.url.contextpath.override that begin with: //.  This is a protocol relative url 
+      		 structure. It's handy when you are sharing your css and/or js with different domains and protocols.  
+      		 So these // urls will work relative to http and https. 
+      		 </li>
+      		 <li>
+      		 Added jawr.css.imagepath.override property to allow for css url replacement that supports absolute URLs or 
+      		 really anything you would like prepended to the URL.  This is usefull if you are sharing your css 
+      		 across multiple domains and use background images.
+      		 </li>
+      		 <li>
+      		 Classloading has been improved to better support the 18n messages generator, which failed to load 
+      		 properties files under certain conditions. 
+      		 </li>
+      		 <li>
+      		 Fixed issue 49 (with no jawr.csslinks.flavor setting, style tags are ended with 'null')
+      		 </li>
+      		 <li>
+      		 Fixed issue 56 (incorrect path management in Spring MVC controller )
+      		 </li>
+			</ul>
+      This release includes code from our new commiter, <strong>Matt Ruby</strong>. Welcome aboard!. Also, as noted 
+      above, <strong>Ibrahim Chaehoi</strong> submitted a couple of high quality patches that were included in the 
+      release. Thanks a lot Ibrahim! 
+      </li>
     	<li> <strong>11/23/2008</strong>: Version 2.6 released:<br/> 
       		<strong>New features/ fixed issues: </strong>
       		 <ul><li> <strong>Spring MVC support added. </strong> Jawr now provides a Spring MVC Controller so it can now be fully configured 

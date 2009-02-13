@@ -132,8 +132,6 @@ Using DWR with Jawr
 	
 	
 +------------------------------------------+  
-	jawr.js.bundle.names=global
-	
 	jawr.js.bundle.global.id=/bundles/global.js
 	jawr.js.bundle.global.mappings=/js/protaculous/**, dwr:_engine, dwr:_util
 	jawr.js.bundle.global.global=true
@@ -174,8 +172,6 @@ Using DWR with Jawr
 	
 	
 +------------------------------------------+  
-	jawr.js.bundle.names=dwrall
-	
 	jawr.js.bundle.dwrall.id=/bundles/dwrall.js
 	jawr.js.bundle.dwrall.mappings=dwr:_engine, dwr:_util,dwr:_auth, dwr:_**	
 +------------------------------------------+	

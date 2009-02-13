@@ -109,7 +109,8 @@ public ConfigPropertiesAugmenter(Properties configProperties,Set privateConfigPr
 	
 	The augmentable properties are the following: 
 	
-	* Bundle definitions  (jawr.[type].bundle.names). 
+	* Bundle definitions  (jawr.[type].bundle.names). Note this property is deprecated as of version 2.7, but you can't mix configurations with and 
+	without it, so be sure to make it clear wether it should be used or not when letting others augment your configuration. 
 	
 	* Bundle mappings (jawr.[type].bundle.[name].mappings). 
 	

@@ -67,7 +67,6 @@ Jawr Generators
 	To add javascript resources from the classpath you use <<jar:>> as the prefix, followed by the path to the resource using / as separator: 
 	
 +------------------------------------------+
-	jawr.js.bundle.names=foo, baz	
 	
 	jawr.js.bundle.foo.id=/bundles/fooBundle.js
 	# Map to a script in the com.mycompany.myapp package and to another from the WAR 
@@ -186,7 +185,6 @@ package net.jawr.example;
 	And now it's a matter of creating a bundle and use the generator: 
 	
 +------------------------------------------+
-	jawr.js.bundle.names=global
 	jawr.js.bundle.global.id=/bundles/global.js
 	jawr.js.bundle.global.mappings=example:Hello World!,example:And Hello Again!
 +------------------------------------------+

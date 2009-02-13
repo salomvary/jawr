@@ -15,7 +15,7 @@ Jawr JSP tag libraries
 	* The page request headers will be analyzed to check wether the current client browser will accept gzip encoding or not. Depending on this, the 
 	generated URLs will point to the regular or the gzipped versions of the bundles. 
 	
-		* Internet Explorer has certain issues with gzip encoded resources under certain circumstances. This affects version 6 partially, since 
+		* Internet Explorer has issues with gzip encoded resources under certain circumstances. This affects version 6 partially, since 
 		Service Pack 2 fixed all problems. If you wish to be 100% sure that you will not run into such problems, you may set the 
 		<<jawr.gzip.ie6.on>> flag to <<false>> in the descritor. This will disable gzipping for IE versions 6 and lower. However, the worst problems 
 		in Internet Explorer are related to Vary headers needed when the same URL points to a resource that is gzipped on demand. Jawr does not 
@@ -61,7 +61,6 @@ Jawr JSP tag libraries
 	This tag has only one mandatory attribute, the aforementioned <<src>>. To see how it works, imagine we had a mapping like this in our config file: 
 		
 +------------------------------------------+
-	jawr.js.bundle.names=globalBundle, fooBundle
 	
 	jawr.js.bundle.globalBundle.id=/bundles/global.js
 	jawr.js.bundle.globalBundle.global=true
@@ -154,9 +153,41 @@ Jawr JSP tag libraries
 	* [not declared at all]: Use the context path, this is the default behavior. 
 
 		
+
+* EL Expressions
+
+	The taglibs accept EL expressions out of the box on servers that support it. If you run on a servlet container of version 2.3, however, 
+	you will need some tweaking to use EL with Jawr tags. Note that even if you use a 2.4 or greater container, you still need to declare 
+	the proper web application version in web.xml. There is a very good explanation of this at 
+	{{{http://www.mularien.com/blog/2008/04/24/how-to-reference-and-use-jstl-in-your-web-application/}this page}}. 
 	
+	So what do you need to use EL on an older container? The first thing you need is to add an additional dependency on the Apache standard 
+	taglib implementation. If you use Maven, just add this to your POM: 	
+	
++------------------------------------------+
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+      <version>1.1.2</version>
+    </dependency>
 
++------------------------------------------+
 
+	If you are not using Maven, then head to the 
+	{{{http://jakarta.apache.org/taglibs/doc/standard-doc/intro.html} apache taglib project page}} 
+	and download the jar from there. 
+	
+	The other thing you need to do is to change the taglib import in JSP pages, to use a special version that supports 
+	EL using the Apache STL implementation. The proper import declaration would be: 
+	
+	
++------------------------------------------+
+
+	<%@ taglib uri="http://jawr.net/tags-el" prefix="jwr" %>
+	
++------------------------------------------+
+
+	With the library in place and using this import declaration, you should be able to use EL expressions in your application. 
 	
 	
 	

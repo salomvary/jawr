@@ -97,19 +97,41 @@ public class ClassLoaderResourceUtils {
 	 */
 	public static Object buildObjectInstance(String classname) {
 		Object rets = null;
+		Class clazz = locateClass(classname);
 		try {
-			Class clazz = Class.forName(classname);
 			rets = clazz.newInstance();
-			
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage() 
-										+ " [The custom class " 
-										+ classname 
-										+ " could not be instantiated, check wether it is available on the classpath and" 
-										+ " verify that it has a zero-arg constructor].\n" 
-										+ " The specific error message is: " + e.getClass().getName() + ":" + e.getMessage(),e);
+		}catch(Exception e) {
+				throw new RuntimeException(e.getMessage() 
+											+ " [The custom class " 
+											+ classname 
+											+ " could not be instantiated, check wether it is available on the classpath and" 
+											+ " verify that it has a zero-arg constructor].\n" 
+											+ " The specific error message is: " + e.getClass().getName() + ":" + e.getMessage(),e);			
 		}
 		return rets;
+	}
+	
+	private static Class locateClass(String classname) {
+		Class clazz = null;
+		try {
+			clazz = Class.forName(classname);
+			
+		} catch (Exception e) {
+			// Try the second approach 
+		}
+		if(null == clazz) {
+			try {
+				clazz = Class.forName(classname, true, new ClassLoaderResourceUtils().getClass().getClassLoader());
+			} catch (Exception e) {
+				throw new RuntimeException(e.getMessage() 
+											+ " [The custom class " 
+											+ classname 
+											+ " could not be instantiated, check wether it is available on the classpath and" 
+											+ " verify that it has a zero-arg constructor].\n" 
+											+ " The specific error message is: " + e.getClass().getName() + ":" + e.getMessage(),e);
+		  }
+		}
+		return clazz;
 	}
 	
 	/**
@@ -126,7 +148,7 @@ public class ClassLoaderResourceUtils {
 		}
 		
 		try {
-			Class clazz = Class.forName(classname);
+			Class clazz = locateClass(classname);
 			rets = clazz.getConstructor(paramTypes).newInstance(params);
 			
 		} catch (Exception e) {

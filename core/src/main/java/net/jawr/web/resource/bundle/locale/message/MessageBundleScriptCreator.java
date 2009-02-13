@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
+import java.util.MissingResourceException;
 
 import javax.servlet.ServletContext;
 
@@ -113,9 +114,22 @@ public class MessageBundleScriptCreator {
 		for(int x = 0;x < names.length; x++) {
 			ResourceBundle bundle;
 			
-			if(null != locale)
-				bundle = ResourceBundle.getBundle(names[x],locale);
-			else bundle = ResourceBundle.getBundle(names[x]);
+			if(null != locale){
+				try {
+					bundle = ResourceBundle.getBundle(names[x],locale);
+				} catch(MissingResourceException ex) {
+					// Fixes problems with some servers, e.g. WLS 10
+					bundle = ResourceBundle.getBundle(names[x],locale,getClass().getClassLoader());
+				}
+			}
+			else {
+				try {
+					bundle = ResourceBundle.getBundle(names[x]);
+				} catch(MissingResourceException ex) {
+					// Fixes problems with some servers, e.g. WLS 10
+					bundle = ResourceBundle.getBundle(names[x],Locale.getDefault(),getClass().getClassLoader());
+				}
+			}
 			
 			Enumeration keys = bundle.getKeys();
 			
