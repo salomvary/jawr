@@ -15,18 +15,25 @@ package net.jawr.web.resource.bundle.generator.classpath;
 
 import java.io.Reader;
 
+import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.bundle.generator.AbstractCSSGenerator;
 import net.jawr.web.resource.bundle.generator.GeneratorContext;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 
 /**
+ * This class defines the generator for the CSS defined in the classpath.
+ * 
  * @author Jordi Hernández Sellés
- *
+ * @author Ibrahim Chaehoi
  */
 public class ClassPathCSSGenerator extends AbstractCSSGenerator {
 	
+	/** The classpath generator helper */
 	private ClassPathGeneratorHelper helper;
 	
+	/**
+	 * Constructor 
+	 */
 	public ClassPathCSSGenerator() {
 		helper = new ClassPathGeneratorHelper();
 	}
@@ -35,7 +42,26 @@ public class ClassPathCSSGenerator extends AbstractCSSGenerator {
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(net.jawr.web.resource.bundle.generator.GeneratorContext)
 	 */
 	public Reader createResource(GeneratorContext context) {
-		return helper.createResource(context);
+		
+		Reader reader = null;
+		
+		// The following section is executed in DEBUG mode to retrieve the classpath CSS from the temporary folder, 
+		// if the user defines that the image servlet should be used to retrieve the CSS images.
+		// It's not executed at the initialization process to be able to read data from classpath.
+		if(!context.isProcessingBundle() && context.getConfig().isUseClasspathCssImageServlet()){
+			
+			try {
+				reader = context.getResourceHandler().getCssClasspathResource(context.getPath());
+			} catch (ResourceNotFoundException e) {
+				 throw new RuntimeException(e);
+			}
+		}
+		
+		if(reader == null){
+			reader = helper.createResource(context);
+		}
+		
+		return reader;
 	}
 
 	/* (non-Javadoc)

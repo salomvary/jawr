@@ -1,5 +1,5 @@
 /**
- * Copyright 2007   Jordi Hernández Sellés
+ * Copyright 2007-2009   Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -15,17 +15,21 @@ package net.jawr.web.resource;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
 
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.JoinableResourceBundleContent;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 
 import org.apache.log4j.Logger;
@@ -33,32 +37,86 @@ import org.apache.log4j.Logger;
 /**
  * Abstract resourcehandler implementation with common functionality.  
  * 
- * Copyright 2007  Jordi Hernández Sellés
+ * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  *
  */
 public abstract class AbstractResourceHandler  implements ResourceHandler{
+	
+	/** The logger */
 	private static final Logger log = Logger.getLogger(AbstractResourceHandler.class.getName());
+	
+	/** The generator registry */
 	private GeneratorRegistry generatorRegistry;
 
+	/** The name of the Jawr temp directory */
 	protected static final String TEMP_SUBDIR = "jawrTmp";
+	
+	/** The name of the directory which contain the bundles in text format */
 	protected static final String TEMP_TEXT_SUBDIR = "text";
+	
+	/** The name of the directory which contain the bundles in gzip format */
 	protected static final String TEMP_GZIP_SUBDIR = "gzip";
+	
+	/** The name of the directory which contain the CSS defined in classpath for the DEBUG mode */
+	protected static final String TEMP_CSS_CLASSPATH_SUBDIR = "cssClasspath";
+	
+	/** The path of the directory which contain the bundles in text format */
 	protected String textDirPath;
+	
+	/** The path of the directory which contain the bundles in gzip format */
 	protected String gzipDirPath;
+	
+	/** The path of the directory which contain the CSS defined in classpath for the DEBUG mode */
+	protected String cssClasspathDirPath;
+	
+	/** The charset to use for the files */
 	protected Charset charset;
 	
-	
-	
+	/**
+     * Build a resource handler based on the specified temporary files root path and charset. 
+     * @param tempDirRoot Root dir for storing bundle files. 
+     * @param charset Charset to read/write characters. 
+     */
+	protected AbstractResourceHandler(File tempDirRoot,Charset charset,GeneratorRegistry generatorRegistry) {
+		super();
+		this.charset = charset;
+		this.generatorRegistry = generatorRegistry;
+		try {
+			String tempDirPath = tempDirRoot.getCanonicalPath() + File.separator + TEMP_SUBDIR;
+             // In windows, pathnames with spaces are returned as %20
+            if(tempDirPath.indexOf("%20") != -1)
+                tempDirPath = tempDirPath.replaceAll("%20"," ");
+            
+            this.textDirPath = tempDirPath + File.separator + TEMP_TEXT_SUBDIR;
+			this.gzipDirPath = tempDirPath + File.separator + TEMP_GZIP_SUBDIR;
+			this.cssClasspathDirPath = tempDirPath + File.separator + TEMP_CSS_CLASSPATH_SUBDIR;
+			createDir(tempDirPath);
+			createDir(textDirPath);
+			createDir(gzipDirPath);
+			createDir(cssClasspathDirPath);
+			
+		} catch (IOException e) {
+			throw new RuntimeException("Unexpected IOException creating temporary jawr directory",e);
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.ResourceHandler#getResource(java.lang.String)
 	 */
 	public final Reader getResource(String resourceName) throws ResourceNotFoundException {
+		return getResource(resourceName, false);
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.ResourceHandler#getResource(java.lang.String, boolean)
+	 */
+	public final Reader getResource(String resourceName, boolean processingBundle) throws ResourceNotFoundException {
 		if(generatorRegistry.isPathGenerated(resourceName)) {			
-			return generatorRegistry.createResource(resourceName);
+			return generatorRegistry.createResource(resourceName, this, processingBundle);
 		}
 		else return doGetResource(resourceName);
 	}
-	
 	
 	/**
 	 * Retrieves a single resource using the implementation specifics. 
@@ -79,31 +137,21 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 		return generatorRegistry.isPathGenerated(path);
 	}
 
-	/**
-     * Build a resource handler based on the specified temporary files root path and charset. 
-     * @param tempDirRoot Root dir for storing bundle files. 
-     * @param charset Charset to read/write characters. 
-     */
-	protected AbstractResourceHandler(File tempDirRoot,Charset charset,GeneratorRegistry generatorRegistry) {
-		super();
-		this.charset = charset;
-		this.generatorRegistry = generatorRegistry;
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.ResourceHandler#getCssClasspathResource(java.lang.String)
+	 */
+	@Override
+	public Reader getCssClasspathResource(String resourceName)
+			throws ResourceNotFoundException {
+		
+		String filePath = getStoredBundlePath(cssClasspathDirPath, resourceName);
+		FileReader reader = null;
 		try {
-			String tempDirPath = tempDirRoot.getCanonicalPath() + File.separator + TEMP_SUBDIR;
-             // In windows, pathnames with spaces are returned as %20
-            if(tempDirPath.indexOf("%20") != -1)
-                tempDirPath = tempDirPath.replaceAll("%20"," ");
-            
-            this.textDirPath = tempDirPath + File.separator + TEMP_TEXT_SUBDIR;
-			this.gzipDirPath = tempDirPath + File.separator + TEMP_GZIP_SUBDIR;
-			createDir(tempDirPath);
-			createDir(textDirPath);
-			createDir(gzipDirPath);
-			
-			
-		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException creating temporary jawr directory",e);
+			reader = new FileReader(filePath);
+		} catch (FileNotFoundException e) {
+			throw new ResourceNotFoundException(filePath);
 		}
+		return reader;
 	}
 
 	/* (non-Javadoc)
@@ -135,24 +183,37 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 
 	/**
 	 * Resolves the file name with which a bundle is stored. 
-	 * @param bundleName
-	 * @return
-	 * @throws IOException
+	 * @param bundleName the bundle name
+	 * @param asGzippedBundle the flag indicating if it's a gzipped bundle or not
+	 * @return the file name.
 	 */
-	private String getStoredBundlePath(String bundleName, boolean asGzippedBundle) throws IOException {
+	private String getStoredBundlePath(String bundleName, boolean asGzippedBundle) {
 		String tempFileName;
-		if(bundleName.indexOf('/') != -1) {
-			bundleName = bundleName.replace('/', File.separatorChar);
-		}
+		
 		if(asGzippedBundle)
 			tempFileName = gzipDirPath;
 		else
 			tempFileName = textDirPath;
+		
+		return getStoredBundlePath(tempFileName, bundleName);
+	}
+
+
+	/**
+	 * Resolves the file path of the bundle from the root directory. 
+	 * @param rootDir the rootDir
+	 * @param bundleName the bundle name
+	 * @return the file path
+	 */
+	private String getStoredBundlePath(String rootDir, String bundleName) {
+		if(bundleName.indexOf('/') != -1) {
+			bundleName = bundleName.replace('/', File.separatorChar);
+		}
 			
 		if(!bundleName.startsWith(File.separator))
-			tempFileName += File.separator;
-		tempFileName += bundleName;
-		return tempFileName;
+			rootDir += File.separator;
+		
+		return rootDir + bundleName;
 	}
 
 	
@@ -184,27 +245,44 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 	 * @see net.jawr.web.resource.bundle.ResourceHandler#storebundle(java.lang.String, java.lang.StringBuffer)
 	 */
 	public void storeBundle(String bundleName, StringBuffer bundledResources) {
-		// Text version
-		storeBundle(bundleName,bundledResources,true);
-
-		// binary version
-		storeBundle(bundleName,bundledResources,false);
+		
 	}
 
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.ResourceHandler#storeBundle(java.lang.String, net.jawr.web.resource.bundle.JoinableResourceBundleContent)
+	 */
+	@Override
+	public void storeBundle(String bundleName,
+			JoinableResourceBundleContent bundleResourcesContent) {
+		
+		// Text version
+		String bundleContent = bundleResourcesContent.getContent().toString();
+		storeBundle(bundleName,bundleContent,false, textDirPath);
+
+		// binary version
+		storeBundle(bundleName,bundleContent,true, gzipDirPath);
+		
+		// Store Css classpath debug files
+		Iterator keyIterator = bundleResourcesContent.getCssClasspathDebugContentMap().keySet().iterator();
+		while(keyIterator.hasNext()){
+			String filePath = (String) keyIterator.next();
+			storeBundle(filePath,bundleContent,false, cssClasspathDirPath);
+		}
+	}
+	
 	/**
 	 * Stores a resource bundle either in text or binary gzipped format. 
-	 * @param bundleName
-	 * @param bundledResources
-	 * @param gzipFile
+	 * @param bundleName the bundle name
+	 * @param bundledResources the bundledRessources
+	 * @param gzipFile a fag defining if the file is gzipped or not
+	 * @param rootDir the root directory
 	 */
-	private void storeBundle(String bundleName, StringBuffer bundledResources,boolean gzipFile) {
+	private void storeBundle(String bundleName, String bundledResources,boolean gzipFile, String rootdir) {
 		if(log.isDebugEnabled()){
 			String msg = "Storing a generated " + (gzipFile ? "and gzipped" : "") + " bundle with an id of:" + bundleName;
 			log.debug(msg);
 		}
-		
-		String rootdir = gzipFile ? gzipDirPath : textDirPath;
-
 		
 		try {
 			// Create subdirs if needed

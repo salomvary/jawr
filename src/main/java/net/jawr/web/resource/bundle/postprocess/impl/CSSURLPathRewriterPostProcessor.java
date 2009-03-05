@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -21,7 +21,9 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 
@@ -33,17 +35,27 @@ import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
  * are allowed within the url.   
  *  
  * @author Jordi Hernández Sellés
- *
+ * @author Ibrahim Chaehoi
  */
 public class CSSURLPathRewriterPostProcessor extends
 		AbstractChainedResourceBundlePostProcessor {
 	
+	/** The prefix for CSS defines in the classpath  */
+	public static final String CLASSPATH_CSS_PREFIX = GeneratorRegistry.CLASSPATH_CSS_BUNDLE_PREFIX + GeneratorRegistry.PREFIX_SEPARATOR;
+
+	/** The url pattern */
 	private static final Pattern urlPattern = Pattern.compile(	"url\\(\\s*" // 'url(' and any number of whitespaces 
 																+ "((\\\\\\))|[^)])*" // any sequence of characters, except an unescaped ')'
 																+ "\\s*\\)",  // Any number of whitespaces, then ')'
 																Pattern.CASE_INSENSITIVE); // works with 'URL('
+	
+	/** The back reference regexp */
 	private static final String backRefRegex = "(\\.\\./)";
+	
+	/** The back reference regexp pattern */
 	private static final Pattern backRefRegexPattern = Pattern.compile(backRefRegex);
+	
+	/** The URL separator pattern */
 	private static final Pattern URLSeparatorPattern = Pattern.compile("/");
 	
 	/* (non-Javadoc)
@@ -57,8 +69,9 @@ public class CSSURLPathRewriterPostProcessor extends
 		// Initial backrefs (number of backtracking paths needed, i.e. '../').
 		int initialBackRefs = 1;
 		
-		if(! "".equals(status.getJawrConfig().getServletMapping())){
-			StringTokenizer tk = new StringTokenizer(status.getJawrConfig().getServletMapping(),"/");
+		JawrConfig jawrConfig = status.getJawrConfig();
+		if(! "".equals(jawrConfig.getServletMapping())){
+			StringTokenizer tk = new StringTokenizer(jawrConfig.getServletMapping(),"/");
 			initialBackRefs += tk.countTokens();
 		}
 		
@@ -70,7 +83,9 @@ public class CSSURLPathRewriterPostProcessor extends
 		while(matcher.find()) {
 			List backRefs = new ArrayList();
 			backRefs.addAll(resourceBackRefs);
-			String url = getUrlPath(matcher.group(), initialBackRefs, backRefs, status.getJawrConfig().getCssImagePathOverride());
+			
+			String url = getUrlPath(matcher.group(), initialBackRefs, backRefs, jawrConfig);
+			
 			matcher.appendReplacement(sb, RegexUtil.adaptReplacementToMatcher(url));
 		}
 		matcher.appendTail(sb);
@@ -80,12 +95,18 @@ public class CSSURLPathRewriterPostProcessor extends
 
 	/**
 	 * Transform a matched url so it points to the proper relative path with respect to the given path.  
-	 * @param matcher
-	 * @param initialBackRefs
-	 * @return
+	 * @param match the matched URL
+	 * @param initialBackRefs the initial backward references
+	 * @param resourceBackRefs the list of resources backward references
+	 * @param jawrConfig the configuration
+	 * @return the image URL path
 	 */
-	private String getUrlPath(String match, int initialBackRefs, List resourceBackRefs, String imagePathOverride) {
+	private String getUrlPath(String match, int initialBackRefs, List resourceBackRefs, JawrConfig jawrConfig) {
 
+		String imagePathOverride = jawrConfig.getCssImagePathOverride();
+		boolean useClassPathCssImgServlet = jawrConfig.isUseClasspathCssImageServlet();
+		String classPathImgServletPath = jawrConfig.getCssImageServletPath();
+		
 		String url = match.substring(match.indexOf('(')+1,match.lastIndexOf(')'))
 					.trim();
 
@@ -140,13 +161,41 @@ public class CSSURLPathRewriterPostProcessor extends
 			}
 		}		
 		
+		boolean classpathCss = !resourceBackRefs.isEmpty()
+		&& ((String) resourceBackRefs.get(0))
+				.startsWith(CLASSPATH_CSS_PREFIX) && useClassPathCssImgServlet;
+		
+		if (classpathCss) {
+			String root = (String) resourceBackRefs.get(0);
+			resourceBackRefs.set(0, root.replace(CLASSPATH_CSS_PREFIX, ""));
+			
+			// If we are in Debug mode, the Jawr CSS generator will be used.
+			// As the path of this generator is define as root level,
+			// we remove the initial backreference.
+			if(jawrConfig.isDebugModeOn()){
+				initialBackRefs = 0;
+			}
+		}
+		
 		// Start rendering the result, starting by the initial quote, if any. 
 		StringBuffer urlPrefix = new StringBuffer("url(").append(quoteStr);
 		
 		// Add the back references as needed
 		for (int i = 0; i < initialBackRefs; i++) {
 			urlPrefix.append("../");
-		}		
+		}
+		
+		if (classpathCss) {
+			// If path starts with "/", remove it
+			String servletPath = classPathImgServletPath;
+			if(servletPath.startsWith("/")){
+				servletPath = servletPath.substring(1);
+			}
+			
+			// Add classpath image servlet path in the URL
+			urlPrefix.append(servletPath);
+		}
+		
 		for(Iterator it = resourceBackRefs.iterator();it.hasNext(); ) {
 			urlPrefix.append(it.next()).append("/");			
 		}
@@ -155,9 +204,9 @@ public class CSSURLPathRewriterPostProcessor extends
 	
 	
 	/**
-	 * Gets the path names within a reource URL, exluding the resource file name. 
-	 * @param resourceURL
-	 * @return
+	 * Gets the path names within a resource URL, excluding the resource file name. 
+	 * @param resourceURL the resource URL
+	 * @return the list of path names within a resource URL, excluding the resource file name. 
 	 */
 	private List getPathNamesInResource(String resourceURL) {
 		List names = new ArrayList();
@@ -174,8 +223,8 @@ public class CSSURLPathRewriterPostProcessor extends
 	
 	/**
 	 * Find the number of occurrences of / within a url. 
-	 * @param url
-	 * @return
+	 * @param url the url
+	 * @return the number of occurrences of / within a url. 
 	 */
 	private int numberOfForwardReferences(String url) {
 		Matcher backUrls = URLSeparatorPattern.matcher(url);

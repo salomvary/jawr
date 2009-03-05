@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -18,41 +18,58 @@ import java.nio.channels.FileChannel;
 import java.util.Set;
 
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.JoinableResourceBundleContent;
 
 /**
  * Helps in identifying, retrieving and listing of resources. An abstraction of a file system, 
  * offers a common interface to access files in a web servlet context or a traditiional filesystem. 
   * 
  * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  */
 public interface ResourceHandler {
 
 	/**
 	 * Retrieves a single resource. 
 	 * @param resourceName String Name of the resource.  
-	 * @return
+	 * @return a reader for the resource
 	 */
 	public Reader getResource(String resourceName) throws ResourceNotFoundException;
 	
 	/**
-	 * Stores a collected group of resources with the specified name. Creates a text version
-	 * and a gzipped binary version. 
-	 * @param bundleName
-	 * @param bundleResources
+	 * Retrieves a single resource. 
+	 * @param resourceName String Name of the resource.  
+	 * @param processingBundle the flag indicating that we are currently processing the bundles
+	 * @return the reader to the resource
 	 */
-	public void storeBundle(String bundleName, StringBuffer bundleResources);
+	public Reader getResource(String resourceName, boolean processingBundle) throws ResourceNotFoundException;
+	
+	/**
+	 * Retrieves a css classpath resource. 
+	 * @param resourceName String Name of the resource.  
+	 * @return a css classpath resource. 
+	 */
+	public Reader getCssClasspathResource(String resourceName) throws ResourceNotFoundException;
+	
+	/**
+	 * Stores a collected group of resources with the specified name. 
+	 * Creates a text version, a gzipped binary version, and the CSS classpath file for DEBUG. 
+	 * @param bundleName the bundle name.
+	 * @param bundleResources the bundle resources
+	 */
+	public void storeBundle(String bundleName,
+			JoinableResourceBundleContent bundleResourcesContent);
 	
 	/**
 	 * Retrieves a reader for a bundle from the store. 
-	 * @param bundleName
-	 * @return
+	 * @param bundleName the bundle name.
+	 * @return a reader for a bundle from the store. 
 	 */
 	public Reader getResourceBundleReader(String bundleName) throws ResourceNotFoundException;
 	
-	
 	/**
-	 * Retieves FileChannel on a resource bundle.
-	 * @param bundleName
+	 * Retrieves FileChannel on a resource bundle.
+	 * @param bundleName the bundle name
 	 * @return FileChannel channel to read the file where the bundle is stored. 
 	 */
 	public FileChannel getResourceBundleChannel(String bundleName) throws ResourceNotFoundException;
@@ -61,24 +78,25 @@ public interface ResourceHandler {
 	 * Returns a list of resources at a specified path within the resources directory
 	 * (normally in the war). 
 	 * @param path
-	 * @return
+	 * @return a list of resources at the specified path
 	 */
 	public Set getResourceNames(String path);
 	
 	
 	/**
 	 * Determines wether a given path is a directory. 
-	 * @param path
-	 * @return
+	 * @param path the path to check
+	 * @return true if the path is a directory
 	 */
 	public boolean isDirectory(String path);
 	
 	/**
-	 * Determines if a reource is not strictly a file in the war structure but  
+	 * Determines if a resource is not strictly a file in the war structure but  
 	 * a resource either java generated or read from elsewhere. 
 	 * 
-	 * @param path
-	 * @return
+	 * @param path the path to check
+	 * @return true if a resource is not strictly a file in the war structure but  
+	 * a resource either java generated or read from elsewhere
 	 */
 	public boolean isResourceGenerated(String path);
 }

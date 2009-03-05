@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -37,7 +37,9 @@ import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.CompositeResourceBundle;
 import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
+import net.jawr.web.resource.bundle.JoinableResourceBundleContent;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler;
 import net.jawr.web.resource.bundle.iterator.DebugModePathsIteratorImpl;
 import net.jawr.web.resource.bundle.iterator.PathsIteratorImpl;
@@ -53,11 +55,16 @@ import org.apache.log4j.Logger;
  * Default implementation of ResourceBundlesHandler
  * 
  * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  */
 public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	
+	/** The logger */
 	private static final Logger log = Logger.getLogger(ResourceBundlesHandler.class);
 	
+	/** The prefix for CSS defines in the classpath  */
+	public static final String CLASSPATH_CSS_PREFIX = GeneratorRegistry.CLASSPATH_CSS_BUNDLE_PREFIX + GeneratorRegistry.PREFIX_SEPARATOR;
+
 	/**
 	 * The bundles that this handler manages. 
 	 */
@@ -73,12 +80,19 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 */
 	private List contextBundles;
 
+	/** The resource handler */
 	private ResourceHandler resourceHandler;
+	
+	/** The Jawr config */
 	private JawrConfig config;
 	
+	/** The post processor */
 	private ResourceBundlePostProcessor postProcessor;
+	
+	/** The unitary post processor */
 	private ResourceBundlePostProcessor unitaryPostProcessor;
 	
+	/** The client side handler generator */
 	private ClientSideHandlerGenerator clientSideHandlerGenerator;
 	
 	/**
@@ -203,9 +217,9 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	
 	/**
 	 * Removes the URL prefix defined in the configuration from a path. 
-	 * If the prerfix contains a variant information, it adds it to the name. 
-	 * @param path
-	 * @return
+	 * If the prefix contains a variant information, it adds it to the name. 
+	 * @param path the path
+	 * @return the path without the prefix
 	 */
 	private String removePrefixFromPath(String path) {
 		// Remove first slash
@@ -289,10 +303,10 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	/**
 	 * Joins the members of a composite bundle in al its variants, storing in a separate file for each
 	 * variant. 
-	 * @param composite
+	 * @param composite the composite resource bundle
 	 */
 	private void joinAndStoreCompositeResourcebundle(CompositeResourceBundle composite){
-		StringBuffer store;
+		JoinableResourceBundleContent store = null;
 		
 		// Collect all variant names from child bundles
 		Set variants = new HashSet();
@@ -304,7 +318,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		
 		// Process all variants
 		for(Iterator vars = variants.iterator();vars.hasNext();) {
-			store = new StringBuffer();
+			store = new JoinableResourceBundleContent();
 			String variant = (String) vars.next();
 			for(Iterator it = composite.getChildBundles().iterator();it.hasNext();) {
 				JoinableResourceBundle childbundle = (JoinableResourceBundle) it.next();
@@ -315,7 +329,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			composite.setBundleDataHashCode(variant,store.toString().hashCode());
 		}
 		// Create the default bundle (the non variant one)
-		store = new StringBuffer();
+		store = new JoinableResourceBundleContent();
 		for(Iterator it = composite.getChildBundles().iterator();it.hasNext();) {
 			JoinableResourceBundle childbundle = (JoinableResourceBundle) it.next();
 			store.append(joinandPostprocessBundle(childbundle, null));					
@@ -329,10 +343,10 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	
 	/**
 	 * Joins the members of a bundle and stores it
-	 * @param bundle
+	 * @param bundle the bundle
 	 */
 	private void joinAndStoreBundle(JoinableResourceBundle bundle) {
-		StringBuffer store = null;
+		JoinableResourceBundleContent store = null;
 		
 		// Process the locale specific variants
 		if(null != bundle.getLocaleVariantKeys()) {
@@ -352,24 +366,27 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		// Store the collected resources as a single file, both in text and gzip formats. 
 		resourceHandler.storeBundle(bundle.getName(),store);
 		
-		
 	}
 
 
 	/**
-	 * Reads all the members of a bundle and executes all associated posprocessors. 
-	 * @param bundle JoinableResourceBundle
-	 * @return
+	 * Reads all the members of a bundle and executes all associated postprocessors. 
+	 * @param bundle the bundle
+	 * @param variantKey the variant key
+	 * @return the resource bundle content, where all postprocessors have been executed 
 	 */
-	private StringBuffer joinandPostprocessBundle(JoinableResourceBundle bundle, String variantKey) {
+	private JoinableResourceBundleContent joinandPostprocessBundle(JoinableResourceBundle bundle, String variantKey) {
+		
+		JoinableResourceBundleContent bundleContent = new JoinableResourceBundleContent();
 		
 		// Don't bother with the bundle if it is excluded because of the inclusion pattern
 		if( (bundle.getInclusionPattern().isExcludeOnDebug() && config.isDebugModeOn()) ||
 			(bundle.getInclusionPattern().isIncludeOnDebug() && !config.isDebugModeOn()) )
-			return new StringBuffer();
+			return bundleContent;
 		
 		StringBuffer bundleData = new StringBuffer();
 		StringBuffer store = null;
+		
 		
 		BundleProcessingStatus status = new BundleProcessingStatus(bundle,resourceHandler,config);
 		
@@ -388,7 +405,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 				// Get a reader on the resource, with appropiate encoding
 				Reader rd;
 				try {
-					rd = resourceHandler.getResource(path);
+					rd = resourceHandler.getResource(path, true);
 				} 
 				catch (ResourceNotFoundException e) {
 					// If a mapped file does not exist, a warning is issued and process continues normally. 
@@ -414,12 +431,22 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 				// Do unitary postprocessing. 
 				if(null != bundle.getUnitaryPostProcessor()) {
 					StringBuffer resourceData = bundle.getUnitaryPostProcessor().postProcessBundle(status, writer.getBuffer());
+					
+					// Set the CSS Classpath resource data for the debug mode  
+					initializeCssClasspathMap(bundleContent, status,
+							resourceData);
+					
 					bundleData.append(resourceData);
 				}
 				else if(null != this.unitaryPostProcessor) {
 					if(log.isDebugEnabled())
 						log.debug("POSTPROCESSING UNIT:" +  status.getLastPathAdded()); 
 					StringBuffer resourceData = this.unitaryPostProcessor.postProcessBundle(status, writer.getBuffer());
+					
+					// Set the CSS Classpath resource data for the debug mode  
+					initializeCssClasspathMap(bundleContent, status,
+							resourceData);
+					
 					bundleData.append(resourceData);
 				}
 				else bundleData.append(writer.getBuffer());
@@ -436,7 +463,27 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		} catch (IOException e) {
 			throw new RuntimeException("Unexpected IOException generating collected file [" + bundle.getName() + "].",e);
 		}
-		return store;
+		
+		bundleContent.setContent(store);
+		return bundleContent;
+	}
+
+
+	/**
+	 * Initialize the bundle content for CSS classpath.
+	 * @param bundleContent the bundle content
+	 * @param status the status
+	 * @param resourceData the resource data
+	 */
+	private void initializeCssClasspathMap(
+			JoinableResourceBundleContent bundleContent,
+			BundleProcessingStatus status, StringBuffer resourceData) {
+		
+		// Set the CSS Classpath resource data for the debug mode  
+		String filePath = status.getLastPathAdded();
+		if(filePath.startsWith(CLASSPATH_CSS_PREFIX)){
+			bundleContent.putCssClasspathDebugContent(filePath.substring(CLASSPATH_CSS_PREFIX.length()), resourceData.toString());
+		}
 	}
 
 	/* (non-Javadoc)
