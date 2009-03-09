@@ -54,7 +54,7 @@ public class PropertiesConfigHelper {
 		this.prefix = PROPS_PREFIX + resourceType + ".";
 		String bundle = prefix + BUNDLE_FACTORY_CUSTOM_PROPERTY;
 		String pattern = "(" + bundle.replaceAll("\\.", "\\\\.")
-				+ ")([a-zA-Z0-9]+)\\.id";
+				+ ")([-_a-zA-Z0-9]+)\\.id";
 		this.bundleNamePattern = Pattern.compile(pattern);
 	}
 
