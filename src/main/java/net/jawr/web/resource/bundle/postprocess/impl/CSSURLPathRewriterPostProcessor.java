@@ -13,8 +13,11 @@
  */
 package net.jawr.web.resource.bundle.postprocess.impl;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -22,10 +25,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Single file postprocessor used to rewrite CSS URLs according to the new relative locations of the references when
@@ -40,8 +48,26 @@ import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 public class CSSURLPathRewriterPostProcessor extends
 		AbstractChainedResourceBundlePostProcessor {
 	
+	/** The logger */
+	private static Log logger = LogFactory.getLog(CSSURLPathRewriterPostProcessor.class);
+	
 	/** The prefix for CSS defines in the classpath  */
 	public static final String CLASSPATH_CSS_PREFIX = GeneratorRegistry.CLASSPATH_CSS_BUNDLE_PREFIX + GeneratorRegistry.PREFIX_SEPARATOR;
+
+	/** The URL separator */
+	private static final String URL_SEPARATOR = "/";
+
+	/** The cache buster separator */
+	private static final String CACHE_BUSTER_PREFIX = "-cb";
+
+	/** The extension separator */
+	private static final String EXTENSION_SEPARATOR = ".";
+
+	/** The URL separator for JAR element */
+	private static final String URL_JAR_ELT_PREFIX = "!";
+
+	/** The URL file prefix */
+	private static final String URL_FILE_PREFIX = "file:/";
 
 	/** The url pattern */
 	private static final Pattern urlPattern = Pattern.compile(	"url\\(\\s*" // 'url(' and any number of whitespaces 
@@ -56,7 +82,13 @@ public class CSSURLPathRewriterPostProcessor extends
 	private static final Pattern backRefRegexPattern = Pattern.compile(backRefRegex);
 	
 	/** The URL separator pattern */
-	private static final Pattern URLSeparatorPattern = Pattern.compile("/");
+	private static final Pattern URLSeparatorPattern = Pattern.compile(URL_SEPARATOR);
+	
+	/** The cache buster patter */
+	//private static Pattern cacheBusterPattern = Pattern.compile("(.*)\\.(.*)$");
+
+	/** The cache buster replace pattern */
+	//private static final String CACHE_BUSTER_REPLACE_PATTERN = "$1.$2";
 	
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.postprocess.impl.AbstractChainedResourceBundlePostProcessor#doPostProcessBundle(net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus, java.lang.StringBuffer)
@@ -71,7 +103,7 @@ public class CSSURLPathRewriterPostProcessor extends
 		
 		JawrConfig jawrConfig = status.getJawrConfig();
 		if(! "".equals(jawrConfig.getServletMapping())){
-			StringTokenizer tk = new StringTokenizer(jawrConfig.getServletMapping(),"/");
+			StringTokenizer tk = new StringTokenizer(jawrConfig.getServletMapping(),URL_SEPARATOR);
 			initialBackRefs += tk.countTokens();
 		}
 		
@@ -84,7 +116,7 @@ public class CSSURLPathRewriterPostProcessor extends
 			List backRefs = new ArrayList();
 			backRefs.addAll(resourceBackRefs);
 			
-			String url = getUrlPath(matcher.group(), initialBackRefs, backRefs, jawrConfig);
+			String url = getUrlPath(matcher.group(), initialBackRefs, backRefs, status);
 			
 			matcher.appendReplacement(sb, RegexUtil.adaptReplacementToMatcher(url));
 		}
@@ -98,11 +130,12 @@ public class CSSURLPathRewriterPostProcessor extends
 	 * @param match the matched URL
 	 * @param initialBackRefs the initial backward references
 	 * @param resourceBackRefs the list of resources backward references
-	 * @param jawrConfig the configuration
+	 * @param status the bundle processing status
 	 * @return the image URL path
 	 */
-	private String getUrlPath(String match, int initialBackRefs, List resourceBackRefs, JawrConfig jawrConfig) {
+	private String getUrlPath(String match, int initialBackRefs, List resourceBackRefs, BundleProcessingStatus status) {
 
+		JawrConfig jawrConfig = status.getJawrConfig();
 		String imagePathOverride = jawrConfig.getCssImagePathOverride();
 		boolean useClassPathCssImgServlet = jawrConfig.isUseClasspathCssImageServlet();
 		String classPathImgServletPath = jawrConfig.getCssImageServletPath();
@@ -133,7 +166,7 @@ public class CSSURLPathRewriterPostProcessor extends
 				backRefsInURL++;
 			url = url.replaceAll(backRefRegex, "");
 		}
-		else if(url.startsWith("/"))
+		else if(url.startsWith(URL_SEPARATOR))
 			url = url.substring(1,url.length());
 		else if(url.startsWith("./"))
 			url = url.substring(2,url.length());
@@ -175,6 +208,8 @@ public class CSSURLPathRewriterPostProcessor extends
 			if(jawrConfig.isDebugModeOn()){
 				initialBackRefs = 0;
 			}
+			
+			
 		}
 		
 		// Start rendering the result, starting by the initial quote, if any. 
@@ -188,7 +223,7 @@ public class CSSURLPathRewriterPostProcessor extends
 		if (classpathCss) {
 			// If path starts with "/", remove it
 			String servletPath = classPathImgServletPath;
-			if(servletPath.startsWith("/")){
+			if(servletPath.startsWith(URL_SEPARATOR)){
 				servletPath = servletPath.substring(1);
 			}
 			
@@ -196,13 +231,71 @@ public class CSSURLPathRewriterPostProcessor extends
 			urlPrefix.append(servletPath);
 		}
 		
+		StringBuffer urlBuffer = new StringBuffer();
 		for(Iterator it = resourceBackRefs.iterator();it.hasNext(); ) {
-			urlPrefix.append(it.next()).append("/");			
+			urlBuffer.append(it.next()).append(URL_SEPARATOR);			
 		}
+		urlBuffer.append(url);
+		
+		url = addCacheBuster(status, urlBuffer.toString()); 
+		
 		return urlPrefix.append(url).append(quoteStr).append(")").toString();
 	}
 	
 	
+	/**
+	 * Adds the cache buster to the CSS image
+	 * @param status the bundle processing status
+	 * @param url the URL
+	 * @return the url of the CSS image with a cache buster
+	 * @throws ResourceNotFoundException if the resource is not found
+	 */
+	private String addCacheBuster(BundleProcessingStatus status, String url) {
+		
+		String newUrl = status.getImageMapping(url);
+		 
+		if(newUrl != null){
+			return newUrl;
+		}
+		
+		newUrl = url;
+		
+		URL internalCssImgUrl = null;
+		try {
+			internalCssImgUrl = ClassLoaderResourceUtils.getResourceURL(url, this);
+		} catch (ResourceNotFoundException e) {
+			logger.debug(e);
+		}
+		if(internalCssImgUrl != null){
+			String filePath = internalCssImgUrl.getFile();
+			filePath = filePath.substring(URL_FILE_PREFIX.length());
+			int jarDefEndIdx = filePath.lastIndexOf(URL_JAR_ELT_PREFIX);
+			filePath = filePath.substring(0, jarDefEndIdx);
+			File file = new File(filePath);
+			
+			long lastModified = -1;
+			if(file.exists()){
+				lastModified = file.lastModified();
+			}else{
+				if(logger.isInfoEnabled()){
+					logger.info("Impossible to find the jar : '"+filePath+"'.\n" +
+							"Define the lastModified date as the current date. This value will be change at the next bundle processing.");
+				}
+				
+				lastModified = (new Date()).getTime();
+			}
+			
+			// Add the cache buster extension
+			int extensionIdx = url.lastIndexOf(EXTENSION_SEPARATOR);
+			newUrl = url.substring(0, extensionIdx)+CACHE_BUSTER_PREFIX+lastModified+url.substring(extensionIdx);
+			
+			// Set the result in a map, so we will not search it the next time
+			status.setImageMapping(url, newUrl);
+		}
+		return newUrl;
+	}
+
+
 	/**
 	 * Gets the path names within a resource URL, excluding the resource file name. 
 	 * @param resourceURL the resource URL
@@ -210,7 +303,7 @@ public class CSSURLPathRewriterPostProcessor extends
 	 */
 	private List getPathNamesInResource(String resourceURL) {
 		List names = new ArrayList();
-		String[] namesArray = resourceURL.split("/");
+		String[] namesArray = resourceURL.split(URL_SEPARATOR);
 		
 		// Add all but the last pathname
 		for (int i = 0; i < namesArray.length -1 ; i++) {
@@ -232,7 +325,7 @@ public class CSSURLPathRewriterPostProcessor extends
 		while(backUrls.find())
 			numMatches++;
 		
-		if(url.startsWith("/"))
+		if(url.startsWith(URL_SEPARATOR))
 			numMatches--;
 		
 		return numMatches;

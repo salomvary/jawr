@@ -53,33 +53,33 @@ import org.apache.log4j.Logger;
  */
 public class JawrRequestHandler implements ConfigChangeListener{
 	
-    private static final String CACHE_CONTROL_HEADER = "Cache-Control";
-    private static final String CACHE_CONTROL_VALUE = "public, max-age=315360000, post-check=315360000, pre-check=315360000";
-    private static final String LAST_MODIFIED_HEADER = "Last-Modified";
-    private static final String IF_MODIFIED_SINCE_HEADER = "If-Modified-Since";
-    private static final String IF_NONE_MATCH_HEADER = "If-None-Match";
-    private static final String LAST_MODIFIED_VALUE = "Sun, 06 Nov 2005 12:00:00 GMT";
-    private static final String ETAG_HEADER = "ETag";
-    private static final String ETAG_VALUE = "2740050219";
-    private static final String EXPIRES_HEADER = "Expires";
+	protected static final String CACHE_CONTROL_HEADER = "Cache-Control";
+	protected static final String CACHE_CONTROL_VALUE = "public, max-age=315360000, post-check=315360000, pre-check=315360000";
+	protected static final String LAST_MODIFIED_HEADER = "Last-Modified";
+	protected static final String IF_MODIFIED_SINCE_HEADER = "If-Modified-Since";
+	protected static final String IF_NONE_MATCH_HEADER = "If-None-Match";
+	protected static final String LAST_MODIFIED_VALUE = "Sun, 06 Nov 2005 12:00:00 GMT";
+	protected static final String ETAG_HEADER = "ETag";
+	protected static final String ETAG_VALUE = "2740050219";
+	protected static final String EXPIRES_HEADER = "Expires";
         
-    private static final String CONFIG_RELOAD_INTERVAL = "jawr.config.reload.interval";
+	protected static final String CONFIG_RELOAD_INTERVAL = "jawr.config.reload.interval";
     public static final String GENERATION_PARAM = "generationConfigParam";
     
     public static final String CLIENTSIDE_HANDLER_REQ_PATH = "/jawr_loader.js";
     
-	private static final Logger log = Logger.getLogger(JawrRequestHandler.class.getName());
+	private static final Logger log = Logger.getLogger(JawrRequestHandler.class);
 	
 	private ResourceBundlesHandler bundlesHandler;
 	
-	private String contentType;
-	private String resourceType;
-	private ServletContext servletContext;
-	private Map initParameters;
-	private ConfigChangeListenerThread configChangeListenerThread;
-	private GeneratorRegistry generatorRegistry;
-	private JawrConfig jawrConfig;
-	private ClientSideHandlerScriptRequestHandler clientSideScriptRequestHandler;
+	protected String contentType;
+	protected String resourceType;
+	protected ServletContext servletContext;
+	protected Map initParameters;
+	protected ConfigChangeListenerThread configChangeListenerThread;
+	protected GeneratorRegistry generatorRegistry;
+	protected JawrConfig jawrConfig;
+	protected ClientSideHandlerScriptRequestHandler clientSideScriptRequestHandler;
 
 	/**
 	 * Reads the properties file and  initializes all configuration using the ServletConfig object. 
@@ -199,10 +199,11 @@ public class JawrRequestHandler implements ConfigChangeListener{
 
 
 	/**
-	 * @param props
-	 * @throws ServletException
+	 * Initialize the Jawr config
+	 * @param props the properties
+	 * @throws ServletException if an exception occurs
 	 */
-	private void initializeJawrConfig(Properties props) throws ServletException {
+	protected void initializeJawrConfig(Properties props) throws ServletException {
 		// Initialize config 
 		if(null != jawrConfig)
 			jawrConfig.invalidate();
@@ -353,7 +354,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
      * twice. 
      * @param resp 
      */
-    private void setResponseHeaders( HttpServletResponse resp ) {
+	protected void setResponseHeaders( HttpServletResponse resp ) {
             // Force resource caching as best as possible
             resp.setHeader(CACHE_CONTROL_HEADER, CACHE_CONTROL_VALUE);                
             resp.setHeader(LAST_MODIFIED_HEADER,LAST_MODIFIED_VALUE);
