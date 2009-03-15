@@ -73,12 +73,6 @@ public class CSSURLPathRewriterPostProcessor extends
 	/** The URL separator pattern */
 	private static final Pattern URLSeparatorPattern = Pattern.compile(URL_SEPARATOR);
 	
-	/** The cache buster patter */
-	//private static Pattern cacheBusterPattern = Pattern.compile("(.*)\\.(.*)$");
-
-	/** The cache buster replace pattern */
-	//private static final String CACHE_BUSTER_REPLACE_PATTERN = "$1.$2";
-	
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.postprocess.impl.AbstractChainedResourceBundlePostProcessor#doPostProcessBundle(net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus, java.lang.StringBuffer)
 	 */
@@ -121,7 +115,7 @@ public class CSSURLPathRewriterPostProcessor extends
 	 * @param resourceBackRefs the list of resources backward references
 	 * @param status the bundle processing status
 	 * @return the image URL path
-	 * @throws IOException if an IO execption occurs
+	 * @throws IOException if an IO exception occurs
 	 */
 	private String getUrlPath(String match, int initialBackRefs, List resourceBackRefs, BundleProcessingStatus status) throws IOException {
 
