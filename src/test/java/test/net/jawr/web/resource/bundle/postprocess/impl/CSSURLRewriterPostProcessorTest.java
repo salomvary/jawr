@@ -236,16 +236,16 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		// Set the properties
 		Properties props = new Properties();
 		props.setProperty(JawrConfig.JAWR_CSS_IMG_USE_CLASSPATH_SERVLET, "true");
-		props.setProperty(JawrConfig.JAWR_CSS_IMG_CLASSPATH_SERVLET_PATH, "/cssImg/");
 		config = new JawrConfig(props);
 		config.setServletMapping("/css");
+		config.setImageServletMapping("/cssImg/");
 		config.setCharsetName("UTF-8");
 		
 		status = new BundleProcessingStatus(bundle, null, config);
 
 		// Css data
 		StringBuffer data = new StringBuffer(
-				"background-image:url(../../images/someImage.gif);");
+				"background-image:url(../../images/logo.png);");
 		
 		// Css path
 		String filePath = "jar_css:style/default/assets/someCSS.css";
@@ -253,7 +253,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		// Expected: goes 3 back to the context path, then add the CSS image servlet mapping,
 		// then go to the image path
 		// the image is at classPath:/style/images/someImage.gif
-		String expectedURL = "background-image:url(../../../cssImg/style/images/someImage.gif);";
+		String expectedURL = "background-image:url(../../../cssImg/cb2587531189/style/images/logo.png);";
 		status.setLastPathAdded(filePath);
 
 		String result = processor.postProcessBundle(status, data).toString();
