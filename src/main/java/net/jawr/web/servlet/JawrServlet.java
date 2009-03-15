@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -25,16 +25,27 @@ import org.apache.log4j.Logger;
 /**
  *
  * Main Jawr servlet. Maps logical URLs to script bundles, which are generated on the fly (may 
- * be cached), and served as a single javascript file. 
+ * be cached), and served as a single file. 
  * 
  * 
  * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  */
 public class JawrServlet extends HttpServlet {
+	
+	/** The logger */
 	private static final Logger log = Logger.getLogger(JawrServlet.class);
 
-	private static final long serialVersionUID = -7628137098513776342L;
-	
+	/** The serial version UID */ 
+	private static final long serialVersionUID = -4551240917172286444L;
+
+	/** The init parameter for the type managed by the servlet */
+	private static final String TYPE_INIT_PARAMETER = "type";
+
+	/** The image type */
+	private static final String IMG_TYPE = "img";
+
+	/** The request handler */
 	protected JawrRequestHandler requestHandler;
 
 	/* (non-Javadoc)
@@ -42,7 +53,12 @@ public class JawrServlet extends HttpServlet {
 	 */
 	public void init() throws ServletException {
 		try {
-			requestHandler = new JawrRequestHandler(getServletContext(),getServletConfig());
+			String type = getServletConfig().getInitParameter(TYPE_INIT_PARAMETER);
+			if(IMG_TYPE.equals(type)){
+				requestHandler = new JawrImageRequestHandler(getServletContext(),getServletConfig());
+			}else{
+				requestHandler = new JawrRequestHandler(getServletContext(),getServletConfig());
+			}
 		}catch (ServletException e) {
 			log.fatal("Jawr servlet with name" +  getServletConfig().getServletName() +" failed to initialize properly. ");
 			log.fatal("Cause:");
