@@ -33,6 +33,10 @@ Descriptor file syntax
 *---------------*---------*--------------+----------------+
 | jawr.css.imagepath.override | String | Value to prepend to normalized css urls.  So css background: url(../../img/bkrnd/bg.gif); will = background: url(${jawr.css.imagepath.override}img/bkrnd/bg.gif); | none| 
 *---------------*---------*--------------+----------------+
+| jawr.css.image.classpath.use.servlet | Boolean | The flag indicating if the CSS images should be retrieved from the classpath, for the CSS defined in the classpath. | none| 
+*---------------*---------*--------------+----------------+
+| jawr.image.hash.algorithm | String | The hash algorithm to use for the images. Two values are possible : CRC32 and MD5  | CRC32 | 
+*---------------*---------*--------------+----------------+
 | jawr.csslinks.flavor | String | Sets how the LINK tags are rendered by the style tag. See the {{{./taglibs.html}taglib docs.}}   | xhtml | 
 *---------------*---------*--------------+----------------+
 | jawr.dwr.mapping | String | Value of the servlet-mapping that points to a DWR servlet instance. See {{{../integration/dwr.html}DWR integration}}.   | none| 
