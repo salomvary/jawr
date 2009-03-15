@@ -13,11 +13,9 @@
  */
 package net.jawr.web.resource.bundle.postprocess.impl;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -25,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.jawr.web.config.JawrConfig;
-import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.CheckSumUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
@@ -58,16 +56,7 @@ public class CSSURLPathRewriterPostProcessor extends
 	private static final String URL_SEPARATOR = "/";
 
 	/** The cache buster separator */
-	private static final String CACHE_BUSTER_PREFIX = "-cb";
-
-	/** The extension separator */
-	private static final String EXTENSION_SEPARATOR = ".";
-
-	/** The URL separator for JAR element */
-	private static final String URL_JAR_ELT_PREFIX = "!";
-
-	/** The URL file prefix */
-	private static final String URL_FILE_PREFIX = "file:/";
+	private static final String CACHE_BUSTER_PREFIX = "cb";
 
 	/** The url pattern */
 	private static final Pattern urlPattern = Pattern.compile(	"url\\(\\s*" // 'url(' and any number of whitespaces 
@@ -132,13 +121,14 @@ public class CSSURLPathRewriterPostProcessor extends
 	 * @param resourceBackRefs the list of resources backward references
 	 * @param status the bundle processing status
 	 * @return the image URL path
+	 * @throws IOException if an IO execption occurs
 	 */
-	private String getUrlPath(String match, int initialBackRefs, List resourceBackRefs, BundleProcessingStatus status) {
+	private String getUrlPath(String match, int initialBackRefs, List resourceBackRefs, BundleProcessingStatus status) throws IOException {
 
 		JawrConfig jawrConfig = status.getJawrConfig();
 		String imagePathOverride = jawrConfig.getCssImagePathOverride();
-		boolean useClassPathCssImgServlet = jawrConfig.isUseClasspathCssImageServlet();
-		String classPathImgServletPath = jawrConfig.getCssImageServletPath();
+		boolean useClassPathCssImgServlet = jawrConfig.isUsingClasspathCssImageServlet();
+		String classPathImgServletPath = jawrConfig.getImageServletMapping();
 		
 		String url = match.substring(match.indexOf('(')+1,match.lastIndexOf(')'))
 					.trim();
@@ -208,8 +198,6 @@ public class CSSURLPathRewriterPostProcessor extends
 			if(jawrConfig.isDebugModeOn()){
 				initialBackRefs = 0;
 			}
-			
-			
 		}
 		
 		// Start rendering the result, starting by the initial quote, if any. 
@@ -228,7 +216,7 @@ public class CSSURLPathRewriterPostProcessor extends
 			}
 			
 			// Add classpath image servlet path in the URL
-			urlPrefix.append(servletPath);
+			urlPrefix.append(servletPath+URL_SEPARATOR);
 		}
 		
 		StringBuffer urlBuffer = new StringBuffer();
@@ -236,8 +224,11 @@ public class CSSURLPathRewriterPostProcessor extends
 			urlBuffer.append(it.next()).append(URL_SEPARATOR);			
 		}
 		urlBuffer.append(url);
-		
-		url = addCacheBuster(status, urlBuffer.toString()); 
+		if (classpathCss) {
+			url = addCacheBuster(status, urlBuffer.toString()); 
+		}else{
+			url = urlBuffer.toString();
+		}
 		
 		return urlPrefix.append(url).append(quoteStr).append(")").toString();
 	}
@@ -248,9 +239,9 @@ public class CSSURLPathRewriterPostProcessor extends
 	 * @param status the bundle processing status
 	 * @param url the URL
 	 * @return the url of the CSS image with a cache buster
-	 * @throws ResourceNotFoundException if the resource is not found
+	 * @throws IOException if an IO exception occurs
 	 */
-	private String addCacheBuster(BundleProcessingStatus status, String url) {
+	private String addCacheBuster(BundleProcessingStatus status, String url) throws IOException {
 		
 		String newUrl = status.getImageMapping(url);
 		 
@@ -260,41 +251,28 @@ public class CSSURLPathRewriterPostProcessor extends
 		
 		newUrl = url;
 		
-		URL internalCssImgUrl = null;
+		InputStream is = ClassLoaderResourceUtils.getResourceAsStream(url, this);
+		String checksum = null;
 		try {
-			internalCssImgUrl = ClassLoaderResourceUtils.getResourceURL(url, this);
-		} catch (ResourceNotFoundException e) {
-			logger.debug(e);
+			checksum = CheckSumUtils.getChecksum(is, status.getJawrConfig().getImageHashAlgorithm());
 		}
-		if(internalCssImgUrl != null){
-			String filePath = internalCssImgUrl.getFile();
-			filePath = filePath.substring(URL_FILE_PREFIX.length());
-			int jarDefEndIdx = filePath.lastIndexOf(URL_JAR_ELT_PREFIX);
-			filePath = filePath.substring(0, jarDefEndIdx);
-			File file = new File(filePath);
-			
-			long lastModified = -1;
-			if(file.exists()){
-				lastModified = file.lastModified();
-			}else{
-				if(logger.isInfoEnabled()){
-					logger.info("Impossible to find the jar : '"+filePath+"'.\n" +
-							"Define the lastModified date as the current date. This value will be change at the next bundle processing.");
-				}
-				
-				lastModified = (new Date()).getTime();
+		finally {
+			if(is != null){
+				is.close();
 			}
-			
-			// Add the cache buster extension
-			int extensionIdx = url.lastIndexOf(EXTENSION_SEPARATOR);
-			newUrl = url.substring(0, extensionIdx)+CACHE_BUSTER_PREFIX+lastModified+url.substring(extensionIdx);
-			
-			// Set the result in a map, so we will not search it the next time
-			status.setImageMapping(url, newUrl);
 		}
+		
+		// Add the cache buster extension
+		newUrl = CACHE_BUSTER_PREFIX+checksum+"/"+url;
+		
+		// Set the result in a map, so we will not search it the next time
+		status.setImageMapping(url, newUrl);
+		
 		return newUrl;
 	}
 
+
+	
 
 	/**
 	 * Gets the path names within a resource URL, excluding the resource file name. 

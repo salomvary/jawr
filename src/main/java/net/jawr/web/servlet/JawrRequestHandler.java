@@ -63,6 +63,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	protected static final String ETAG_VALUE = "2740050219";
 	protected static final String EXPIRES_HEADER = "Expires";
         
+	protected static final String IMG_SERVLET_MAPPING_PARAM = "imageServletMapping";
 	protected static final String CONFIG_RELOAD_INTERVAL = "jawr.config.reload.interval";
     public static final String GENERATION_PARAM = "generationConfigParam";
     
@@ -221,6 +222,18 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		String mapping = (String) initParameters.get("mapping");
 		if(null != mapping)
 			jawrConfig.setServletMapping(mapping);
+		
+		String imageServletMapping = (String) initParameters.get(IMG_SERVLET_MAPPING_PARAM);
+		if(jawrConfig.isUsingClasspathCssImageServlet() && resourceType.equals("css")){
+			
+			if(null != imageServletMapping){
+				jawrConfig.setImageServletMapping(imageServletMapping);
+			}else{
+				throw new ServletException("In the Jawr config, you have defined that you are using the CSS image defined in the classpath, " +
+						"but the mapping for the image servlet has not been defined in the Jawr CSS servlet.\n" +
+						"Please add the '"+IMG_SERVLET_MAPPING_PARAM+"' property in the init parameters of the CSS servlet.");
+			}
+		}
 		
 		if(log.isDebugEnabled()) {
 			log.debug("Configuration read. Current config:");

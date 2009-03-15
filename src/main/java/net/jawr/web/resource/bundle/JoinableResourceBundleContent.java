@@ -106,4 +106,41 @@ public class JoinableResourceBundleContent {
 		
 		this.cssClasspathDebugContentMap.put(cssPath, content);
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((content == null) ? 0 : content.toString().hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		JoinableResourceBundleContent other = (JoinableResourceBundleContent) obj;
+		if (content == null) {
+			if (other.content != null)
+				return false;
+		} else if (!content.equals(other.content))
+			return false;
+		if (cssClasspathDebugContentMap == null) {
+			if (other.cssClasspathDebugContentMap != null)
+				return false;
+		} else if (!cssClasspathDebugContentMap.equals(other.cssClasspathDebugContentMap))
+			return false;
+		return true;
+	}
+	
 }
