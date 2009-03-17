@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi, Matt Ruby
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -30,6 +30,7 @@ import net.jawr.web.resource.bundle.renderer.CSSHTMLBundleLinkRenderer;
  * 
  * @author Jordi Hernández Sellés
  * @author Ibrahim Chaehoi
+ * @author Matt Ruby
  */
 public class JawrConfig {
 
@@ -82,7 +83,12 @@ public class JawrConfig {
 	 * Flag to switch on the debug mode. defaults to false.
 	 */
 	private boolean debugModeOn = false;
-
+	
+	/**
+	 * Key that may be passed in to override production mode
+	 */
+	private String debugOverrideKey = "";
+		
 	/**
 	 * Flag to switch on the gzipped resources mode. defaults to true.
 	 */
@@ -158,6 +164,9 @@ public class JawrConfig {
 		if (null != System.getProperty(DEBUG_MODE_SYSTEM_FLAG)) {
 			setDebugModeOn(Boolean.valueOf(System.getProperty(DEBUG_MODE_SYSTEM_FLAG)).booleanValue());
 		}
+		if (null != props.getProperty("jawr.debug.overrideKey")) {
+			setDebugOverrideKey(props.getProperty("jawr.debug.overrideKey"));
+		}
 		if (null != props.getProperty("jawr.gzip.on")) {
 			setGzipResourcesModeOn(Boolean.valueOf(props.getProperty("jawr.gzip.on")).booleanValue());
 		}
@@ -196,6 +205,24 @@ public class JawrConfig {
 		}
 		
 	}
+	
+	/**
+	 * Get the debugOverrideKey
+	 * 
+	 * @return the debugOverrideKey that is used to override production mode per request
+	 */
+	public String getDebugOverrideKey() {
+		return debugOverrideKey;
+	}
+
+	/**
+	 * Set the debugOverrideKey
+	 * 
+	 * @param debugOverrideKey the String to set as the key
+	 */
+	public void setDebugOverrideKey(String debugOverrideKey) {
+		this.debugOverrideKey = debugOverrideKey;
+	}
 
 	/**
 	 * Get the isDomainOverriden flag.
@@ -208,10 +235,14 @@ public class JawrConfig {
 
 	/**
 	 * Get debug mode status.
+	 * This flag may be overridden using the debugOverrideKey
 	 * 
 	 * @return the debug mode flag.
 	 */
 	public boolean isDebugModeOn() {
+		if(!debugModeOn && ThreadLocalDebugOverride.getDebugOverride()){
+			return true;
+		}
 		return debugModeOn;
 	}
 

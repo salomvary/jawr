@@ -306,6 +306,8 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			this.clientSideScriptRequestHandler.handleClientSideHandlerRequest(request, response);
 			return;
 		}
+		
+		RendererRequestUtils.setRequestDebuggable(request,this.jawrConfig);
 
 		// CSS images would be requested through this handler in case servletMapping is used  
 		if( 	this.jawrConfig.isDebugModeOn() && 
