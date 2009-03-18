@@ -35,6 +35,9 @@ public class ThreadLocalDebugOverride {
 	 * @return gebugOverride Boolean
 	 */
 	public static Boolean getDebugOverride() {
+		if(debugOverride.get() == null){
+			return false;
+		}
 		return debugOverride.get();
 	}
 
