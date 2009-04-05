@@ -140,7 +140,6 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.ResourceHandler#getCssClasspathResource(java.lang.String)
 	 */
-	@Override
 	public Reader getCssClasspathResource(String resourceName)
 			throws ResourceNotFoundException {
 		
@@ -252,7 +251,6 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.ResourceHandler#storeBundle(java.lang.String, net.jawr.web.resource.bundle.JoinableResourceBundleContent)
 	 */
-	@Override
 	public void storeBundle(String bundleName,
 			JoinableResourceBundleContent bundleResourcesContent) {
 		

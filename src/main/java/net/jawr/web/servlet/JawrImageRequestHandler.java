@@ -49,7 +49,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	private static final String CACHE_BUSTER_REPLACE_PATTERN = "$1";
 
 	/** The image MIME map, associating the image extension to their MIME type */
-	private static Map<String, String> imgMimeMap = new HashMap<String, String>(20);
+	private static Map imgMimeMap = new HashMap(20);
 	static {
 		imgMimeMap.put("gif", "image/gif");
 		imgMimeMap.put("jpg", "image/jpeg");
@@ -258,7 +258,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 
 		// Retrieve the extension
 		String extension = requestUri.substring(suffixIdx + 1).toLowerCase();
-		String contentType = imgMimeMap.get(extension);
+		String contentType = (String) imgMimeMap.get(extension);
 		if (contentType == null) {
 
 			log.error("No image extension match the extension '" + extension + "' for the request URI : " + requestUri);
