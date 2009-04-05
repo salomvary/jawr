@@ -240,7 +240,7 @@ public class JawrConfig {
 	 * @return the debug mode flag.
 	 */
 	public boolean isDebugModeOn() {
-		if(!debugModeOn && ThreadLocalDebugOverride.getDebugOverride()){
+		if(!debugModeOn && ThreadLocalDebugOverride.getDebugOverride().booleanValue()){
 			return true;
 		}
 		return debugModeOn;

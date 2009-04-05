@@ -106,9 +106,9 @@ public class RendererRequestUtils {
 			&& null != req.getParameter("overrideKey")
 			&& jeesConfig.getDebugOverrideKey().equals(req.getParameter("overrideKey"))
 			) {
-			ThreadLocalDebugOverride.setDebugOverride(true);
+			ThreadLocalDebugOverride.setDebugOverride(Boolean.TRUE);
 		} else {
-			ThreadLocalDebugOverride.setDebugOverride(false);
+			ThreadLocalDebugOverride.setDebugOverride(Boolean.FALSE);
 		}
 		
 	}

@@ -170,7 +170,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     		fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
     	
     	// allow debugOverride to pass through on the generated urls
-    	if(ThreadLocalDebugOverride.getDebugOverride()){
+    	if(ThreadLocalDebugOverride.getDebugOverride().booleanValue()){
     		fullPath = PathNormalizer.addGetParameter(fullPath, "overrideKey", bundler.getConfig().getDebugOverrideKey());
     	}
     	

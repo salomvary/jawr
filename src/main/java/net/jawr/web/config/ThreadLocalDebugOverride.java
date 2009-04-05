@@ -22,13 +22,13 @@ public class ThreadLocalDebugOverride {
 	 * debugOverride will allow us to override production mode on a request by request basis.
 	 * ThreadLocal is used to hold the overridden status throughout a given request.
 	 */
-	private static ThreadLocal<Boolean> debugOverride = new ThreadLocal<Boolean>();
+	private static ThreadLocal debugOverride = new ThreadLocal();
 	
 	/**
 	 * The debugOverride will be automatially set to false
 	 */
 	private ThreadLocalDebugOverride() {
-		debugOverride.set(false);
+		debugOverride.set(Boolean.FALSE);
 	}
 	/**
 	 * Get the flag stating that production mode should be overridden
@@ -36,9 +36,9 @@ public class ThreadLocalDebugOverride {
 	 */
 	public static Boolean getDebugOverride() {
 		if(debugOverride.get() == null){
-			return false;
+			return Boolean.FALSE;
 		}
-		return debugOverride.get();
+		return (Boolean) debugOverride.get();
 	}
 
 	/**
