@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>    
- <jwr:style src="/cssJawrPath/fwk/core/component.css" media="all" />
+ <jwr:style src="/fwk/core/component.css" media="all" />
 </head>
 <body>
 <div class="mandatory">

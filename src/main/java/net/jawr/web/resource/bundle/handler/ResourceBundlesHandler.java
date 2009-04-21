@@ -15,6 +15,7 @@ package net.jawr.web.resource.bundle.handler;
 
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.List;
 
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.ResourceNotFoundException;
@@ -71,6 +72,11 @@ public interface ResourceBundlesHandler {
 	 */
 	public void streamBundleTo(String bundlePath, OutputStream out) throws ResourceNotFoundException;
 	
+	/**
+	 * Returns the context bundles
+	 * @return the context bundles
+	 */
+	public List getContextBundles();
 	
 	/**
 	 * Generates all file bundles so that they will be ready to attend requests. 

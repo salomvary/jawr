@@ -21,6 +21,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 
 import org.apache.log4j.Logger;
@@ -87,7 +88,13 @@ public class JawrSpringController implements Controller, ServletContextAware, In
 		initParams.put("mapping",fullMapping);
 		if(log.isDebugEnabled())
 			log.debug("Initializing Jawr Controller's JawrRequestHandler");
-		requestHandler = new JawrRequestHandler(context,initParams,configuration);
+		
+		if(JawrConstant.IMG_TYPE.equals(type)){
+			requestHandler = new JawrImageRequestHandler(context,initParams, configuration);
+		}else{
+			requestHandler = new JawrRequestHandler(context,initParams, configuration);
+		}
+		
 	}
 
 	/* (non-Javadoc)
@@ -133,7 +140,5 @@ public class JawrSpringController implements Controller, ServletContextAware, In
 			controllerMapping = controllerMapping.substring(0,controllerMapping.length()-1);
 		this.controllerMapping = controllerMapping;
 	}
-
-	
 
 }

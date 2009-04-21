@@ -134,6 +134,13 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 																			config);
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#getContextBundles()
+	 */
+	public List getContextBundles() {
+		return contextBundles;
+	}
+	
 	/**
 	 * Splits the bundles in two lists, one for global lists and other for
 	 * the remaining bundles.  
