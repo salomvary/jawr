@@ -25,6 +25,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
 
@@ -262,10 +263,11 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 		storeBundle(bundleName,bundleContent,true, gzipDirPath);
 		
 		// Store Css classpath debug files
-		Iterator keyIterator = bundleResourcesContent.getCssClasspathDebugContentMap().keySet().iterator();
+		Map cssClasspathDebugContentMap = bundleResourcesContent.getCssClasspathDebugContentMap();
+		Iterator keyIterator = cssClasspathDebugContentMap.keySet().iterator();
 		while(keyIterator.hasNext()){
 			String filePath = (String) keyIterator.next();
-			storeBundle(filePath,bundleContent,false, cssClasspathDirPath);
+			storeBundle(filePath,(String)cssClasspathDebugContentMap.get(filePath),false, cssClasspathDirPath);
 		}
 	}
 	
