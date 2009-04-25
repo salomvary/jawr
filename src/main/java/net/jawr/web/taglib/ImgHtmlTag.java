@@ -536,7 +536,7 @@ public class ImgHtmlTag extends TagSupport {
 	        	logger.debug("No mapping found for the image : "+getSrc());
 	        }
 	        
-	        String imageServletMapping = imgRsHandler.getJawrConfig().getImageServletMapping();
+	        String imageServletMapping = imgRsHandler.getJawrConfig().getServletMapping();
 			if(imageServletMapping != null){
 				newUrl = PathNormalizer.joinDomainToPath(imageServletMapping, newUrl);
 			}else{
