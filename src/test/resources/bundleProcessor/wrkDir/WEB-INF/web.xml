@@ -26,6 +26,23 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
+		<servlet-name>CssImgServlet</servlet-name>
+		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
+		<init-param>
+			<param-name>configLocation</param-name>
+			<param-value>/jawr-fullBundleProcess.properties</param-value>
+		</init-param>
+		<init-param>
+			<param-name>mapping</param-name>
+			<param-value>/cssImg/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>type</param-name>
+			<param-value>img</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
 		<servlet-name>CssServlet</servlet-name>
 		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
 		<init-param>
@@ -44,31 +61,6 @@
 			<param-name>imageServletMapping</param-name>
 			<param-value>/cssImg/</param-value>
 		</init-param>
-		<!-- init-param>
-			<param-name>configPropertiesSourceClass</param-name>
-			<param-value>net.jawr.web.resource.bundle.factory.util.MultipleFileConfigSource</param-value>
-		</init-param-->
-		<!-- init-param>
-			<param-name>mapping</param-name>
-			<param-value>/styles/</param-value>
-		</init-param-->
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet>
-		<servlet-name>CssImgServlet</servlet-name>
-		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
-		<init-param>
-			<param-name>configLocation</param-name>
-			<param-value>/jawr-fullBundleProcess.properties</param-value>
-		</init-param>
-		<init-param>
-			<param-name>imageServletMapping</param-name>
-			<param-value>/cssImg/</param-value>
-		</init-param>
-		<init-param>
-			<param-name>type</param-name>
-			<param-value>img</param-value>
-		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
@@ -85,15 +77,7 @@
 		<servlet-name>CssImgServlet</servlet-name>
 		<url-pattern>/cssImg/*</url-pattern>
 	</servlet-mapping>
-	<!-- Using mapping-->
-	<!-- <servlet-mapping>
-		<servlet-name>JavascriptServlet</servlet-name>
-		<url-pattern>/jawr/*</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>CssServlet</servlet-name>
-		<url-pattern>/styles/*</url-pattern>
-	</servlet-mapping>-->
+	
 	
 	<session-config>
 		<session-timeout>10</session-timeout>

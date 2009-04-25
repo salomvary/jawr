@@ -30,7 +30,9 @@ import javax.servlet.http.HttpServlet;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
+import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BasicBundleRenderer;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
@@ -189,6 +191,7 @@ public class BundleProcessor {
 		String type = servletConfig.getInitParameter("type");
 		String mapping = servletConfig.getInitParameter("mapping");
 		ResourceBundlesHandler bundleHandler = null;
+		ImageResourcesHandler imgRsHandler = null;
 		ServletContext servletContext = servletConfig.getServletContext();
 
 		// Retrieve the bundle Handler
@@ -197,6 +200,8 @@ public class BundleProcessor {
 			bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE);
 		} else if (type.equals("css")) {
 			bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE);
+		} else if (type.equals("img")) {
+			imgRsHandler = (ImageResourcesHandler) servletContext.getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
 		}
 
 		if (bundleHandler != null) {
@@ -208,6 +213,8 @@ public class BundleProcessor {
 			}
 
 			createBundles(servlet, bundleHandler, destDirPath, mapping);
+		} else if (imgRsHandler != null) {
+			createImageBundle(servlet, imgRsHandler, destDirPath, mapping);
 		}
 	}
 
@@ -237,30 +244,73 @@ public class BundleProcessor {
 			JoinableResourceBundle bundle = (JoinableResourceBundle) bundleIterator.next();
 			String path = createLinkToBundle(bundleHandler, bundle.getName(), useGzip);
 
-			request.setRequestPath(path);
-			if (mapping != null && mapping.length() > 0) {
-				int idx = path.indexOf(mapping);
-				if (idx > -1) {
-					path = path.substring(idx + mapping.length());
-				}
-
-				if (!path.startsWith("/")) {
-					path = "/" + path;
-				}
-				request.setPathInfo(path);
-			}
-
-			// Create the parent directory of the destination file
-			File destFile = new File(destDirPath, path);
-			if (!destFile.exists()) {
-				destFile.getParentFile().mkdirs();
-			}
-
-			// Set the response mock to write in the destination file
-			response.setFile(destFile);
-			servlet.service(request, response);
-			response.close();
+			createBundleFile(servlet, response, request, path, destDirPath, mapping);
 		}
+	}
+
+	/**
+	 * Create the image bundle
+	 * 
+	 * @param servlet the servlet
+	 * @param imgRsHandler the image resource handler
+	 * @param destDirPath the destination directory path
+	 * @param mapping the mapping
+	 * @throws IOException if an IOExceptin occurs
+	 * @throws ServletException if an exception occurs
+	 */
+	private void createImageBundle(HttpServlet servlet, ImageResourcesHandler imgRsHandler, String destDirPath, String mapping) throws IOException,
+			ServletException {
+		Map bundleImgMap = imgRsHandler.getImageMap();
+
+		Iterator bundleIterator = bundleImgMap.keySet().iterator();
+		MockServletResponse response = new MockServletResponse();
+		MockServletRequest request = new MockServletRequest();
+
+		// For the list of bundle defines, create the file associated
+		while (bundleIterator.hasNext()) {
+			String imgPath = (String) bundleIterator.next();
+			String path = (String) bundleImgMap.get(imgPath);
+
+			createBundleFile(servlet, response, request, path, destDirPath, mapping);
+		}
+	}
+
+	/**
+	 * Create the bundle file
+	 * 
+	 * @param servlet the servlet
+	 * @param response the response
+	 * @param request the request
+	 * @param path the path
+	 * @param destDirPath the destination directory path
+	 * @param mapping the mapping
+	 * @throws IOException if an IO exception occurs
+	 * @throws ServletException if an exception occurs
+	 */
+	private void createBundleFile(HttpServlet servlet, MockServletResponse response, MockServletRequest request, String path, String destDirPath,
+			String mapping) throws IOException, ServletException {
+		request.setRequestPath(path);
+		if (mapping != null && mapping.length() > 0) {
+			int idx = path.indexOf(mapping);
+			if (idx > -1) {
+				path = path.substring(idx + mapping.length());
+			}
+
+			path = PathNormalizer.asPath(path);
+			
+			request.setPathInfo(path);
+		}
+
+		// Create the parent directory of the destination file
+		File destFile = new File(destDirPath, path);
+		if (!destFile.exists()) {
+			destFile.getParentFile().mkdirs();
+		}
+
+		// Set the response mock to write in the destination file
+		response.setFile(destFile);
+		servlet.service(request, response);
+		response.close();
 	}
 
 	/**

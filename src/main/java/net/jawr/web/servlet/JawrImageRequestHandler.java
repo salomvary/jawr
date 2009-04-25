@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.exception.InvalidPathException;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.ResourceHandler;
@@ -136,18 +137,17 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		// Set the content type to be used for every request.
 		contentType = "img/";
 
+		// Set mapping, to be used by the tag lib to define URLs that point to this servlet. 
+		String mapping = (String) initParameters.get("mapping");
+		if(null != mapping){
+			jawrConfig.setServletMapping(mapping);
+		}
+		
 		// Set mapping, to be used by the tag lib to define URLs that point to this servlet.
 		String imageServletMapping = (String) initParameters.get(IMG_SERVLET_MAPPING_PARAM);
-		if (jawrConfig.isUsingClasspathCssImageServlet()) {
-
-			jawrConfig.setImageServletMapping(imageServletMapping);
-			
-//			if (null != imageServletMapping) {
-//			} else {
-//				throw new ServletException("In the Jawr config, you have defined that you are using the CSS image defined in the classpath, "
-//						+ "but the mapping for the image servlet has not been defined in the Jawr Image servlet.\n" + "Please add the '"
-//						+ IMG_SERVLET_MAPPING_PARAM + "' property in the init parameters of the Image servlet.");
-//			}
+		if(imageServletMapping != null){
+			log.debug("The property used to configure the image servlet mapping is the property 'mapping'.\n" +
+					"The parameter '"+IMG_SERVLET_MAPPING_PARAM+"' is should only used in the Jawr CSS servlet.");
 		}
 		
 		rsHandler = new ServletContextResourceHandler(servletContext,jawrConfig.getResourceCharset(),jawrConfig.getGeneratorRegistry());
@@ -274,8 +274,17 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 				if(log.isDebugEnabled())
 					log.debug("Added to item path list:" + PathNormalizer.asPath(resourcePath));
 			}
-			else if(addSubDirs && rsHandler.isDirectory(resourcePath))
-				folders.add(resourceName);
+			else if(addSubDirs){
+				
+				try{
+					if(rsHandler.isDirectory(resourcePath)){
+						folders.add(resourceName);
+					}
+				}catch(InvalidPathException e){
+					if(log.isDebugEnabled())
+						log.debug("Enable to define if the following resource is a directory : " + PathNormalizer.asPath(resourcePath));
+				}
+			}
 		}
 		
 		// Add subfolders if requested. Subfolders are added last unless specified in sorting file. 
@@ -384,7 +393,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	private String getContentType(HttpServletRequest request, String filePath) {
 		String requestUri = request.getRequestURI();
 
-		int suffixIdx = requestUri.lastIndexOf(".");
+		int suffixIdx = filePath.lastIndexOf(".");
 		if (suffixIdx == -1) {
 
 			log.error("No extension found for the request URI : " + requestUri);
@@ -392,7 +401,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		}
 
 		// Retrieve the extension
-		String extension = requestUri.substring(suffixIdx + 1).toLowerCase();
+		String extension = filePath.substring(suffixIdx + 1).toLowerCase();
 		String contentType = (String) imgMimeMap.get(extension);
 		if (contentType == null) {
 
@@ -410,6 +419,9 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 */
 	private String getFilePath(HttpServletRequest request) {
 		
+		String requestedPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
+		//String requestedPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
+		/*
 		String contextPath = request.getContextPath();
 		String requestPath = request.getRequestURI().substring(contextPath.length());
 		
@@ -419,12 +431,12 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		
 			int servletPathIdx = requestPath.indexOf(servletPath);
 			if (servletPathIdx != -1) {
-				requestPath = requestPath.substring(servletPathIdx + servletPath.length());
+				requestedPath = requestPath.substring(servletPathIdx + servletPath.length());
 			}
 		}
-		
+		*/
 		// Return the file path requested
-		return requestPath;
+		return requestedPath;
 	}
 
 	/**

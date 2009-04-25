@@ -53,6 +53,14 @@ public class ImageResourcesHandler {
 	public void setJawrConfig(JawrConfig jawrConfig) {
 		this.jawrConfig = jawrConfig;
 	}
+	
+	/**
+	 * Returns the image map
+	 * @return the image Map
+	 */
+	public Map getImageMap() {
+		return imageMap;
+	}
 
 	/**
 	 * Add an image mapping
