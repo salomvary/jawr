@@ -16,6 +16,7 @@ package net.jawr.web;
 /**
  * The constant value for Jawr.
  * 
+ * @author Jordi Hernández Sellés
  * @author Ibrahim Chaehoi
  */
 public class JawrConstant {
@@ -31,4 +32,16 @@ public class JawrConstant {
 	
 	/** The css type */
 	public static final String CSS_TYPE = "css";
+	
+	/** The cache buster separator */
+	public static final String CACHE_BUSTER_PREFIX = "cb";
+	
+	/** The cache buster separator */
+	public static final String CLASSPATH_CACHE_BUSTER_PREFIX = "cpCb";
+	
+	/** The image context attrbute */
+	public static final String IMG_CONTEXT_ATTRIBUTE = "net.jawr.web.resource.bundle.IMG_CONTEXT_ATTRIBUTE";
+	
+	/** The classpath resource prefix */
+	public static final String CLASSPATH_RESOURCE_PREFIX = "jar:";
 }

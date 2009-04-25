@@ -52,13 +52,23 @@ public class ServletContextResourceHandler extends AbstractResourceHandler imple
 	}
 
 	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.ResourceHandler#getResource(java.lang.String)
+	 * @see net.jawr.web.resource.ResourceHandler#getResourceInputStream(java.lang.String)
 	 */
-	public Reader doGetResource(String resourceName)  throws ResourceNotFoundException{
+	public InputStream getResourceAsStream(String resourceName) throws ResourceNotFoundException {
+		
 		InputStream is = context.getResourceAsStream(resourceName);		
 		if(null == is)
 			throw new ResourceNotFoundException(resourceName);
 		
+		return is;
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.ResourceHandler#getResource(java.lang.String)
+	 */
+	public Reader doGetResource(String resourceName)  throws ResourceNotFoundException{
+		
+		InputStream is = getResourceAsStream(resourceName);		
 		return new InputStreamReader(is, charset);
 	}
 
@@ -85,5 +95,7 @@ public class ServletContextResourceHandler extends AbstractResourceHandler imple
 		Set paths = context.getResourcePaths(path);
 		return (null != paths && paths.size() > 0);
 	}
+
+	
 
 }

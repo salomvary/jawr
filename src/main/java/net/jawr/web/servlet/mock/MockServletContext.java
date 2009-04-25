@@ -59,6 +59,13 @@ public class MockServletContext implements ServletContext {
 	/**
 	 * Constructor
 	 */
+	public MockServletContext() {
+	
+	}
+	
+	/**
+	 * Constructor
+	 */
 	public MockServletContext(String baseDir, String tempDir) {
 		this.baseDir = baseDir.replace('/', File.separatorChar);
 		this.baseDir = this.baseDir.replaceAll("%20", " ");

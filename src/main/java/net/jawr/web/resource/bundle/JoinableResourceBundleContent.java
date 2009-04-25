@@ -37,10 +37,17 @@ public class JoinableResourceBundleContent {
 	 * Constructor 
 	 */
 	public JoinableResourceBundleContent() {
-		this.content = new StringBuffer();
+		this(new StringBuffer());
+	}
+	
+	/**
+	 * Constructor 
+	 */
+	public JoinableResourceBundleContent(StringBuffer content) {
+		this.content = content;
 		this.cssClasspathDebugContentMap = new HashMap();
 	}
-
+	
 	// ~---------- Getters & Setters ----------
 
 

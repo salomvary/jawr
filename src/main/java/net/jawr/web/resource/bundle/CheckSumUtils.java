@@ -22,6 +22,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
+import org.apache.log4j.Logger;
+
+import net.jawr.web.JawrConstant;
+import net.jawr.web.config.JawrConfig;
+import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.ResourceHandler;
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
+import net.jawr.web.servlet.JawrImageRequestHandler;
+
 /**
  * This class defines utilities methods for Checksum.
  * 
@@ -29,12 +39,117 @@ import java.util.zip.Checksum;
  */
 public final class CheckSumUtils {
 
+	/** The logger */
+	private static final Logger log = Logger.getLogger(CheckSumUtils.class);
+
 	/** The MD5 algorithm name */
 	private static final String MD5_ALGORITHM = "MD5";
 
 	/** The CRC32 algorithm name */
 	private static final String CRC32_ALGORITHM = "CRC32";
 	
+	/**
+	 * Return the cache busted url associated to the url passed in parameter 
+	 * @param url the url path to the resource file
+	 * @param is the resource input stream 
+	 * @param jawrConfig the jawrConfig
+	 * @return the cache busted url
+	 * @throws IOException if an IO exception occurs.
+	 */
+	public static String getCacheBustedUrl(String url, ResourceHandler rsHandler, JawrConfig jawrConfig, boolean fromClasspath) throws IOException{
+		
+		String checksum = null;
+		String classpathResourceUrl = null;
+		InputStream is = null;
+		try {
+			
+			if(fromClasspath){
+				
+				classpathResourceUrl = url.substring(JawrConstant.CLASSPATH_RESOURCE_PREFIX.length());
+				is = ClassLoaderResourceUtils.getResourceAsStream(classpathResourceUrl, CheckSumUtils.class);
+			}else{
+				url = PathNormalizer.asPath(url);
+				is = rsHandler.getResourceAsStream(url);
+			}
+			
+			checksum = CheckSumUtils.getChecksum(is, jawrConfig.getImageHashAlgorithm());
+		}catch(IOException e){
+			log.error("An exception occurs while defining the mapping for the resource : "+url, e);
+		} catch (ResourceNotFoundException e) {
+			log.error("An exception occurs while defining the mapping for the resource : "+url, e);
+		}
+		finally {
+			if(is != null){
+				is.close();
+			}
+		}
+		
+		String result = "";
+		
+		if(fromClasspath){
+			result = JawrConstant.CLASSPATH_CACHE_BUSTER_PREFIX;
+		}else{
+			result = JawrConstant.CACHE_BUSTER_PREFIX;
+		}
+		
+		result = result+checksum;
+		if(fromClasspath){
+			url = classpathResourceUrl;
+		}
+		if(!url.startsWith("/")){
+			result = result + "/";
+		}
+		// Add the cache buster extension
+		return PathNormalizer.asPath(result+url);
+	}
+	
+	/**
+	 * Return the cache busted url associated to the url passed in parameter 
+	 * @param url the url path to the resource file
+	 * @param is the resource input stream 
+	 * @param jawrConfig the jawrConfig
+	 * @return the cache busted url
+	 * @throws IOException if an IO exception occurs.
+	 */
+	public static String getCacheBustedUrl(String url, InputStream is, JawrConfig jawrConfig, boolean fromClasspath) throws IOException{
+		
+		String checksum = null;
+		
+		try {
+			checksum = CheckSumUtils.getChecksum(is, jawrConfig.getImageHashAlgorithm());
+		}
+		finally {
+			if(is != null){
+				is.close();
+			}
+		}
+		
+		String result = "";
+		
+		if(fromClasspath){
+			result = JawrConstant.CLASSPATH_CACHE_BUSTER_PREFIX;
+		}else{
+			result = JawrConstant.CACHE_BUSTER_PREFIX;
+		}
+		
+		result = result+checksum;
+		if(fromClasspath){
+			url = url.substring("jar:".length());
+		}
+		if(!url.startsWith("/")){
+			result = result + "/";
+		}
+		// Add the cache buster extension
+		return PathNormalizer.asPath(result+url);
+	}
+	
+	/**
+	 * Returns the checksum value of the input stream taking in count the algorithm passed in parameter
+	 * @param is the input stream
+	 * @param algorithm the checksum algorithm
+	 * @return the checksum value
+	 * @throws IOException if an exception occurs.
+	 */
 	public static String getChecksum(InputStream is, String algorithm) throws IOException {
 	
 		if(algorithm.equals(CRC32_ALGORITHM)){

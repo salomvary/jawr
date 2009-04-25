@@ -22,9 +22,13 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.bundle.CheckSumUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
@@ -54,9 +58,6 @@ public class CSSURLPathRewriterPostProcessor extends
 
 	/** The URL separator */
 	private static final String URL_SEPARATOR = "/";
-
-	/** The cache buster separator */
-	private static final String CACHE_BUSTER_PREFIX = "cb";
 
 	/** The url pattern */
 	private static final Pattern urlPattern = Pattern.compile(	"url\\(\\s*" // 'url(' and any number of whitespaces 
@@ -202,29 +203,58 @@ public class CSSURLPathRewriterPostProcessor extends
 			urlPrefix.append("../");
 		}
 		
-		if (classpathCss) {
+		ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) jawrConfig.getContext().getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
+		String imgCacheUrl = null;
+		if(imgRsHandler != null){
+			imgCacheUrl = imgRsHandler.getCacheUrl("/"+url);
+			if(imgCacheUrl != null){
+				imgCacheUrl = imgCacheUrl.substring(1);
+			}
+		}
+		
+		boolean classpathImg = url.startsWith(JawrConstant.CLASSPATH_RESOURCE_PREFIX);
+		
+		if (classpathCss || classpathImg || imgCacheUrl != null) {
 			// If path starts with "/", remove it
 			String servletPath = classPathImgServletPath;
-			if(servletPath.startsWith(URL_SEPARATOR)){
-				servletPath = servletPath.substring(1);
+			if(servletPath != null){
+				if(servletPath.startsWith(URL_SEPARATOR) && servletPath.length() > 1){
+					servletPath = servletPath.substring(1);
+				}
+				// Add image servlet path in the URL
+				urlPrefix.append(servletPath+URL_SEPARATOR);
 			}
-			
-			// Add classpath image servlet path in the URL
-			urlPrefix.append(servletPath+URL_SEPARATOR);
 		}
+		
 		
 		StringBuffer urlBuffer = new StringBuffer();
-		for(Iterator it = resourceBackRefs.iterator();it.hasNext(); ) {
-			urlBuffer.append(it.next()).append(URL_SEPARATOR);			
-		}
-		urlBuffer.append(url);
-		if (classpathCss) {
-			url = addCacheBuster(status, urlBuffer.toString()); 
-		}else{
-			url = urlBuffer.toString();
+		if(classpathCss){
+			urlBuffer.append(JawrConstant.CLASSPATH_RESOURCE_PREFIX);
 		}
 		
-		return urlPrefix.append(url).append(quoteStr).append(")").toString();
+		if(!classpathImg){
+			for(Iterator it = resourceBackRefs.iterator();it.hasNext(); ) {
+				urlBuffer.append(it.next()).append(URL_SEPARATOR);			
+			}
+		}
+		
+		urlBuffer.append(url);
+		
+		if (classpathCss || classpathImg) {
+			url = addCacheBuster(status, urlBuffer.toString(), true);
+			if(url.startsWith("/")){
+				url = url.substring(1);
+			}
+		}else{
+			if(imgCacheUrl != null){
+				url = imgCacheUrl;
+			}else{
+				url = urlBuffer.toString();
+			}
+			
+		}
+		
+		return PathNormalizer.normalizePath(urlPrefix.append(url).append(quoteStr).append(")").toString());
 	}
 	
 	
@@ -235,7 +265,7 @@ public class CSSURLPathRewriterPostProcessor extends
 	 * @return the url of the CSS image with a cache buster
 	 * @throws IOException if an IO exception occurs
 	 */
-	private String addCacheBuster(BundleProcessingStatus status, String url) throws IOException {
+	private String addCacheBuster(BundleProcessingStatus status, String url, boolean fromClasspath) throws IOException {
 		
 		String newUrl = status.getImageMapping(url);
 		 
@@ -243,21 +273,7 @@ public class CSSURLPathRewriterPostProcessor extends
 			return newUrl;
 		}
 		
-		newUrl = url;
-		
-		InputStream is = ClassLoaderResourceUtils.getResourceAsStream(url, this);
-		String checksum = null;
-		try {
-			checksum = CheckSumUtils.getChecksum(is, status.getJawrConfig().getImageHashAlgorithm());
-		}
-		finally {
-			if(is != null){
-				is.close();
-			}
-		}
-		
-		// Add the cache buster extension
-		newUrl = CACHE_BUSTER_PREFIX+checksum+"/"+url;
+		newUrl = CheckSumUtils.getCacheBustedUrl(url, status.getRsHandler(), status.getJawrConfig(), fromClasspath);
 		
 		// Set the result in a map, so we will not search it the next time
 		status.setImageMapping(url, newUrl);

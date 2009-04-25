@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2009 Jordi Hernández Sellés
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -15,7 +15,8 @@ package net.jawr.web.resource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -36,10 +37,11 @@ import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
  */
 public class FileSystemResourceHandler extends AbstractResourceHandler implements ResourceHandler {
 
+	/** The base directory */
 	private String baseDir;
 	
 	/**
-	 * Createss a filesystem based handler. 
+	 * Creates a filesystem based handler. 
 	 * @param baseDir Directory where js files are located. 
 	 * @param tempDirRoot Directory to store temporary files
 	 * @param charset Charset to use for reading/writing the files. 
@@ -51,24 +53,29 @@ public class FileSystemResourceHandler extends AbstractResourceHandler implement
 	}
 
 	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.ResourceHandler#getResourceInputStream(java.lang.String)
+	 */
+	public InputStream getResourceAsStream(String resourceName) throws ResourceNotFoundException {
+		
+		InputStream is = null;
+		try {
+			File resource = new File(baseDir, resourceName);
+			is = new FileInputStream( resource );
+		} catch (FileNotFoundException e) {
+			throw new ResourceNotFoundException(baseDir +  resourceName);
+		}
+		
+		return is; 
+	}	
+	
+	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.ResourceHandler#getResource(java.lang.String)
 	 */
 	public Reader doGetResource(String resourceName) throws ResourceNotFoundException {
-		Reader rd = null;
-		try {
-			File resource = new File(baseDir, resourceName);
-			
-			if(!resource.exists())
-				throw new ResourceNotFoundException(baseDir +  resourceName);
-			
-			FileInputStream fis = new FileInputStream( resource );
-	        FileChannel inchannel = fis.getChannel();
-	        rd = Channels.newReader(inchannel,charset.newDecoder (),-1);			
-		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException reading resource file with path [" + baseDir +  resourceName + "]",e);
-		}
 		
-		return rd;
+		FileInputStream fis = (FileInputStream) getResourceAsStream(resourceName);
+        FileChannel inchannel = fis.getChannel();
+	    return Channels.newReader(inchannel,charset.newDecoder (),-1);
 	}
 
 	/* (non-Javadoc)
@@ -100,6 +107,6 @@ public class FileSystemResourceHandler extends AbstractResourceHandler implement
 	public boolean isDirectory(String path) {
 		path = path.replace('/', File.separatorChar);
 		return new File(baseDir, path).isDirectory();
-	}	
+	}
 
 }

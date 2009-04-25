@@ -14,12 +14,15 @@
 package net.jawr.web.servlet;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -27,6 +30,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.exception.ResourceNotFoundException;
@@ -37,6 +41,7 @@ import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.ConfigChangeListener;
 import net.jawr.web.resource.bundle.factory.util.ConfigChangeListenerThread;
 import net.jawr.web.resource.bundle.factory.util.ConfigPropertiesSource;
+import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.factory.util.PropsFilePropertiesSource;
 import net.jawr.web.resource.bundle.factory.util.ServletContextAware;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
@@ -69,9 +74,21 @@ public class JawrRequestHandler implements ConfigChangeListener{
     
     public static final String CLIENTSIDE_HANDLER_REQ_PATH = "/jawr_loader.js";
     
+    /** The CSS classpath image pattern */
+    private static Pattern CSS_CLASSPATH_IMG_PATTERN = Pattern.compile("(url\\(([\"' ]*))(jar:)([^)]*)\\)");
+	
+	/** The CSS classpath image  replace pattern */
+    private static String CACHE_BUSTER_REPLACE_PATTERN = "$1"+"cpCbDebug/"+"$4)";
+
+    /** The URL separator pattern */
+    private static Pattern URL_SEPARATOR_PATTERN = Pattern.compile("([^/]*)/");
+    
+    /** The pattern to go to the root */
+    private static String ROOT_REPLACE_PATTERN = "../";
+	
 	private static final Logger log = Logger.getLogger(JawrRequestHandler.class);
 	
-	private ResourceBundlesHandler bundlesHandler;
+	protected ResourceBundlesHandler bundlesHandler;
 	
 	protected String contentType;
 	protected String resourceType;
@@ -84,7 +101,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 
 	/**
 	 * Reads the properties file and  initializes all configuration using the ServletConfig object. 
-	 * If aplicable, a ConfigChangeListenerThread will be started to listen to changes in the properties configuration. 
+	 * If applicable, a ConfigChangeListenerThread will be started to listen to changes in the properties configuration. 
 	 * @param servletContext ServletContext
 	 * @param servletConfig ServletConfig 
 	 * @throws ServletException
@@ -225,14 +242,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		
 		String imageServletMapping = (String) initParameters.get(IMG_SERVLET_MAPPING_PARAM);
 		if(jawrConfig.isUsingClasspathCssImageServlet() && resourceType.equals("css")){
-			
-			if(null != imageServletMapping){
-				jawrConfig.setImageServletMapping(imageServletMapping);
-			}else{
-				throw new ServletException("In the Jawr config, you have defined that you are using the CSS image defined in the classpath, " +
-						"but the mapping for the image servlet has not been defined in the Jawr CSS servlet.\n" +
-						"Please add the '"+IMG_SERVLET_MAPPING_PARAM+"' property in the init parameters of the CSS servlet.");
-			}
+			jawrConfig.setImageServletMapping(imageServletMapping);
 		}
 		
 		if(log.isDebugEnabled()) {
@@ -347,8 +357,41 @@ public class JawrRequestHandler implements ConfigChangeListener{
 				bundlesHandler.streamBundleTo(requestedPath, response.getOutputStream());
 			}
 			else {
-				Writer out = response.getWriter();
-				bundlesHandler.writeBundleTo(requestedPath, out);
+				
+				// In debug mode, we take in account the image defined in the classpath
+				if(this.jawrConfig.isDebugModeOn() && resourceType.equals(JawrConstant.CSS_TYPE)){
+					
+					// Write the content of the CSS in the Stringwriter
+					Writer writer = new StringWriter();
+					bundlesHandler.writeBundleTo(requestedPath, writer);
+					String content = writer.toString();
+					
+					String imageServletMapping = jawrConfig.getImageServletMapping();
+					if(imageServletMapping == null){
+						imageServletMapping = "";
+					}
+					
+					// Define the replacement pattern for the image define in the classpath (like jar:img/myImg.png)
+					String replacementPattern = CACHE_BUSTER_REPLACE_PATTERN;
+					String relativeRootUrlPath = getRootRelativeUrlPath(requestedPath); 
+					replacementPattern = PathNormalizer.normalizePath("$1"+relativeRootUrlPath+imageServletMapping+"/cpCbDebug/"+"$4)");
+					
+					Matcher matcher = CSS_CLASSPATH_IMG_PATTERN.matcher(content);
+					
+					// Rewrite the images define in the classpath, to point to the image servlet
+					StringBuffer result = new StringBuffer();
+					while(matcher.find()) {
+						matcher.appendReplacement(result, replacementPattern);
+					}
+					matcher.appendTail(result);
+					Writer out = response.getWriter();
+					out.write(result.toString());
+				}else{
+					
+					Writer out = response.getWriter();
+					bundlesHandler.writeBundleTo(requestedPath, out);
+				}
+				
 			}
 		} catch (ResourceNotFoundException e) {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -361,7 +404,26 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			log.debug("request succesfully attended");
 	}
 	
-	
+	/**
+	 * Returns the depth level of an url 
+	 * @param url the url
+	 * @return the depth level of an url 
+	 */
+	private String getRootRelativeUrlPath(String url) {
+		
+		if(!url.startsWith("/")){
+			url = "/"+url;
+		}
+		
+		Matcher matcher = URL_SEPARATOR_PATTERN.matcher(url);
+		StringBuffer result = new StringBuffer();
+		while(matcher.find()){
+			matcher.appendReplacement(result, ROOT_REPLACE_PATTERN);
+		}
+		
+		return result.toString();
+	}
+
 	/**
      * Adds aggresive caching headers to the response in order to prevent browsers requesting the same file
      * twice. 

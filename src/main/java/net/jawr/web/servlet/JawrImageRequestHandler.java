@@ -16,9 +16,14 @@ package net.jawr.web.servlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +33,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.ImageResourcesHandler;
+import net.jawr.web.resource.ResourceHandler;
+import net.jawr.web.resource.ServletContextResourceHandler;
+import net.jawr.web.resource.bundle.CheckSumUtils;
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 
 import org.apache.log4j.Logger;
 
@@ -43,11 +56,14 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	private static final Logger log = Logger.getLogger(JawrImageRequestHandler.class);
 
 	/** The cache buster patter */
-	private static Pattern cacheBusterPattern = Pattern.compile("cb[a-f0-9]+/(.*)$");
+	private static Pattern cacheBusterPattern = Pattern.compile("("+JawrConstant.CACHE_BUSTER_PREFIX+"|"+JawrConstant.CLASSPATH_CACHE_BUSTER_PREFIX+")[a-zA-Z0-9]+/(.*)$");
 
 	/** The cache buster replace pattern */
-	private static final String CACHE_BUSTER_REPLACE_PATTERN = "$1";
+	private static final String CACHE_BUSTER_REPLACE_PATTERN = "$2";
 
+	/** The resource handler */
+	private ResourceHandler rsHandler;
+	
 	/** The image MIME map, associating the image extension to their MIME type */
 	private static Map imgMimeMap = new HashMap(20);
 	static {
@@ -124,14 +140,23 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		String imageServletMapping = (String) initParameters.get(IMG_SERVLET_MAPPING_PARAM);
 		if (jawrConfig.isUsingClasspathCssImageServlet()) {
 
-			if (null != imageServletMapping) {
-				jawrConfig.setImageServletMapping(imageServletMapping);
-			} else {
-				throw new ServletException("In the Jawr config, you have defined that you are using the CSS image defined in the classpath, "
-						+ "but the mapping for the image servlet has not been defined in the Jawr Image servlet.\n" + "Please add the '"
-						+ IMG_SERVLET_MAPPING_PARAM + "' property in the init parameters of the Image servlet.");
-			}
+			jawrConfig.setImageServletMapping(imageServletMapping);
+			
+//			if (null != imageServletMapping) {
+//			} else {
+//				throw new ServletException("In the Jawr config, you have defined that you are using the CSS image defined in the classpath, "
+//						+ "but the mapping for the image servlet has not been defined in the Jawr Image servlet.\n" + "Please add the '"
+//						+ IMG_SERVLET_MAPPING_PARAM + "' property in the init parameters of the Image servlet.");
+//			}
 		}
+		
+		rsHandler = new ServletContextResourceHandler(servletContext,jawrConfig.getResourceCharset(),jawrConfig.getGeneratorRegistry());
+		
+		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(jawrConfig);
+		initImageMapping(imgRsHandler);
+		
+		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE, imgRsHandler);
+		
 		if (log.isDebugEnabled()) {
 			log.debug("Configuration read. Current config:");
 			log.debug(jawrConfig);
@@ -143,6 +168,126 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		}
 	}
 
+	/**
+	 * Initialize the image mapping of the image resources handler
+	 * @param imgRsHandler the image resources handler
+	 */
+	private void initImageMapping(ImageResourcesHandler imgRsHandler) {
+		
+		// Create a resource handler to read files from the WAR archive or exploded dir. 
+		String imageBundleDefinition = jawrConfig.getImageBundleDefinition();
+		if(imageBundleDefinition != null){
+			
+			StringTokenizer tokenizer = new StringTokenizer(imageBundleDefinition, ",");
+			while(tokenizer.hasMoreTokens()){
+				String pathMapping = tokenizer.nextToken();
+			
+				// path in the classpath and ends with an image extension
+				if(pathMapping.startsWith("jar:") && hasImageFileExtension(pathMapping)){
+				
+					addImagePath(imgRsHandler, pathMapping, true);
+				}
+				// path ends in /, the folder is included without subfolders
+				else if(pathMapping.endsWith("/")) {
+					addItemsFromDir(imgRsHandler, pathMapping,false);
+				}
+				// path ends in /, the folder is included with all subfolders
+				else if(pathMapping.endsWith("/**")){
+					addItemsFromDir(imgRsHandler, pathMapping.substring(0,pathMapping.lastIndexOf("**")),true);
+				}
+				else if(hasImageFileExtension(pathMapping)){
+					addImagePath(imgRsHandler, pathMapping);
+				}
+				else log.warn("Wrong mapping [" + pathMapping  
+								+ "] for image bundle. Please check configuration. ");
+			}
+			if(log.isDebugEnabled())
+				log.debug("Finished creating map for image bundle");
+		}
+		
+	}
+
+	/**
+	 * Add an image path to the image map
+	 * @param imgRsHandler the image resources handler
+	 * @param imgPath the image path
+	 */
+	private void addImagePath(ImageResourcesHandler imgRsHandler, String imgPath) {
+		
+		addImagePath(imgRsHandler, imgPath, false);
+	}
+	/**
+	 * Add an image path to the image map
+	 * @param imgRsHandler the image resources handler
+	 * @param imgPath the image path
+	 * @param classPathImg the flag indicating if the image should be retrieved from classpath
+	 */
+	private void addImagePath(ImageResourcesHandler imgRsHandler, String imgPath, boolean classPathImg) {
+		
+		try {
+			String resultPath = CheckSumUtils.getCacheBustedUrl(imgPath, rsHandler, jawrConfig, classPathImg);
+			imgRsHandler.addMapping(imgPath, resultPath);
+		}catch(IOException e){
+			log.error("An exception occurs while defining the mapping for the file : "+imgPath, e);
+		}
+	}
+	
+	/**
+	 * Returns true of the path contains an image file extension
+	 * @param path the path
+	 * @return the image file extension
+	 */
+	private boolean hasImageFileExtension(String path){
+		boolean result = false;
+		
+		int extFileIdx = path.lastIndexOf(".");
+		if(extFileIdx != -1 && extFileIdx+1 < path.length()){
+			String extension = path.substring(extFileIdx+1);
+			result = imgMimeMap.containsKey(extension);
+		}
+		
+		return result;
+	}
+	/**
+	 * Adds all the resources within a path to the image map.
+	 * @param imgRsHandler the image resources handler 
+	 * @param dirName the directory name
+	 * @param addSubDirs boolean If subfolders will be included. In such case, 
+	 * 							 every folder below the path is included.  
+	 */
+	private void addItemsFromDir(ImageResourcesHandler imgRsHandler, String dirName, boolean addSubDirs)
+	{
+		Set resources = rsHandler.getResourceNames(dirName);
+			
+		if(log.isDebugEnabled()) {
+			log.debug("Adding " + resources.size() + " resources from path [" + dirName + "] to image bundle");
+		}
+		
+		// Add remaining resources (remaining after sorting, or all if no sort file present)
+		List folders = new ArrayList();
+		for(Iterator it = resources.iterator();it.hasNext();) {
+			String resourceName = (String) it.next();
+			String resourcePath = PathNormalizer.joinPaths(dirName, resourceName);
+			if(hasImageFileExtension(resourceName)) {
+				addImagePath(imgRsHandler, resourcePath);
+
+				if(log.isDebugEnabled())
+					log.debug("Added to item path list:" + PathNormalizer.asPath(resourcePath));
+			}
+			else if(addSubDirs && rsHandler.isDirectory(resourcePath))
+				folders.add(resourceName);
+		}
+		
+		// Add subfolders if requested. Subfolders are added last unless specified in sorting file. 
+		if(addSubDirs)
+		{
+			for(Iterator it = folders.iterator();it.hasNext();) {
+				String folderName = (String) it.next();
+				addItemsFromDir(imgRsHandler, PathNormalizer.joinPaths(dirName, folderName),true);
+			}
+		}
+	}
+	
 	/**
 	 * Handles a resource request by getting the requested path from the request object and invoking processRequest.
 	 * 
@@ -177,18 +322,6 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		if (log.isDebugEnabled())
 			log.debug("Request received for path:" + requestedPath);
 
-		// // CSS images would be requested through this handler in case servletMapping is used
-		// if( this.jawrConfig.isDebugModeOn() &&
-		// !("".equals(this.jawrConfig.getServletMapping())) &&
-		// null == request.getParameter(GENERATION_PARAM)) {
-		// if(null == bundlesHandler.resolveBundleForPath(requestedPath)) {
-		// if(log.isDebugEnabled())
-		// log.debug("Path '" + requestedPath + "' does not belong to a bundle. Forwarding request to the server. ");
-		// request.getRequestDispatcher(requestedPath).forward(request, response);
-		// return;
-		// }
-		// }
-
 		// Retrieve the file path
 		String filePath = getFilePath(request);
 		if (filePath == null) {
@@ -219,12 +352,14 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			setResponseHeaders(response);
 		}
 
+		boolean isClasspathImg = isClasspathImage(filePath);
+		
 		// Returns the real file path
 		filePath = getRealFilePath(filePath);
-
+		
 		// Read the file from the classpath and send it in the outputStream
 		try {
-			writeContent(response, filePath);
+			writeContent(response, filePath, isClasspathImg);
 
 			// Set the content length, and the content type based on the file extension
 			response.setContentType(contentType);
@@ -274,19 +409,22 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 * @return the image file path
 	 */
 	private String getFilePath(HttpServletRequest request) {
-		String requestUri = request.getRequestURI();
+		
+		String contextPath = request.getContextPath();
+		String requestPath = request.getRequestURI().substring(contextPath.length());
+		
 		String servletPath = jawrConfig.getImageServletMapping();
-		int servletPathIdx = requestUri.indexOf(servletPath);
-
-		// If the servlet path is not found return a 404 error
-		if (servletPathIdx == -1) {
-
-			log.error("The configured CSS image servlet path '" + servletPath + "' is not found in the request URI : " + requestUri);
-			return null;
+		
+		if(servletPath != null){
+		
+			int servletPathIdx = requestPath.indexOf(servletPath);
+			if (servletPathIdx != -1) {
+				requestPath = requestPath.substring(servletPathIdx + servletPath.length());
+			}
 		}
-
-		// Retrieve the file path requested
-		return requestUri.substring(servletPathIdx + servletPath.length());
+		
+		// Return the file path requested
+		return requestPath;
 	}
 
 	/**
@@ -296,12 +434,30 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 * @param fileName the filename
 	 * @throws IOException if an IO exception occurs.
 	 */
-	private void writeContent(HttpServletResponse response, String fileName) throws IOException {
+	private void writeContent(HttpServletResponse response, String fileName, boolean fromClasspath) throws IOException {
 
 		int length = 0;
 
 		OutputStream os = response.getOutputStream();
-		InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
+		InputStream is = null;
+		
+		if(fromClasspath){
+			if(fileName.startsWith("/")){
+				fileName = fileName.substring(1);
+			}
+			is = ClassLoaderResourceUtils.getResourceAsStream(fileName, this);
+		}else{
+			try {
+				is = rsHandler.getResourceAsStream(fileName);
+			} catch (ResourceNotFoundException e) {
+				// Nothing to do
+			}
+		}
+		
+		if(is == null){
+			log.error("Unable to find resource :"+fileName);
+		}
+		
 		int count;
 		byte buf[] = new byte[4096];
 		while ((count = is.read(buf)) > -1) {
@@ -335,6 +491,19 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		return fileName;
 	}
 
+	/**
+	 * Returns true if the file is a class path image
+	 * @param fileName the file name
+	 * @return true if the file is a class path image
+	 */
+	private boolean isClasspathImage(String fileName){
+		if(fileName.startsWith("/")){
+			fileName = fileName.substring(1);
+		}
+		
+		return fileName.startsWith(JawrConstant.CLASSPATH_CACHE_BUSTER_PREFIX);
+	}
+	
 	/**
 	 * Analog to Servlet.destroy(), should be invoked whenever the app is redeployed.
 	 */

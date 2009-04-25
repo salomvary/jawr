@@ -49,6 +49,11 @@ public class JawrConfig {
 	private static final String JAWR_IMAGE_HASH_ALGORITHM = "jawr.image.hash.algorithm";
 
 	/**
+	 * The property name for the image hash algorithm.
+	 */
+	private static final String JAWR_IMAGE_BUNDLE = "jawr.image.bundle";
+
+	/**
 	 * The generator registry
 	 */
 	private GeneratorRegistry generatorRegistry;
@@ -128,6 +133,11 @@ public class JawrConfig {
 	private String imageServletMapping;
 	
 	/**
+	 * Defines the image bundle.
+	 */
+	private String imageBundleDefinition;
+	
+	/**
 	 * Defines the image hash algorithm.
 	 * By default the value is CRC32. 
 	 * There are only 2 algorithm available CRC32 and MD5. 
@@ -193,6 +203,10 @@ public class JawrConfig {
 
 		if (null != props.getProperty(JAWR_IMAGE_HASH_ALGORITHM)) {
 			setImageHashAlgorithm(props.getProperty(JAWR_IMAGE_HASH_ALGORITHM).trim());
+		}
+		
+		if (null != props.getProperty(JAWR_IMAGE_BUNDLE)) {
+			setImageBundleDefinition(props.getProperty(JAWR_IMAGE_BUNDLE).trim());
 		}
 		
 	}
@@ -407,7 +421,23 @@ public class JawrConfig {
 	 * @param cssImgServletPath the path to set
 	 */
 	public void setImageServletMapping(String cssImgServletPath) {
-		this.imageServletMapping = PathNormalizer.normalizePath(cssImgServletPath);
+		this.imageServletMapping = cssImgServletPath == null ? null : PathNormalizer.normalizePath(cssImgServletPath);
+	}
+	
+	/**
+	 * Returns the image bundle definition.
+	 * @return the imageBundle Definition.
+	 */
+	public String getImageBundleDefinition() {
+		return imageBundleDefinition;
+	}
+
+	/**
+	 * Sets the image bundle definition.
+	 * @param imageBundleDefinition the imageBundleDefinition to set
+	 */
+	public void setImageBundleDefinition(String imageBundleDefinition) {
+		this.imageBundleDefinition = imageBundleDefinition;
 	}
 
 	/**
