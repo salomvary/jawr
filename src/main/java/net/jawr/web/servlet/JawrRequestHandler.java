@@ -27,9 +27,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.ServletContextResourceHandler;
 import net.jawr.web.resource.bundle.factory.PropertiesBasedBundlesHandlerFactory;
@@ -223,15 +225,12 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		if(null != mapping)
 			jawrConfig.setServletMapping(mapping);
 		
-		String imageServletMapping = (String) initParameters.get(IMG_SERVLET_MAPPING_PARAM);
 		if(jawrConfig.isUsingClasspathCssImageServlet() && resourceType.equals("css")){
-			
-			if(null != imageServletMapping){
-				jawrConfig.setImageServletMapping(imageServletMapping);
-			}else{
-				throw new ServletException("In the Jawr config, you have defined that you are using the CSS image defined in the classpath, " +
-						"but the mapping for the image servlet has not been defined in the Jawr CSS servlet.\n" +
-						"Please add the '"+IMG_SERVLET_MAPPING_PARAM+"' property in the init parameters of the CSS servlet.");
+			ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) servletContext.getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
+			if(imgRsHandler == null){
+				log.error("You are using the CSS classpath image feature, but the JAWR Image servlet is yet initialized.\n" +
+						"The JAWR Image servlet must be initialized before the JAWR CSS servlet.\n" +
+						"Please check you web application configuration.");
 			}
 		}
 		

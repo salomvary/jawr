@@ -22,9 +22,14 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.ImageResourcesHandler;
+import net.jawr.web.resource.ResourceHandler;
+import net.jawr.web.resource.ServletContextResourceHandler;
 import net.jawr.web.resource.bundle.CheckSumUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
+import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
@@ -122,7 +127,12 @@ public class CSSURLPathRewriterPostProcessor extends
 		JawrConfig jawrConfig = status.getJawrConfig();
 		String imagePathOverride = jawrConfig.getCssImagePathOverride();
 		boolean useClassPathCssImgServlet = jawrConfig.isUsingClasspathCssImageServlet();
-		String classPathImgServletPath = jawrConfig.getImageServletMapping();
+		ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) jawrConfig.getContext().getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
+		String classPathImgServletPath = null;
+		
+		if(imgRsHandler != null){
+			classPathImgServletPath = imgRsHandler.getJawrConfig().getServletMapping();
+		}
 		
 		String url = match.substring(match.indexOf('(')+1,match.lastIndexOf(')'))
 					.trim();
@@ -224,7 +234,7 @@ public class CSSURLPathRewriterPostProcessor extends
 			url = urlBuffer.toString();
 		}
 		
-		return urlPrefix.append(url).append(quoteStr).append(")").toString();
+		return PathNormalizer.normalizePath(urlPrefix.append(url).append(quoteStr).append(")").toString());
 	}
 	
 	
@@ -243,21 +253,7 @@ public class CSSURLPathRewriterPostProcessor extends
 			return newUrl;
 		}
 		
-		newUrl = url;
-		
-		InputStream is = ClassLoaderResourceUtils.getResourceAsStream(url, this);
-		String checksum = null;
-		try {
-			checksum = CheckSumUtils.getChecksum(is, status.getJawrConfig().getImageHashAlgorithm());
-		}
-		finally {
-			if(is != null){
-				is.close();
-			}
-		}
-		
-		// Add the cache buster extension
-		newUrl = CACHE_BUSTER_PREFIX+checksum+"/"+url;
+		newUrl = CheckSumUtils.getCacheBustedUrl(url, status.getRsHandler(), status.getJawrConfig(), true);
 		
 		// Set the result in a map, so we will not search it the next time
 		status.setImageMapping(url, newUrl);

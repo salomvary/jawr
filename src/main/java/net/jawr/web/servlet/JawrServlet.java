@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.jawr.web.JawrConstant;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -39,12 +41,6 @@ public class JawrServlet extends HttpServlet {
 	/** The serial version UID */ 
 	private static final long serialVersionUID = -4551240917172286444L;
 
-	/** The init parameter for the type managed by the servlet */
-	private static final String TYPE_INIT_PARAMETER = "type";
-
-	/** The image type */
-	private static final String IMG_TYPE = "img";
-
 	/** The request handler */
 	protected JawrRequestHandler requestHandler;
 
@@ -53,8 +49,8 @@ public class JawrServlet extends HttpServlet {
 	 */
 	public void init() throws ServletException {
 		try {
-			String type = getServletConfig().getInitParameter(TYPE_INIT_PARAMETER);
-			if(IMG_TYPE.equals(type)){
+			String type = getServletConfig().getInitParameter(JawrConstant.TYPE_INIT_PARAMETER);
+			if(JawrConstant.IMG_TYPE.equals(type)){
 				requestHandler = new JawrImageRequestHandler(getServletContext(),getServletConfig());
 			}else{
 				requestHandler = new JawrRequestHandler(getServletContext(),getServletConfig());

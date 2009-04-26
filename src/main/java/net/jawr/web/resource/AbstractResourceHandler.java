@@ -245,6 +245,7 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 	 * @see net.jawr.web.resource.bundle.ResourceHandler#storebundle(java.lang.String, java.lang.StringBuffer)
 	 */
 	public void storeBundle(String bundleName, StringBuffer bundledResources) {
+	
 		JoinableResourceBundleContent bundleResourcesContent = new JoinableResourceBundleContent(bundledResources);
 		storeBundle(bundleName, bundleResourcesContent);
 	}
@@ -268,7 +269,7 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 		Iterator keyIterator = cssClasspathDebugContentMap.keySet().iterator();
 		while(keyIterator.hasNext()){
 			String filePath = (String) keyIterator.next();
-			storeBundle(filePath,(String)cssClasspathDebugContentMap.get(filePath),false, cssClasspathDirPath);
+			storeBundle(filePath,(String) cssClasspathDebugContentMap.get(filePath),false, cssClasspathDirPath);
 		}
 	}
 	

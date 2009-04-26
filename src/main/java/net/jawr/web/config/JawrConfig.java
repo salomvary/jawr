@@ -129,11 +129,6 @@ public class JawrConfig {
 	private boolean useClasspathCssImageServlet;
 
 	/**
-	 * Defines the path of the CSS image servlet.
-	 */
-	private String imageServletMapping;
-	
-	/**
 	 * Defines the image hash algorithm.
 	 * By default the value is CRC32. 
 	 * There are only 2 algorithm available CRC32 and MD5. 
@@ -421,24 +416,6 @@ public class JawrConfig {
 	 */
 	public void setImageHashAlgorithm(String imageHashAlgorithm) {
 		this.imageHashAlgorithm = imageHashAlgorithm;
-	}
-
-	/**
-	 * Returns the path to the CSS image servlet, which will load image from the classpath.
-	 * 
-	 * @return the path to the CSS image servlet, which will load image from the classpath.
-	 */
-	public String getImageServletMapping() {
-		return imageServletMapping;
-	}
-
-	/**
-	 * Sets the path to the CSS image servlet, which will load image from the classpath
-	 * 
-	 * @param cssImgServletPath the path to set
-	 */
-	public void setImageServletMapping(String cssImgServletPath) {
-		this.imageServletMapping = PathNormalizer.normalizePath(cssImgServletPath);
 	}
 
 	/**

@@ -28,7 +28,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.ImageResourcesHandler;
+import net.jawr.web.resource.ResourceHandler;
+import net.jawr.web.resource.ServletContextResourceHandler;
+import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 
 import org.apache.log4j.Logger;
 
@@ -43,11 +49,14 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	private static final Logger log = Logger.getLogger(JawrImageRequestHandler.class);
 
 	/** The cache buster patter */
-	private static Pattern cacheBusterPattern = Pattern.compile("cb[a-f0-9]+/(.*)$");
+	private static Pattern cacheBusterPattern = Pattern.compile("("+JawrConstant.CACHE_BUSTER_PREFIX+"|"+JawrConstant.CLASSPATH_CACHE_BUSTER_PREFIX+")[a-zA-Z0-9]+/(.*)$");
 
 	/** The cache buster replace pattern */
-	private static final String CACHE_BUSTER_REPLACE_PATTERN = "$1";
+	private static final String CACHE_BUSTER_REPLACE_PATTERN = "$2";
 
+	/** The resource handler */
+	private ResourceHandler rsHandler;
+	
 	/** The image MIME map, associating the image extension to their MIME type */
 	private static Map imgMimeMap = new HashMap(20);
 	static {
@@ -120,18 +129,16 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		// Set the content type to be used for every request.
 		contentType = "img/";
 
-		// Set mapping, to be used by the tag lib to define URLs that point to this servlet.
-		String imageServletMapping = (String) initParameters.get(IMG_SERVLET_MAPPING_PARAM);
-		if (jawrConfig.isUsingClasspathCssImageServlet()) {
-
-			if (null != imageServletMapping) {
-				jawrConfig.setImageServletMapping(imageServletMapping);
-			} else {
-				throw new ServletException("In the Jawr config, you have defined that you are using the CSS image defined in the classpath, "
-						+ "but the mapping for the image servlet has not been defined in the Jawr Image servlet.\n" + "Please add the '"
-						+ IMG_SERVLET_MAPPING_PARAM + "' property in the init parameters of the Image servlet.");
-			}
+		// Set mapping, to be used by the tag lib to define URLs that point to this servlet. 
+		String mapping = (String) initParameters.get("mapping");
+		if(null != mapping){
+			jawrConfig.setServletMapping(mapping);
 		}
+		
+		rsHandler = new ServletContextResourceHandler(servletContext,jawrConfig.getResourceCharset(),jawrConfig.getGeneratorRegistry());
+		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(jawrConfig);
+		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE, imgRsHandler);
+		
 		if (log.isDebugEnabled()) {
 			log.debug("Configuration read. Current config:");
 			log.debug(jawrConfig);
@@ -177,18 +184,6 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		if (log.isDebugEnabled())
 			log.debug("Request received for path:" + requestedPath);
 
-		// // CSS images would be requested through this handler in case servletMapping is used
-		// if( this.jawrConfig.isDebugModeOn() &&
-		// !("".equals(this.jawrConfig.getServletMapping())) &&
-		// null == request.getParameter(GENERATION_PARAM)) {
-		// if(null == bundlesHandler.resolveBundleForPath(requestedPath)) {
-		// if(log.isDebugEnabled())
-		// log.debug("Path '" + requestedPath + "' does not belong to a bundle. Forwarding request to the server. ");
-		// request.getRequestDispatcher(requestedPath).forward(request, response);
-		// return;
-		// }
-		// }
-
 		// Retrieve the file path
 		String filePath = getFilePath(request);
 		if (filePath == null) {
@@ -219,12 +214,14 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			setResponseHeaders(response);
 		}
 
+		boolean isClasspathImg = isClasspathImage(filePath);
+		
 		// Returns the real file path
 		filePath = getRealFilePath(filePath);
-
+		
 		// Read the file from the classpath and send it in the outputStream
 		try {
-			writeContent(response, filePath);
+			writeContent(response, filePath, isClasspathImg);
 
 			// Set the content length, and the content type based on the file extension
 			response.setContentType(contentType);
@@ -249,7 +246,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	private String getContentType(HttpServletRequest request, String filePath) {
 		String requestUri = request.getRequestURI();
 
-		int suffixIdx = requestUri.lastIndexOf(".");
+		int suffixIdx = filePath.lastIndexOf(".");
 		if (suffixIdx == -1) {
 
 			log.error("No extension found for the request URI : " + requestUri);
@@ -257,7 +254,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		}
 
 		// Retrieve the extension
-		String extension = requestUri.substring(suffixIdx + 1).toLowerCase();
+		String extension = filePath.substring(suffixIdx + 1).toLowerCase();
 		String contentType = (String) imgMimeMap.get(extension);
 		if (contentType == null) {
 
@@ -274,19 +271,11 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 * @return the image file path
 	 */
 	private String getFilePath(HttpServletRequest request) {
-		String requestUri = request.getRequestURI();
-		String servletPath = jawrConfig.getImageServletMapping();
-		int servletPathIdx = requestUri.indexOf(servletPath);
-
-		// If the servlet path is not found return a 404 error
-		if (servletPathIdx == -1) {
-
-			log.error("The configured CSS image servlet path '" + servletPath + "' is not found in the request URI : " + requestUri);
-			return null;
-		}
-
-		// Retrieve the file path requested
-		return requestUri.substring(servletPathIdx + servletPath.length());
+		
+		String requestedPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
+		
+		// Return the file path requested
+		return requestedPath;
 	}
 
 	/**
@@ -296,12 +285,30 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 * @param fileName the filename
 	 * @throws IOException if an IO exception occurs.
 	 */
-	private void writeContent(HttpServletResponse response, String fileName) throws IOException {
+	private void writeContent(HttpServletResponse response, String fileName, boolean fromClasspath) throws IOException {
 
 		int length = 0;
 
 		OutputStream os = response.getOutputStream();
-		InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
+		InputStream is = null;
+		
+		if(fromClasspath){
+			if(fileName.startsWith("/")){
+				fileName = fileName.substring(1);
+			}
+			is = ClassLoaderResourceUtils.getResourceAsStream(fileName, this);
+		}else{
+			try {
+				is = rsHandler.getResourceAsStream(fileName);
+			} catch (ResourceNotFoundException e) {
+				// Nothing to do
+			}
+		}
+		
+		if(is == null){
+			log.error("Unable to find resource :"+fileName);
+		}
+		
 		int count;
 		byte buf[] = new byte[4096];
 		while ((count = is.read(buf)) > -1) {
@@ -335,6 +342,19 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		return fileName;
 	}
 
+	/**
+	 * Returns true if the file is a class path image
+	 * @param fileName the file name
+	 * @return true if the file is a class path image
+	 */
+	private boolean isClasspathImage(String fileName){
+		if(fileName.startsWith("/")){
+			fileName = fileName.substring(1);
+		}
+		
+		return fileName.startsWith(JawrConstant.CLASSPATH_CACHE_BUSTER_PREFIX);
+	}
+	
 	/**
 	 * Analog to Servlet.destroy(), should be invoked whenever the app is redeployed.
 	 */

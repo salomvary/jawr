@@ -13,6 +13,8 @@
  */
 package net.jawr.web.resource;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.nio.channels.FileChannel;
 import java.util.Set;
@@ -29,6 +31,13 @@ import net.jawr.web.resource.bundle.JoinableResourceBundleContent;
  */
 public interface ResourceHandler {
 
+	/**
+	 * Retrieves the resource input stream of a resource. 
+	 * @param resourceName String Name of the resource.  
+	 * @return a input stream of the resource
+	 */
+	public InputStream getResourceAsStream(String resourceName) throws ResourceNotFoundException;
+	
 	/**
 	 * Retrieves a single resource. 
 	 * @param resourceName String Name of the resource.  
