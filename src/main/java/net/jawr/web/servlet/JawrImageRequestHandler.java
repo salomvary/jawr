@@ -143,13 +143,6 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			jawrConfig.setServletMapping(mapping);
 		}
 		
-		// Set mapping, to be used by the tag lib to define URLs that point to this servlet.
-		String imageServletMapping = (String) initParameters.get(IMG_SERVLET_MAPPING_PARAM);
-		if(imageServletMapping != null){
-			log.debug("The property used to configure the image servlet mapping is the property 'mapping'.\n" +
-					"The parameter '"+IMG_SERVLET_MAPPING_PARAM+"' is should only used in the Jawr CSS servlet.");
-		}
-		
 		rsHandler = new ServletContextResourceHandler(servletContext,jawrConfig.getResourceCharset(),jawrConfig.getGeneratorRegistry());
 		
 		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(jawrConfig);

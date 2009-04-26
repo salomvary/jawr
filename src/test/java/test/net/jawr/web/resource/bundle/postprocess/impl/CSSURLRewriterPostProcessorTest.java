@@ -7,7 +7,9 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 
 import junit.framework.TestCase;
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
@@ -245,8 +247,14 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		ServletContext servletContext = new MockServletContext();
 		config.setContext(servletContext);
 		config.setServletMapping("/css");
-		config.setImageServletMapping("/cssImg/");
 		config.setCharsetName("UTF-8");
+		
+		// Set up the Image servlet Jawr config
+		props = new Properties();
+		JawrConfig imgServletJawrConfig = new JawrConfig(props);
+		imgServletJawrConfig.setServletMapping("/cssImg/");
+		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(imgServletJawrConfig);
+		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE, imgRsHandler);
 		
 		status = new BundleProcessingStatus(bundle, null, config);
 
@@ -277,8 +285,14 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		ServletContext servletContext = new MockServletContext();
 		config.setContext(servletContext);
 		config.setServletMapping("/css");
-		config.setImageServletMapping("/cssImg/");
 		config.setCharsetName("UTF-8");
+		
+		// Set up the Image servlet Jawr config
+		props = new Properties();
+		JawrConfig imgServletJawrConfig = new JawrConfig(props);
+		imgServletJawrConfig.setServletMapping("/cssImg/");
+		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(imgServletJawrConfig);
+		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE, imgRsHandler);
 		
 		status = new BundleProcessingStatus(bundle, null, config);
 

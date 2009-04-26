@@ -128,11 +128,6 @@ public class JawrConfig {
 	private boolean useClasspathCssImageServlet;
 
 	/**
-	 * Defines the path of the CSS image servlet.
-	 */
-	private String imageServletMapping;
-	
-	/**
 	 * Defines the image bundle.
 	 */
 	private String imageBundleDefinition;
@@ -406,24 +401,6 @@ public class JawrConfig {
 		this.imageHashAlgorithm = imageHashAlgorithm;
 	}
 
-	/**
-	 * Returns the path to the CSS image servlet, which will load image from the classpath.
-	 * 
-	 * @return the path to the CSS image servlet, which will load image from the classpath.
-	 */
-	public String getImageServletMapping() {
-		return imageServletMapping;
-	}
-
-	/**
-	 * Sets the path to the CSS image servlet, which will load image from the classpath
-	 * 
-	 * @param cssImgServletPath the path to set
-	 */
-	public void setImageServletMapping(String cssImgServletPath) {
-		this.imageServletMapping = cssImgServletPath == null ? null : PathNormalizer.normalizePath(cssImgServletPath);
-	}
-	
 	/**
 	 * Returns the image bundle definition.
 	 * @return the imageBundle Definition.

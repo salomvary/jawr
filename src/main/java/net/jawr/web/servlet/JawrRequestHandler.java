@@ -34,6 +34,7 @@ import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.ServletContextResourceHandler;
 import net.jawr.web.resource.bundle.factory.PropertiesBasedBundlesHandlerFactory;
@@ -68,7 +69,6 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	protected static final String ETAG_VALUE = "2740050219";
 	protected static final String EXPIRES_HEADER = "Expires";
         
-	protected static final String IMG_SERVLET_MAPPING_PARAM = "imageServletMapping";
 	protected static final String CONFIG_RELOAD_INTERVAL = "jawr.config.reload.interval";
     public static final String GENERATION_PARAM = "generationConfigParam";
     
@@ -240,9 +240,13 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		if(null != mapping)
 			jawrConfig.setServletMapping(mapping);
 		
-		String imageServletMapping = (String) initParameters.get(IMG_SERVLET_MAPPING_PARAM);
 		if(jawrConfig.isUsingClasspathCssImageServlet() && resourceType.equals("css")){
-			jawrConfig.setImageServletMapping(imageServletMapping);
+			ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) servletContext.getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
+			if(imgRsHandler == null){
+				log.error("You are using the CSS classpath image feature, but the JAWR Image servlet is yet initialized.\n" +
+						"The JAWR Image servlet must be initialized before the JAWR CSS servlet.\n" +
+						"Please check you web application configuration.");
+			}
 		}
 		
 		if(log.isDebugEnabled()) {
@@ -366,7 +370,8 @@ public class JawrRequestHandler implements ConfigChangeListener{
 					bundlesHandler.writeBundleTo(requestedPath, writer);
 					String content = writer.toString();
 					
-					String imageServletMapping = jawrConfig.getImageServletMapping();
+					ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) servletContext.getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
+					String imageServletMapping = imgRsHandler.getJawrConfig().getServletMapping();
 					if(imageServletMapping == null){
 						imageServletMapping = "";
 					}

@@ -123,7 +123,14 @@ public class CSSURLPathRewriterPostProcessor extends
 		JawrConfig jawrConfig = status.getJawrConfig();
 		String imagePathOverride = jawrConfig.getCssImagePathOverride();
 		boolean useClassPathCssImgServlet = jawrConfig.isUsingClasspathCssImageServlet();
-		String classPathImgServletPath = jawrConfig.getImageServletMapping();
+		
+		// Retrieve the image servlet mapping
+		ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) jawrConfig.getContext().getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
+		String classPathImgServletPath = null;
+		
+		if(imgRsHandler != null){
+			classPathImgServletPath = imgRsHandler.getJawrConfig().getServletMapping();
+		}
 		
 		String url = match.substring(match.indexOf('(')+1,match.lastIndexOf(')'))
 					.trim();
@@ -203,7 +210,6 @@ public class CSSURLPathRewriterPostProcessor extends
 			urlPrefix.append("../");
 		}
 		
-		ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) jawrConfig.getContext().getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
 		String imgCacheUrl = null;
 		if(imgRsHandler != null){
 			imgCacheUrl = imgRsHandler.getCacheUrl("/"+url);
