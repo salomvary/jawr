@@ -20,6 +20,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.config.ThreadLocalDebugOverride;
 
 import org.apache.log4j.Logger;
 
@@ -86,5 +87,29 @@ public class RendererRequestUtils {
         }
         else rets = false;
 		return rets;
+	}
+	
+	/**
+     * Determines wether to override the debug settings. 
+     * Sets the debugOverride status on ThreadLocalDebugOverride
+     * @param req 
+	 * @param jawrConfig
+     * 
+     */	
+	public static void setRequestDebuggable(HttpServletRequest req,
+			JawrConfig jeesConfig) {
+		
+		// make sure we have set an overrideKey
+		// make sure the overrideKey exists in the request
+		// lastly, make sure the keys match
+		if( jeesConfig.getDebugOverrideKey().length() > 0
+			&& null != req.getParameter("overrideKey")
+			&& jeesConfig.getDebugOverrideKey().equals(req.getParameter("overrideKey"))
+			) {
+			ThreadLocalDebugOverride.setDebugOverride(Boolean.TRUE);
+		} else {
+			ThreadLocalDebugOverride.setDebugOverride(Boolean.FALSE);
+		}
+		
 	}
 }

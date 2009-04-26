@@ -19,6 +19,8 @@ Descriptor file syntax
 *---------------+---------+--------------+----------------+
 | jawr.debug.on | Boolean | Toggle development mode on/off. If the JVM is started with the <<net.jawr.debug.on>> flag (-Dnet.jawr.debug.on=true\|false), its value takes precedence over whatever value is set on the properties file.   | false    | 
 *---------------+---------+--------------+----------------+
+| jawr.debug.overrideKey | String | Override production mode on a request by request basis. | none    | 
+*---------------+---------+--------------+----------------+
 | jawr.gzip.on | Boolean | Enable the ability to serve gzipped resources to browsers that support it. | true    | 
 *---------------+---------+--------------+----------------+
 | jawr.gzip.ie6.on | Boolean | Disable the serving of gzipped resources to Internet Explorer 6 or less. | true    | 

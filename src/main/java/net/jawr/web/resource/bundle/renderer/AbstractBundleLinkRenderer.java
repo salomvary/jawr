@@ -18,6 +18,7 @@ import java.io.Writer;
 import java.util.Random;
 import java.util.Set;
 
+import net.jawr.web.config.ThreadLocalDebugOverride;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.generator.dwr.DWRParamWriter;
@@ -167,6 +168,11 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     	}    		
     	else
     		fullPath = PathNormalizer.joinPaths(contextPath,fullPath);
+    	
+    	// allow debugOverride to pass through on the generated urls
+    	if(ThreadLocalDebugOverride.getDebugOverride().booleanValue()){
+    		fullPath = PathNormalizer.addGetParameter(fullPath, "overrideKey", bundler.getConfig().getDebugOverrideKey());
+    	}
     	
     	return renderLink(fullPath);
     }
