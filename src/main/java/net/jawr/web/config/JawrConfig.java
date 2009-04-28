@@ -88,6 +88,11 @@ public class JawrConfig {
 	 * Key that may be passed in to override production mode
 	 */
 	private String debugOverrideKey = "";
+	
+	/**
+	 * Key that may be passed in to reload the bundles on the fly
+	 */
+	private String refreshKey = "";
 		
 	/**
 	 * Flag to switch on the gzipped resources mode. defaults to true.
@@ -161,6 +166,9 @@ public class JawrConfig {
 		}
 		if (null != props.getProperty("jawr.debug.overrideKey")) {
 			setDebugOverrideKey(props.getProperty("jawr.debug.overrideKey"));
+		}
+		if (null != props.getProperty("jawr.config.reload.refreshKey")) {
+			setRefreshKey(props.getProperty("jawr.config.reload.refreshKey"));
 		}
 		if (null != props.getProperty("jawr.gzip.on")) {
 			setGzipResourcesModeOn(Boolean.valueOf(props.getProperty("jawr.gzip.on")).booleanValue());
@@ -531,6 +539,14 @@ public class JawrConfig {
 		sb.append("[JawrConfig:'").append("charset name:'").append(this.charsetName).append("'\n").append("debugModeOn:'").append(isDebugModeOn())
 				.append("'\n").append("servletMapping:'").append(getServletMapping()).append("' ]");
 		return sb.toString();
+	}
+
+	public String getRefreshKey() {
+		return refreshKey;
+	}
+
+	public void setRefreshKey(String refreshKey) {
+		this.refreshKey = refreshKey;
 	}
 
 }
