@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.config.ThreadLocalDebugOverride;
 import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ImageResourcesHandler;
@@ -82,6 +83,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	protected ConfigChangeListenerThread configChangeListenerThread;
 	protected GeneratorRegistry generatorRegistry;
 	protected JawrConfig jawrConfig;
+	protected ConfigPropertiesSource propertiesSource;
 	protected ClientSideHandlerScriptRequestHandler clientSideScriptRequestHandler;
 
 	/**
@@ -141,6 +143,9 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		// init registry 
 		generatorRegistry = new GeneratorRegistry();
 		
+		// hang onto the propertiesSource for manual reloads
+		this.propertiesSource = propsSrc;
+		
 		// Initialize config 
 		initializeJawrConfig(props);
 		
@@ -192,8 +197,6 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		// Initialize config 
 		initializeJawrConfig(configProps);
 		
-		
-
 		if(log.isInfoEnabled()) {
 			long totaltime = System.currentTimeMillis() - initialTime;
 			log.info("Init method succesful. jawr started in " + (totaltime/1000) + " seconds....");
@@ -298,6 +301,14 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	 */
 	public void processRequest(String requestedPath, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		// manual reload request
+		if( this.jawrConfig.getRefreshKey().length() > 0
+				&& null != request.getParameter("refreshKey")
+				&& this.jawrConfig.getRefreshKey().equals(request.getParameter("refreshKey"))
+				) {
+				this.configChanged(propertiesSource.getConfigProperties());
+		}
+		
 		if(log.isDebugEnabled())
 			log.debug("Request received for path:" + requestedPath);
 		
@@ -306,8 +317,9 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			return;
 		}
 		
+		// override production mode if requested
 		RendererRequestUtils.setRequestDebuggable(request,this.jawrConfig);
-
+		
 		// CSS images would be requested through this handler in case servletMapping is used  
 		if( 	this.jawrConfig.isDebugModeOn() && 
 				!("".equals(this.jawrConfig.getServletMapping())) && 
