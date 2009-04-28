@@ -51,10 +51,7 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 		   this.renderer = createRenderer();
            
            HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-           
-           // set the debug override
-          // renderer.getBundler().getConfig().setDebugOverride(true);
-           
+                       
            String localeKey = this.renderer.getBundler().getConfig().getLocaleResolver().resolveLocaleCode(request);
            boolean isGzippable = RendererRequestUtils.isRequestGzippable(request,renderer.getBundler().getConfig());
            RendererRequestUtils.setRequestDebuggable(request,renderer.getBundler().getConfig());
