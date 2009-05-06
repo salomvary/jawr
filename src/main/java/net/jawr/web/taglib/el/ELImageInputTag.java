@@ -15,28 +15,16 @@ package net.jawr.web.taglib.el;
 
 import javax.servlet.jsp.JspException;
 
-import net.jawr.web.taglib.ImgHtmlTag;
+import net.jawr.web.taglib.ImageInputTag;
 
 /**
- * This class defines the EL version of image HTML tag
+ * This class defines the EL version of image input HTML tag
  * 
- * @author Ibrahim CHAEHOI
+ * @author Ibrahim Chaehoi
  */
-public class ELImgHtmlTag extends ImgHtmlTag {
-
+public class ELImageInputTag extends ImageInputTag {
+	
 	/**
-     * Instance variable mapped to "action" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String actionExpr;
-
-    /**
-     * Instance variable mapped to "module" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String moduleExpr;
-
-    /**
      * Instance variable mapped to "align" tag attribute. (Mapping set in
      * associated BeanInfo class.)
      */
@@ -49,22 +37,10 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     private String altExpr;
 
     /**
-     * Instance variable mapped to "altKey" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String altKeyExpr;
-
-    /**
      * Instance variable mapped to "border" tag attribute. (Mapping set in
      * associated BeanInfo class.)
      */
     private String borderExpr;
-
-    /**
-     * Instance variable mapped to "bundle" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String bundleExpr;
 
     /**
      * Instance variable mapped to "dir" tag attribute. (Mapping set in
@@ -73,28 +49,10 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     private String dirExpr;
 
     /**
-     * Instance variable mapped to "height" tag attribute. (Mapping set in
+     * Instance variable mapped to "disabled" tag attribute. (Mapping set in
      * associated BeanInfo class.)
      */
-    private String heightExpr;
-
-    /**
-     * Instance variable mapped to "hspace" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String hspaceExpr;
-
-    /**
-     * Instance variable mapped to "imageName" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String imageNameExpr;
-
-    /**
-     * Instance variable mapped to "ismap" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String ismapExpr;
+    private String disabledExpr;
 
     /**
      * Instance variable mapped to "lang" tag attribute. (Mapping set in
@@ -103,16 +61,16 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     private String langExpr;
 
     /**
-     * Instance variable mapped to "locale" tag attribute. (Mapping set in
+     * Instance variable mapped to "onblur" tag attribute. (Mapping set in
      * associated BeanInfo class.)
      */
-    private String localeExpr;
+    private String onblurExpr;
 
     /**
-     * Instance variable mapped to "name" tag attribute. (Mapping set in
+     * Instance variable mapped to "onchange" tag attribute. (Mapping set in
      * associated BeanInfo class.)
      */
-    private String nameExpr;
+    private String onchangeExpr;
 
     /**
      * Instance variable mapped to "onclick" tag attribute. (Mapping set in
@@ -125,6 +83,12 @@ public class ELImgHtmlTag extends ImgHtmlTag {
      * associated BeanInfo class.)
      */
     private String ondblclickExpr;
+
+    /**
+     * Instance variable mapped to "onfocus" tag attribute. (Mapping set in
+     * associated BeanInfo class.)
+     */
+    private String onfocusExpr;
 
     /**
      * Instance variable mapped to "onkeydown" tag attribute. (Mapping set in
@@ -175,64 +139,10 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     private String onmouseupExpr;
 
     /**
-     * Instance variable mapped to "paramId" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String paramIdExpr;
-
-    /**
-     * Instance variable mapped to "page" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String pageExpr;
-
-    /**
-     * Instance variable mapped to "pageKey" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String pageKeyExpr;
-
-    /**
-     * Instance variable mapped to "paramName" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String paramNameExpr;
-
-    /**
-     * Instance variable mapped to "paramProperty" tag attribute. (Mapping set
-     * in associated BeanInfo class.)
-     */
-    private String paramPropertyExpr;
-
-    /**
-     * Instance variable mapped to "paramScope" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String paramScopeExpr;
-
-    /**
-     * Instance variable mapped to "property" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String propertyExpr;
-
-    /**
-     * Instance variable mapped to "scope" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String scopeExpr;
-
-    /**
      * Instance variable mapped to "src" tag attribute. (Mapping set in
      * associated BeanInfo class.)
      */
     private String srcExpr;
-
-    /**
-     * Instance variable mapped to "srcKey" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String srcKeyExpr;
 
     /**
      * Instance variable mapped to "style" tag attribute. (Mapping set in
@@ -253,56 +163,22 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     private String styleIdExpr;
 
     /**
+     * Instance variable mapped to "tabindex" tag attribute. (Mapping set in
+     * associated BeanInfo class.)
+     */
+    private String tabindexExpr;
+
+    /**
      * Instance variable mapped to "title" tag attribute. (Mapping set in
      * associated BeanInfo class.)
      */
     private String titleExpr;
 
     /**
-     * Instance variable mapped to "titleKey" tag attribute. (Mapping set in
+     * Instance variable mapped to "value" tag attribute. (Mapping set in
      * associated BeanInfo class.)
      */
-    private String titleKeyExpr;
-
-    /**
-     * Instance variable mapped to "useLocalEncoding" tag attribute. (Mapping
-     * set in associated BeanInfo class.)
-     */
-    private String useLocalEncodingExpr;
-
-    /**
-     * Instance variable mapped to "usemap" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String usemapExpr;
-
-    /**
-     * Instance variable mapped to "vspace" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String vspaceExpr;
-
-    /**
-     * Instance variable mapped to "width" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    private String widthExpr;
-
-    /**
-     * Getter method for "action" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getActionExpr() {
-        return (actionExpr);
-    }
-
-    /**
-     * Getter method for "module" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getModuleExpr() {
-        return (moduleExpr);
-    }
+    private String valueExpr;
 
     /**
      * Getter method for "align" tag attribute. (Mapping set in associated
@@ -321,27 +197,11 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
-     * Getter method for "altKey" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getAltKeyExpr() {
-        return (altKeyExpr);
-    }
-
-    /**
      * Getter method for "border" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
     public String getBorderExpr() {
         return (borderExpr);
-    }
-
-    /**
-     * Getter method for "bundle" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getBundleExpr() {
-        return (bundleExpr);
     }
 
     /**
@@ -353,35 +213,11 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
-     * Getter method for "height" tag attribute. (Mapping set in associated
+     * Getter method for "disabled" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
-    public String getHeightExpr() {
-        return (heightExpr);
-    }
-
-    /**
-     * Getter method for "hspace" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getHspaceExpr() {
-        return (hspaceExpr);
-    }
-
-    /**
-     * Getter method for "imageName" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getImageNameExpr() {
-        return (imageNameExpr);
-    }
-
-    /**
-     * Getter method for "ismap" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getIsmapExpr() {
-        return (ismapExpr);
+    public String getDisabledExpr() {
+        return (disabledExpr);
     }
 
     /**
@@ -393,19 +229,19 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
-     * Getter method for "locale" tag attribute. (Mapping set in associated
+     * Getter method for "onblur" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
-    public String getLocaleExpr() {
-        return (localeExpr);
+    public String getOnblurExpr() {
+        return (onblurExpr);
     }
 
     /**
-     * Getter method for "name" tag attribute. (Mapping set in associated
+     * Getter method for "onchange" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
-    public String getNameExpr() {
-        return (nameExpr);
+    public String getOnchangeExpr() {
+        return (onchangeExpr);
     }
 
     /**
@@ -422,6 +258,14 @@ public class ELImgHtmlTag extends ImgHtmlTag {
      */
     public String getOndblclickExpr() {
         return (ondblclickExpr);
+    }
+
+    /**
+     * Getter method for "onfocus" tag attribute. (Mapping set in associated
+     * BeanInfo class.)
+     */
+    public String getOnfocusExpr() {
+        return (onfocusExpr);
     }
 
     /**
@@ -489,83 +333,11 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
-     * Getter method for "paramId" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getParamIdExpr() {
-        return (paramIdExpr);
-    }
-
-    /**
-     * Getter method for "page" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getPageExpr() {
-        return (pageExpr);
-    }
-
-    /**
-     * Getter method for "pageKey" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getPageKeyExpr() {
-        return (pageKeyExpr);
-    }
-
-    /**
-     * Getter method for "paramName" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getParamNameExpr() {
-        return (paramNameExpr);
-    }
-
-    /**
-     * Getter method for "paramProperty" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    public String getParamPropertyExpr() {
-        return (paramPropertyExpr);
-    }
-
-    /**
-     * Getter method for "paramScope" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    public String getParamScopeExpr() {
-        return (paramScopeExpr);
-    }
-
-    /**
-     * Getter method for "property" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getPropertyExpr() {
-        return (propertyExpr);
-    }
-
-    /**
-     * Getter method for "scope" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getScopeExpr() {
-        return (scopeExpr);
-    }
-
-    /**
      * Getter method for "src" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
     public String getSrcExpr() {
         return (srcExpr);
-    }
-
-    /**
-     * Getter method for "srcKey" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getSrcKeyExpr() {
-        return (srcKeyExpr);
     }
 
     /**
@@ -593,6 +365,14 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
+     * Getter method for "tabindex" tag attribute. (Mapping set in associated
+     * BeanInfo class.)
+     */
+    public String getTabindexExpr() {
+        return (tabindexExpr);
+    }
+
+    /**
      * Getter method for "title" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
@@ -601,59 +381,11 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
-     * Getter method for "titleKey" tag attribute. (Mapping set in associated
+     * Getter method for "value" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
-    public String getTitleKeyExpr() {
-        return (titleKeyExpr);
-    }
-
-    /**
-     * Getter method for "useLocalEncoding" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    public String getUseLocalEncodingExpr() {
-        return (useLocalEncodingExpr);
-    }
-
-    /**
-     * Getter method for "usemap" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getUsemapExpr() {
-        return (usemapExpr);
-    }
-
-    /**
-     * Getter method for "vspace" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getVspaceExpr() {
-        return (vspaceExpr);
-    }
-
-    /**
-     * Getter method for "width" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public String getWidthExpr() {
-        return (widthExpr);
-    }
-
-    /**
-     * Setter method for "action" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setActionExpr(String actionExpr) {
-        this.actionExpr = actionExpr;
-    }
-
-    /**
-     * Setter method for "module" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setModuleExpr(String moduleExpr) {
-        this.moduleExpr = moduleExpr;
+    public String getValueExpr() {
+        return (valueExpr);
     }
 
     /**
@@ -673,27 +405,11 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
-     * Setter method for "altKey" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setAltKeyExpr(String altKeyExpr) {
-        this.altKeyExpr = altKeyExpr;
-    }
-
-    /**
      * Setter method for "border" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
     public void setBorderExpr(String borderExpr) {
         this.borderExpr = borderExpr;
-    }
-
-    /**
-     * Setter method for "bundle" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setBundleExpr(String bundleExpr) {
-        this.bundleExpr = bundleExpr;
     }
 
     /**
@@ -705,35 +421,11 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
-     * Setter method for "height" tag attribute. (Mapping set in associated
+     * Setter method for "disabled" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
-    public void setHeightExpr(String heightExpr) {
-        this.heightExpr = heightExpr;
-    }
-
-    /**
-     * Setter method for "hspace" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setHspaceExpr(String hspaceExpr) {
-        this.hspaceExpr = hspaceExpr;
-    }
-
-    /**
-     * Setter method for "imageName" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setImageNameExpr(String imageNameExpr) {
-        this.imageNameExpr = imageNameExpr;
-    }
-
-    /**
-     * Setter method for "ismap" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setIsmapExpr(String ismapExpr) {
-        this.ismapExpr = ismapExpr;
+    public void setDisabledExpr(String disabledExpr) {
+        this.disabledExpr = disabledExpr;
     }
 
     /**
@@ -745,19 +437,19 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
-     * Setter method for "locale" tag attribute. (Mapping set in associated
+     * Setter method for "onblur" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
-    public void setLocaleExpr(String localeExpr) {
-        this.localeExpr = localeExpr;
+    public void setOnblurExpr(String onblurExpr) {
+        this.onblurExpr = onblurExpr;
     }
 
     /**
-     * Setter method for "name" tag attribute. (Mapping set in associated
+     * Setter method for "onchange" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
-    public void setNameExpr(String nameExpr) {
-        this.nameExpr = nameExpr;
+    public void setOnchangeExpr(String onchangeExpr) {
+        this.onchangeExpr = onchangeExpr;
     }
 
     /**
@@ -774,6 +466,14 @@ public class ELImgHtmlTag extends ImgHtmlTag {
      */
     public void setOndblclickExpr(String ondblclickExpr) {
         this.ondblclickExpr = ondblclickExpr;
+    }
+
+    /**
+     * Setter method for "onfocus" tag attribute. (Mapping set in associated
+     * BeanInfo class.)
+     */
+    public void setOnfocusExpr(String onfocusExpr) {
+        this.onfocusExpr = onfocusExpr;
     }
 
     /**
@@ -841,83 +541,11 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
-     * Setter method for "paramId" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setParamIdExpr(String paramIdExpr) {
-        this.paramIdExpr = paramIdExpr;
-    }
-
-    /**
-     * Setter method for "page" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setPageExpr(String pageExpr) {
-        this.pageExpr = pageExpr;
-    }
-
-    /**
-     * Setter method for "pageKey" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setPageKeyExpr(String pageKeyExpr) {
-        this.pageKeyExpr = pageKeyExpr;
-    }
-
-    /**
-     * Setter method for "paramName" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setParamNameExpr(String paramNameExpr) {
-        this.paramNameExpr = paramNameExpr;
-    }
-
-    /**
-     * Setter method for "paramProperty" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    public void setParamPropertyExpr(String paramPropertyExpr) {
-        this.paramPropertyExpr = paramPropertyExpr;
-    }
-
-    /**
-     * Setter method for "paramScope" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    public void setParamScopeExpr(String paramScopeExpr) {
-        this.paramScopeExpr = paramScopeExpr;
-    }
-
-    /**
-     * Setter method for "property" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setPropertyExpr(String propertyExpr) {
-        this.propertyExpr = propertyExpr;
-    }
-
-    /**
-     * Setter method for "scope" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setScopeExpr(String scopeExpr) {
-        this.scopeExpr = scopeExpr;
-    }
-
-    /**
      * Setter method for "src" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
     public void setSrcExpr(String srcExpr) {
         this.srcExpr = srcExpr;
-    }
-
-    /**
-     * Setter method for "srcKey" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setSrcKeyExpr(String srcKeyExpr) {
-        this.srcKeyExpr = srcKeyExpr;
     }
 
     /**
@@ -945,6 +573,14 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
+     * Setter method for "tabindex" tag attribute. (Mapping set in associated
+     * BeanInfo class.)
+     */
+    public void setTabindexExpr(String tabindexExpr) {
+        this.tabindexExpr = tabindexExpr;
+    }
+
+    /**
      * Setter method for "title" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
@@ -953,43 +589,11 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     }
 
     /**
-     * Setter method for "titleKey" tag attribute. (Mapping set in associated
+     * Setter method for "value" tag attribute. (Mapping set in associated
      * BeanInfo class.)
      */
-    public void setTitleKeyExpr(String titleKeyExpr) {
-        this.titleKeyExpr = titleKeyExpr;
-    }
-
-    /**
-     * Setter method for "useLocalEncoding" tag attribute. (Mapping set in
-     * associated BeanInfo class.)
-     */
-    public void setUseLocalEncodingExpr(String useLocalEncodingExpr) {
-        this.useLocalEncodingExpr = useLocalEncodingExpr;
-    }
-
-    /**
-     * Setter method for "usemap" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setUsemapExpr(String usemapExpr) {
-        this.usemapExpr = usemapExpr;
-    }
-
-    /**
-     * Setter method for "vspace" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setVspaceExpr(String vspaceExpr) {
-        this.vspaceExpr = vspaceExpr;
-    }
-
-    /**
-     * Setter method for "width" tag attribute. (Mapping set in associated
-     * BeanInfo class.)
-     */
-    public void setWidthExpr(String widthExpr) {
-        this.widthExpr = widthExpr;
+    public void setValueExpr(String valueExpr) {
+        this.valueExpr = valueExpr;
     }
 
     /**
@@ -997,23 +601,17 @@ public class ELImgHtmlTag extends ImgHtmlTag {
      */
     public void release() {
         super.release();
-        setActionExpr(null);
-        setModuleExpr(null);
         setAlignExpr(null);
         setAltExpr(null);
-        setAltKeyExpr(null);
         setBorderExpr(null);
-        setBundleExpr(null);
         setDirExpr(null);
-        setHeightExpr(null);
-        setHspaceExpr(null);
-        setImageNameExpr(null);
-        setIsmapExpr(null);
+        setDisabledExpr(null);
         setLangExpr(null);
-        setLocaleExpr(null);
-        setNameExpr(null);
+        setOnblurExpr(null);
+        setOnchangeExpr(null);
         setOnclickExpr(null);
         setOndblclickExpr(null);
+        setOnfocusExpr(null);
         setOnkeydownExpr(null);
         setOnkeypressExpr(null);
         setOnkeyupExpr(null);
@@ -1022,25 +620,13 @@ public class ELImgHtmlTag extends ImgHtmlTag {
         setOnmouseoutExpr(null);
         setOnmouseoverExpr(null);
         setOnmouseupExpr(null);
-        setPageExpr(null);
-        setPageKeyExpr(null);
-        setParamIdExpr(null);
-        setParamNameExpr(null);
-        setParamPropertyExpr(null);
-        setParamScopeExpr(null);
-        setPropertyExpr(null);
-        setScopeExpr(null);
         setSrcExpr(null);
-        setSrcKeyExpr(null);
         setStyleExpr(null);
         setStyleClassExpr(null);
         setStyleIdExpr(null);
+        setTabindexExpr(null);
         setTitleExpr(null);
-        setTitleKeyExpr(null);
-        setUseLocalEncodingExpr(null);
-        setUsemapExpr(null);
-        setVspaceExpr(null);
-        setWidthExpr(null);
+        setValueExpr(null);
     }
 
     /**
@@ -1063,7 +649,11 @@ public class ELImgHtmlTag extends ImgHtmlTag {
     private void evaluateExpressions()
         throws JspException {
         String string = null;
+        Boolean bool = null;
 
+
+        //  The "align" attribute is deprecated.  This needs to be removed when
+        //  the "align" attribute is finally removed.
         if ((string =
                 EvalHelper.evalString("align", getAlignExpr(), this, pageContext)) != null) {
             setAlign(string);
@@ -1086,27 +676,10 @@ public class ELImgHtmlTag extends ImgHtmlTag {
         	setDir(string);
         }
         
-        if ((string =
-                EvalHelper.evalString("height", getHeightExpr(), this,
+        if ((bool =
+                EvalHelper.evalBoolean("disabled", getDisabledExpr(), this,
                     pageContext)) != null) {
-            setHeight(string);
-        }
-
-        if ((string =
-                EvalHelper.evalString("hspace", getHspaceExpr(), this,
-                    pageContext)) != null) {
-            setHspace(string);
-        }
-
-        if ((string =
-                EvalHelper.evalString("name", getNameExpr(), this,
-                    pageContext)) != null) {
-            setName(string);
-        }
-
-        if ((string =
-                EvalHelper.evalString("ismap", getIsmapExpr(), this, pageContext)) != null) {
-            setIsmap(string);
+            setDisabled(bool.booleanValue());
         }
 
         if ((string =
@@ -1116,8 +689,15 @@ public class ELImgHtmlTag extends ImgHtmlTag {
         }
 
         if ((string =
-                EvalHelper.evalString("name", getNameExpr(), this, pageContext)) != null) {
-            setName(string);
+                EvalHelper.evalString("onblur", getOnblurExpr(), this,
+                    pageContext)) != null) {
+            setOnblur(string);
+        }
+
+        if ((string =
+                EvalHelper.evalString("onchange", getOnchangeExpr(), this,
+                    pageContext)) != null) {
+            setOnchange(string);
         }
 
         if ((string =
@@ -1130,6 +710,12 @@ public class ELImgHtmlTag extends ImgHtmlTag {
                 EvalHelper.evalString("ondblclick", getOndblclickExpr(), this,
                     pageContext)) != null) {
             setOndblclick(string);
+        }
+
+        if ((string =
+                EvalHelper.evalString("onfocus", getOnfocusExpr(), this,
+                    pageContext)) != null) {
+            setOnfocus(string);
         }
 
         if ((string =
@@ -1203,25 +789,19 @@ public class ELImgHtmlTag extends ImgHtmlTag {
         }
 
         if ((string =
+                EvalHelper.evalString("tabindex", getTabindexExpr(), this,
+                    pageContext)) != null) {
+            setTabindex(string);
+        }
+
+        if ((string =
                 EvalHelper.evalString("title", getTitleExpr(), this, pageContext)) != null) {
             setTitle(string);
         }
 
-        if ((string =
-                EvalHelper.evalString("usemap", getUsemapExpr(), this,
-                    pageContext)) != null) {
-            setUsemap(string);
-        }
-
-        if ((string =
-                EvalHelper.evalString("vspace", getVspaceExpr(), this,
-                    pageContext)) != null) {
-            setVspace(string);
-        }
-
-        if ((string =
-                EvalHelper.evalString("width", getWidthExpr(), this, pageContext)) != null) {
-            setWidth(string);
+       if ((string =
+                EvalHelper.evalString("value", getValueExpr(), this, pageContext)) != null) {
+            setValue(string);
         }
     }
     
