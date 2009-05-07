@@ -378,7 +378,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 					
 					// Define the replacement pattern for the image define in the classpath (like jar:img/myImg.png)
 					String replacementPattern = CACHE_BUSTER_REPLACE_PATTERN;
-					String relativeRootUrlPath = getRootRelativeUrlPath(requestedPath); 
+					String relativeRootUrlPath = getRootRelativeUrlPath(request, requestedPath); 
 					replacementPattern = PathNormalizer.normalizePath("$1"+relativeRootUrlPath+imageServletMapping+"/cpCbDebug/"+"$4)");
 					
 					Matcher matcher = CSS_CLASSPATH_IMG_PATTERN.matcher(content);
@@ -411,10 +411,14 @@ public class JawrRequestHandler implements ConfigChangeListener{
 	
 	/**
 	 * Returns the depth level of an url 
-	 * @param url the url
+	 * @param request the request
+	 * @param url the requested url
 	 * @return the depth level of an url 
 	 */
-	private String getRootRelativeUrlPath(String url) {
+	private String getRootRelativeUrlPath(HttpServletRequest request, String url) {
+		
+		String servletPath = "".equals(jawrConfig.getServletMapping()) ? "" : request.getServletPath();
+		url = servletPath+url;
 		
 		if(!url.startsWith("/")){
 			url = "/"+url;
@@ -422,8 +426,15 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		
 		Matcher matcher = URL_SEPARATOR_PATTERN.matcher(url);
 		StringBuffer result = new StringBuffer();
+		int i = 0;
 		while(matcher.find()){
-			matcher.appendReplacement(result, ROOT_REPLACE_PATTERN);
+			if(i == 0){
+				matcher.appendReplacement(result, "");
+				i++;
+			}else{
+				matcher.appendReplacement(result, ROOT_REPLACE_PATTERN);
+			}
+			
 		}
 		
 		return result.toString();
