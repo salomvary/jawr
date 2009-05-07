@@ -8,33 +8,71 @@
 	<description>
 		
 	</description>
-	<context-param>
+	<!-- With config source -->
+	<!-- context-param>
 		<param-name>jawr.config.sources</param-name>
 		<param-value>file:C:\jawr_A.properties,file:C:\jawr_B.properties</param-value>
+	</context-param  -->
+	<context-param>
+		<param-name>jawr.config.sources</param-name>
+		<param-value>/additionalConfigA.properties,/additionalConfigB.properties</param-value>
 	</context-param>
 	<servlet>
 		<servlet-name>JavascriptServlet</servlet-name>
 		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
 		<init-param>
 			<param-name>configLocation</param-name>
-			<param-value>file:c:\jawr.properties</param-value>
+			<!-- File path source -->
+			<!-- param-value>file:c:\jawr.properties</param-value -->
+			<!-- Classpath source -->
+			<param-value>/jawr.properties</param-value>
 		</init-param>
 		<!-- init-param>
 			<param-name>mapping</param-name>
 			<param-value>/jawr/</param-value>
 		</init-param-->
+		<!-- Multiple configuration file Source factory -->
 		<init-param>
 			<param-name>configPropertiesSourceClass</param-name>
 			<param-value>net.jawr.web.resource.bundle.factory.util.MultipleFileConfigSource</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>ImgServlet</servlet-name>
+		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
+		<init-param>
+			<param-name>configLocation</param-name>
+			<!-- File path source -->
+			<!-- param-value>file:c:\jawr.properties</param-value -->
+			<!-- Classpath source -->
+			<param-value>/jawr.properties</param-value>
+		</init-param>
+		<init-param>
+			<param-name>type</param-name>
+			<param-value>img</param-value>
+		</init-param>
+		<!-- init-param>
+			<param-name>configPropertiesSourceClass</param-name>
+			<param-value>net.jawr.web.resource.bundle.factory.util.MultipleFileConfigSource</param-value>
+		</init-param-->
+		<init-param>
+			<param-name>mapping</param-name>
+			<param-value>/jwrImg/</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
 	<servlet>
 		<servlet-name>CssServlet</servlet-name>
 		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
 		<init-param>
 			<param-name>configLocation</param-name>
-			<param-value>file:c:\jawr.properties</param-value>
+			<!-- File path source -->
+			<!-- param-value>file:c:\jawr.properties</param-value -->
+			<!-- Classpath source -->
+			<param-value>/jawr.properties</param-value>
 		</init-param>
 		<init-param>
 			<param-name>type</param-name>
@@ -48,7 +86,7 @@
 			<param-name>mapping</param-name>
 			<param-value>/styles/</param-value>
 		</init-param-->
-		<load-on-startup>1</load-on-startup>
+		<load-on-startup>2</load-on-startup>
 	</servlet>
 	
 	<!-- Without mapping-->
@@ -59,6 +97,10 @@
 	<servlet-mapping>
 		<servlet-name>CssServlet</servlet-name>
 		<url-pattern>*.css</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ImgServlet</servlet-name>
+		<url-pattern>/jwrImg/*</url-pattern>
 	</servlet-mapping>
 	<!-- Using mapping-->
 	<!-- <servlet-mapping>
