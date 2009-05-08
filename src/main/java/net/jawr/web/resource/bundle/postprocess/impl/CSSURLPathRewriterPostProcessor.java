@@ -14,7 +14,6 @@
 package net.jawr.web.resource.bundle.postprocess.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,10 +23,8 @@ import java.util.regex.Pattern;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
-import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.bundle.CheckSumUtils;
-import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
@@ -126,7 +123,7 @@ public class CSSURLPathRewriterPostProcessor extends
 		
 		// Retrieve the image servlet mapping
 		ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) jawrConfig.getContext().getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
-		String classPathImgServletPath = null;
+		String classPathImgServletPath = "";
 		
 		if(imgRsHandler != null){
 			classPathImgServletPath = imgRsHandler.getJawrConfig().getServletMapping();
@@ -223,8 +220,8 @@ public class CSSURLPathRewriterPostProcessor extends
 		if (classpathCss || classpathImg || imgCacheUrl != null) {
 			// If path starts with "/", remove it
 			String servletPath = classPathImgServletPath;
-			if(servletPath != null){
-				if(servletPath.startsWith(URL_SEPARATOR) && servletPath.length() > 1){
+			if(!"".equals(servletPath)){
+				if(servletPath.startsWith(URL_SEPARATOR) && servletPath.length() >= 1){
 					servletPath = servletPath.substring(1);
 				}
 				// Add image servlet path in the URL

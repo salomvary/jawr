@@ -536,12 +536,12 @@ public class AbstractImageTag extends TagSupport {
         }
         
         String imageServletMapping = imgRsHandler.getJawrConfig().getServletMapping();
-		if(imageServletMapping != null){
-			newUrl = PathNormalizer.joinDomainToPath(imageServletMapping, newUrl);
-		}else{
+		if("".equals(imageServletMapping)){
 			if(newUrl.startsWith("/")){
 				newUrl = newUrl.substring(1);
 			}
+		}else{
+			newUrl = PathNormalizer.joinDomainToPath(imageServletMapping, newUrl);
 		}
         
         prepareAttribute(results, "src", response.encodeURL(newUrl));
