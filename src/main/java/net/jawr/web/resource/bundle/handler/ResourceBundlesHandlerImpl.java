@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.ResourceNotFoundException;
@@ -62,9 +63,6 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	/** The logger */
 	private static final Logger log = Logger.getLogger(ResourceBundlesHandler.class);
 	
-	/** The prefix for CSS defines in the classpath  */
-	public static final String CLASSPATH_CSS_PREFIX = GeneratorRegistry.CLASSPATH_CSS_BUNDLE_PREFIX + GeneratorRegistry.PREFIX_SEPARATOR;
-
 	/**
 	 * The bundles that this handler manages. 
 	 */
@@ -481,8 +479,8 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		
 		// Set the CSS Classpath resource data for the debug mode  
 		String filePath = status.getLastPathAdded();
-		if(status.getJawrConfig().isDebugModeOn() && filePath.startsWith(CLASSPATH_CSS_PREFIX)){
-			bundleContent.putCssClasspathDebugContent(filePath.substring(CLASSPATH_CSS_PREFIX.length()), resourceData.toString());
+		if(status.getJawrConfig().isDebugModeOn() && filePath.startsWith(JawrConstant.CLASSPATH_RESOURCE_PREFIX)){
+			bundleContent.putCssClasspathDebugContent(filePath.substring(JawrConstant.CLASSPATH_RESOURCE_PREFIX.length()), resourceData.toString());
 		}
 	}
 

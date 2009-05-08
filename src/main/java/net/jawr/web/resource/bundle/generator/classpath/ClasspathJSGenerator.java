@@ -44,7 +44,7 @@ public class ClasspathJSGenerator extends AbstractJavascriptGenerator implements
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#getMappingPrefix()
 	 */
 	public String getMappingPrefix() {
-		return GeneratorRegistry.CLASSPATH_JS_BUNDLE_PREFIX;
+		return GeneratorRegistry.CLASSPATH_RESOURCE_BUNDLE_PREFIX;
 	}
 
 }
