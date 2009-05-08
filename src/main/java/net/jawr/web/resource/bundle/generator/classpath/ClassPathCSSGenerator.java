@@ -68,7 +68,7 @@ public class ClassPathCSSGenerator extends AbstractCSSGenerator {
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#getMappingPrefix()
 	 */
 	public String getMappingPrefix() {
-		return GeneratorRegistry.CLASSPATH_CSS_BUNDLE_PREFIX;
+		return GeneratorRegistry.CLASSPATH_RESOURCE_BUNDLE_PREFIX;
 	}
 
 }

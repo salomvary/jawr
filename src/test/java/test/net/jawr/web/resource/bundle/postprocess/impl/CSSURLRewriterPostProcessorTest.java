@@ -263,7 +263,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 				"background-image:url(../../images/logo.png);");
 		
 		// Css path
-		String filePath = "jar_css:style/default/assets/someCSS.css";
+		String filePath = "jar:style/default/assets/someCSS.css";
 		
 		// Expected: goes 3 back to the context path, then add the CSS image servlet mapping,
 		// then go to the image path

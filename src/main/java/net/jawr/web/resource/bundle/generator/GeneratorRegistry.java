@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.ResourceHandler;
@@ -46,11 +47,8 @@ public class GeneratorRegistry {
 	/** The message bundle prefix */
 	public static final String MESSAGE_BUNDLE_PREFIX = "messages";
 	
-	/** The classpath JS bundle prefix */
-	public static final String CLASSPATH_JS_BUNDLE_PREFIX = "jar";
-	
-	/** The classpath CSS bundle prefix */
-	public static final String CLASSPATH_CSS_BUNDLE_PREFIX = "jar_css";
+	/** The classpath resource bundle prefix */
+	public static final String CLASSPATH_RESOURCE_BUNDLE_PREFIX = "jar";
 	
 	/** The DWR bundle prefix */
 	public static final String DWR_BUNDLE_PREFIX = "dwr";
@@ -67,14 +65,16 @@ public class GeneratorRegistry {
 	/** The generator prefix registry */
 	private static final List prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 	
+	/** The resource type */
+	private String resourceType;
+	
 	/** The Jawr config */
 	private JawrConfig config;
 	
 	static
 	{
 		prefixRegistry.add(MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR);
-		prefixRegistry.add(CLASSPATH_JS_BUNDLE_PREFIX + PREFIX_SEPARATOR);
-		prefixRegistry.add(CLASSPATH_CSS_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+		prefixRegistry.add(CLASSPATH_RESOURCE_BUNDLE_PREFIX + PREFIX_SEPARATOR);
 		prefixRegistry.add(DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR);
 		prefixRegistry.add(COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR);
 	}
@@ -84,7 +84,14 @@ public class GeneratorRegistry {
 	 * Use only for testing purposes.
 	 */
 	public GeneratorRegistry(){
-		super();
+		this(JawrConstant.JS_TYPE);
+	}
+	
+	/**
+	 * Constructor
+	 */
+	public GeneratorRegistry(String resourceType){
+		this.resourceType = resourceType;;
 	}
 	
 	/**
@@ -105,11 +112,12 @@ public class GeneratorRegistry {
 		if((MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, new ResourceBundleMessagesGenerator());
 		}
-		else if((CLASSPATH_JS_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
-			registry.put(generatorKey, new ClasspathJSGenerator());
-		}
-		else if((CLASSPATH_CSS_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
-			registry.put(generatorKey, new ClassPathCSSGenerator());
+		else if((CLASSPATH_RESOURCE_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+			if(resourceType.equals(JawrConstant.JS_TYPE)){
+				registry.put(generatorKey, new ClasspathJSGenerator());
+			}else{
+				registry.put(generatorKey, new ClassPathCSSGenerator());
+			}
 		}
 		else if((DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, DWRGeneratorFactory.createDWRGenerator());

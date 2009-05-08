@@ -154,7 +154,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		Properties props = propsSrc.getConfigProperties();
 		
 		// init registry 
-		generatorRegistry = new GeneratorRegistry();
+		generatorRegistry = new GeneratorRegistry(resourceType);
 		
 		// Initialize config 
 		initializeJawrConfig(props);
@@ -202,7 +202,7 @@ public class JawrRequestHandler implements ConfigChangeListener{
 		
 
 		// init registry 
-		generatorRegistry = new GeneratorRegistry();
+		generatorRegistry = new GeneratorRegistry(resourceType);
 		
 		// Initialize config 
 		initializeJawrConfig(configProps);

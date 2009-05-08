@@ -27,7 +27,6 @@ import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.bundle.CheckSumUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
-import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 
@@ -50,9 +49,6 @@ public class CSSURLPathRewriterPostProcessor extends
 	/** The logger */
 	private static Log logger = LogFactory.getLog(CSSURLPathRewriterPostProcessor.class);
 	
-	/** The prefix for CSS defines in the classpath  */
-	public static final String CLASSPATH_CSS_PREFIX = GeneratorRegistry.CLASSPATH_CSS_BUNDLE_PREFIX + GeneratorRegistry.PREFIX_SEPARATOR;
-
 	/** The URL separator */
 	private static final String URL_SEPARATOR = "/";
 
@@ -185,11 +181,11 @@ public class CSSURLPathRewriterPostProcessor extends
 		
 		boolean classpathCss = !resourceBackRefs.isEmpty()
 		&& ((String) resourceBackRefs.get(0))
-				.startsWith(CLASSPATH_CSS_PREFIX) && useClassPathCssImgServlet;
+				.startsWith(JawrConstant.CLASSPATH_RESOURCE_PREFIX) && useClassPathCssImgServlet;
 		
 		if (classpathCss) {
 			String root = (String) resourceBackRefs.get(0);
-			resourceBackRefs.set(0, root.replace(CLASSPATH_CSS_PREFIX, ""));
+			resourceBackRefs.set(0, root.replace(JawrConstant.CLASSPATH_RESOURCE_PREFIX, ""));
 			
 			// If we are in Debug mode, the Jawr CSS generator will be used.
 			// As the path of this generator is define as root level,

@@ -58,7 +58,6 @@ public class BundleLinkRendererTest  extends ResourceHandlerBasedTest{
 	    jeesConfig = new JawrConfig(new Properties());
 	    jeesConfig.setCharsetName("UTF-8");
 	    jeesConfig.setServletMapping("/srvMapping");
-	    jeesConfig.setGeneratorRegistry(new GeneratorRegistry());
 	    ResourceBundlesHandler jsHandler = null;
 	    ResourceBundlesHandler cssHandler = null;
 	    try {
