@@ -276,6 +276,44 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 
 	}
 	
+	public void testImgURLRewritingForDataScheme() {
+
+		// Set the properties
+		Properties props = new Properties();
+		props.setProperty(JawrConfig.JAWR_CSS_IMG_USE_CLASSPATH_SERVLET, "true");
+		config = new JawrConfig(props);
+		ServletContext servletContext = new MockServletContext();
+		config.setContext(servletContext);
+		config.setServletMapping("/css");
+		config.setCharsetName("UTF-8");
+		
+		// Set up the Image servlet Jawr config
+		props = new Properties();
+		JawrConfig imgServletJawrConfig = new JawrConfig(props);
+		imgServletJawrConfig.setServletMapping("/cssImg/");
+		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(imgServletJawrConfig);
+		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE, imgRsHandler);
+		
+		status = new BundleProcessingStatus(bundle, null, config);
+
+		// Css data
+		StringBuffer data = new StringBuffer(
+				"background-image: url(data:image/gif;base64,AAAA);");
+		
+		// Css path
+		String filePath = "style/default/assets/someCSS.css";
+		
+		// Expected: goes 3 back to the context path, then add the CSS image servlet mapping,
+		// then go to the image path
+		// the image is at classPath:/style/images/someImage.gif
+		String expectedURL = "background-image: url(data:image/gif;base64,AAAA);";
+		status.setLastPathAdded(filePath);
+
+		String result = processor.postProcessBundle(status, data).toString();
+		assertEquals("URL was not rewritten properly", expectedURL, result);
+
+	}
+	
 	public void testMultiLine() {
 		StringBuffer data = new StringBuffer("\nsomeRule {");
 		data.append("\n");

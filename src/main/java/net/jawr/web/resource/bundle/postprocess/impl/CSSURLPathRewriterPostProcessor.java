@@ -149,6 +149,13 @@ public class CSSURLPathRewriterPostProcessor extends
 			return sb.toString();
 		}
 		
+		// Check if the URL is embedded data (RFC2397), if it is return it as is
+		if(url.trim().toLowerCase().startsWith("data:")) {
+			StringBuffer sb = new StringBuffer("url(");
+			sb.append(quoteStr).append(url).append(quoteStr).append(")");
+			return sb.toString();
+		}
+		
 		int backRefsInURL = 0;
 		// Remove leading slash
 		if(url.startsWith("../")) {
