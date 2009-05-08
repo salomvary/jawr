@@ -59,7 +59,7 @@
 		</init-param-->
 		<init-param>
 			<param-name>mapping</param-name>
-			<param-value>/jwrImg/</param-value>
+			<param-value>/img/jwrImg/</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -84,8 +84,8 @@
 		</init-param-->
 		<!-- init-param>
 			<param-name>mapping</param-name>
-			<param-value>/styles/</param-value>
-		</init-param-->
+			<param-value>/styles/bundle/jwrStyles/</param-value>
+		</init-param -->
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 	
@@ -98,18 +98,22 @@
 		<servlet-name>CssServlet</servlet-name>
 		<url-pattern>*.css</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
+	<!-- servlet-mapping>
 		<servlet-name>ImgServlet</servlet-name>
-		<url-pattern>/jwrImg/*</url-pattern>
-	</servlet-mapping>
+		<url-pattern>*.png</url-pattern>
+	</servlet-mapping -->
 	<!-- Using mapping-->
 	<!-- <servlet-mapping>
 		<servlet-name>JavascriptServlet</servlet-name>
 		<url-pattern>/jawr/*</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
+	</servlet-mapping -->
+	<!-- servlet-mapping>
 		<servlet-name>CssServlet</servlet-name>
-		<url-pattern>/styles/*</url-pattern>
-	</servlet-mapping>-->
+		<url-pattern>/styles/bundle/jwrStyles/*</url-pattern>
+	</servlet-mapping -->
+	<servlet-mapping>
+		<servlet-name>ImgServlet</servlet-name>
+		<url-pattern>/img/jwrImg/*</url-pattern>
+	</servlet-mapping>
 	
 </web-app>
