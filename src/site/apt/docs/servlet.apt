@@ -91,33 +91,14 @@ The Jawr servlet
 +------------------------------------------+
 
 
-
-	* <<imageServletMapping>>: The value of this attribute defines the mapping for the image servlet, which will handle the images associated to CSS defined 
-	in the classpath, if you are using the option <jawr.css.image.classpath.use.servlet=true> in the Jawr config.
+	In JAWR, you could use CSS defined in classpath, which reference images in classpath, using the property : <jawr.css.image.classpath.use.servlet>.
+	If you set the property <jawr.css.image.classpath.use.servlet> to true, the CSS images associated to classpath CSS, will also be retrieved from the classpath.
+	When using this feature, you should also use the JAWR image servlet to handle these images.
+	To make it work properly, the image servlet should start before the CSS servlet.
+	Below you will find an example of how the configuration should be done.
 	
-	Note: If you set the property <jawr.css.image.classpath.use.servlet> to true, you should defined the <<imageServletMapping>> parameter 
-	in the CSS and the image servlets like this: 
-
-
 +------------------------------------------+
 	...
-	<servlet>
-		<servlet-name>JawrCSSServlet</servlet-name>
-		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
-		<init-param>
-			<param-name>configLocation</param-name>
-			<param-value>/jawr.properties</param-value>
-		</init-param>
-		<init-param>
-			<param-name>type</param-name>
-			<param-value>css</param-value>
-		</init-param>
-		<init-param>
-			<param-name>imageServletMapping</param-name>
-			<param-value>/jwrImg/</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
 	<servlet>
 		<servlet-name>JawrImgServlet</servlet-name>
 		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
@@ -130,10 +111,23 @@ The Jawr servlet
 			<param-value>img</param-value>
 		</init-param>
 		<init-param>
-			<param-name>imageServletMapping</param-name>
+			<param-name>mapping</param-name>
 			<param-value>/jwrImg/</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>JawrCSSServlet</servlet-name>
+		<servlet-class>net.jawr.web.servlet.JawrServlet</servlet-class>
+		<init-param>
+			<param-name>configLocation</param-name>
+			<param-value>/jawr.properties</param-value>
+		</init-param>
+		<init-param>
+			<param-name>type</param-name>
+			<param-value>css</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
 	</servlet>
 	...
 	
