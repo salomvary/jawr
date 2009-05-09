@@ -47,8 +47,11 @@ public class GeneratorRegistry {
 	/** The message bundle prefix */
 	public static final String MESSAGE_BUNDLE_PREFIX = "messages";
 	
-	/** The classpath JS bundle prefix */
+	/** The classpath resource bundle prefix */
 	public static final String CLASSPATH_RESOURCE_BUNDLE_PREFIX = "jar";
+	
+	/** The old classpath CSS bundle prefix (usage of this prefix is deprecated since Jawr 2.8) */
+	public static final String OLD_CLASSPATH_CSS_BUNDLE_PREFIX = "jar_css";
 	
 	/** The DWR bundle prefix */
 	public static final String DWR_BUNDLE_PREFIX = "dwr";
@@ -75,6 +78,7 @@ public class GeneratorRegistry {
 	{
 		prefixRegistry.add(MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR);
 		prefixRegistry.add(CLASSPATH_RESOURCE_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+		prefixRegistry.add(OLD_CLASSPATH_CSS_BUNDLE_PREFIX+PREFIX_SEPARATOR);
 		prefixRegistry.add(DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR);
 		prefixRegistry.add(COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR);
 	}
@@ -120,7 +124,9 @@ public class GeneratorRegistry {
 				registry.put(generatorKey, new ClassPathCSSGenerator());
 			}
 		}
-		else if((DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+		else if((OLD_CLASSPATH_CSS_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+			registry.put(generatorKey, new ClassPathCSSGenerator());
+		}else if((DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, DWRGeneratorFactory.createDWRGenerator());
 		}
 		else if((COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){

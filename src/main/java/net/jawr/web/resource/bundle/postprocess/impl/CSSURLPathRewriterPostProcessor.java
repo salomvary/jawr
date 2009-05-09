@@ -58,7 +58,7 @@ public class CSSURLPathRewriterPostProcessor extends
 	private static final String URL_SEPARATOR = "/";
 
 	/** The cache buster separator */
-	private static final String CACHE_BUSTER_PREFIX = "cb";
+	private static final String OLD_CLASSPATH_CSS_PREFIX = GeneratorRegistry.OLD_CLASSPATH_CSS_BUNDLE_PREFIX+GeneratorRegistry.PREFIX_SEPARATOR;
 
 	/** The url pattern */
 	private static final Pattern urlPattern = Pattern.compile(	"url\\(\\s*" // 'url(' and any number of whitespaces 
@@ -192,13 +192,18 @@ public class CSSURLPathRewriterPostProcessor extends
 			}
 		}		
 		
+		String root = "";
+		if(!resourceBackRefs.isEmpty()){
+			root = (String) resourceBackRefs.get(0);
+		}
 		boolean classpathCss = !resourceBackRefs.isEmpty()
-		&& ((String) resourceBackRefs.get(0))
-				.startsWith(JawrConstant.CLASSPATH_RESOURCE_PREFIX) && useClassPathCssImgServlet;
+		&& (root.startsWith(JawrConstant.CLASSPATH_RESOURCE_PREFIX) || 
+			root.startsWith(OLD_CLASSPATH_CSS_PREFIX)) && useClassPathCssImgServlet;
 		
 		if (classpathCss) {
-			String root = (String) resourceBackRefs.get(0);
-			resourceBackRefs.set(0, root.replace(JawrConstant.CLASSPATH_RESOURCE_PREFIX, ""));
+			
+			int idx = root.indexOf(GeneratorRegistry.PREFIX_SEPARATOR);
+			resourceBackRefs.set(0, root.substring(idx+1));
 			
 			// If we are in Debug mode, the Jawr CSS generator will be used.
 			// As the path of this generator is define as root level,
