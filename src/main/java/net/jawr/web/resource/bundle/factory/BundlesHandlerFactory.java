@@ -166,6 +166,7 @@ public class BundlesHandlerFactory {
 		ResourceBundlePostProcessor unitProcessor = null;
 		if(null == this.unitPostProcessorKeys)
 			unitProcessor = this.chainFactory.buildDefaultUnitProcessorChain();
+		else unitProcessor = this.chainFactory.buildPostProcessorChain(unitPostProcessorKeys);
 		
 		// Build the handler
 		ResourceBundlesHandler collector = new ResourceBundlesHandlerImpl(resourceBundles,resourceHandler,jawrConfig,processor,unitProcessor);
