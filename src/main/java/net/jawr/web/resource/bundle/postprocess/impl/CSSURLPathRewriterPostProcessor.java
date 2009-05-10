@@ -30,8 +30,7 @@ import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Single file postprocessor used to rewrite CSS URLs according to the new relative locations of the references when
@@ -45,9 +44,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CSSURLPathRewriterPostProcessor extends
 		AbstractChainedResourceBundlePostProcessor {
-	
-	/** The logger */
-	private static Log logger = LogFactory.getLog(CSSURLPathRewriterPostProcessor.class);
 	
 	/** The URL separator */
 	private static final String URL_SEPARATOR = "/";

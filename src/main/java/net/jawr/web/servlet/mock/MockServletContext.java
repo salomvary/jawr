@@ -34,8 +34,7 @@ import javax.servlet.ServletException;
 import net.jawr.web.exception.InvalidPathException;
 
 import org.apache.commons.collections.iterators.IteratorEnumeration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * This class defines a mock servlet container.
@@ -45,7 +44,7 @@ import org.apache.commons.logging.LogFactory;
 public class MockServletContext implements ServletContext {
 
 	/** The logger */
-	private static Log logger = LogFactory.getLog(MockServletContext.class);
+	private static Logger logger = Logger.getLogger(MockServletContext.class);
 
 	/** The base directory */
 	private String baseDir;

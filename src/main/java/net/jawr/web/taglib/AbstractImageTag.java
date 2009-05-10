@@ -7,12 +7,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.jawr.web.JawrConstant;
 import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
+
+import org.apache.log4j.Logger;
 
 /**
  * This tag defines the base class for HTML tags
@@ -23,7 +22,7 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 public class AbstractImageTag extends TagSupport {
 
 	/** The logger */
-	private static Log logger = LogFactory.getLog(ImgHtmlTag.class);
+	private static Logger logger = Logger.getLogger(ImgHtmlTag.class);
 	
 	/**
      * The property to specify where to align the image.
