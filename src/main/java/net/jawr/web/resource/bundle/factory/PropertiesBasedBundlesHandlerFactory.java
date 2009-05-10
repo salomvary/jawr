@@ -52,6 +52,9 @@ public class PropertiesBasedBundlesHandlerFactory {
 	// Dir mapper switch
 	public static final String FACTORY_USE_DIR_MAPPER = "factory.use.dirmapper";
 	public static final String FACTORY_DIR_MAPPER_EXCLUSION = "factory.dirmapper.excluded";
+	
+	// Orphans switch
+	public static final String FACTORY_PROCESS_ORPHANS = "factory.use.orphans.mapper";
 
 	// Which postprocessors to use.
 	public static final String BUNDLE_FACTORY_POSTPROCESSOR = "bundle.factory.bundlepostprocessors";
@@ -131,6 +134,10 @@ public class PropertiesBasedBundlesHandlerFactory {
 				.booleanValue());
 		factory.setSingleFileBundleName(props
 				.getProperty(FACTORY_SINGLE_FILE_NAME));
+		
+		// Use orphans resolution at all, on by default. FACTORY_PROCESS_ORPHANS
+		factory.setScanForOrphans(Boolean.valueOf(
+				props.getProperty(FACTORY_PROCESS_ORPHANS, "true")).booleanValue());
 
 		// Use the automatic directory-as-bundle mapper.
 		factory.setUseDirMapperFactory(Boolean.valueOf(
