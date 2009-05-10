@@ -163,11 +163,15 @@ public class PropertiesBasedBundlesHandlerFactory {
 						(String) bundleNames.next(), false));
 			}
 		}
+		
+		factory.setBundleDefinitions(customBundles);
 
-		// Read custom postprocessor definitions
+		// Check if we should use the custom postprocessor names property or
+		// find the postprocessor name using the postprocessor class declaration :
+		// jawr.custom.postprocessors.<name>.class
+		Map customPostprocessors = new HashMap();
 		if (null != properties.getProperty(CUSTOM_POSTPROCESSORS
 				+ CUSTOM_POSTPROCESSORS_NAMES)) {
-			Map customPostprocessors = new HashMap();
 			StringTokenizer tk = new StringTokenizer(properties
 					.getProperty(CUSTOM_POSTPROCESSORS
 							+ CUSTOM_POSTPROCESSORS_NAMES), ",");
@@ -180,12 +184,16 @@ public class PropertiesBasedBundlesHandlerFactory {
 				if (null != processorClass)
 					customPostprocessors.put(processorKey, processorClass);
 			}
-			factory.setCustomPostprocessors(customPostprocessors);
-
+		}else{
+			
+			customPostprocessors = props.getCustomPostProcessorMap();
 		}
-
-		factory.setBundleDefinitions(customBundles);
+		
+		factory.setCustomPostprocessors(customPostprocessors);
+		
 	}
+
+	
 
 	/**
 	 * Build a resources handler based on the configuration.
