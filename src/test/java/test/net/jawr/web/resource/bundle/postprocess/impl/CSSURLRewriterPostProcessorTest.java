@@ -405,6 +405,9 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 			}
 			public List getLocaleVariantKeys() {
 				return null;
+			}
+			public String getAlternateProductionURL() {
+				return null;
 			}};
 		
 	}

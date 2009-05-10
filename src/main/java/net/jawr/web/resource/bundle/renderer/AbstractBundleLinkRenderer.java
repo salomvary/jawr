@@ -67,6 +67,12 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     	if(null == bundle)
 			return;
     	
+    	// If there is a fixed URL for production mode it is rendered and method returns.  
+    	if(!debugOn && null != bundle.getAlternateProductionURL()){
+    		out.write(renderLink(bundle.getAlternateProductionURL()));
+    		return;
+    	}
+    	
         if( debugOn ) {
                 addComment("Start adding members resolved by '" + requestedPath + "'. Bundle id is: '" + bundle.getName() + "'",out);
         }

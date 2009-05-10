@@ -212,6 +212,9 @@ public class BundlesHandlerFactory {
 		if(null != definition.getIeConditionalExpression())
 			composite.setExplorerConditionalExpression(definition.getIeConditionalExpression());
 		
+		if(null != definition.getAlternateProductionURL())
+			composite.setAlternateProductionURL(definition.getAlternateProductionURL());
+		
 		return composite;
 	}
 	
@@ -245,6 +248,9 @@ public class BundlesHandlerFactory {
 		
 		if(null != definition.getLocaleVariantKeys())
 			newBundle.setLocaleVariantKeys(definition.getLocaleVariantKeys());
+		
+		if(null != definition.getAlternateProductionURL())
+			newBundle.setAlternateProductionURL(definition.getAlternateProductionURL());
 		
 		return newBundle;
 	}

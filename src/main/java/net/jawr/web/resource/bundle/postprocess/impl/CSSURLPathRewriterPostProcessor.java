@@ -14,7 +14,6 @@
 package net.jawr.web.resource.bundle.postprocess.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,18 +24,12 @@ import java.util.regex.Pattern;
 import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.ImageResourcesHandler;
-import net.jawr.web.resource.ResourceHandler;
-import net.jawr.web.resource.ServletContextResourceHandler;
 import net.jawr.web.resource.bundle.CheckSumUtils;
-import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Single file postprocessor used to rewrite CSS URLs according to the new relative locations of the references when
@@ -51,8 +44,6 @@ import org.apache.commons.logging.LogFactory;
 public class CSSURLPathRewriterPostProcessor extends
 		AbstractChainedResourceBundlePostProcessor {
 	
-	/** The logger */
-	private static Log logger = LogFactory.getLog(CSSURLPathRewriterPostProcessor.class);
 	
 	/** The URL separator */
 	private static final String URL_SEPARATOR = "/";

@@ -13,7 +13,6 @@
  */
 package net.jawr.web.resource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.channels.FileChannel;

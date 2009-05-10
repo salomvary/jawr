@@ -71,6 +71,9 @@ public class PropertiesBasedBundlesHandlerFactory {
 
 	public static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG = ".composite";
 	public static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES = ".child.names";
+	
+	// Alternate static URL for production mode 
+	public static final String BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL = ".productionURL";
 
 	//
 	public static final String USE_BUNDLE_NAMES = "jawr.use.bundle.names";
@@ -276,6 +279,13 @@ public class PropertiesBasedBundlesHandlerFactory {
 					.getCustomBundleProperty(bundleName,
 							BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION));
 
+		// Sets the alternate URL for production mode. 
+		if (null != props.getCustomBundleProperty(bundleName,
+				BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL))
+			bundle.setAlternateProductionURL(props.getCustomBundleProperty(bundleName,
+				BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL));
+			
+		
 		if (isComposite) {
 			String childBundlesProperty = props.getCustomBundleProperty(
 					bundleName, BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES);
