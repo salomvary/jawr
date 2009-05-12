@@ -26,6 +26,8 @@ Descriptor file syntax
 | jawr.gzip.ie6.on | Boolean | Disable the serving of gzipped resources to Internet Explorer 6 or less. | true    | 
 *---------------+---------+--------------+----------------+
 | jawr.config.reload.interval | int | The interval in seconds in which Jawr checks wether the configuration has changed. If this value is set, when you change the properties file Jawr will detect it and redeploy itself so you don't need to restart the server to test your changes.  | none| 
+*---------------+---------+--------------+----------------+
+| jawr.config.reload.refreshKey | String | Force a full refresh of all bundles on request.  Hit any bundle URL and add ?refreshKey=value to reload the bundles. | none    | 
 *---------------*---------*--------------+----------------+
 | jawr.locale.resolver | String | Name of a class implementing net.jawr.web.resource.bundle.locale.LocaleResolver. An instance of this class will be created and used to determine the Locale to use for a given request when using an {{{./messages_gen.html}i18n messages generator}}.   | none| 
 *---------------*---------*--------------+----------------+
