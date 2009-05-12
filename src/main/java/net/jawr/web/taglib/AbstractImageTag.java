@@ -519,6 +519,23 @@ public class AbstractImageTag extends TagSupport {
             handlers.append("\"");
         }
     }
+    
+    /**
+     * Prepares an attribute if the value is not null, appending it to the the
+     * given StringBuffer.
+     *
+     * @param handlers The StringBuffer that output will be appended to.
+     */
+    protected void prepareAttribute(StringBuffer handlers, String name,
+        boolean value) {
+    
+    	handlers.append(" ");
+        handlers.append(name);
+        handlers.append("=\"");
+        handlers.append(value);
+        handlers.append("\"");
+    
+    }
 
     /**
 	 * Prepare the image URL
