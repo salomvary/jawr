@@ -35,6 +35,56 @@ import net.jawr.web.resource.bundle.renderer.CSSHTMLBundleLinkRenderer;
 public class JawrConfig {
 
 	/**
+	 * The property name for the image path override
+	 */
+	public static final String JAWR_CSS_IMAGEPATH_OVERRIDE = "jawr.css.imagepath.override";
+
+	/**
+	 * The property name for the css link flavor
+	 */
+	public static final String JAWR_CSSLINKS_FLAVOR = "jawr.csslinks.flavor";
+
+	/**
+	 * The property name for the locale resolver
+	 */
+	public static final String JAWR_LOCALE_RESOLVER = "jawr.locale.resolver";
+
+	/**
+	 * The property name for the dwr mapping
+	 */
+	public static final String JAWR_DWR_MAPPING = "jawr.dwr.mapping";
+
+	/**
+	 * The property name for the url context path used to override
+	 */
+	public static final String JAWR_URL_CONTEXTPATH_OVERRIDE = "jawr.url.contextpath.override";
+
+	/**
+	 * The property name for the Gzip IE6 flag
+	 */
+	public static final String JAWR_GZIP_IE6_ON = "jawr.gzip.ie6.on";
+
+	/**
+	 * The property name for the charset name
+	 */
+	public static final String JAWR_CHARSET_NAME = "jawr.charset.name";
+
+	/**
+	 * The property name for the Gzip flag
+	 */
+	public static final String JAWR_GZIP_ON = "jawr.gzip.on";
+
+	/**
+	 * The property name for the debug override key
+	 */
+	public static final String JAWR_DEBUG_OVERRIDE_KEY = "jawr.debug.overrideKey";
+
+	/**
+	 * The property name for the Debug flag
+	 */
+	public static final String JAWR_DEBUG_ON = "jawr.debug.on";
+
+	/**
 	 * The property name for the debug mode system flag
 	 */
 	private static final String DEBUG_MODE_SYSTEM_FLAG = "net.jawr.debug.on";
@@ -47,12 +97,12 @@ public class JawrConfig {
 	/**
 	 * The property name for the image hash algorithm.
 	 */
-	private static final String JAWR_IMAGE_HASH_ALGORITHM = "jawr.image.hash.algorithm";
+	public static final String JAWR_IMAGE_HASH_ALGORITHM = "jawr.image.hash.algorithm";
 
 	/**
 	 * The property name for the image hash algorithm.
 	 */
-	private static final String JAWR_IMAGE_BUNDLE = "jawr.image.bundle";
+	public static final String JAWR_IMAGE_BUNDLE = "jawr.image.bundle";
 
 	/**
 	 * The generator registry
@@ -162,43 +212,43 @@ public class JawrConfig {
 	 */
 	public JawrConfig(Properties props) {
 		this.configProperties = props;
-		if (null != props.getProperty("jawr.debug.on")) {
-			setDebugModeOn(Boolean.valueOf(props.getProperty("jawr.debug.on")).booleanValue());
+		if (null != props.getProperty(JAWR_DEBUG_ON)) {
+			setDebugModeOn(Boolean.valueOf(props.getProperty(JAWR_DEBUG_ON)).booleanValue());
 		}
 		// If system flag is available, override debug mode from properties
 		if (null != System.getProperty(DEBUG_MODE_SYSTEM_FLAG)) {
 			setDebugModeOn(Boolean.valueOf(System.getProperty(DEBUG_MODE_SYSTEM_FLAG)).booleanValue());
 		}
-		if (null != props.getProperty("jawr.debug.overrideKey")) {
-			setDebugOverrideKey(props.getProperty("jawr.debug.overrideKey"));
+		if (null != props.getProperty(JAWR_DEBUG_OVERRIDE_KEY)) {
+			setDebugOverrideKey(props.getProperty(JAWR_DEBUG_OVERRIDE_KEY));
 		}
-		if (null != props.getProperty("jawr.gzip.on")) {
-			setGzipResourcesModeOn(Boolean.valueOf(props.getProperty("jawr.gzip.on")).booleanValue());
+		if (null != props.getProperty(JAWR_GZIP_ON)) {
+			setGzipResourcesModeOn(Boolean.valueOf(props.getProperty(JAWR_GZIP_ON)).booleanValue());
 		}
-		if (null != props.getProperty("jawr.charset.name")) {
-			setCharsetName(props.getProperty("jawr.charset.name"));
+		if (null != props.getProperty(JAWR_CHARSET_NAME)) {
+			setCharsetName(props.getProperty(JAWR_CHARSET_NAME));
 		}
-		if (null != props.getProperty("jawr.gzip.ie6.on")) {
-			setGzipResourcesForIESixOn(Boolean.valueOf(props.getProperty("jawr.gzip.ie6.on")).booleanValue());
+		if (null != props.getProperty(JAWR_GZIP_IE6_ON)) {
+			setGzipResourcesForIESixOn(Boolean.valueOf(props.getProperty(JAWR_GZIP_IE6_ON)).booleanValue());
 		}
-		if (null != props.getProperty("jawr.url.contextpath.override")) {
-			setContextPathOverride(props.getProperty("jawr.url.contextpath.override"));
+		if (null != props.getProperty(JAWR_URL_CONTEXTPATH_OVERRIDE)) {
+			setContextPathOverride(props.getProperty(JAWR_URL_CONTEXTPATH_OVERRIDE));
 		}
-		if (null != props.getProperty("jawr.dwr.mapping")) {
-			setDwrMapping(props.getProperty("jawr.dwr.mapping"));
+		if (null != props.getProperty(JAWR_DWR_MAPPING)) {
+			setDwrMapping(props.getProperty(JAWR_DWR_MAPPING));
 		}
 
-		if (null != props.getProperty("jawr.locale.resolver")) {
-			localeResolver = (LocaleResolver) ClassLoaderResourceUtils.buildObjectInstance(props.getProperty("jawr.locale.resolver"));
+		if (null != props.getProperty(JAWR_LOCALE_RESOLVER)) {
+			localeResolver = (LocaleResolver) ClassLoaderResourceUtils.buildObjectInstance(props.getProperty(JAWR_LOCALE_RESOLVER));
 		} else
 			localeResolver = new DefaultLocaleResolver();
 
-		if (null != props.getProperty("jawr.csslinks.flavor")) {
-			setCssLinkFlavor(props.getProperty("jawr.csslinks.flavor").trim());
+		if (null != props.getProperty(JAWR_CSSLINKS_FLAVOR)) {
+			setCssLinkFlavor(props.getProperty(JAWR_CSSLINKS_FLAVOR).trim());
 		}
 
-		if (null != props.getProperty("jawr.css.imagepath.override")) {
-			setCssImagePathOverride(props.getProperty("jawr.css.imagepath.override").trim());
+		if (null != props.getProperty(JAWR_CSS_IMAGEPATH_OVERRIDE)) {
+			setCssImagePathOverride(props.getProperty(JAWR_CSS_IMAGEPATH_OVERRIDE).trim());
 		}
 
 		if (null != props.getProperty(JAWR_CSS_IMG_USE_CLASSPATH_SERVLET)) {

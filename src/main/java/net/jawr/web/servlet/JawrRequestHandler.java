@@ -16,6 +16,7 @@ package net.jawr.web.servlet;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.management.ManagementFactory;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -24,6 +25,13 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -32,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.config.jmx.JawrConfigManager;
 import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ImageResourcesHandler;
@@ -170,7 +179,9 @@ public class JawrRequestHandler implements ConfigChangeListener{
 			configChangeListenerThread.start();
 		}	
 		
-
+		// initialize the jmx Bean
+		initJMXBean();
+		
 		if(log.isInfoEnabled()) {
 			long totaltime = System.currentTimeMillis() - initialTime;
 			log.info("Init method succesful. jawr started in " + (totaltime/1000) + " seconds....");
@@ -178,6 +189,34 @@ public class JawrRequestHandler implements ConfigChangeListener{
 
 	}
 	
+	protected void initJMXBean() {
+		 
+		MBeanServer mbs = null;
+		if(System.getProperty("java.version").startsWith("1.4")){
+			mbs = MBeanServerFactory.createMBeanServer();
+		}else{
+			mbs = ManagementFactory.getPlatformMBeanServer();
+		}
+		
+		JawrConfigManager mbean = new JawrConfigManager(this, jawrConfig.getConfigProperties()); 
+	    
+		try {
+			ObjectName name = new ObjectName("net.jawr.web.jmx."+resourceType+":type=JawrConfigManagerMBean");
+			mbs.registerMBean(mbean, name);
+		} catch (MalformedObjectNameException e) {
+			log.error("Unable to instanciate the Jawr MBean", e);
+		} catch (NullPointerException e) {
+			log.error("Unable to instanciate the Jawr MBean", e);
+		} catch (InstanceAlreadyExistsException e) {
+			log.error("Unable to instanciate the Jawr MBean", e);
+		} catch (MBeanRegistrationException e) {
+			log.error("Unable to instanciate the Jawr MBean", e);
+		} catch (NotCompliantMBeanException e) {
+			log.error("Unable to instanciate the Jawr MBean", e);
+		} 
+
+	}
+
 	/**
 	 * Alternate constructor that does not need a ServletConfig object. 
 	 * Parameters normally read rom it are read from the initParams Map, and the configProps are used 
