@@ -1,5 +1,5 @@
 /**
- * Copyright 2008  Jordi Hernández Sellés
+ * Copyright 2008  Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -18,15 +18,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.management.ManagementFactory;
 import java.net.URL;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import net.jawr.web.config.jmx.JmxUtils;
+import net.jawr.web.context.ThreadLocalJawrContext;
 import net.jawr.web.exception.ResourceNotFoundException;
 
 import org.apache.log4j.Logger;
@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 /**
  * Utilities to access resources from the classpath
  * 
- * @author Jordi Hernández Sellés
+ * @author Jordi Hernández Sellés, Ibrahim Chaehoi
  *
  */
 public class ClassLoaderResourceUtils {
@@ -77,27 +77,22 @@ public class ClassLoaderResourceUtils {
 				if(null == url){
 					// Try to use the classloader of the JawrConfigManagerMBean
 					
-					MBeanServer mbs = null;
-					if(System.getProperty("java.version").startsWith("1.4")){
-						mbs = MBeanServerFactory.createMBeanServer();
-					}else{
-						mbs = ManagementFactory.getPlatformMBeanServer();
+					MBeanServer mbs = JmxUtils.getMBeanServer();
+					if(mbs != null){
+						
+						try {
+							
+							ObjectName name = new ObjectName(ThreadLocalJawrContext.getMbeanObjectName());
+							ClassLoader cl = mbs.getClassLoaderFor(name);
+							url = cl.getResource(resourcePath);
+						} catch (MalformedObjectNameException e) {
+							log.error("Unable to instanciate the Jawr MBean", e);
+						} catch (NullPointerException e) {
+							log.error("Unable to instanciate the Jawr MBean", e);
+						} catch (InstanceNotFoundException e) {
+							log.error("Unable to instanciate the Jawr MBean", e);
+						}
 					}
-					
-					String resourceType = getResourceType(resourcePath);
-					
-					try {
-						ObjectName name = new ObjectName("net.jawr.web.jmx."+resourceType+":type=JawrConfigManagerMBean");
-						ClassLoader cl = mbs.getClassLoaderFor(name);
-						url = cl.getResource(resourcePath);
-					} catch (MalformedObjectNameException e) {
-						log.error("Unable to instanciate the Jawr MBean", e);
-					} catch (NullPointerException e) {
-						log.error("Unable to instanciate the Jawr MBean", e);
-					} catch (InstanceNotFoundException e) {
-						log.error("Unable to instanciate the Jawr MBean", e);
-					}
-
 				}
 				// Last chance, hack in the classloader
 				if(null == url) {
@@ -128,31 +123,6 @@ public class ClassLoaderResourceUtils {
 		return is;
 	}
 
-	/**
-	 * Rerurns the resource type
-	 * @param resourcePath
-	 * @return
-	 */
-	private static String getResourceType(String resourcePath) {
-		
-		int idx = resourcePath.lastIndexOf(".");
-		String resourceType = "js";
-		if(idx > 0){
-		
-			String extension = resourcePath.substring(idx+1).toLowerCase();
-			if(extension.equals("js")){
-				resourceType = "js";
-			}else if(extension.equals("css")){
-				resourceType = "css";
-			}else {
-				resourceType = "img";
-			}
-		}
-		
-		
-		return resourceType;
-	}
-	
 	/**
 	 * Attempts to find the URL of a resource from the classpath, either usinf the caller's class loader or the current thread's 
 	 * context classloader. 

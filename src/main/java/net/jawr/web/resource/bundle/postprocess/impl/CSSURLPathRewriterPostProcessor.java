@@ -30,8 +30,6 @@ import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 
-import org.apache.log4j.Logger;
-
 /**
  * Single file postprocessor used to rewrite CSS URLs according to the new relative locations of the references when
  * added to a bundle. Since the path changes, the URLs must be rewritten accordingly.  
@@ -188,7 +186,8 @@ public class CSSURLPathRewriterPostProcessor extends
 		
 		if (classpathCss) {
 			String root = (String) resourceBackRefs.get(0);
-			resourceBackRefs.set(0, root.replace(JawrConstant.CLASSPATH_RESOURCE_PREFIX, ""));
+			
+			resourceBackRefs.set(0, root.substring(JawrConstant.CLASSPATH_RESOURCE_PREFIX.length()));
 			
 			// If we are in Debug mode, the Jawr CSS generator will be used.
 			// As the path of this generator is define as root level,

@@ -291,19 +291,6 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	}
 	
 	/**
-	 * Handles a resource request by getting the requested path from the request object and invoking processRequest.
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String requestedPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
-		processRequest(requestedPath, request, response);
-	}
-
-	/**
 	 * Handles a resource request.
 	 * <ul>
 	 * <li>If the request contains an If-Modified-Since header, the 304 status is set and no data is written to the response</li>
@@ -453,6 +440,9 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			is = ClassLoaderResourceUtils.getResourceAsStream(fileName, this);
 		}else{
 			try {
+				if(!fileName.startsWith("/")){
+					fileName = "/"+fileName;
+				}
 				is = rsHandler.getResourceAsStream(fileName);
 			} catch (ResourceNotFoundException e) {
 				// Nothing to do
