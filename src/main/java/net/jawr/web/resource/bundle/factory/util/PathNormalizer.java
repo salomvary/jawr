@@ -156,7 +156,7 @@ public class PathNormalizer {
 	 * @return a String with the url parameter added: path + ? or & + parameterKey=parameter
 	 */
 	public static String addGetParameter(String path, String parameterKey, String parameter){
-		StringBuilder sb = new StringBuilder(path); 
+		StringBuffer sb = new StringBuffer(path); 
 		if(path.indexOf("?") > 0) {
 			sb.append("&");
 		} else {
