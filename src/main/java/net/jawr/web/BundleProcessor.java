@@ -119,7 +119,8 @@ public class BundleProcessor {
 			for (int j = 0; j < childNodes.getLength(); j++) {
 				Node servletChildNode = childNodes.item(j);
 				if (servletChildNode.getNodeName().equals(SERVLET_NAME_TAG_NAME)) {
-					servletName = servletChildNode.getTextContent();
+					
+					servletName = servletChildNode.getFirstChild().getNodeValue();
 					config.setServletName(servletName);
 
 					// If the servlet name is part of the list of servlet to initialized
@@ -130,7 +131,7 @@ public class BundleProcessor {
 
 				} else if (servletChildNode.getNodeName().equals(SERVLET_CLASS_TAG_NAME)) {
 
-					String servletClassName = servletChildNode.getTextContent();
+					String servletClassName = servletChildNode.getFirstChild().getNodeValue();
 					servletClass = getClass().getClassLoader().loadClass(servletClassName);
 
 					// If the servlet is a Jawr Servlet it must be initialized
@@ -167,9 +168,9 @@ public class BundleProcessor {
 			Node childNode = childNodes.item(j);
 			String nodeName = childNode.getNodeName();
 			if (nodeName.equals(PARAM_NAME_TAG_NAME)) {
-				paramName = childNode.getTextContent();
+				paramName = childNode.getFirstChild().getNodeValue();
 			} else if (nodeName.equals(PARAM_VALUE_TAG_NAME)) {
-				paramValue = childNode.getTextContent();
+				paramValue = childNode.getFirstChild().getNodeValue();
 			}
 		}
 
