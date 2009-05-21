@@ -95,7 +95,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 */
 	public JawrImageRequestHandler(ServletContext context, ServletConfig config) throws ServletException {
 		super(context, config);
-		resourceType = "img/";
+		resourceType = "img";
 	}
 
 	/**
