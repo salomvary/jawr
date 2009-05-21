@@ -441,24 +441,12 @@ public class JawrRequestHandler implements ConfigChangeListener {
 					String relativeRootUrlPath = getRootRelativeUrlPath(request, requestedPath);
 					String replacementPattern = PathNormalizer.normalizePath("$1" + relativeRootUrlPath + imageServletMapping + "/cpCbDebug/" + "$4$5");
 					
-//					String nonClassPathImgReplacePattern = null;
-//					String overrideKey = request.getParameter("overrideKey");
-//					if(overrideKey != null && overrideKey.equals(jawrConfig.getDebugOverrideKey())){
-//						nonClassPathImgReplacePattern = "$1$4"+"?overrideKey="+overrideKey+"$5";
-//					}else{
-//						nonClassPathImgReplacePattern = "$0";
-//					}
-					
 					Matcher matcher = CSS_CLASSPATH_IMG_PATTERN.matcher(content);
 
 					// Rewrite the images define in the classpath, to point to the image servlet
 					StringBuffer result = new StringBuffer();
 					while (matcher.find()) {
-						//if("jar:".equals(matcher.group(3))){
-							matcher.appendReplacement(result, replacementPattern);
-//						}else{
-//							matcher.appendReplacement(result, nonClassPathImgReplacePattern);
-//						}
+						matcher.appendReplacement(result, replacementPattern);
 					}
 					matcher.appendTail(result);
 					Writer out = response.getWriter();
