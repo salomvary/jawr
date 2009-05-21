@@ -20,9 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import net.jawr.web.config.jmx.JmxUtils;
@@ -69,31 +67,30 @@ public class ClassLoaderResourceUtils {
 			is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
 		}
 		
+		if(null == is){
+			
+			// Try to use the classloader of the current Jawr Config Manager MBean
+			// This will be used when a refresh is done in the configuration using the JMX MBean
+			MBeanServer mbs = JmxUtils.getMBeanServer();
+			if(mbs != null){
+				
+				ObjectName name = ThreadLocalJawrContext.getJawrConfigMgrObjectName();
+				try {
+					
+					ClassLoader cl = mbs.getClassLoaderFor(name);
+					is = cl.getResourceAsStream(resourcePath);
+				} catch (Exception e) {
+					log.error("Unable to instanciate the Jawr MBean '"+name.getCanonicalName()+"'", e);
+				}
+			}
+		}
+		
 		// Try to retrieve by URL
 		if(null == is) {
 			try {
 				URL url = Thread.currentThread().getContextClassLoader().getResource(resourcePath);
 				
-				if(null == url){
-					// Try to use the classloader of the JawrConfigManagerMBean
-					
-					MBeanServer mbs = JmxUtils.getMBeanServer();
-					if(mbs != null){
-						
-						try {
-							
-							ObjectName name = new ObjectName(ThreadLocalJawrContext.getMbeanObjectName());
-							ClassLoader cl = mbs.getClassLoaderFor(name);
-							url = cl.getResource(resourcePath);
-						} catch (MalformedObjectNameException e) {
-							log.error("Unable to instanciate the Jawr MBean", e);
-						} catch (NullPointerException e) {
-							log.error("Unable to instanciate the Jawr MBean", e);
-						} catch (InstanceNotFoundException e) {
-							log.error("Unable to instanciate the Jawr MBean", e);
-						}
-					}
-				}
+				
 				// Last chance, hack in the classloader
 				if(null == url) {
 					ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();

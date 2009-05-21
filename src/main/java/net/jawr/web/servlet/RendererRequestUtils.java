@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2009 Jordi Hernández Sellés, Matt Ruby, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -19,14 +19,19 @@ import java.util.Set;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.config.ThreadLocalDebugOverride;
+import net.jawr.web.config.jmx.JawrApplicationConfigManager;
+import net.jawr.web.context.ThreadLocalJawrContext;
 
 import org.apache.log4j.Logger;
 
 /**
  * Utilities for tag rendering components, which help in handling request lifecycle aspects. 
  * @author Jordi Hernández Sellés
+ * @author Matt Ruby
+ * @author Ibrahim Chaehoi
  *
  */
 public class RendererRequestUtils {
@@ -91,25 +96,43 @@ public class RendererRequestUtils {
 	
 	/**
      * Determines wether to override the debug settings. 
-     * Sets the debugOverride status on ThreadLocalDebugOverride
-     * @param req 
-	 * @param jawrConfig
+     * Sets the debugOverride status on ThreadLocalJawrContext
+     * @param req the request
+	 * @param jawrConfig the jawr config
      * 
      */	
 	public static void setRequestDebuggable(HttpServletRequest req,
-			JawrConfig jeesConfig) {
+			JawrConfig jawrConfig) {
 		
 		// make sure we have set an overrideKey
 		// make sure the overrideKey exists in the request
 		// lastly, make sure the keys match
-		if( jeesConfig.getDebugOverrideKey().length() > 0
+		if( jawrConfig.getDebugOverrideKey().length() > 0
 			&& null != req.getParameter("overrideKey")
-			&& jeesConfig.getDebugOverrideKey().equals(req.getParameter("overrideKey"))
+			&& jawrConfig.getDebugOverrideKey().equals(req.getParameter("overrideKey"))
 			) {
-			ThreadLocalDebugOverride.setDebugOverride(Boolean.TRUE);
+			ThreadLocalJawrContext.setDebugOverriden(true);
 		} else {
-			ThreadLocalDebugOverride.setDebugOverride(Boolean.FALSE);
+			ThreadLocalJawrContext.setDebugOverriden(false);
 		}
 		
+		// Inherit the debuggable property of the session if the session is a debuggable one
+		inheritSessionDebugProperty(req);
+		
+	}
+
+	/**
+	 * Sets a request debuggable if the session is a debuggable session. 
+	 * @param req the request
+	 */
+	public static void inheritSessionDebugProperty(HttpServletRequest request) {
+		
+		String sessionId = request.getSession().getId();
+		JawrApplicationConfigManager appConfigMgr = (JawrApplicationConfigManager) request.getSession().getServletContext().getAttribute(JawrConstant.JAWR_APPLICATION_CONFIG_MANAGER);
+        
+		// If the session ID is a debuggable session ID, activate debug mode for the request.
+		if(appConfigMgr != null && appConfigMgr.isDebugSessionId(sessionId)){
+			ThreadLocalJawrContext.setDebugOverriden(true);
+        }
 	}
 }

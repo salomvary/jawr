@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi, Matt Ruby
+ * Copyright 2009 * @author Matt Ruby, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -13,9 +13,12 @@
  */
 package net.jawr.web.context;
 
+import javax.management.ObjectName;
+
 /**
  * This class defines the context for Jawr, it holds the context in a ThreadLocal object.
  * 
+ * @author Matt Ruby
  * @author Ibrahim Chaehoi
  */
 public class ThreadLocalJawrContext {
@@ -24,37 +27,58 @@ public class ThreadLocalJawrContext {
 	 * debugOverride will allow us to override production mode on a request by request basis.
 	 * ThreadLocal is used to hold the overridden status throughout a given request.
 	 */
-	private static ThreadLocal jawrContext = new ThreadLocal();
+	private static ThreadLocal jawrContext = new ThreadLocal(){
+
+		/* (non-Javadoc)
+		 * @see java.lang.ThreadLocal#initialValue()
+		 */
+		protected Object initialValue() {
+			return new JawrContext();
+		}
+		
+	};
 	
 	/**
 	 * The debugOverride will be automatially set to false
 	 */
 	private ThreadLocalJawrContext() {
 		
-		jawrContext.set(new JawrContext());
 	}
 	
 	/**
-	 * Returns the mbean object name
-	 * @return the mbean object name
+	 * Returns the mbean object name of the Jawr config manager
+	 * @return the mbean object name of the Jawr config manager
 	 */
-	public static String getMbeanObjectName() {
+	public static ObjectName getJawrConfigMgrObjectName() {
 		
-		return ((JawrContext) jawrContext.get()).getMbeanObjectName();
+		return ((JawrContext) jawrContext.get()).getJawrConfigMgrObjectName();
 	}
 
 	/**
-	 * Sets the mbean object name
-	 * @param mbeanObjectName the mbean object name
+	 * Sets the mbean object name of the Jawr config manager
+	 * @param mbeanObjectName the mbean object name of the Jawr config manager
 	 */
-	public static void setMbeanObjectName(String mbeanObjectName) {
+	public static void setJawrConfigMgrObjectName(ObjectName mbeanObjectName) {
 
-		JawrContext ctx = (JawrContext) jawrContext.get();
-		if(ctx == null){
-			ctx =  new JawrContext();
-		}
-		ctx.setMbeanObjectName(mbeanObjectName);
-		jawrContext.set(ctx);
+		((JawrContext) jawrContext.get()).setJawrConfigMgrObjectName(mbeanObjectName);
+	}
+	
+	/**
+	 * Get the flag stating that production mode should be overridden
+	 * @return the flag stating that production mode should be overridden
+	 */
+	public static boolean isDebugOverriden() {
+		
+		return ((JawrContext) jawrContext.get()).isDebugOverriden();
+	}
+
+	/**
+	 * Set the override flag that will live only for this request
+	 * @param override the flag to set
+	 */
+	public static void setDebugOverriden(boolean override) {
+
+		((JawrContext) jawrContext.get()).setDebugOverriden(override);
 	}
 	
 	/**
@@ -63,7 +87,6 @@ public class ThreadLocalJawrContext {
 	 */
 	public static void reset() {
 
-		JawrContext ctx = (JawrContext) jawrContext.get();
-		ctx.reset();
+		((JawrContext) jawrContext.get()).reset();
 	}
 }

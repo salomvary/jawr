@@ -1,5 +1,5 @@
 /**
- * Copyright 2007  Jordi Hernández Sellés
+ * Copyright 2007-2009  Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.config.jmx.JawrApplicationConfigManager;
 import net.jawr.web.config.jmx.JawrConfigManager;
 import net.jawr.web.config.jmx.JmxUtils;
 import net.jawr.web.context.ThreadLocalJawrContext;
@@ -61,6 +62,7 @@ import org.apache.log4j.Logger;
  * Request handling class. Any jawr enabled servlet delegates to this class to handle requests.
  * 
  * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  */
 public class JawrRequestHandler implements ConfigChangeListener {
 
@@ -80,10 +82,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	public static final String CLIENTSIDE_HANDLER_REQ_PATH = "/jawr_loader.js";
 
 	/** The CSS classpath image pattern */
-	private static Pattern CSS_CLASSPATH_IMG_PATTERN = Pattern.compile("(url\\(([\"' ]*))(jar:)([^)]*)\\)");
-
-	/** The CSS classpath image replace pattern */
-	private static String CACHE_BUSTER_REPLACE_PATTERN = "$1" + "cpCbDebug/" + "$4)";
+	private static Pattern CSS_IMG_PATTERN = Pattern.compile("(url\\(([\"' ]*))(jar:)?([^\\)\"']*)([\"']?\\))");
 
 	/** The URL separator pattern */
 	private static Pattern URL_SEPARATOR_PATTERN = Pattern.compile("([^/]*)/");
@@ -190,22 +189,43 @@ public class JawrRequestHandler implements ConfigChangeListener {
 		
 		try {
 
-			JawrConfigManager mbean = new JawrConfigManager(this, jawrConfig.getConfigProperties());
 			MBeanServer mbs = JmxUtils.getMBeanServer();
 			if(mbs != null){
-			
-				String objectNameStr = JmxUtils.getMBeanObjectName(servletContext, resourceType);
 				
-				ObjectName name = new ObjectName(objectNameStr);
-				if(mbs.isRegistered(name)){
-					log.warn("The MBean '"+objectNameStr+"' already exists. It will be unregisterd and registered with the new JawrConfigManagerMBean.");
-					mbs.unregisterMBean(name);
+				ObjectName jawrConfigMgrObjName = JmxUtils.getMBeanObjectName(servletContext, resourceType);
+				JawrApplicationConfigManager appConfigMgr = (JawrApplicationConfigManager) servletContext.getAttribute(JawrConstant.JAWR_APPLICATION_CONFIG_MANAGER);
+				if(appConfigMgr == null){
+					appConfigMgr = new JawrApplicationConfigManager();
+					servletContext.setAttribute(JawrConstant.JAWR_APPLICATION_CONFIG_MANAGER, appConfigMgr);
 				}
-				mbs.registerMBean(mbean, name);
+				
+				// register the jawrApplicationConfigManager if it's not already done
+				ObjectName appJawrMgrObjectName = JmxUtils.getAppJawrConfigMBeanObjectName(servletContext);
+				if(!mbs.isRegistered(appJawrMgrObjectName)){
+					mbs.registerMBean(appConfigMgr, appJawrMgrObjectName);
+				}
+				
+				// Create the MBean for the current Request Handler
+				JawrConfigManager mbean = new JawrConfigManager(this, jawrConfig.getConfigProperties());
+				if(mbs.isRegistered(jawrConfigMgrObjName)){
+					log.warn("The MBean '"+jawrConfigMgrObjName.getCanonicalName()+"' already exists. It will be unregisterd and registered with the new JawrConfigManagerMBean.");
+					mbs.unregisterMBean(jawrConfigMgrObjName);
+				}
+				
+				// Initialize the jawrApplicationConfigManager
+				if(resourceType.equals(JawrConstant.JS_TYPE)){
+					appConfigMgr.setJsMBean(mbean);
+				}else if(resourceType.equals(JawrConstant.CSS_TYPE)){
+					appConfigMgr.setCssMBean(mbean);
+				}else{
+					appConfigMgr.setImgMBean(mbean);
+				}
+				
+				mbs.registerMBean(mbean, jawrConfigMgrObjName);
 			}
 			
 		} catch (Exception e) {
-			log.error("Unable to instanciate the Jawr MBean", e);
+			log.error("Unable to instanciate the Jawr MBean for resource type '"+resourceType+"'", e);
 		}
 
 	}
@@ -297,9 +317,9 @@ public class JawrRequestHandler implements ConfigChangeListener {
 		}
 
 		if (resourceType.equals("js"))
-			servletContext.setAttribute(ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE, bundlesHandler);
+			servletContext.setAttribute(JawrConstant.JS_CONTEXT_ATTRIBUTE, bundlesHandler);
 		else
-			servletContext.setAttribute(ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE, bundlesHandler);
+			servletContext.setAttribute(JawrConstant.CSS_CONTEXT_ATTRIBUTE, bundlesHandler);
 
 		this.clientSideScriptRequestHandler = new ClientSideHandlerScriptRequestHandler(bundlesHandler, jawrConfig);
 
@@ -325,10 +345,14 @@ public class JawrRequestHandler implements ConfigChangeListener {
 		
 		try{
 			// Initialize the Thread local for the Jawr context
-			ThreadLocalJawrContext.setMbeanObjectName(JmxUtils.getMBeanObjectName(request.getContextPath(), resourceType));
+			ThreadLocalJawrContext.setJawrConfigMgrObjectName(JmxUtils.getMBeanObjectName(request.getContextPath(), resourceType));
+			RendererRequestUtils.setRequestDebuggable(request, jawrConfig);
+			
 			String requestedPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
 			processRequest(requestedPath, request, response);
 			
+		} catch (Exception e) {
+			throw new ServletException(e);
 		}finally{
 			
 			// Reset the Thread local for the Jawr context
@@ -347,11 +371,11 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	 * <li>If the resource is not found, the response satus is set to 404 and no response is written.</li>
 	 * </ul>
 	 * 
-	 * @param requestedPath
-	 * @param request
-	 * @param response
-	 * @throws ServletException
-	 * @throws IOException
+	 * @param requestedPath the requested path
+	 * @param request the request
+	 * @param response the response
+	 * @throws ServletException if a servlet exception occurs
+	 * @throws IOException if an IO exception occurs
 	 */
 	public void processRequest(String requestedPath, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -414,16 +438,27 @@ public class JawrRequestHandler implements ConfigChangeListener {
 					}
 
 					// Define the replacement pattern for the image define in the classpath (like jar:img/myImg.png)
-					String replacementPattern = CACHE_BUSTER_REPLACE_PATTERN;
 					String relativeRootUrlPath = getRootRelativeUrlPath(request, requestedPath);
-					replacementPattern = PathNormalizer.normalizePath("$1" + relativeRootUrlPath + imageServletMapping + "/cpCbDebug/" + "$4)");
-
-					Matcher matcher = CSS_CLASSPATH_IMG_PATTERN.matcher(content);
+					String replacementPattern = PathNormalizer.normalizePath("$1" + relativeRootUrlPath + imageServletMapping + "/cpCbDebug/" + "$4$5");
+					
+					String nonClassPathImgReplacePattern = null;
+					String overrideKey = request.getParameter("overrideKey");
+					if(overrideKey != null && overrideKey.equals(jawrConfig.getDebugOverrideKey())){
+						nonClassPathImgReplacePattern = "$1$4"+"?overrideKey="+overrideKey+"$5";
+					}else{
+						nonClassPathImgReplacePattern = "$0";
+					}
+					
+					Matcher matcher = CSS_IMG_PATTERN.matcher(content);
 
 					// Rewrite the images define in the classpath, to point to the image servlet
 					StringBuffer result = new StringBuffer();
 					while (matcher.find()) {
-						matcher.appendReplacement(result, replacementPattern);
+						if("jar:".equals(matcher.group(3))){
+							matcher.appendReplacement(result, replacementPattern);
+						}else{
+							matcher.appendReplacement(result, nonClassPathImgReplacePattern);
+						}
 					}
 					matcher.appendTail(result);
 					Writer out = response.getWriter();
@@ -512,7 +547,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 			log.debug("Reloading Jawr configuration");
 		try {
 			// Initialize the Thread local for the Jawr context
-			ThreadLocalJawrContext.setMbeanObjectName(JmxUtils.getMBeanObjectName(servletContext, resourceType));
+			ThreadLocalJawrContext.setJawrConfigMgrObjectName(JmxUtils.getMBeanObjectName(servletContext, resourceType));
 			
 			initializeJawrConfig(newConfig);
 		} catch (Exception e) {

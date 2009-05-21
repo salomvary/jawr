@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi, Matt Ruby
+ * Copyright 2009 @author Matt Ruby, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -13,16 +13,22 @@
  */
 package net.jawr.web.context;
 
+import javax.management.ObjectName;
+
 /**
  * This class defines the Jawr context.
  * 
+ * @author Matt Ruby
  * @author Ibrahim Chaehoi
  *
  */
 public class JawrContext {
 	
 	/** The object name for the MBean of the Jawr config manager */
-	private String mbeanObjectName;
+	private ObjectName jawrConfigMgrObjectName;
+	
+	/** The flag indicating if we should override the debug setting */
+	private boolean debugOverriden;
 	
 	/**
 	 * Constructor. 
@@ -32,19 +38,36 @@ public class JawrContext {
 	}
 
 	/**
-	 * Returns the mbeanObjectName
-	 * @return the mbeanObjectName
+	 * Returns the object name for the MBean of the Jawr config manager
+	 * @return the object name for the MBean of the Jawr config manager.
 	 */
-	public String getMbeanObjectName() {
-		return mbeanObjectName;
+	public ObjectName getJawrConfigMgrObjectName() {
+		return jawrConfigMgrObjectName;
+	}
+
+
+	/**
+	 * Sets the flag indicating if we should override the debug setting
+	 * @return the debugOverride flag
+	 */
+	public boolean isDebugOverriden() {
+		return debugOverriden;
 	}
 
 	/**
-	 * Sets the mbeanObjectName.
+	 * Sets the object name for the MBean of the Jawr config manager.
 	 * @param mbeanObjectName the mbeanObjectName to set
 	 */
-	public void setMbeanObjectName(String mbeanObjectName) {
-		this.mbeanObjectName = mbeanObjectName;
+	public void setJawrConfigMgrObjectName(ObjectName mbeanObjectName) {
+		this.jawrConfigMgrObjectName = mbeanObjectName;
+	}
+	
+	/**
+	 * Sets the flag indicating if we should override the debug setting
+	 * @param debugOverriden the debugOverride flag to set
+	 */
+	public void setDebugOverriden(boolean debugOverriden) {
+		this.debugOverriden = debugOverriden;
 	}
 	
 	/**
@@ -52,6 +75,8 @@ public class JawrContext {
 	 */
 	public void reset(){
 		
-		this.mbeanObjectName = null;
+		this.jawrConfigMgrObjectName = null;
+		this.debugOverriden = false;
 	}
+
 }

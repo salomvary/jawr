@@ -33,15 +33,25 @@ public class JawrConstant {
 	/** The css type */
 	public static final String CSS_TYPE = "css";
 	
+	/** The classpath resource prefix */
+	public static final String CLASSPATH_RESOURCE_PREFIX = "jar:";
+
 	/** The cache buster separator */
 	public static final String CACHE_BUSTER_PREFIX = "cb";
 	
 	/** The cache buster separator */
 	public static final String CLASSPATH_CACHE_BUSTER_PREFIX = "cpCb";
 	
-	/** The image context attrbute */
+	/** The Jawr application config manager attribute */
+	public static final String JAWR_APPLICATION_CONFIG_MANAGER = "net.jawr.web.jmx.JAWR_APPLICATION_CONFIG_MANAGER";
+	
+	/** The javascript servlet context attribute name */
+	public static final String JS_CONTEXT_ATTRIBUTE  = "net.jawr.web.resource.bundle.JS_CONTEXT_ATTRIBUTE";
+
+	/** The css servlet context attribute name */
+	public static final String CSS_CONTEXT_ATTRIBUTE = "net.jawr.web.resource.bundle.CSS_CONTEXT_ATTRIBUTE";
+	
+	/** The image servlet context attribute name*/
 	public static final String IMG_CONTEXT_ATTRIBUTE = "net.jawr.web.resource.bundle.IMG_CONTEXT_ATTRIBUTE";
 	
-	/** The classpath resource prefix */
-	public static final String CLASSPATH_RESOURCE_PREFIX = "jar:";
 }

@@ -103,7 +103,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 */
 	public JawrImageRequestHandler(ServletContext context, ServletConfig config) throws ServletException {
 		super(context, config);
-		resourceType = "img/";
+		resourceType = "img";
 	}
 
 	/**
@@ -499,30 +499,4 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		return fileName.startsWith(JawrConstant.CLASSPATH_CACHE_BUSTER_PREFIX);
 	}
 	
-	/**
-	 * Analog to Servlet.destroy(), should be invoked whenever the app is redeployed.
-	 */
-	public void destroy() {
-		// Stop the config change listener.
-		if (null != this.configChangeListenerThread)
-			configChangeListenerThread.stopPolling();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.jawr.web.resource.bundle.factory.util.ConfigChangeListener#configChanged(java.util.Properties)
-	 */
-	public synchronized void configChanged(Properties newConfig) {
-		if (log.isDebugEnabled())
-			log.debug("Reloading Jawr configuration");
-		try {
-			initializeJawrConfig(newConfig);
-		} catch (ServletException e) {
-			throw new RuntimeException("Error reloading Jawr config: " + e.getMessage(), e);
-		}
-		if (log.isDebugEnabled())
-			log.debug("Jawr configuration succesfully reloaded. ");
-
-	}
 }

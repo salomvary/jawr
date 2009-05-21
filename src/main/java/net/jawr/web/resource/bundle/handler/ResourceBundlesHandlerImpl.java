@@ -40,7 +40,6 @@ import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.JoinableResourceBundleContent;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
-import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler;
 import net.jawr.web.resource.bundle.iterator.DebugModePathsIteratorImpl;
 import net.jawr.web.resource.bundle.iterator.PathsIteratorImpl;

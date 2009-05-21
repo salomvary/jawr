@@ -27,20 +27,21 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 
 	/** The request handler */
 	private JawrRequestHandler requestHandler;
-	
+
 	/** The configuration properties */
 	private Properties configProperties;
-	
+
 	/**
 	 * Constructor
+	 * 
 	 * @param requestHandler the request handler
 	 * @param properties the properties
 	 */
-	public JawrConfigManager(JawrRequestHandler requestHandler, Properties properties){
+	public JawrConfigManager(JawrRequestHandler requestHandler, Properties properties) {
 		this.requestHandler = requestHandler;
 		this.configProperties = (Properties) properties.clone();
 	}
-	
+
 	/**
 	 * @return
 	 * @see net.jawr.web.config.JawrConfig#getContextPathOverride()
@@ -136,7 +137,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	public String getCharsetName() {
 		return configProperties.getProperty(JawrConfig.JAWR_CHARSET_NAME);
 	}
-	
+
 	/**
 	 * @param contextPathOverride
 	 * @see net.jawr.web.config.JawrConfig#setContextPathOverride(java.lang.String)
@@ -150,7 +151,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	 * @see net.jawr.web.config.JawrConfig#setCssImagePathOverride(java.lang.String)
 	 */
 	public void setCssImagePathOverride(String cssImagePathOverride) {
-		configProperties.setProperty(JawrConfig.JAWR_CSS_IMAGEPATH_OVERRIDE,cssImagePathOverride);
+		configProperties.setProperty(JawrConfig.JAWR_CSS_IMAGEPATH_OVERRIDE, cssImagePathOverride);
 	}
 
 	/**
@@ -164,7 +165,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	public String getCssLinkFlavor() {
 		return configProperties.getProperty(JawrConfig.JAWR_CSSLINKS_FLAVOR);
 	}
-	
+
 	/**
 	 * @param debugMode
 	 * @see net.jawr.web.config.JawrConfig#setDebugModeOn(boolean)
@@ -229,11 +230,13 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 		configProperties.setProperty(JawrConfig.JAWR_CSS_IMG_USE_CLASSPATH_SERVLET, Boolean.toString(useClasspathCssImgServlet));
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.jawr.web.config.jmx.JawrConfigManagerMBean#refreshConfig()
 	 */
 	public void refreshConfig() {
-		
+
 		requestHandler.configChanged(configProperties);
 	}
 

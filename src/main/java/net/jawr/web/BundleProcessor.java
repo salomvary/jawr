@@ -198,9 +198,9 @@ public class BundleProcessor {
 		// Retrieve the bundle Handler
 		if (type == null || type.equals("js")) {
 
-			bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(ResourceBundlesHandler.JS_CONTEXT_ATTRIBUTE);
+			bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(JawrConstant.JS_CONTEXT_ATTRIBUTE);
 		} else if (type.equals("css")) {
-			bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE);
+			bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(JawrConstant.CSS_CONTEXT_ATTRIBUTE);
 		} else if (type.equals("img")) {
 			imgRsHandler = (ImageResourcesHandler) servletContext.getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
 		}

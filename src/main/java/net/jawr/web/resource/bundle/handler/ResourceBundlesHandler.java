@@ -33,9 +33,6 @@ import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
  */
 public interface ResourceBundlesHandler {
 	
-	public static final String JS_CONTEXT_ATTRIBUTE  = "net.jawr.web.resource.bundle.JS_CONTEXT_ATTRIBUTE";
-	public static final String CSS_CONTEXT_ATTRIBUTE = "net.jawr.web.resource.bundle.CSS_CONTEXT_ATTRIBUTE";
-	
 	/**
 	 * Determines which bundle corresponds to a path. The path may be
 	 * a directory or file path. This path will not include any prefix, it is intended

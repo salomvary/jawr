@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
@@ -103,7 +104,7 @@ public class ClientSideHandlerGeneratorImpl implements
 		// Retrieve the resourcehandler for CSS if there is one. 
 		ResourceBundlesHandler rsHandler = (ResourceBundlesHandler)  request.getSession()
 																			.getServletContext()
-																			.getAttribute(ResourceBundlesHandler.CSS_CONTEXT_ATTRIBUTE);
+																			.getAttribute(JawrConstant.CSS_CONTEXT_ATTRIBUTE);
 		boolean isCSSHandler = false;
 		if(null != rsHandler) {
 			ClientSideHandlerGenerator generator = rsHandler.getClientSideHandler();

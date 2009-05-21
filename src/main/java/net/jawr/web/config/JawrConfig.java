@@ -18,6 +18,7 @@ import java.util.Properties;
 
 import javax.servlet.ServletContext;
 
+import net.jawr.web.context.ThreadLocalJawrContext;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
@@ -299,7 +300,7 @@ public class JawrConfig {
 	 * @return the debug mode flag.
 	 */
 	public boolean isDebugModeOn() {
-		if(!debugModeOn && ThreadLocalDebugOverride.getDebugOverride().booleanValue()){
+		if(!debugModeOn && ThreadLocalJawrContext.isDebugOverriden()){
 			return true;
 		}
 		return debugModeOn;
