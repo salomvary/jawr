@@ -45,6 +45,7 @@ import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ClientSideHandlerScriptRequestHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
+import net.jawr.web.servlet.util.MIMETypesSupport;
 
 import org.apache.log4j.Logger;
 
@@ -84,6 +85,9 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	protected JawrConfig jawrConfig;
 	protected ConfigPropertiesSource propertiesSource;
 	protected ClientSideHandlerScriptRequestHandler clientSideScriptRequestHandler;
+	
+	/** The image MIME map, associating the image extension to their MIME type */
+	protected Map imgMimeMap;
 
 	/**
 	 * Reads the properties file and initializes all configuration using the ServletConfig object. If aplicable, a ConfigChangeListenerThread will be
@@ -94,6 +98,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	 * @throws ServletException
 	 */
 	public JawrRequestHandler(ServletContext context, ServletConfig config) throws ServletException {
+		this.imgMimeMap = MIMETypesSupport.getSupportedProperties(this);
 		this.initParameters = new HashMap();
 		Enumeration params = config.getInitParameterNames();
 		while (params.hasMoreElements()) {
@@ -173,7 +178,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	 * @throws ServletException
 	 */
 	public JawrRequestHandler(ServletContext context, Map initParams, Properties configProps) throws ServletException {
-
+		this.imgMimeMap = MIMETypesSupport.getSupportedProperties(this);
 		this.initParameters = initParams;
 
 		if (log.isInfoEnabled())
@@ -315,7 +320,9 @@ public class JawrRequestHandler implements ConfigChangeListener {
 
 		// CSS images would be requested through this handler in case servletMapping is used
 		// if( this.jawrConfig.isDebugModeOn() && !("".equals(this.jawrConfig.getServletMapping())) && null == request.getParameter(GENERATION_PARAM)) {
-		if (JawrConstant.CSS_TYPE.equals(resourceType) && !JawrConstant.CSS_TYPE.equals(getExtension(requestedPath))) {
+		if (JawrConstant.CSS_TYPE.equals(resourceType) && 
+				!JawrConstant.CSS_TYPE.equals(getExtension(requestedPath)) &&
+				this.imgMimeMap.containsKey(getExtension(requestedPath))) {
 
 			if (null == bundlesHandler.resolveBundleForPath(requestedPath)) {
 				if (log.isDebugEnabled())

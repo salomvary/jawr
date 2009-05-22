@@ -16,7 +16,6 @@ package net.jawr.web.servlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -57,33 +56,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	/** The resource handler */
 	private ResourceHandler rsHandler;
 	
-	/** The image MIME map, associating the image extension to their MIME type */
-	private static Map imgMimeMap = new HashMap(20);
-	static {
-		imgMimeMap.put("gif", "image/gif");
-		imgMimeMap.put("jpg", "image/jpeg");
-		imgMimeMap.put("jpe", "image/jpeg");
-		imgMimeMap.put("jpeg", "image/jpeg");
-		imgMimeMap.put("png", "image/png");
-		imgMimeMap.put("ief", "image/ief");
-		imgMimeMap.put("tiff", "image/tiff");
-		imgMimeMap.put("tif", "image/tiff");
-		imgMimeMap.put("ras", "image/x-cmu-raster");
-		imgMimeMap.put("pnm", "image/x-portable-anymap");
-		imgMimeMap.put("pbm", "image/x-portable-bitmap");
-		imgMimeMap.put("pgm", "image/x-portable-graymap");
-		imgMimeMap.put("ppm", "image/x-portable-pixmap");
-		imgMimeMap.put("rgb", "image/x-rgb");
-		imgMimeMap.put("xbm", "image/x-xbitmap");
-		imgMimeMap.put("xpm", "image/x-xpixmap");
-		imgMimeMap.put("xwd", "image/x-xwindowdump");
 
-		/* Add XML related MIMEs */
-		imgMimeMap.put("svg", "image/svg+xml");
-		imgMimeMap.put("svgz", "image/svg+xml");
-		imgMimeMap.put("wbmp", "image/vnd.wap.wbmp");
-
-	}
 
 	/**
 	 * Reads the properties file and initializes all configuration using the ServletConfig object. If aplicable, a ConfigChangeListenerThread will be
@@ -148,6 +121,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		if (jawrConfig.isDebugModeOn()) {
 			log.warn("Jawr initialized in DEVELOPMENT MODE. Do NOT use this mode in production or integration servers. ");
 		}
+		
 	}
 
 	/**
