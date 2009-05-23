@@ -377,7 +377,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	 * @param requestedPath the requested path
 	 * @return the extension for the requested path
 	 */
-	private String getExtension(String requestedPath) {
+	protected String getExtension(String requestedPath) {
 
 		String extension = null;
 		int extensionIdx = requestedPath.lastIndexOf(".");

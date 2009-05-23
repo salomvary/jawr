@@ -57,7 +57,6 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	private ResourceHandler rsHandler;
 	
 
-
 	/**
 	 * Reads the properties file and initializes all configuration using the ServletConfig object. If aplicable, a ConfigChangeListenerThread will be
 	 * started to listen to changes in the properties configuration.
@@ -220,15 +219,14 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	private String getContentType(HttpServletRequest request, String filePath) {
 		String requestUri = request.getRequestURI();
 
-		int suffixIdx = filePath.lastIndexOf(".");
-		if (suffixIdx == -1) {
+		// Retrieve the extension
+		String extension = getExtension(filePath);
+		if (extension == null) {
 
 			log.error("No extension found for the request URI : " + requestUri);
 			return null;
 		}
 
-		// Retrieve the extension
-		String extension = filePath.substring(suffixIdx + 1).toLowerCase();
 		String contentType = (String) imgMimeMap.get(extension);
 		if (contentType == null) {
 
@@ -329,30 +327,4 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		return fileName.startsWith(JawrConstant.CLASSPATH_CACHE_BUSTER_PREFIX);
 	}
 	
-	/**
-	 * Analog to Servlet.destroy(), should be invoked whenever the app is redeployed.
-	 */
-	public void destroy() {
-		// Stop the config change listener.
-		if (null != this.configChangeListenerThread)
-			configChangeListenerThread.stopPolling();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.jawr.web.resource.bundle.factory.util.ConfigChangeListener#configChanged(java.util.Properties)
-	 */
-	public synchronized void configChanged(Properties newConfig) {
-		if (log.isDebugEnabled())
-			log.debug("Reloading Jawr configuration");
-		try {
-			initializeJawrConfig(newConfig);
-		} catch (ServletException e) {
-			throw new RuntimeException("Error reloading Jawr config: " + e.getMessage(), e);
-		}
-		if (log.isDebugEnabled())
-			log.debug("Jawr configuration succesfully reloaded. ");
-
-	}
 }
