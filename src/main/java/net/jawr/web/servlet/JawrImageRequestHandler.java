@@ -373,15 +373,14 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	private String getContentType(HttpServletRequest request, String filePath) {
 		String requestUri = request.getRequestURI();
 
-		int suffixIdx = filePath.lastIndexOf(".");
-		if (suffixIdx == -1) {
+		// Retrieve the extension
+		String extension = getExtension(filePath);
+		if (extension == null) {
 
 			log.error("No extension found for the request URI : " + requestUri);
 			return null;
 		}
 
-		// Retrieve the extension
-		String extension = filePath.substring(suffixIdx + 1).toLowerCase();
 		String contentType = (String) imgMimeMap.get(extension);
 		if (contentType == null) {
 
