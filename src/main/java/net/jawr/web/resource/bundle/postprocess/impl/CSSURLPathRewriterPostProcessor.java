@@ -116,7 +116,7 @@ public class CSSURLPathRewriterPostProcessor extends
 		String imagePathOverride = jawrConfig.getCssImagePathOverride();
 		boolean useClassPathCssImgServlet = jawrConfig.isUsingClasspathCssImageServlet();
 		ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) jawrConfig.getContext().getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
-		String classPathImgServletPath = null;
+		String classPathImgServletPath = "";
 		
 		if(imgRsHandler != null){
 			classPathImgServletPath = imgRsHandler.getJawrConfig().getServletMapping();
@@ -215,12 +215,14 @@ public class CSSURLPathRewriterPostProcessor extends
 		if (classpathCss) {
 			// If path starts with "/", remove it
 			String servletPath = classPathImgServletPath;
-			if(servletPath.startsWith(URL_SEPARATOR)){
-				servletPath = servletPath.substring(1);
+			if(!"".equals(servletPath)){
+				if(servletPath.startsWith(URL_SEPARATOR) && servletPath.length() >= 1){
+					servletPath = servletPath.substring(1);
+				}
+				// Add image servlet path in the URL
+				urlPrefix.append(servletPath+URL_SEPARATOR);
 			}
 			
-			// Add classpath image servlet path in the URL
-			urlPrefix.append(servletPath+URL_SEPARATOR);
 		}
 		
 		StringBuffer urlBuffer = new StringBuffer();
@@ -229,7 +231,10 @@ public class CSSURLPathRewriterPostProcessor extends
 		}
 		urlBuffer.append(url);
 		if (classpathCss) {
-			url = addCacheBuster(status, urlBuffer.toString()); 
+			url = addCacheBuster(status, urlBuffer.toString());
+			if(url.startsWith("/")){
+				url = url.substring(1);
+			}
 		}else{
 			url = urlBuffer.toString();
 		}
