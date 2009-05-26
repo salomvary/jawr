@@ -20,6 +20,7 @@ public class PropertiesConfigHelperTestCase extends TestCase {
 		PropertiesConfigHelper helper = new PropertiesConfigHelper(prop, "js");
 		Set bundleNames = helper.getPropertyBundleNameSet();
 		assertEquals(3, bundleNames.size());
+		is.close();
 	}
 
 	public void testGetCssBundleNames() throws IOException {
@@ -32,6 +33,7 @@ public class PropertiesConfigHelperTestCase extends TestCase {
 		PropertiesConfigHelper helper = new PropertiesConfigHelper(prop, "css");
 		Set bundleNames = helper.getPropertyBundleNameSet();
 		assertEquals(2, bundleNames.size());
+		is.close();
 	}
 
 }

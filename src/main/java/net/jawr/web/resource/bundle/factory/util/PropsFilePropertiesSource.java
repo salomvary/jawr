@@ -69,7 +69,7 @@ public class PropsFilePropertiesSource implements ConfigPropertiesSource {
 		Properties props = new Properties();	
 		// Load properties file
 		try {	
-			InputStream is;
+			InputStream is = null;
 			if(path.startsWith(FILE_PREFIX)) {
 				if(log.isDebugEnabled() && !checking) 			
 					log.debug("Using filesystem properties file location at: " + configLocation);
@@ -82,14 +82,14 @@ public class PropsFilePropertiesSource implements ConfigPropertiesSource {
 			}
 			// load properties into a Properties object
 			props.load(is);
-			
-			
+			is.close();
 		} 
 		catch (IOException e) {
 			throw new IllegalArgumentException("jawr configuration could not be found at "
 					+ path + ". Make sure parameter is properly set "
 					+ "in web.xml. ");
 		}
+		
 		return props;
 	}
 
