@@ -45,10 +45,12 @@ public class MIMETypesSupport {
 			synchronized (MIMETypesSupport.class) {
 				if(null == supportedMIMETypes) {
 					// Load the supported MIME types out of a properties file
+					InputStream is = null;
 					try {
-						InputStream is = ClassLoaderResourceUtils.getResourceAsStream(MIME_PROPS_LOCATION, ref);
+						is = ClassLoaderResourceUtils.getResourceAsStream(MIME_PROPS_LOCATION, ref);
 						supportedMIMETypes = new Properties();
 						supportedMIMETypes.load(is);
+						is.close();
 					} catch (FileNotFoundException e) {
 						throw new RuntimeException("Error retrieving " + MIME_PROPS_LOCATION 
 													+ ".Please check your classloader settings");

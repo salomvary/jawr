@@ -257,12 +257,14 @@ public class ClientSideHandlerGeneratorImpl implements
 	 */
 	private StringBuffer loadScriptTemplate(String path) {
 		StringWriter sw = new StringWriter();
+		
 		try {
 			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(path,this);
 			int i;
 			while((i = is.read()) != -1) {
 				sw.write(i);
 			}
+			is.close();
 		} catch (IOException e) {
 			log.fatal("a serious error occurred when initializing ClientSideHandlerGeneratorImpl");
 			throw new RuntimeException("Classloading issues prevent loading the loader template to be loaded. ",e);
