@@ -33,6 +33,7 @@ import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.ServletContextResourceHandler;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 
 import org.apache.log4j.Logger;
@@ -99,7 +100,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		jawrConfig.setGeneratorRegistry(generatorRegistry);
 
 		// Set the content type to be used for every request.
-		contentType = "img/";
+		contentType = "img";
 
 		// Set mapping, to be used by the tag lib to define URLs that point to this servlet. 
 		String mapping = (String) initParameters.get("mapping");
@@ -112,7 +113,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE, imgRsHandler);
 		
 		if (log.isDebugEnabled()) {
-			log.debug("Configuration read. Current config:");
+			log.debug("Image Configuration read. Current config:");
 			log.debug(jawrConfig);
 		}
 
@@ -278,18 +279,14 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		}
 		
 		if(is == null){
-			log.error("Unable to find resource :"+fileName);
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			if (log.isInfoEnabled())
+				log.info("Received a request for a non existing image resource: " + fileName);
+			return;
 		}
 		
-		int count;
-		byte buf[] = new byte[4096];
-		while ((count = is.read(buf)) > -1) {
-			os.write(buf, 0, count);
-			length += count;
-		}
-		is.close();
-		os.close();
-
+		IOUtils.copy(is, os, true);
+		
 		response.setContentLength(length);
 	}
 

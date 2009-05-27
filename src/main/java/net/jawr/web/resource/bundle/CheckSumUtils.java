@@ -22,15 +22,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
-import org.apache.log4j.Logger;
-
 import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
-import net.jawr.web.servlet.JawrImageRequestHandler;
+
+import org.apache.log4j.Logger;
 
 /**
  * This class defines utilities methods for Checksum.
@@ -78,9 +77,7 @@ public final class CheckSumUtils {
 			log.error("An exception occurs while defining the mapping for the resource : "+url, e);
 		}
 		finally {
-			if(is != null){
-				is.close();
-			}
+			IOUtils.close(is);
 		}
 		
 		String result = "";
@@ -118,9 +115,7 @@ public final class CheckSumUtils {
 			checksum = CheckSumUtils.getChecksum(is, jawrConfig.getImageHashAlgorithm());
 		}
 		finally {
-			if(is != null){
-				is.close();
-			}
+			IOUtils.close(is);
 		}
 		
 		String result = "";

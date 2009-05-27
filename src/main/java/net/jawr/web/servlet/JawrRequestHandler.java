@@ -31,6 +31,7 @@ import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.FileNameUtils;
 import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.ServletContextResourceHandler;
@@ -379,12 +380,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	 */
 	protected String getExtension(String requestedPath) {
 
-		String extension = null;
-		int extensionIdx = requestedPath.lastIndexOf(".");
-		if (extensionIdx != -1 && requestedPath.length() > extensionIdx) {
-			extension = requestedPath.substring(extensionIdx + 1).toLowerCase();
-		}
-		return extension;
+		return FileNameUtils.getExtension(requestedPath);
 	}
 
 	/**

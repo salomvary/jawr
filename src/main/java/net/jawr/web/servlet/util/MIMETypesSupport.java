@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 
 /**
@@ -50,13 +51,14 @@ public class MIMETypesSupport {
 						is = ClassLoaderResourceUtils.getResourceAsStream(MIME_PROPS_LOCATION, ref);
 						supportedMIMETypes = new Properties();
 						supportedMIMETypes.load(is);
-						is.close();
 					} catch (FileNotFoundException e) {
 						throw new RuntimeException("Error retrieving " + MIME_PROPS_LOCATION 
 													+ ".Please check your classloader settings");
 					} catch (IOException e) {
 						throw new RuntimeException("Error retrieving " + MIME_PROPS_LOCATION 
 													+ ".Please check your classloader settings");
+					}finally{
+						IOUtils.close(is);
 					}
 				}
 			}
