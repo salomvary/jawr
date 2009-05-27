@@ -40,6 +40,7 @@ import net.jawr.web.config.jmx.JmxUtils;
 import net.jawr.web.context.ThreadLocalJawrContext;
 import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.FileNameUtils;
 import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.ServletContextResourceHandler;
@@ -55,6 +56,7 @@ import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ClientSideHandlerScriptRequestHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
+import net.jawr.web.servlet.util.MIMETypesSupport;
 
 import org.apache.log4j.Logger;
 
@@ -103,6 +105,9 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	protected JawrConfig jawrConfig;
 	protected ClientSideHandlerScriptRequestHandler clientSideScriptRequestHandler;
 
+	/** The image MIME map, associating the image extension to their MIME type */
+	protected Map imgMimeMap;
+	
 	/**
 	 * Reads the properties file and initializes all configuration using the ServletConfig object. If applicable, a ConfigChangeListenerThread will be
 	 * started to listen to changes in the properties configuration.
@@ -112,6 +117,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	 * @throws ServletException
 	 */
 	public JawrRequestHandler(ServletContext context, ServletConfig config) throws ServletException {
+		this.imgMimeMap = MIMETypesSupport.getSupportedProperties(this);
 		this.initParameters = new HashMap();
 		Enumeration params = config.getInitParameterNames();
 		while (params.hasMoreElements()) {
@@ -242,6 +248,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	 */
 	public JawrRequestHandler(ServletContext context, Map initParams, Properties configProps) throws ServletException {
 
+		this.imgMimeMap = MIMETypesSupport.getSupportedProperties(this);
 		this.initParameters = initParams;
 
 		if (log.isInfoEnabled())
@@ -388,7 +395,11 @@ public class JawrRequestHandler implements ConfigChangeListener {
 		}
 
 		// CSS images would be requested through this handler in case servletMapping is used
-		if(resourceType.equals(JawrConstant.CSS_TYPE) && !JawrConstant.CSS_TYPE.equals(getExtension(requestedPath))){	
+		// if( this.jawrConfig.isDebugModeOn() && !("".equals(this.jawrConfig.getServletMapping())) && null == request.getParameter(GENERATION_PARAM)) {
+		if (JawrConstant.CSS_TYPE.equals(resourceType) && 
+				!JawrConstant.CSS_TYPE.equals(getExtension(requestedPath)) &&
+				this.imgMimeMap.containsKey(getExtension(requestedPath))) {
+
 			if (null == bundlesHandler.resolveBundleForPath(requestedPath)) {
 				if (log.isDebugEnabled())
 					log.debug("Path '" + requestedPath + "' does not belong to a bundle. Forwarding request to the server. ");
@@ -476,12 +487,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	 */
 	protected String getExtension(String requestedPath) {
 		
-		String extension = null;
-		int extensionIdx = requestedPath.lastIndexOf(".");
-		if(extensionIdx != -1 && requestedPath.length() > extensionIdx){
-			extension = requestedPath.substring(extensionIdx+1).toLowerCase();
-		}
-		return extension;
+		return FileNameUtils.getExtension(requestedPath);
 	}
 
 	/**

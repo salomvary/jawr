@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
@@ -248,16 +249,20 @@ public class ClientSideHandlerGeneratorImpl implements
 	 */
 	private StringBuffer loadScriptTemplate(String path) {
 		StringWriter sw = new StringWriter();
+		
+		InputStream is = null;
 		try {
-			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(path,this);
+			is = ClassLoaderResourceUtils.getResourceAsStream(path,this);
 			int i;
 			while((i = is.read()) != -1) {
 				sw.write(i);
 			}
-			is.close();
+			
 		} catch (IOException e) {
 			log.fatal("a serious error occurred when initializing ClientSideHandlerGeneratorImpl");
 			throw new RuntimeException("Classloading issues prevent loading the loader template to be loaded. ",e);
+		}finally{
+			IOUtils.close(is);
 		}
 		
 		return sw.getBuffer();

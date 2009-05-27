@@ -40,6 +40,7 @@ import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.ServletContextResourceHandler;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.CheckSumUtils;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
@@ -135,7 +136,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		jawrConfig.setGeneratorRegistry(generatorRegistry);
 
 		// Set the content type to be used for every request.
-		contentType = "img/";
+		contentType = "img";
 
 		// Set mapping, to be used by the tag lib to define URLs that point to this servlet. 
 		String mapping = (String) initParameters.get("mapping");
@@ -399,21 +400,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	private String getFilePath(HttpServletRequest request) {
 		
 		String requestedPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
-		//String requestedPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
-		/*
-		String contextPath = request.getContextPath();
-		String requestPath = request.getRequestURI().substring(contextPath.length());
 		
-		String servletPath = jawrConfig.getImageServletMapping();
-		
-		if(servletPath != null){
-		
-			int servletPathIdx = requestPath.indexOf(servletPath);
-			if (servletPathIdx != -1) {
-				requestedPath = requestPath.substring(servletPathIdx + servletPath.length());
-			}
-		}
-		*/
 		// Return the file path requested
 		return requestedPath;
 	}
@@ -449,18 +436,14 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		}
 		
 		if(is == null){
-			log.error("Unable to find resource :"+fileName);
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			if (log.isInfoEnabled())
+				log.info("Received a request for a non existing image resource: " + fileName);
+			return;
 		}
 		
-		int count;
-		byte buf[] = new byte[4096];
-		while ((count = is.read(buf)) > -1) {
-			os.write(buf, 0, count);
-			length += count;
-		}
-		is.close();
-		os.close();
-
+		IOUtils.copy(is, os, true);
+		
 		response.setContentLength(length);
 	}
 

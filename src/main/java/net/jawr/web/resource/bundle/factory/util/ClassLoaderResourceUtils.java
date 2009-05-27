@@ -75,12 +75,14 @@ public class ClassLoaderResourceUtils {
 			if(mbs != null){
 				
 				ObjectName name = ThreadLocalJawrContext.getJawrConfigMgrObjectName();
-				try {
-					
-					ClassLoader cl = mbs.getClassLoaderFor(name);
-					is = cl.getResourceAsStream(resourcePath);
-				} catch (Exception e) {
-					log.error("Unable to instanciate the Jawr MBean '"+name.getCanonicalName()+"'", e);
+				if(name != null){
+					try {
+						
+						ClassLoader cl = mbs.getClassLoaderFor(name);
+						is = cl.getResourceAsStream(resourcePath);
+					} catch (Exception e) {
+						log.error("Unable to instanciate the Jawr MBean '"+name.getCanonicalName()+"'", e);
+					}
 				}
 			}
 		}
@@ -96,7 +98,9 @@ public class ClassLoaderResourceUtils {
 					ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();
 					try {
 						 Thread.currentThread().setContextClassLoader(source.getClass().getClassLoader());
-						 url = Thread.currentThread().getContextClassLoader().getResource(resourcePath);
+						 if(Thread.currentThread().getContextClassLoader() != null){
+							 url = Thread.currentThread().getContextClassLoader().getResource(resourcePath);
+						 }
 					}
 					finally {
 						 Thread.currentThread().setContextClassLoader(threadClassLoader);

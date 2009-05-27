@@ -91,14 +91,15 @@ public class MessageBundleScriptCreator {
 	 */
 	private StringBuffer loadScriptTemplate() {
 		StringWriter sw = new StringWriter();
-		
+		InputStream is = null;
 		try {
-			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(SCRIPT_TEMPLATE,this);
+			is = ClassLoaderResourceUtils.getResourceAsStream(SCRIPT_TEMPLATE,this);
             IOUtils.copy(is, sw);
-            is.close();
-		} catch (IOException e) {
+        } catch (IOException e) {
 			log.fatal("a serious error occurred when initializing MessageBundleScriptCreator");
 			throw new RuntimeException("Classloading issues prevent loading the message template to be loaded. ",e);
+		}finally{
+			IOUtils.close(is);
 		}
 		
 		return sw.getBuffer();
