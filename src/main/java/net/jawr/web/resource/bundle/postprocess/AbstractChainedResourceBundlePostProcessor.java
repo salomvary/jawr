@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -23,12 +23,14 @@ import org.apache.log4j.Logger;
  * can be used as a processing chain. 
  * 
  * @author Jordi Hernández Sellés
- *
+ * @author Ibrahim Chaehoi
  */ 
 public abstract class AbstractChainedResourceBundlePostProcessor implements
-		ResourceBundlePostProcessor {
-	private ResourceBundlePostProcessor nextProcessor;
+		ChainedResourceBundlePostProcessor {
+	
 	private static final Logger log = Logger.getLogger(ResourceBundlePostProcessor.class);
+	
+	private AbstractChainedResourceBundlePostProcessor nextProcessor;
 	
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor#postProcessBundle(java.lang.StringBuffer)
@@ -52,8 +54,12 @@ public abstract class AbstractChainedResourceBundlePostProcessor implements
 	 * Set the next post processor in the chain. 
 	 * @param nextProcessor
 	 */
-	public void setNextProcessor(ResourceBundlePostProcessor nextProcessor) {
-		this.nextProcessor = nextProcessor;
+	public void addNextProcessor(AbstractChainedResourceBundlePostProcessor nextProcessor) {
+		if(this.nextProcessor == null){
+			this.nextProcessor = nextProcessor;
+		}else{
+			this.nextProcessor.addNextProcessor(nextProcessor);
+		}
 	}
 	
 	/**

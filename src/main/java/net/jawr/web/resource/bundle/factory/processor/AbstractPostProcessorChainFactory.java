@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -29,7 +29,7 @@ import net.jawr.web.resource.bundle.postprocess.impl.LicensesIncluderPostProcess
  * Abstract implementation of the PostProcessorChainFactory with functionalities common to js and css resources.  
  * 
  * @author Jordi Hernández Sellés
- *
+ * @author Ibrahim Chaehoi
  */
 public abstract class AbstractPostProcessorChainFactory implements	PostProcessorChainFactory {
 
@@ -76,9 +76,14 @@ public abstract class AbstractPostProcessorChainFactory implements	PostProcessor
 		}
 		else toAdd = buildProcessorByKey(key);
 		
-		if(null == chain)
+		if(null == chain){
 			chain = toAdd;
-		else chain.setNextProcessor(toAdd);
+		}
+		else{
+			
+			chain.addNextProcessor(toAdd);
+		}
+		
 		return chain;
 	}
 	
