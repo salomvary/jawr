@@ -42,15 +42,30 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <!-- executions>
+        <executions>
           <execution>
+             <id>attach-sources</id>
+            <phase>verify</phase>
             <goals>
-              <goal>verify</goal>
+              <goal>jar</goal>
             </goals>
+
           </execution>
-        </executions-->
+        </executions>
       </plugin>
     </plugins>
+    <pluginManagement>
+		<plugins>
+		<plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<configuration>
+			<source>1.4</source>
+			<target>1.4</target>
+		</configuration>
+		</plugin>
+		</plugins>
+		</pluginManagement>
   </build>
   <repositories>
     <repository>
@@ -148,7 +163,7 @@
   <distributionManagement>
     <repository>
       <id>java.net-m2-repository</id>
-      <url>java-net:/maven2-repository/trunk/www/repository/</url>
+      <url>java-net:/maven2-repository/trunk/repository/</url>
     </repository>
   </distributionManagement>
 </project>
