@@ -84,6 +84,10 @@ Jawr Generators
 	jawr.css.bundle.styles.mappings=jar:/com/mycompany/myapp/stylesheet.css, /css/bar.css	
 +------------------------------------------+
 	
+	CSS files loaded from the classpath may refer to images which will normally be available from the classpath as well. Since version 2.8 Jawr 
+	can serve such image files by defining an extra instance of the servlet with its init param <<type>> set to <<img>>. You can find details on how 
+	to set it up at the {{{./servlet.html}servlet configuration page.}}
+	  
 	Unlike the normal mapping, this way of referring to resources does not yet allow wildcards (i.e.: <jar:/com/mycompany/myapp/**> would not 
 	work).  
 	

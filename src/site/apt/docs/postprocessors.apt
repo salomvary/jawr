@@ -94,12 +94,14 @@ public class FunctionWrapperPostProcessor implements ResourceBundlePostProcessor
 
 	To use this postprocessor with our application, we need to declare it in the properties configuration, by giving it a name and declaring the class 
 	so that Jawr may create an instance when starting up. The name you give to your postprocessor can then be used to define the bundlepostprocessors 
-	and filepostprocessors properties, thus allowing you to create a chain that combines your postprocessors with those of Jawr. For example, the 
-	following configuration would add two custom postprocessors named <func> and <sample> and map them in different postprocessing chains: 
+	and filepostprocessors properties, thus allowing you to create a chain that combines your postprocessors with those of Jawr. 
+	
+	The name and class are defined by declaring a property in the form jawr.custom.postprocessors.[name].class=[class].
+	For example, the following configuration would add two custom postprocessors named <func> and <sample> and map them in different 
+	postprocessing chains: 
 	
 		
 +------------------------------------------+
-jawr.custom.postprocessors.names=func,sample
 jawr.custom.postprocessors.func.class=net.jawr.test.FunctionWrapperPostProcessor
 jawr.custom.postprocessors.sample.class=net.jawr.test.SamplePostProcessor
 
