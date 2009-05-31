@@ -4,13 +4,18 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
+
 import junit.framework.TestCase;
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.impl.CSSURLPathRewriterPostProcessor;
+import net.jawr.web.servlet.mock.MockServletContext;
 
 public class CSSURLRewriterPostProcessorTest extends TestCase {
 	
@@ -30,6 +35,8 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		
 		bundle = buildFakeBundle(bundlePath, urlPrefix);
 		config = new JawrConfig( new Properties());
+		ServletContext servletContext = new MockServletContext();
+		config.setContext(servletContext);
 		config.setServletMapping("/js");
 		config.setCharsetName("UTF-8");		
 		status = new BundleProcessingStatus(bundle,null,config);
@@ -231,7 +238,81 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		
 	}
 	
+	public void testURLFromClasspathCssRewriting() {
+
+		// Set the properties
+		Properties props = new Properties();
+		props.setProperty(JawrConfig.JAWR_CSS_IMG_USE_CLASSPATH_SERVLET, "true");
+		config = new JawrConfig(props);
+		config.setServletMapping("/css");
+		config.setCharsetName("UTF-8");
+		ServletContext servletContext = new MockServletContext();
+		config.setContext(servletContext);
+		
+		// Set up the Image servlet Jawr config
+		props = new Properties();
+		JawrConfig imgServletJawrConfig = new JawrConfig(props);
+		imgServletJawrConfig.setServletMapping("/cssImg/");
+		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(imgServletJawrConfig);
+		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE, imgRsHandler);
+		
+		status = new BundleProcessingStatus(bundle, null, config);
+
+		// Css data
+		StringBuffer data = new StringBuffer(
+				"background-image:url(../../images/logo.png);");
+		
+		// Css path
+		String filePath = "jar:style/default/assets/someCSS.css";
+		
+		// Expected: goes 3 back to the context path, then add the CSS image servlet mapping,
+		// then go to the image path
+		// the image is at classPath:/style/images/someImage.gif
+		String expectedURL = "background-image:url(../../../cssImg/cpCb2587531189/style/images/logo.png);";
+		status.setLastPathAdded(filePath);
+
+		String result = processor.postProcessBundle(status, data).toString();
+		assertEquals("URL was not rewritten properly", expectedURL, result);
+
+	}
 	
+	public void testImgURLRewritingForDataScheme() {
+
+		// Set the properties
+		Properties props = new Properties();
+		props.setProperty(JawrConfig.JAWR_CSS_IMG_USE_CLASSPATH_SERVLET, "true");
+		config = new JawrConfig(props);
+		ServletContext servletContext = new MockServletContext();
+		config.setContext(servletContext);
+		config.setServletMapping("/css");
+		config.setCharsetName("UTF-8");
+		
+		// Set up the Image servlet Jawr config
+		props = new Properties();
+		JawrConfig imgServletJawrConfig = new JawrConfig(props);
+		imgServletJawrConfig.setServletMapping("/cssImg/");
+		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(imgServletJawrConfig);
+		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE, imgRsHandler);
+		
+		status = new BundleProcessingStatus(bundle, null, config);
+
+		// Css data
+		StringBuffer data = new StringBuffer(
+				"background-image: url(data:image/gif;base64,AAAA);");
+		
+		// Css path
+		String filePath = "style/default/assets/someCSS.css";
+		
+		// Expected: goes 3 back to the context path, then add the CSS image servlet mapping,
+		// then go to the image path
+		// the image is at classPath:/style/images/someImage.gif
+		String expectedURL = "background-image: url(data:image/gif;base64,AAAA);";
+		status.setLastPathAdded(filePath);
+
+		String result = processor.postProcessBundle(status, data).toString();
+		assertEquals("URL was not rewritten properly", expectedURL, result);
+
+	}
 	
 	public void testMultiLine() {
 		StringBuffer data = new StringBuffer("\nsomeRule {");
@@ -323,6 +404,9 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 				return null;
 			}
 			public List getLocaleVariantKeys() {
+				return null;
+			}
+			public String getAlternateProductionURL() {
 				return null;
 			}};
 		

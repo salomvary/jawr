@@ -1,17 +1,18 @@
-JAWR.loader.insert = function(bundles,func,path,media) {
+JAWR.loader.insert = function(bundles,func,mappingToUse,path,media) {
 
 	for(var x = 0; x < bundles.length; x++){	
 		if(bundles[x].belongsToBundle(path) && !this.usedBundles[bundles[x].name]){		
 			var bundle =  bundles[x];
 			this.usedBundles[bundle.name] = true;
+			var pathtoRender = this.normalizePath(mappingToUse +'/'+ bundle.name);
 			if(!bundle.itemPathList) {
 				if(bundle.ieExpression)
-					this.insertCondComment(bundle.ieExpression,func,bundle.name,media);
-				else this[func](bundle.name,media);		
+					this.insertCondComment(bundle.ieExpression,func,pathtoRender,media);
+				else this[func](pathtoRender,media);		
 			}
 			else{
 				for(var i = 0; i < bundle.itemPathList.length; i++){
-					var pathLink = this.addRandomParam(bundle.itemPathList[i]);
+					var pathLink = this.addRandomParam(this.normalizePath(mappingToUse +'/'+bundle.itemPathList[i]));
 					if(bundle.ieExpression)
 						this.insertCondComment(bundle.ieExpression,func,pathLink,media);
 					else this[func](pathLink);

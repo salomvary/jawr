@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.util.Set;
 
 import net.jawr.web.resource.FileSystemResourceHandler;
+import net.jawr.web.resource.bundle.JoinableResourceBundleContent;
 
 import test.net.jawr.web.resource.bundle.handler.ResourceHandlerBasedTest;
 
@@ -134,7 +135,8 @@ public class FileSystemResourceHandlerTest extends ResourceHandlerBasedTest {
 		StringBuffer sb = new StringBuffer(testStr);
 		try {
 			// Store data
-			subject.storeBundle("/somepath/somesubpath/store/testCollection.js", sb);
+			JoinableResourceBundleContent bundleResourcesContent = new JoinableResourceBundleContent(sb);
+			subject.storeBundle("/somepath/somesubpath/store/testCollection.js", bundleResourcesContent);
 			
 			// Retrieve it back and check its content. 
 			Reader rd = subject.getResourceBundleReader("/somepath/somesubpath/store/testCollection.js");

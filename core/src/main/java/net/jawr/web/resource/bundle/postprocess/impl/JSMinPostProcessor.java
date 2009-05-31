@@ -99,6 +99,7 @@ public class JSMinPostProcessor extends
         Reader rd = Channels.newReader(chan,charset.newDecoder(),-1);
         StringWriter writer = new StringWriter();
         IOUtils.copy(rd, writer);
+        rd.close();
 		return writer.getBuffer();
 	}
 

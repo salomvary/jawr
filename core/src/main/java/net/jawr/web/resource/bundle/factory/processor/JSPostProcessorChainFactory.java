@@ -36,7 +36,7 @@ public class JSPostProcessorChainFactory extends AbstractPostProcessorChainFacto
 	 */
 	public ResourceBundlePostProcessor buildDefaultProcessorChain() {
 		JSMinPostProcessor processor = buildJSMinPostProcessor();
-		processor.setNextProcessor(buildLicensesProcessor());
+		processor.addNextProcessor(buildLicensesProcessor());
 		return processor;
 	}
 	

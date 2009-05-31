@@ -6,6 +6,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.factory.util.PropertiesConfigHelper;
 
 public class PropertiesConfigHelperTestCase extends TestCase {
@@ -20,6 +21,7 @@ public class PropertiesConfigHelperTestCase extends TestCase {
 		PropertiesConfigHelper helper = new PropertiesConfigHelper(prop, "js");
 		Set bundleNames = helper.getPropertyBundleNameSet();
 		assertEquals(3, bundleNames.size());
+		IOUtils.close(is);
 	}
 
 	public void testGetCssBundleNames() throws IOException {
@@ -32,6 +34,7 @@ public class PropertiesConfigHelperTestCase extends TestCase {
 		PropertiesConfigHelper helper = new PropertiesConfigHelper(prop, "css");
 		Set bundleNames = helper.getPropertyBundleNameSet();
 		assertEquals(2, bundleNames.size());
+		IOUtils.close(is);
 	}
 
 }

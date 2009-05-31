@@ -22,6 +22,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
@@ -94,7 +95,7 @@ public class ClientSideHandlerGeneratorImpl implements
 		sb.append("(function(){\n");
 		
 		// shorthand for creating ResourceBundles. makes the script shorter. 
-		sb.append("function r(n, p, i,ie){return new JAWR.ResourceBundle(n, p, i,ie);}\n");
+		sb.append("function r(n, p, i,ie,aU){return new JAWR.ResourceBundle(n, p, i,ie,aU);}\n");
 		
 		sb.append("JAWR.loader.jsbundles = [");
 		sb.append(getClientSideBundles(locale, useGzip));
@@ -233,9 +234,19 @@ public class ClientSideHandlerGeneratorImpl implements
 					buf.append(",");
 			}
 			buf.append("]");
+			
+			if(null != bundle.getExplorerConditionalExpression()) {
+				buf.append(",'").append(bundle.getExplorerConditionalExpression()).append("'");
+			}
 		}
-		if(null != bundle.getExplorerConditionalExpression()) {
-			buf.append(",'").append(bundle.getExplorerConditionalExpression()).append("'");
+		if(null != bundle.getAlternateProductionURL()) {
+			// Complete the parameters if needed, since the alternate param goes afterwards
+			if(skipItems)
+				buf.append(",null,null");
+			else if(null == bundle.getExplorerConditionalExpression())
+				buf.append(",null");
+			buf.append("," +JavascriptStringUtil.quote(bundle.getAlternateProductionURL()));
+				
 		}
 		buf.append(")");
 		
@@ -247,15 +258,20 @@ public class ClientSideHandlerGeneratorImpl implements
 	 */
 	private StringBuffer loadScriptTemplate(String path) {
 		StringWriter sw = new StringWriter();
+		
+		InputStream is = null;
 		try {
-			InputStream is = ClassLoaderResourceUtils.getResourceAsStream(path,this);
+			is = ClassLoaderResourceUtils.getResourceAsStream(path,this);
 			int i;
 			while((i = is.read()) != -1) {
 				sw.write(i);
 			}
+			
 		} catch (IOException e) {
 			log.fatal("a serious error occurred when initializing ClientSideHandlerGeneratorImpl");
 			throw new RuntimeException("Classloading issues prevent loading the loader template to be loaded. ",e);
+		}finally{
+			IOUtils.close(is);
 		}
 		
 		return sw.getBuffer();

@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -34,6 +34,7 @@ import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
  * files are stored in the web server temporary folder. 
  * 
  * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  *
  */
 public class ServletContextResourceHandler extends AbstractResourceHandler implements ResourceHandler {
@@ -52,13 +53,23 @@ public class ServletContextResourceHandler extends AbstractResourceHandler imple
 	}
 
 	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.ResourceHandler#getResource(java.lang.String)
+	 * @see net.jawr.web.resource.ResourceHandler#getResourceInputStream(java.lang.String)
 	 */
-	public Reader doGetResource(String resourceName)  throws ResourceNotFoundException{
+	public InputStream getResourceAsStream(String resourceName) throws ResourceNotFoundException {
+		
 		InputStream is = context.getResourceAsStream(resourceName);		
 		if(null == is)
 			throw new ResourceNotFoundException(resourceName);
 		
+		return is;
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.ResourceHandler#getResource(java.lang.String)
+	 */
+	public Reader doGetResource(String resourceName)  throws ResourceNotFoundException{
+		
+		InputStream is = getResourceAsStream(resourceName);		
 		return new InputStreamReader(is, charset);
 	}
 

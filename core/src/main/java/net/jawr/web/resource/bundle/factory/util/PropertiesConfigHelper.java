@@ -15,8 +15,10 @@
  */
 package net.jawr.web.resource.bundle.factory.util;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -37,6 +39,7 @@ public class PropertiesConfigHelper {
 	private Properties props;
 	private String prefix;
 	private Pattern bundleNamePattern;
+	private Pattern postProcessorClassPattern = Pattern.compile("(jawr\\.custom\\.postprocessors\\.)([-_a-zA-Z0-9]+).class");
 
 	/**
 	 * Build a properties wrapper that appends 'jawr.' and the specified
@@ -54,7 +57,7 @@ public class PropertiesConfigHelper {
 		this.prefix = PROPS_PREFIX + resourceType + ".";
 		String bundle = prefix + BUNDLE_FACTORY_CUSTOM_PROPERTY;
 		String pattern = "(" + bundle.replaceAll("\\.", "\\\\.")
-				+ ")([a-zA-Z0-9]+)\\.id";
+				+ ")([-_a-zA-Z0-9]+)\\.id";
 		this.bundleNamePattern = Pattern.compile(pattern);
 	}
 
@@ -90,8 +93,12 @@ public class PropertiesConfigHelper {
 		return props.getProperty(prefix + key, defaultValue);
 	}
 
+	/**
+	 * Returns the set of the name for the bundle 
+	 * @return
+	 */
 	public Set getPropertyBundleNameSet() {
-
+		
 		Set bundleNameSet = new HashSet();
 
 		for (Iterator it = props.keySet().iterator();it.hasNext();) {
@@ -106,6 +113,26 @@ public class PropertiesConfigHelper {
 		return bundleNameSet;
 	}
 
+	/**
+	 * Returns the set of post processor name based on the class definition
+	 * @return the set of post processor name based on the class definition
+	 */
+	public Map getCustomPostProcessorMap() {
+		Map postProcessorMap = new HashMap();
+
+		for (Iterator it = props.keySet().iterator();it.hasNext();) {
+			String key = (String) it.next();
+			Matcher matcher = postProcessorClassPattern.matcher(key);
+			if (matcher.matches()) {
+
+				String postProcessorName = matcher.group(2);
+				String className = props.getProperty(key);
+				postProcessorMap.put(postProcessorName, className);
+			}
+		}
+		return postProcessorMap;
+	}
+	
 	/**
 	 * Appends the prefix (jawr.) to the specified key and reads it from the
 	 * properties object.

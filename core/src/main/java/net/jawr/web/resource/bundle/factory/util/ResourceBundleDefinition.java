@@ -35,6 +35,7 @@ public class ResourceBundleDefinition {
 	private String unitaryPostProcessorKeys;
 	private String bundlePostProcessorKeys;
 	private String ieConditionalExpression;
+	private String alternateProductionURL;
 	private List children;
 	private List localeVariantKeys;
 	
@@ -113,6 +114,18 @@ public class ResourceBundleDefinition {
 	}
 	public void setIeConditionalExpression(String ieConditionalExpression) {
 		this.ieConditionalExpression = ieConditionalExpression;
+	}
+	/**
+	 * @return the alternateProductionURL
+	 */
+	public String getAlternateProductionURL() {
+		return alternateProductionURL;
+	}
+	/**
+	 * @param alternateProductionURL the alternateProductionURL to set
+	 */
+	public void setAlternateProductionURL(String alternateProductionURL) {
+		this.alternateProductionURL = alternateProductionURL;
 	}
 	
 	

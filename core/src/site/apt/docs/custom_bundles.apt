@@ -108,7 +108,7 @@ Definition of custom bundles
 +------------------------------------------+	
 	
 	The full documentation for the available generators and instructions on how to create your own are 
-	{{{./generators.html}here}}.
+	{{{./generators.html}here.}}
 	
 	
 	
@@ -219,7 +219,11 @@ jawr.js.bundle.comp.child.names=foo, bar
 =====================
 
 
-	You can configure Jawr to do one of two things with orphans: 
+	You can configure Jawr to do one of three things with orphans: 
+	
+	* <<Ignore them altogether>>: since scanning may be time and resource consuming during start up and in some cases it is undesirable to treat 
+	orphans, you can set a parameter in config to disable all orphans related activity. Simply set <<factory.use.orphans.mapper>> to false 
+	(it would be true by default) and it's done. 
 	
 	* <<Create one-file bundles with each orphan resource>>: This is what Jawr will do by default. Even for files you don't need to serve within a bundle, 
 	you can let Jawr handle them as a compressor. Simply reference your scripts/CSS using the Jawr tags, with the same path you would normally use in a 
@@ -246,4 +250,21 @@ jawr.js.bundle.comp.child.names=foo, bar
 	Note that you may actually define some bundles and then use this feature if that suits you. Also, the usual ordering scheme will apply to the 
 	orphans bundle. Check the {{{./source_ordering.html}source ordering manual}} for more info. \ 
 	
+* Using an absolute URL in production
+
+	In some special cases you might want to have bundles served from a static URL when in production. To achieve this you would specify the 
+	production URL using the <<productionURL>>: 
+
++------------------------------------------+
+
+	jawr.js.bundle.foo.productionURL=http://someserver.com/myscript.js
+	
++------------------------------------------+
+
+	This would be useful when you use libraries which are publicly served by the author's CDN, such as the YUI library. You could work on your 
+	app offline using your local files, with debug mode on, and then in production your users will download from the CDN elsewhere, thus 
+	reducing your required bandwith. Needles to say, you must take good care to be sure that your local files contain the same code as the 
+	publicly served ones. 
+
+
 	

@@ -51,7 +51,7 @@ Jawr Generators
 	Jawr comes with several generators, each accomplishing a special kind of task. The currently provided generators are: 
 	
 	
-	* <<i18n messages script generator>>: generates javascript code with locale specifica variants which are loaded depending on the user's 
+	* <<i18n messages script generator>>: generates javascript code with locale specific variants which are loaded depending on the user's 
 	specific language. Full documentation is {{{./messages_gen.html}here}}. 
 	
 	* <<DWR scripts generator>>: allows you to bundle and compress together DWR generated interfaces, plus all the utility scripts required 
@@ -77,13 +77,17 @@ Jawr Generators
 	Note the leading slash in the mapping, which is also required. You can of course combine this kind of mappings with regular ones, so you can 
 	bundle together resources from the WAR and from the classpath. 
 	
-	If you need to load CSS files from the classpath, you would use the exact same syntax, only changing the prefix from <<jar:>> 
-	to <<jar_css:>> 
+	If you need to load CSS files from the classpath, you would use the exact same syntax <<jar:>>.
+	Note that you could also use <<jar_css:>>, but this prefix is deprecated since Jawr 2.8. 
 	
 +------------------------------------------+
-	jawr.css.bundle.styles.mappings=jar_css:/com/mycompany/myapp/stylesheet.css, /css/bar.css	
+	jawr.css.bundle.styles.mappings=jar:/com/mycompany/myapp/stylesheet.css, /css/bar.css	
 +------------------------------------------+
 	
+	CSS files loaded from the classpath may refer to images which will normally be available from the classpath as well. Since version 2.8 Jawr 
+	can serve such image files by defining an extra instance of the servlet with its init param <<type>> set to <<img>>. You can find details on how 
+	to set it up at the {{{./servlet.html}servlet configuration page.}}
+	  
 	Unlike the normal mapping, this way of referring to resources does not yet allow wildcards (i.e.: <jar:/com/mycompany/myapp/**> would not 
 	work).  
 	

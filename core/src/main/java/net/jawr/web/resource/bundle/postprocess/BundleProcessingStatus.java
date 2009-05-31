@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -13,6 +13,9 @@
  */
 package net.jawr.web.resource.bundle.postprocess;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
@@ -22,14 +25,31 @@ import net.jawr.web.resource.bundle.JoinableResourceBundle;
  * postprocessors have metadata available about the processed data
  * 
  * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  */
 public class BundleProcessingStatus {
 	
-	final JoinableResourceBundle currentBundle;
-	final ResourceHandler rsHandler;
-	final JawrConfig jawrConfig;
-	String lastPathAdded;
+	/** The current bundle */
+	private final JoinableResourceBundle currentBundle;
 	
+	/** The resource handler */
+	private final ResourceHandler rsHandler;
+	
+	/** The Jawr config */
+	private final JawrConfig jawrConfig;
+	
+	/** The last path added */
+	private String lastPathAdded;
+	
+	/** The image resource mapping */
+	private Map imgResourceMapping = new HashMap();
+	
+	/**
+	 * Constructor
+	 * @param currentBundle the current bundle
+	 * @param rsHandler the resource handler
+	 * @param jawrConfig the Jawr config
+	 */
 	public BundleProcessingStatus(final JoinableResourceBundle currentBundle,
 			final ResourceHandler rsHandler,final JawrConfig jawrConfig) {
 		super();
@@ -39,36 +59,77 @@ public class BundleProcessingStatus {
 	}
 	
 	/**
-	 * @return String The last (current) resource path added to the bundle. 
+	 * Returns the last (current) resource path added to the bundle. 
+	 * @return The last (current) resource path added to the bundle. 
 	 */
 	public String getLastPathAdded() {
 		return lastPathAdded;
 	}
+	
+	/**
+	 * Sets the last (current) resource path added to the bundle. 
+	 * @param lastPathAdded the path to set
+	 */
 	public void setLastPathAdded(String lastPathAdded) {
 		this.lastPathAdded = lastPathAdded;
 	}
 	
 	/**
-	 * @return JoinableResourceBundle Currently processed bundle. 
+	 * Returns the currently processed bundle. 
+	 * @return currently processed bundle. 
 	 */
 	public JoinableResourceBundle getCurrentBundle() {
 		return currentBundle;
 	}
 	
 	/**
-	 * @return ResourceHandler 
+	 * Returns the resource handler
+	 * @return the resource handler
 	 */
 	public ResourceHandler getRsHandler() {
 		return rsHandler;
 	}
 
 	/**
-	 * @return Current config. 
+	 * Returns the current Jawr config
+	 * @return the current Jawr config
 	 */
 	public JawrConfig getJawrConfig() {
 		return jawrConfig;
 	}
 	
+	/**
+	 * Returns the image resource map
+	 * @return the image resource map
+	 */
+	public Map getImgResourceMapping() {
+		return imgResourceMapping;
+	}
+
+	/**
+	 * Sets the image resource map
+	 * @param imgResourceMapping the map to set
+	 */
+	public void setImgResourceMapping(Map imgResourceMapping) {
+		this.imgResourceMapping = imgResourceMapping;
+	}
 	
+	/**
+	 * Sets the image mapping for a image resource
+	 * @param resourceKey the image source
+	 * @param resourceValue the result imaged source
+	 */
+	public void setImageMapping(String resourceKey, String resourceValue){
+		this.imgResourceMapping.put(resourceKey, resourceValue);
+	}
+
+	/**
+	 * Gets the image mapping for a image resource
+	 * @param resourceKey the image source
+	 * @return the result imaged source
+	 */
+	public String getImageMapping(String resourceKey){
+		return (String) this.imgResourceMapping.get(resourceKey);
+	}
 
 }

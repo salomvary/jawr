@@ -52,7 +52,7 @@ Initialization of Jawr either failed or never occurred.</source>
         can use <a href="http://www.jslint.com/">JSLint</a>, which is an online tool that checks the syntax of your scripts. 
         </p>
         <p>
-        You may want to switch to a different minifier. JSLint, while normally efficient enaugh, is more prone to fail on valid-yet-weird syntax than 
+        You may want to switch to a different minifier. JSLint, while normally efficient enough, is more prone to fail on valid-yet-weird syntax than 
         other alternatives such as the YUI compressor (which is also more efficient anyway). To switch to a different minifier, follow instructions at 
         the <a href="../docs/postprocessors.html">postprocessors guide</a>. 
         </p>

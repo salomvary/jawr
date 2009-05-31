@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007 Jordi Hernández Sellés, Matt Ruby
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -27,7 +27,7 @@ import net.jawr.web.servlet.JawrRequestHandler;
  * Utility class to work with relative paths. 
  * 
  * @author Jordi Hernández Sellés
- *
+ * @author Matt Ruby
  *
  */
 public class PathNormalizer {
@@ -142,5 +142,27 @@ public class PathNormalizer {
 										neverHappens);
 		}
 		return path;
+	}
+	
+	/**
+	 * Adds a key and value to the request path
+	 * & or ? will be used as needed
+	 * 
+	 * path + ? or & + parameterKey=parameter
+	 * 
+	 * @param path the url to add the parameterKey and parameter too
+	 * @param parameterKey the key in the get request (parameterKey=parameter)
+	 * @param parameter the parameter to add to the end of the url
+	 * @return a String with the url parameter added: path + ? or & + parameterKey=parameter
+	 */
+	public static String addGetParameter(String path, String parameterKey, String parameter){
+		StringBuffer sb = new StringBuffer(path); 
+		if(path.indexOf("?") > 0) {
+			sb.append("&");
+		} else {
+			sb.append("?");
+		}
+		sb.append(parameterKey + "="+ parameter);
+		return sb.toString();
 	}
 }

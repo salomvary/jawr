@@ -164,7 +164,7 @@ Using DWR with Jawr
 
 +------------------------------------------+  
    This adds all beans defined in dwr.xml: 
-   jawr.js.bundle.alldwrbeans.mappings=_**
+   jawr.js.bundle.alldwrbeans.mappings=dwr:_**
 	
 +------------------------------------------+	
 	

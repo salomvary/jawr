@@ -48,11 +48,13 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 	public int doStartTag() throws JspException {		
             
            // Renderer istance which takes care of generating the response
-			this.renderer = createRenderer();		
+		   this.renderer = createRenderer();
            
            HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+                       
            String localeKey = this.renderer.getBundler().getConfig().getLocaleResolver().resolveLocaleCode(request);
            boolean isGzippable = RendererRequestUtils.isRequestGzippable(request,renderer.getBundler().getConfig());
+           RendererRequestUtils.setRequestDebuggable(request,renderer.getBundler().getConfig());
            
             try {
                 renderer.renderBundleLinks( src,

@@ -113,4 +113,11 @@ public interface JoinableResourceBundle {
      * @return
      */
     public List getItemPathList(String variantKey);
+    
+    
+    /**
+     * If set, it will force the tag libraries to render a static URL in production mode. 
+     * @return
+     */
+    public String getAlternateProductionURL();
 }

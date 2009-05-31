@@ -37,7 +37,7 @@ public class CSSPostProcessorChainFactory extends
 	 */
 	public ResourceBundlePostProcessor buildDefaultProcessorChain() {
 		CSSMinPostProcessor processor = new CSSMinPostProcessor();
-		processor.setNextProcessor(buildLicensesProcessor());
+		processor.addNextProcessor(buildLicensesProcessor());
 		return processor;
 	}
 

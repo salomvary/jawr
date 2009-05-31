@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import net.jawr.web.exception.ResourceNotFoundException;
+
 /**
  * Utilities to access resources from the classpath
  * 
@@ -88,6 +90,61 @@ public class ClassLoaderResourceUtils {
 		if(null == is)
 			throw new FileNotFoundException( resourcePath + " could not be found. ");
 		return is;
+	}
+	
+	/**
+	 * Attempts to find the URL of a resource from the classpath, either usinf the caller's class loader or the current thread's 
+	 * context classloader. 
+	 * 
+	 * @param resourcePath the resource path
+	 * @param source the object
+	 * @return the URL.
+	 * @throws ResourceNotFoundException if the resource is not found
+	 */
+	public static URL getResourceURL(String resourcePath, Object source) throws ResourceNotFoundException {
+		
+		// Try the current classloader
+		URL url = source.getClass().getResource(resourcePath);
+		
+		// Weblogic 10 likes this one better..
+		if(null == url) {
+			ClassLoader cl = source.getClass().getClassLoader();
+			if(null != cl)
+				url = cl.getResource(resourcePath);
+		}
+		
+		// If current classloader failed, try with the Threads context classloader. If that fails ott, the resource is either not on the 
+		// classpath or inaccessible from the current context. 
+		
+		if(null == url) {
+			url = Thread.currentThread().getContextClassLoader().getResource(resourcePath);
+		}
+		
+		// Try to retrieve by URL
+		if(null == url) {
+				url = Thread.currentThread().getContextClassLoader().getResource(resourcePath);
+				
+				// Last chance, hack in the classloader
+				if(null == url) {
+					ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();
+					try {
+						 Thread.currentThread().setContextClassLoader(source.getClass().getClassLoader());
+						 url = Thread.currentThread().getContextClassLoader().getResource(resourcePath);
+					}
+					finally {
+						 Thread.currentThread().setContextClassLoader(threadClassLoader);
+					}
+					
+				}
+				if(null == url){
+					throw new ResourceNotFoundException( resourcePath + " could not be found. ");
+				}
+		}
+		
+		// Everything failed... exception is trown. 
+		if(null == url)
+			throw new ResourceNotFoundException( resourcePath + " could not be found. ");
+		return url;
 	}
 	
 	/**

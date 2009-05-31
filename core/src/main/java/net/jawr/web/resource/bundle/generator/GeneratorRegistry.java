@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 Jordi Hernández Sellés
+ * Copyright 2008 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.classpath.ClassPathCSSGenerator;
 import net.jawr.web.resource.bundle.generator.classpath.ClasspathJSGenerator;
@@ -38,27 +40,45 @@ import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
  * Generators provided with Jawr will be automatically mapped. 
  * 
  * @author Jordi Hernández Sellés
- *
+ * @author Ibrahim Chaehoi
  */
 public class GeneratorRegistry {
 	
+	/** The message bundle prefix */
 	public static final String MESSAGE_BUNDLE_PREFIX = "messages";
-	public static final String CLASSPATH_JS_BUNDLE_PREFIX = "jar";
-	public static final String CLASSPATH_CSS_BUNDLE_PREFIX = "jar_css";
+	
+	/** The classpath resource bundle prefix */
+	public static final String CLASSPATH_RESOURCE_BUNDLE_PREFIX = "jar";
+	
+	/** The old classpath CSS bundle prefix (usage of this prefix is deprecated since Jawr 2.8) */
+	public static final String OLD_CLASSPATH_CSS_BUNDLE_PREFIX = "jar_css";
+	
+	/** The DWR bundle prefix */
 	public static final String DWR_BUNDLE_PREFIX = "dwr";
+	
+	/** The commons validator bundle prefix */
 	public static final String COMMONS_VALIDATOR_PREFIX = "acv";
 	
+	/** The generator prefix separator */
 	public static final String PREFIX_SEPARATOR = ":";
 	
+	/** The generator registry */
 	private static final Map registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+	
+	/** The generator prefix registry */
 	private static final List prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
+	
+	/** The resource type */
+	private String resourceType;
+	
+	/** The Jawr config */
 	private JawrConfig config;
 	
 	static
 	{
 		prefixRegistry.add(MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR);
-		prefixRegistry.add(CLASSPATH_JS_BUNDLE_PREFIX + PREFIX_SEPARATOR);
-		prefixRegistry.add(CLASSPATH_CSS_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+		prefixRegistry.add(CLASSPATH_RESOURCE_BUNDLE_PREFIX + PREFIX_SEPARATOR);
+		prefixRegistry.add(OLD_CLASSPATH_CSS_BUNDLE_PREFIX+PREFIX_SEPARATOR);
 		prefixRegistry.add(DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR);
 		prefixRegistry.add(COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR);
 	}
@@ -68,26 +88,45 @@ public class GeneratorRegistry {
 	 * Use only for testing purposes.
 	 */
 	public GeneratorRegistry(){
-		super();
+		this(JawrConstant.JS_TYPE);
+	}
+	
+	/**
+	 * Constructor
+	 * @param resource type, the type of resource handled by the generator registry
+	 */
+	public GeneratorRegistry(String resourceType){
+		this.resourceType = resourceType;
+	}
+	
+	/**
+	 * Set the Jawr config
+	 * 
+	 * @param config the config to set
+	 */
+	public void setConfig(JawrConfig config) {
+		this.config = config;
 	}
 	
 	/**
 	 * Lazy loads generators, to avoid the need for undesired dependencies. 
 	 * 
-	 * @param generatorKey
-	 * @return
+	 * @param generatorKey the generator key
 	 */
 	private void loadGenerator(String generatorKey) {
 		if((MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, new ResourceBundleMessagesGenerator());
 		}
-		else if((CLASSPATH_JS_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
-			registry.put(generatorKey, new ClasspathJSGenerator());
+		else if((CLASSPATH_RESOURCE_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+			if(resourceType.equals(JawrConstant.JS_TYPE)){
+				registry.put(generatorKey, new ClasspathJSGenerator());
+			}else{
+				registry.put(generatorKey, new ClassPathCSSGenerator());
+			}
 		}
-		else if((CLASSPATH_CSS_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+		else if((OLD_CLASSPATH_CSS_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, new ClassPathCSSGenerator());
-		}
-		else if((DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
+		}else if((DWR_BUNDLE_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			registry.put(generatorKey, DWRGeneratorFactory.createDWRGenerator());
 		}
 		else if((COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
@@ -98,7 +137,7 @@ public class GeneratorRegistry {
 	/**
 	 * Register a generator mapping it to the specified prefix. 
 	 * 
-	 * @param clazz String Qualified classname of the generator
+	 * @param clazz the classname of the generator
 	 */
 	public void registerGenerator(String clazz){
 		ResourceGenerator generator = (ResourceGenerator) ClassLoaderResourceUtils.buildObjectInstance(clazz);
@@ -126,20 +165,22 @@ public class GeneratorRegistry {
 	
 	/**
 	 * Determines wether a path is to be handled by a generator. 
-	 * @param path
-	 * @return
+	 * @param path the resource path
+	 * @return true if the path could be handled by a generator
 	 */
 	public boolean isPathGenerated(String path) {
 		return null != matchPath(path);
 	}
 	
 	/**
-	 * Creates the contents corresponding to a path, by using the appropiate generator. 
-	 * @param path
-	 * @param charset
-	 * @return
+	 * Creates the contents corresponding to a path, by using the appropriate generator. 
+	 * @param path the resource path
+	 * @param resourceHandler the current resource handler
+	 * @param processingBundle the flag indicating if if we are currently processing the bundles
+	 * @return the reader for the contents
 	 */
-	public Reader createResource(String path) {
+	public Reader createResource(String path,
+			ResourceHandler resourceHandler, boolean processingBundle) {
 		String key = matchPath(path);
 		Locale locale = null;
 		
@@ -162,6 +203,8 @@ public class GeneratorRegistry {
 		}
 		GeneratorContext context = new GeneratorContext(config, path.substring(key.length()));
 		context.setLocale(locale);
+		context.setResourceHandler(resourceHandler);
+		context.setProcessingBundle(processingBundle);
 		
 		return ((ResourceGenerator)registry.get(key)).createResource(context);
 	}
@@ -169,8 +212,8 @@ public class GeneratorRegistry {
 	
 	/**
 	 * Returns the path to use in the generation URL for debug mode. 
-	 * @param path
-	 * @return
+	 * @param path the resource path
+	 * @return the path to use in the generation URL for debug mode. 
 	 */
 	public String getDebugModeGenerationPath(String path) {
 		String key = matchPath(path);
@@ -179,8 +222,8 @@ public class GeneratorRegistry {
 	
 	/**
 	 * Get the key from the mappings that corresponds to the specified path. 
-	 * @param path
-	 * @return
+	 * @param path the resource path
+	 * @return the registry key corresponding to the path
 	 */
 	private String matchPath(String path) {
 		String rets = null;
@@ -194,13 +237,6 @@ public class GeneratorRegistry {
 			loadGenerator(rets);
 		
 		return rets;
-	}
-
-	/**
-	 * @param config the config to set
-	 */
-	public void setConfig(JawrConfig config) {
-		this.config = config;
 	}
 
 }

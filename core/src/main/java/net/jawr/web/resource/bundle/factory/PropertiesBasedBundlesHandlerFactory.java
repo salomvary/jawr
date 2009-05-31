@@ -52,6 +52,9 @@ public class PropertiesBasedBundlesHandlerFactory {
 	// Dir mapper switch
 	public static final String FACTORY_USE_DIR_MAPPER = "factory.use.dirmapper";
 	public static final String FACTORY_DIR_MAPPER_EXCLUSION = "factory.dirmapper.excluded";
+	
+	// Orphans switch
+	public static final String FACTORY_PROCESS_ORPHANS = "factory.use.orphans.mapper";
 
 	// Which postprocessors to use.
 	public static final String BUNDLE_FACTORY_POSTPROCESSOR = "bundle.factory.bundlepostprocessors";
@@ -71,6 +74,9 @@ public class PropertiesBasedBundlesHandlerFactory {
 
 	public static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG = ".composite";
 	public static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES = ".child.names";
+	
+	// Alternate static URL for production mode 
+	public static final String BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL = ".productionURL";
 
 	//
 	public static final String USE_BUNDLE_NAMES = "jawr.use.bundle.names";
@@ -128,6 +134,10 @@ public class PropertiesBasedBundlesHandlerFactory {
 				.booleanValue());
 		factory.setSingleFileBundleName(props
 				.getProperty(FACTORY_SINGLE_FILE_NAME));
+		
+		// Use orphans resolution at all, on by default. FACTORY_PROCESS_ORPHANS
+		factory.setScanForOrphans(Boolean.valueOf(
+				props.getProperty(FACTORY_PROCESS_ORPHANS, "true")).booleanValue());
 
 		// Use the automatic directory-as-bundle mapper.
 		factory.setUseDirMapperFactory(Boolean.valueOf(
@@ -163,11 +173,15 @@ public class PropertiesBasedBundlesHandlerFactory {
 						(String) bundleNames.next(), false));
 			}
 		}
+		
+		factory.setBundleDefinitions(customBundles);
 
-		// Read custom postprocessor definitions
+		// Check if we should use the custom postprocessor names property or
+		// find the postprocessor name using the postprocessor class declaration :
+		// jawr.custom.postprocessors.<name>.class
+		Map customPostprocessors = new HashMap();
 		if (null != properties.getProperty(CUSTOM_POSTPROCESSORS
 				+ CUSTOM_POSTPROCESSORS_NAMES)) {
-			Map customPostprocessors = new HashMap();
 			StringTokenizer tk = new StringTokenizer(properties
 					.getProperty(CUSTOM_POSTPROCESSORS
 							+ CUSTOM_POSTPROCESSORS_NAMES), ",");
@@ -180,12 +194,16 @@ public class PropertiesBasedBundlesHandlerFactory {
 				if (null != processorClass)
 					customPostprocessors.put(processorKey, processorClass);
 			}
-			factory.setCustomPostprocessors(customPostprocessors);
-
+		}else{
+			
+			customPostprocessors = props.getCustomPostProcessorMap();
 		}
-
-		factory.setBundleDefinitions(customBundles);
+		
+		factory.setCustomPostprocessors(customPostprocessors);
+		
 	}
+
+	
 
 	/**
 	 * Build a resources handler based on the configuration.
@@ -268,6 +286,13 @@ public class PropertiesBasedBundlesHandlerFactory {
 					.getCustomBundleProperty(bundleName,
 							BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION));
 
+		// Sets the alternate URL for production mode. 
+		if (null != props.getCustomBundleProperty(bundleName,
+				BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL))
+			bundle.setAlternateProductionURL(props.getCustomBundleProperty(bundleName,
+				BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL));
+			
+		
 		if (isComposite) {
 			String childBundlesProperty = props.getCustomBundleProperty(
 					bundleName, BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES);
