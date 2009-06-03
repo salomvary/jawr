@@ -284,6 +284,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 			jawrConfig.invalidate();
 
 		jawrConfig = new JawrConfig(props);
+		
 		jawrConfig.setContext(servletContext);
 		jawrConfig.setGeneratorRegistry(generatorRegistry);
 
@@ -312,9 +313,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 		}
 
 		// Create a resource handler to read files from the WAR archive or exploded dir.
-		ResourceHandler rsHandler;
-
-		rsHandler = new ServletContextResourceHandler(servletContext, jawrConfig.getResourceCharset(), jawrConfig.getGeneratorRegistry());
+		ResourceHandler rsHandler = new ServletContextResourceHandler(servletContext, jawrConfig.getResourceCharset(), jawrConfig.getGeneratorRegistry());
 		PropertiesBasedBundlesHandlerFactory factory = new PropertiesBasedBundlesHandlerFactory(props, resourceType, rsHandler, jawrConfig
 				.getGeneratorRegistry());
 		try {

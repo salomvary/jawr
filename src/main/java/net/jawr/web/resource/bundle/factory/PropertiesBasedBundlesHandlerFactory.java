@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim CHAEHOI
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,6 +16,7 @@
 package net.jawr.web.resource.bundle.factory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,12 +33,13 @@ import net.jawr.web.resource.bundle.factory.util.PropertiesConfigHelper;
 import net.jawr.web.resource.bundle.factory.util.ResourceBundleDefinition;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
+import net.jawr.web.resource.bundle.locale.LocaleUtils;
 
 /**
  * Properties based configuration entry point.
  * 
  * @author Jordi Hernández Sellés
- * @author Ibrahim CHAEHOI
+ * @author Ibrahim Chaehoi
  * 
  */
 public class PropertiesBasedBundlesHandlerFactory {
@@ -52,7 +54,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 	// Dir mapper switch
 	public static final String FACTORY_USE_DIR_MAPPER = "factory.use.dirmapper";
 	public static final String FACTORY_DIR_MAPPER_EXCLUSION = "factory.dirmapper.excluded";
-
+	
 	// Which postprocessors to use.
 	public static final String BUNDLE_FACTORY_POSTPROCESSOR = "bundle.factory.bundlepostprocessors";
 	public static final String BUNDLE_FACTORY_FILE_POSTPROCESSOR = "bundle.factory.filepostprocessors";
@@ -71,6 +73,9 @@ public class PropertiesBasedBundlesHandlerFactory {
 
 	public static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG = ".composite";
 	public static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES = ".child.names";
+	
+	// Alternate static URL for production mode 
+	public static final String BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL = ".productionURL";
 
 	//
 	public static final String USE_BUNDLE_NAMES = "jawr.use.bundle.names";
@@ -84,7 +89,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 	public static final String CUSTOM_GENERATORS = "jawr.custom.generators";
 
 	// Locale variants
-	public static final String BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS = ".locales";
+	//public static final String BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS = ".locales";
 
 	private PropertiesConfigHelper props;
 	private BundlesHandlerFactory factory;
@@ -128,7 +133,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 				.booleanValue());
 		factory.setSingleFileBundleName(props
 				.getProperty(FACTORY_SINGLE_FILE_NAME));
-
+		
 		// Use the automatic directory-as-bundle mapper.
 		factory.setUseDirMapperFactory(Boolean.valueOf(
 				props.getProperty(FACTORY_USE_DIR_MAPPER, "false"))
@@ -154,13 +159,13 @@ public class PropertiesBasedBundlesHandlerFactory {
 					.getProperty(BUNDLE_FACTORY_CUSTOM_NAMES), ",");
 			while (tk.hasMoreTokens()) {
 				customBundles.add(buildCustomBundleDefinition(tk.nextToken()
-						.trim(), false));
+						.trim(), false, generatorRegistry));
 			}
 		} else {
 			Iterator bundleNames = props.getPropertyBundleNameSet().iterator();
 			while (bundleNames.hasNext()) {
 				customBundles.add(buildCustomBundleDefinition(
-						(String) bundleNames.next(), false));
+						(String) bundleNames.next(), false, generatorRegistry));
 			}
 		}
 		
@@ -211,11 +216,12 @@ public class PropertiesBasedBundlesHandlerFactory {
 	/**
 	 * Create a BundleDefinition based on the properties file.
 	 * 
-	 * @param bundleName
-	 * @return
+	 * @param bundleName the bundle name
+	 * @param generatorRegistry the generator registry
+	 * @return BundleDefinition
 	 */
 	private ResourceBundleDefinition buildCustomBundleDefinition(
-			String bundleName, boolean isChildBundle) {
+			String bundleName, boolean isChildBundle, GeneratorRegistry generatorRegistry) {
 
 		// Id for the bundle
 		String bundleId = props.getCustomBundleProperty(bundleName,
@@ -292,7 +298,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 			StringTokenizer tk = new StringTokenizer(childBundlesProperty, ",");
 			while (tk.hasMoreTokens()) {
 				ResourceBundleDefinition childDef = buildCustomBundleDefinition(
-						tk.nextToken().trim(), true);
+						tk.nextToken().trim(), true, generatorRegistry);
 				childDef.setBundleId(bundleId);
 				children.add(childDef);
 			}
@@ -308,21 +314,31 @@ public class PropertiesBasedBundlesHandlerFactory {
 
 			// Add the mappings
 			List mappings = new ArrayList();
+			Set localeKeys = new HashSet();
 			StringTokenizer tk = new StringTokenizer(mappingsProperty, ",");
-			while (tk.hasMoreTokens())
-				mappings.add(tk.nextToken().trim());
-			bundle.setMappings(mappings);
-
-			String locales = props.getCustomBundleProperty(bundleName,
-					BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS);
-			if (null != locales) {
-				List localeKeys = new ArrayList();
-				StringTokenizer tkl = new StringTokenizer(locales, ",");
-				while (tkl.hasMoreTokens())
-					localeKeys.add(tkl.nextToken().trim());
-				bundle.setLocaleVariantKeys(localeKeys);
-
+			while (tk.hasMoreTokens()){
+				String mapping = tk.nextToken().trim();
+				mappings.add(mapping);
+				// Add local variants
+				if(generatorRegistry.isMessageResourceGenerator(mapping)){
+					int idx = mapping.indexOf(GeneratorRegistry.PREFIX_SEPARATOR);
+					String msgBundle = mapping.substring(idx+1);
+					localeKeys.addAll(LocaleUtils.getAvailableLocaleSuffixes(msgBundle));
+				}
 			}
+			bundle.setMappings(mappings);
+			bundle.setLocaleVariantKeys(Collections.list(Collections.enumeration(localeKeys)));
+			
+			
+//			String locales = props.getCustomBundleProperty(bundleName,
+//					BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS);
+//			if (null != locales) {
+//				
+//				StringTokenizer tkl = new StringTokenizer(locales, ",");
+//				while (tkl.hasMoreTokens())
+//					localeKeys.add(tkl.nextToken().trim());
+//			}
+//			
 		}
 
 		return bundle;

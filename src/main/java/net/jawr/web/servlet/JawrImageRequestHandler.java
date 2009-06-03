@@ -1,5 +1,5 @@
 /**
- * Copyright 2009  Ibrahim CHAEHOI
+ * Copyright 2009  Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -50,7 +50,7 @@ import org.apache.log4j.Logger;
 /**
  * Image Request handling class. Jawr image servlet delegates to this class to handle requests.
  * 
- * @author Ibrahim CHAEHOI
+ * @author Ibrahim Chaehoi
  */
 public class JawrImageRequestHandler extends JawrRequestHandler {
 
@@ -132,6 +132,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			jawrConfig.invalidate();
 
 		jawrConfig = new JawrConfig(props);
+		
 		jawrConfig.setContext(servletContext);
 		jawrConfig.setGeneratorRegistry(generatorRegistry);
 

@@ -264,6 +264,98 @@ public class JawrApplicationConfigManager implements JawrApplicationConfigManage
 		return Boolean.toString(mBean1.isGzipResourcesModeOn());
 	}
 
+	/* (non-Javadoc)
+	 * @see net.jawr.web.config.jmx.JawrApplicationConfigManagerMBean#getContextPathOverride()
+	 */
+	public String getContextPathOverride() {
+		List mBeans = getInitializedConfigurationManagers();
+		if (mBeans.size() == 3) {
+
+			if (areEquals(jsMBean.getContextPathOverride(), cssMBean.getContextPathOverride(), imgMBean.getContextPathOverride())) {
+
+				return jsMBean.getContextPathOverride();
+			} else {
+				return NOT_IDENTICAL_VALUES;
+			}
+		}
+
+		if (mBeans.size() == 2) {
+			JawrConfigManagerMBean mBean1 = (JawrConfigManagerMBean) mBeans.get(0);
+			JawrConfigManagerMBean mBean2 = (JawrConfigManagerMBean) mBeans.get(1);
+
+			if (areEquals(mBean1.getContextPathOverride(),mBean2.getContextPathOverride())) {
+				return mBean1.getContextPathOverride();
+			} else {
+				return NOT_IDENTICAL_VALUES;
+			}
+		}
+
+		JawrConfigManagerMBean mBean1 = (JawrConfigManagerMBean) mBeans.get(0);
+		return mBean1.getContextPathOverride();
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.config.jmx.JawrApplicationConfigManagerMBean#getContextPathSslOverride()
+	 */
+	public String getContextPathSslOverride() {
+		
+		List mBeans = getInitializedConfigurationManagers();
+		if (mBeans.size() == 3) {
+
+			if (areEquals(jsMBean.getContextPathSslOverride(), cssMBean.getContextPathSslOverride(), imgMBean.getContextPathSslOverride())) {
+
+				return jsMBean.getContextPathSslOverride();
+			} else {
+				return NOT_IDENTICAL_VALUES;
+			}
+		}
+
+		if (mBeans.size() == 2) {
+			JawrConfigManagerMBean mBean1 = (JawrConfigManagerMBean) mBeans.get(0);
+			JawrConfigManagerMBean mBean2 = (JawrConfigManagerMBean) mBeans.get(1);
+
+			if (areEquals(mBean1.getContextPathSslOverride(),mBean2.getContextPathSslOverride())) {
+				return mBean1.getContextPathSslOverride();
+			} else {
+				return NOT_IDENTICAL_VALUES;
+			}
+		}
+
+		JawrConfigManagerMBean mBean1 = (JawrConfigManagerMBean) mBeans.get(0);
+		return mBean1.getContextPathSslOverride();
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.config.jmx.JawrApplicationConfigManagerMBean#getUseContextPathOverrideInDebugMode()
+	 */
+	public String getUseContextPathOverrideInDebugMode() {
+		List mBeans = getInitializedConfigurationManagers();
+		if (mBeans.size() == 3) {
+
+			if (jsMBean.getUseContextPathOverrideInDebugMode() == cssMBean.getUseContextPathOverrideInDebugMode()
+					&& cssMBean.getUseContextPathOverrideInDebugMode() == imgMBean.getUseContextPathOverrideInDebugMode()) {
+
+				return Boolean.toString(jsMBean.getUseContextPathOverrideInDebugMode());
+			} else {
+				return NOT_IDENTICAL_VALUES;
+			}
+		}
+
+		if (mBeans.size() == 2) {
+			JawrConfigManagerMBean mBean1 = (JawrConfigManagerMBean) mBeans.get(0);
+			JawrConfigManagerMBean mBean2 = (JawrConfigManagerMBean) mBeans.get(1);
+
+			if (mBean1.getUseContextPathOverrideInDebugMode() == mBean2.getUseContextPathOverrideInDebugMode()) {
+				return Boolean.toString(mBean1.getUseContextPathOverrideInDebugMode());
+			} else {
+				return NOT_IDENTICAL_VALUES;
+			}
+		}
+
+		JawrConfigManagerMBean mBean1 = (JawrConfigManagerMBean) mBeans.get(0);
+		return Boolean.toString(mBean1.getUseContextPathOverrideInDebugMode());
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -280,7 +372,7 @@ public class JawrApplicationConfigManager implements JawrApplicationConfigManage
 			imgMBean.setCharsetName(charsetName);
 		}
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -348,7 +440,54 @@ public class JawrApplicationConfigManager implements JawrApplicationConfigManage
 			imgMBean.setGzipResourcesModeOn(Boolean.valueOf(gzipResourcesModeOn).booleanValue());
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.config.jmx.JawrApplicationConfigManagerMBean#setContextPathOverride(java.lang.String)
+	 */
+	public void setContextPathOverride(String contextPathOverride) {
+		
+		if (jsMBean != null) {
+			jsMBean.setDebugOverrideKey(contextPathOverride);
+		}
+		if (cssMBean != null) {
+			cssMBean.setDebugOverrideKey(contextPathOverride);
+		}
+		if (imgMBean != null) {
+			imgMBean.setDebugOverrideKey(contextPathOverride);
+		}
+	}
 
+	/* (non-Javadoc)
+	 * @see net.jawr.web.config.jmx.JawrApplicationConfigManagerMBean#setContextPathSslOverride(java.lang.String)
+	 */
+	public void setContextPathSslOverride(String contextPathOverride) {
+		
+		if (jsMBean != null) {
+			jsMBean.setDebugOverrideKey(contextPathOverride);
+		}
+		if (cssMBean != null) {
+			cssMBean.setDebugOverrideKey(contextPathOverride);
+		}
+		if (imgMBean != null) {
+			imgMBean.setDebugOverrideKey(contextPathOverride);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.config.jmx.JawrApplicationConfigManagerMBean#setUseContextPathOverrideInDebugMode(java.lang.String)
+	 */
+	public void setUseContextPathOverrideInDebugMode(String useContextPathOverrideInDebugMode) {
+		if (jsMBean != null) {
+			jsMBean.setGzipResourcesModeOn(Boolean.valueOf(useContextPathOverrideInDebugMode).booleanValue());
+		}
+		if (cssMBean != null) {
+			cssMBean.setGzipResourcesModeOn(Boolean.valueOf(useContextPathOverrideInDebugMode).booleanValue());
+		}
+		if (imgMBean != null) {
+			imgMBean.setGzipResourcesModeOn(Boolean.valueOf(useContextPathOverrideInDebugMode).booleanValue());
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

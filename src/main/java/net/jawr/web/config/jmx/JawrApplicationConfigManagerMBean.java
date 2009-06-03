@@ -69,18 +69,6 @@ public interface JawrApplicationConfigManagerMBean {
 	 */
 	public void setGzipResourcesModeOn(String gzipResourcesModeOn);
 	
-//	/**
-//	 * @return
-//	 * @see net.jawr.web.config.JawrConfig#isUsingClasspathCssImageServlet()
-//	 */
-//	public boolean isUsingClasspathCssImageServlet();
-//
-//	/**
-//	 * @param useClasspathCssImgServlet
-//	 * @see net.jawr.web.config.JawrConfig#setUseClasspathCssImageServlet(boolean)
-//	 */
-//	public void setUsingClasspathCssImageServlet(boolean useClasspathCssImgServlet);
-	
 	/**
 	 * @param charsetName
 	 * @see net.jawr.web.config.JawrConfig#getCharsetName(java.lang.String)
@@ -92,6 +80,44 @@ public interface JawrApplicationConfigManagerMBean {
 	 * @see net.jawr.web.config.JawrConfig#setCharsetName(java.lang.String)
 	 */
 	public void setCharsetName(String charsetName);
+
+	/**
+	 * @return
+	 * @see net.jawr.web.config.JawrConfig#getContextPathOverride()
+	 */
+	public String getContextPathOverride();
+
+
+	/**
+	 * @param contextPathOverride
+	 * @see net.jawr.web.config.JawrConfig#setContextPathOverride(java.lang.String)
+	 */
+	public void setContextPathOverride(String contextPathOverride);
+
+	/**
+	 * @return
+	 * @see net.jawr.web.config.JawrConfig#getContextPathOverride()
+	 */
+	public String getContextPathSslOverride();
+
+
+	/**
+	 * @param contextPathOverride
+	 * @see net.jawr.web.config.JawrConfig#setContextPathOverride(java.lang.String)
+	 */
+	public void setContextPathSslOverride(String contextPathOverride);
+
+	/**
+	 * @param contextPathOverride
+	 * @see net.jawr.web.config.JawrConfig#setUseContextPathOverrideInDebugMode(boolean)
+	 */
+	public void setUseContextPathOverrideInDebugMode(String useContextPathOverrideInDebugMode);
+
+	/**
+	 * @param contextPathOverride
+	 * @see net.jawr.web.config.JawrConfig#getUseContextPathOverrideInDebugMode()
+	 */
+	public String getUseContextPathOverrideInDebugMode();
 
 	/**
 	 * Refresh the configuration. 

@@ -20,7 +20,7 @@ import net.jawr.web.taglib.ImgHtmlTag;
 /**
  * This class defines the EL version of image HTML tag
  * 
- * @author Ibrahim CHAEHOI
+ * @author Ibrahim Chaehoi
  */
 public class ELImgHtmlTag extends ImgHtmlTag {
 

@@ -485,7 +485,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		
 		// Set the CSS Classpath resource data for the debug mode  
 		String filePath = status.getLastPathAdded();
-		if(status.getJawrConfig().isDebugModeOn() && filePath.startsWith(JawrConstant.CLASSPATH_RESOURCE_PREFIX)){
+		if(filePath.startsWith(JawrConstant.CLASSPATH_RESOURCE_PREFIX)){
 			bundleContent.putCssClasspathDebugContent(filePath.substring(JawrConstant.CLASSPATH_RESOURCE_PREFIX.length()), resourceData.toString());
 		}
 	}

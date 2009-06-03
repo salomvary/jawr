@@ -26,6 +26,7 @@ import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.sorting.SortFileParser;
+import net.jawr.web.util.StringUtils;
 
 import org.apache.log4j.Logger;
 
@@ -249,7 +250,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList(java.lang.String)
 	 */
 	public List getItemPathList(String variantKey) {
-		if(null == variantKey)
+		if(StringUtils.isEmpty(variantKey))
 			return itemPathList;
 		
 		List rets = new ArrayList();
@@ -285,7 +286,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
     		throw new IllegalStateException("The bundleDataHashCode must be set before accessing the url prefix.");
     	
     	// Resolves the locale key like resourcebundle does
-    	if(null != variantKey && null != this.localeVariantKeys) {
+    	if(StringUtils.isNotEmpty(variantKey) && null != this.localeVariantKeys) {
     		String key = getAvailableLocaleVariant(variantKey);
     		if(null != key)
     			return prefixMap.get(variantKey) + "." + key + "/";

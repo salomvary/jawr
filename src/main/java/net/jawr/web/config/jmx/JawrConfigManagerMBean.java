@@ -35,15 +35,28 @@ public interface JawrConfigManagerMBean {
 
 	/**
 	 * @return
-	 * @see net.jawr.web.config.JawrConfig#getCssImagePathOverride()
+	 * @see net.jawr.web.config.JawrConfig#getContextPathOverride()
 	 */
-	public String getCssImagePathOverride();
+	public String getContextPathSslOverride();
+
 
 	/**
-	 * @param cssImagePathOverride
-	 * @see net.jawr.web.config.JawrConfig#setCssImagePathOverride(java.lang.String)
+	 * @param contextPathOverride
+	 * @see net.jawr.web.config.JawrConfig#setContextPathOverride(java.lang.String)
 	 */
-	public void setCssImagePathOverride(String cssImagePathOverride);
+	public void setContextPathSslOverride(String contextPathOverride);
+
+	/**
+	 * @param contextPathOverride
+	 * @see net.jawr.web.config.JawrConfig#setUseContextPathOverrideInDebugMode(boolean)
+	 */
+	public void setUseContextPathOverrideInDebugMode(boolean useContextPathOverrideInDebugMode);
+
+	/**
+	 * @param contextPathOverride
+	 * @see net.jawr.web.config.JawrConfig#getUseContextPathOverrideInDebugMode()
+	 */
+	public boolean getUseContextPathOverrideInDebugMode();
 
 	/**
 	 * @return

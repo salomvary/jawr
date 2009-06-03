@@ -161,7 +161,9 @@ public class ClassLoaderResourceUtils {
 					ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();
 					try {
 						 Thread.currentThread().setContextClassLoader(source.getClass().getClassLoader());
-						 url = Thread.currentThread().getContextClassLoader().getResource(resourcePath);
+						 if(Thread.currentThread().getContextClassLoader() != null){
+							 url = Thread.currentThread().getContextClassLoader().getResource(resourcePath);
+						 }
 					}
 					finally {
 						 Thread.currentThread().setContextClassLoader(threadClassLoader);

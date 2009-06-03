@@ -13,14 +13,13 @@
  */
 package net.jawr.web.servlet.mock;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-
-import org.apache.commons.collections.iterators.IteratorEnumeration;
 
 /**
  * The mock class for the servlet config
@@ -62,13 +61,21 @@ public class MockServletConfig implements ServletConfig {
 	}
 
 	/**
+	 * Returns the initialization parameters map
+	 * @return the initialization parameters map
+	 */
+	public Map getInitParameters() {
+		return this.initParameters;
+	}
+
+	/**
 	 * Sets the initialization parameters map
 	 * @param initParameters the initParameters to set
 	 */
 	public void setInitParameters(Map initParameters) {
 		this.initParameters = initParameters;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see javax.servlet.ServletConfig#getInitParameter(java.lang.String)
 	 */
@@ -82,7 +89,7 @@ public class MockServletConfig implements ServletConfig {
 	 */
 	public Enumeration getInitParameterNames() {
 		
-		return new IteratorEnumeration(initParameters.keySet().iterator());
+		return Collections.enumeration(initParameters.keySet());
 	}
 
 	/* (non-Javadoc)

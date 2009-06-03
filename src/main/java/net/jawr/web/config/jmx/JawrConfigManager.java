@@ -50,12 +50,20 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 		return configProperties.getProperty(JawrConfig.JAWR_URL_CONTEXTPATH_OVERRIDE);
 	}
 
-	/**
-	 * @return
-	 * @see net.jawr.web.config.JawrConfig#getCssImagePathOverride()
+	/* (non-Javadoc)
+	 * @see net.jawr.web.config.jmx.JawrConfigManagerMBean#getContextPathSslOverride()
 	 */
-	public String getCssImagePathOverride() {
-		return configProperties.getProperty(JawrConfig.JAWR_CSS_IMAGEPATH_OVERRIDE);
+	public String getContextPathSslOverride() {
+		
+		return configProperties.getProperty(JawrConfig.JAWR_URL_CONTEXTPATH_SSL_OVERRIDE);
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.config.jmx.JawrConfigManagerMBean#getUseContextPathOverrideInDebugMode()
+	 */
+	public boolean getUseContextPathOverrideInDebugMode() {
+	
+		return Boolean.parseBoolean(configProperties.getProperty(JawrConfig.JAWR_USE_URL_CONTEXTPATH_OVERRIDE_IN_DEBUG_MODE));
 	}
 
 	/**
@@ -95,7 +103,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	 * @see net.jawr.web.config.JawrConfig#isDebugModeOn()
 	 */
 	public boolean isDebugModeOn() {
-		return Boolean.valueOf(configProperties.getProperty(JawrConfig.JAWR_DEBUG_ON)).booleanValue();
+		return Boolean.parseBoolean(configProperties.getProperty(JawrConfig.JAWR_DEBUG_ON));
 	}
 
 	/**
@@ -103,7 +111,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	 * @see net.jawr.web.config.JawrConfig#isGzipResourcesForIESixOn()
 	 */
 	public boolean isGzipResourcesForIESixOn() {
-		return Boolean.valueOf(configProperties.getProperty(JawrConfig.JAWR_GZIP_IE6_ON)).booleanValue();
+		return Boolean.parseBoolean(configProperties.getProperty(JawrConfig.JAWR_GZIP_IE6_ON));
 	}
 
 	/**
@@ -111,7 +119,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	 * @see net.jawr.web.config.JawrConfig#isGzipResourcesModeOn()
 	 */
 	public boolean isGzipResourcesModeOn() {
-		return Boolean.valueOf(configProperties.getProperty(JawrConfig.JAWR_GZIP_ON)).booleanValue();
+		return Boolean.parseBoolean(configProperties.getProperty(JawrConfig.JAWR_GZIP_ON));
 	}
 
 	/**
@@ -119,7 +127,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	 * @see net.jawr.web.config.JawrConfig#isUsingClasspathCssImageServlet()
 	 */
 	public boolean isUsingClasspathCssImageServlet() {
-		return Boolean.valueOf(configProperties.getProperty(JawrConfig.JAWR_CSS_IMG_USE_CLASSPATH_SERVLET)).booleanValue();
+		return Boolean.parseBoolean(configProperties.getProperty(JawrConfig.JAWR_CSS_IMG_USE_CLASSPATH_SERVLET));
 	}
 
 	/**
@@ -146,14 +154,22 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 		configProperties.setProperty(JawrConfig.JAWR_URL_CONTEXTPATH_OVERRIDE, contextPathOverride);
 	}
 
-	/**
-	 * @param cssImagePathOverride
-	 * @see net.jawr.web.config.JawrConfig#setCssImagePathOverride(java.lang.String)
+	/* (non-Javadoc)
+	 * @see net.jawr.web.config.jmx.JawrConfigManagerMBean#setContextPathSslOverride(java.lang.String)
 	 */
-	public void setCssImagePathOverride(String cssImagePathOverride) {
-		configProperties.setProperty(JawrConfig.JAWR_CSS_IMAGEPATH_OVERRIDE, cssImagePathOverride);
+	public void setContextPathSslOverride(String contextPathOverride) {
+		
+		configProperties.setProperty(JawrConfig.JAWR_URL_CONTEXTPATH_SSL_OVERRIDE, contextPathOverride);
 	}
 
+	/* (non-Javadoc)
+	 * @see net.jawr.web.config.jmx.JawrConfigManagerMBean#setUseContextPathOverrideInDebugMode(boolean)
+	 */
+	public void setUseContextPathOverrideInDebugMode(boolean useContextPathOverrideInDebugMode) {
+	
+		configProperties.setProperty(JawrConfig.JAWR_USE_URL_CONTEXTPATH_OVERRIDE_IN_DEBUG_MODE, Boolean.toString(useContextPathOverrideInDebugMode));
+	}
+	
 	/**
 	 * @param cssLinkFlavor
 	 * @see net.jawr.web.config.JawrConfig#setCssLinkFlavor(java.lang.String)

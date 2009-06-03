@@ -21,6 +21,12 @@ package net.jawr.web;
  */
 public class JawrConstant {
 
+	/** The URL separator */
+	public static final String URL_SEPARATOR = "/";
+	
+	/** The URL separator character. */
+	public static final char URL_SEPARATOR_CHAR = '/';
+	
 	/** The init parameter servlet for the resource type */
 	public static final String TYPE_INIT_PARAMETER = "type";
 
@@ -53,5 +59,15 @@ public class JawrConstant {
 	
 	/** The image servlet context attribute name*/
 	public static final String IMG_CONTEXT_ATTRIBUTE = "net.jawr.web.resource.bundle.IMG_CONTEXT_ATTRIBUTE";
+
+	/** The https url prefix */
+	public static final String HTTPS_URL_PREFIX = "https://";
+
+	/** The http url prefix */
+	public static final String HTTP_URL_PREFIX = "http://";
+	
+	
+
+	
 	
 }

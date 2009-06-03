@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim CHAEHOI
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  * Helper class to make properties access less verbose.
  * 
  * @author Jordi Hernández Sellés
- * @author Ibrahim CHAEHOI
+ * @author Ibrahim Chaehoi
  * 
  */
 public class PropertiesConfigHelper {

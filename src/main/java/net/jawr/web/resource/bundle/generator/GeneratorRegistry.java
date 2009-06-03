@@ -29,6 +29,7 @@ import net.jawr.web.resource.bundle.generator.classpath.ClasspathJSGenerator;
 import net.jawr.web.resource.bundle.generator.dwr.DWRGeneratorFactory;
 import net.jawr.web.resource.bundle.generator.validator.CommonsValidatorGenerator;
 import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
+import net.jawr.web.servlet.JawrRequestHandler;
 
 /**
  * Registry for resource generators, which create scripts or CSS data dynamically, 
@@ -214,6 +215,23 @@ public class GeneratorRegistry {
 	}
 	
 	/**
+	 * Returns the path to use in the "build time process" to generate the resource path for debug mode. 
+	 * @param path the resource path
+	 * @return the path to use in the "build time process" to generate the resource path for debug mode. 
+	 */
+	public String getDebugModeBuildTimeGenerationPath(String path){
+		
+		int idx = path.indexOf("?");
+		String debugModeGeneratorPath = path.substring(0, idx);
+		debugModeGeneratorPath = debugModeGeneratorPath.replaceAll("\\.", "/");
+		
+		int jawrGenerationParamIdx = path.indexOf(JawrRequestHandler.GENERATION_PARAM);
+		String parameter = path.substring(jawrGenerationParamIdx+JawrRequestHandler.GENERATION_PARAM.length()+1); // Add 1 for the '=' character 
+		String key = matchPath(parameter);
+		return debugModeGeneratorPath+"/"+((ResourceGenerator)registry.get(key)).getDebugModeBuildTimeGenerationPath(parameter);
+	}
+	
+	/**
 	 * Get the key from the mappings that corresponds to the specified path. 
 	 * @param path the resource path
 	 * @return the registry key corresponding to the path
@@ -232,4 +250,13 @@ public class GeneratorRegistry {
 		return rets;
 	}
 
+	/**
+	 * Returns true if the path match a message resource generator
+	 * @param path the path
+	 * @return true if the path match a message resource generator
+	 */
+	public boolean isMessageResourceGenerator(String path){
+		
+		return path.startsWith(MESSAGE_BUNDLE_PREFIX+PREFIX_SEPARATOR);	
+	}
 }

@@ -36,11 +36,6 @@ import net.jawr.web.resource.bundle.renderer.CSSHTMLBundleLinkRenderer;
 public class JawrConfig {
 
 	/**
-	 * The property name for the image path override
-	 */
-	public static final String JAWR_CSS_IMAGEPATH_OVERRIDE = "jawr.css.imagepath.override";
-
-	/**
 	 * The property name for the css link flavor
 	 */
 	public static final String JAWR_CSSLINKS_FLAVOR = "jawr.csslinks.flavor";
@@ -59,6 +54,16 @@ public class JawrConfig {
 	 * The property name for the url context path used to override
 	 */
 	public static final String JAWR_URL_CONTEXTPATH_OVERRIDE = "jawr.url.contextpath.override";
+
+	/**
+	 * The property name for the url context path used to override SSL path
+	 */
+	public static final String JAWR_URL_CONTEXTPATH_SSL_OVERRIDE = "jawr.url.contextpath.ssl.override";
+
+	/**
+	 * The property name for the flag indicating if we should use or not the url context path override even in debug mode
+	 */
+	public static final String JAWR_USE_URL_CONTEXTPATH_OVERRIDE_IN_DEBUG_MODE = "jawr.url.contextpath.override.use.in.debug.mode";
 
 	/**
 	 * The property name for the Gzip IE6 flag
@@ -167,9 +172,16 @@ public class JawrConfig {
 	private String contextPathOverride;
 
 	/**
-	 * Determines if the contextPathOverride is a full domain path (http://.... or https://...)
+	 * Override value to use instead of the context path of the application in generated urls for SSL page. 
+	 * If null, contextPath is used. If blank, urls are generated to be relative.
 	 */
-	private boolean isDomainOverriden;
+	private String contextPathSslOverride;
+
+	/**
+	 * The flag indicating that we should use the overriden context path even in debug mode.
+	 * The default value is false.
+	 */
+	private boolean useContextPathOverrideInDebugMode = false;
 
 	/**
 	 * Override value to use instead of the relative path of the application when css urls paths are re-written. urls are generated to be relative if
@@ -235,6 +247,14 @@ public class JawrConfig {
 		if (null != props.getProperty(JAWR_URL_CONTEXTPATH_OVERRIDE)) {
 			setContextPathOverride(props.getProperty(JAWR_URL_CONTEXTPATH_OVERRIDE));
 		}
+		if (null != props.getProperty(JAWR_URL_CONTEXTPATH_SSL_OVERRIDE)) {
+			setContextPathSslOverride(props.getProperty(JAWR_URL_CONTEXTPATH_SSL_OVERRIDE));
+		}
+		
+		if (null != props.getProperty(JAWR_USE_URL_CONTEXTPATH_OVERRIDE_IN_DEBUG_MODE)) {
+			setUseContextPathOverrideInDebugMode(Boolean.valueOf(props.getProperty(JAWR_USE_URL_CONTEXTPATH_OVERRIDE_IN_DEBUG_MODE)).booleanValue());
+		}
+		
 		if (null != props.getProperty(JAWR_DWR_MAPPING)) {
 			setDwrMapping(props.getProperty(JAWR_DWR_MAPPING));
 		}
@@ -246,10 +266,6 @@ public class JawrConfig {
 
 		if (null != props.getProperty(JAWR_CSSLINKS_FLAVOR)) {
 			setCssLinkFlavor(props.getProperty(JAWR_CSSLINKS_FLAVOR).trim());
-		}
-
-		if (null != props.getProperty(JAWR_CSS_IMAGEPATH_OVERRIDE)) {
-			setCssImagePathOverride(props.getProperty(JAWR_CSS_IMAGEPATH_OVERRIDE).trim());
 		}
 
 		if (null != props.getProperty(JAWR_CSS_IMG_USE_CLASSPATH_SERVLET)) {
@@ -282,15 +298,6 @@ public class JawrConfig {
 	 */
 	public void setDebugOverrideKey(String debugOverrideKey) {
 		this.debugOverrideKey = debugOverrideKey;
-	}
-
-	/**
-	 * Get the isDomainOverriden flag.
-	 * 
-	 * @return the isDomainOverriden attribute, which determines if the contextPathOverride is a full domain path (http://.... or https://...)
-	 */
-	public boolean isDomainOverriden() {
-		return isDomainOverriden;
 	}
 
 	/**
@@ -410,9 +417,34 @@ public class JawrConfig {
 	 */
 	public void setContextPathOverride(String contextPathOverride) {
 		this.contextPathOverride = contextPathOverride;
-		if (null != contextPathOverride
-				&& (contextPathOverride.startsWith("http://") || contextPathOverride.startsWith("https://") || contextPathOverride.startsWith("//")))
-			this.isDomainOverriden = true;
+	}
+
+	/**
+	 * @return the contextPathSslOverride
+	 */
+	public String getContextPathSslOverride() {
+		return contextPathSslOverride;
+	}
+
+	/**
+	 * @param contextPathSslOverride the contextPathSslOverride to set
+	 */
+	public void setContextPathSslOverride(String contextPathSslOverride) {
+		this.contextPathSslOverride = contextPathSslOverride;
+	}
+
+	/**
+	 * @return the useContextPathOverrideInDebugMode
+	 */
+	public boolean isUseContextPathOverrideInDebugMode() {
+		return useContextPathOverrideInDebugMode;
+	}
+
+	/**
+	 * @param useContextPathOverrideInDebugMode the useContextPathOverrideInDebugMode to set
+	 */
+	public void setUseContextPathOverrideInDebugMode(boolean useContextPathOverrideInDebugMode) {
+		this.useContextPathOverrideInDebugMode = useContextPathOverrideInDebugMode;
 	}
 
 	/**
