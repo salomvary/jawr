@@ -14,12 +14,16 @@
 package net.jawr.web.resource.bundle.factory.util;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import net.jawr.web.JawrConstant;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
+import net.jawr.web.servlet.JawrRequestHandler;
 import net.jawr.web.util.StringUtils;
 
 /**
@@ -126,6 +130,49 @@ public class PathNormalizer {
 			ret.add(path);
 		}
 		return ret;
+	}
+	
+	/**
+	 * converts a generation path (such as jar:/some/path/file) into 
+	 * a request path that the request handler can understand and process.  
+	 * @param path
+	 * @return
+	 */
+	public static String createGenerationPath(String path, GeneratorRegistry registry){
+		try {
+			path = registry.getDebugModeGenerationPath(path) 
+				+ "?" 
+				+ JawrRequestHandler.GENERATION_PARAM 
+				+ "=" 
+				+ URLEncoder.encode(path, "UTF-8");
+		} catch (UnsupportedEncodingException neverHappens) {
+			/*URLEncoder:how not to use checked exceptions...*/
+			throw new RuntimeException("Something went unexpectedly wrong while encoding a URL for a generator. ",
+										neverHappens);
+		}
+		return path;
+	}
+
+	/**
+	 * Adds a key and value to the request path
+	 * & or ? will be used as needed
+	 * 
+	 * path + ? or & + parameterKey=parameter
+	 * 
+	 * @param path the url to add the parameterKey and parameter too
+	 * @param parameterKey the key in the get request (parameterKey=parameter)
+	 * @param parameter the parameter to add to the end of the url
+	 * @return a String with the url parameter added: path + ? or & + parameterKey=parameter
+	 */
+	public static String addGetParameter(String path, String parameterKey, String parameter){
+		StringBuffer sb = new StringBuffer(path); 
+		if(path.indexOf("?") > 0) {
+			sb.append("&");
+		} else {
+			sb.append("?");
+		}
+		sb.append(parameterKey + "="+ parameter);
+		return sb.toString();
 	}
 	
 	///------------------------------------------------------
@@ -652,4 +699,6 @@ public class PathNormalizer {
         }
         return relativePath;
     }
+
+	
 }

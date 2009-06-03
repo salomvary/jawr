@@ -96,7 +96,7 @@ public class ClientSideHandlerGeneratorImpl implements
 		sb.append("(function(){\n");
 		
 		// shorthand for creating ResourceBundles. makes the script shorter. 
-		sb.append("function r(n, p, i,ie){return new JAWR.ResourceBundle(n, p, i,ie);}\n");
+		sb.append("function r(n, p, i,ie,aU){return new JAWR.ResourceBundle(n, p, i,ie,aU);}\n");
 		
 		sb.append("JAWR.loader.jsbundles = [");
 		sb.append(getClientSideBundles(locale, useGzip));
@@ -226,7 +226,7 @@ public class ClientSideHandlerGeneratorImpl implements
 			for(Iterator it = bundle.getItemPathList(variantKey).iterator();it.hasNext();){
 				String path = (String) it.next();
 				if(this.config.getGeneratorRegistry().isPathGenerated(path)) {
-					path = RendererRequestUtils.createGenerationPath(path,this.config.getGeneratorRegistry());
+					path = PathNormalizer.createGenerationPath(path,this.config.getGeneratorRegistry());
 				}
 				if("".equals(this.config.getContextPathOverride()) && path.startsWith("/"))
 					path = path.substring(1);
@@ -235,9 +235,19 @@ public class ClientSideHandlerGeneratorImpl implements
 					buf.append(",");
 			}
 			buf.append("]");
+			
+			if(null != bundle.getExplorerConditionalExpression()) {
+				buf.append(",'").append(bundle.getExplorerConditionalExpression()).append("'");
+			}
 		}
-		if(null != bundle.getExplorerConditionalExpression()) {
-			buf.append(",'").append(bundle.getExplorerConditionalExpression()).append("'");
+		if(null != bundle.getAlternateProductionURL()) {
+			// Complete the parameters if needed, since the alternate param goes afterwards
+			if(skipItems)
+				buf.append(",null,null");
+			else if(null == bundle.getExplorerConditionalExpression())
+				buf.append(",null");
+			buf.append("," +JavascriptStringUtil.quote(bundle.getAlternateProductionURL()));
+				
 		}
 		buf.append(")");
 		

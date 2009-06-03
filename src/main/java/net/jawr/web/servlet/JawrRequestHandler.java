@@ -103,6 +103,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	protected ConfigChangeListenerThread configChangeListenerThread;
 	protected GeneratorRegistry generatorRegistry;
 	protected JawrConfig jawrConfig;
+	protected ConfigPropertiesSource propertiesSource;
 	protected ClientSideHandlerScriptRequestHandler clientSideScriptRequestHandler;
 
 	/** The image MIME map, associating the image extension to their MIME type */
@@ -164,6 +165,9 @@ public class JawrRequestHandler implements ConfigChangeListener {
 
 		// init registry
 		generatorRegistry = new GeneratorRegistry(resourceType);
+
+		// hang onto the propertiesSource for manual reloads
+		this.propertiesSource = propsSrc;
 
 		// Initialize config
 		initializeJawrConfig(props);
@@ -384,6 +388,12 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	 * @throws IOException if an IO exception occurs
 	 */
 	public void processRequest(String requestedPath, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		// manual reload request
+		if (this.jawrConfig.getRefreshKey().length() > 0 && null != request.getParameter("refreshKey")
+				&& this.jawrConfig.getRefreshKey().equals(request.getParameter("refreshKey"))) {
+			this.configChanged(propertiesSource.getConfigProperties());
+		}
 
 		if (log.isDebugEnabled())
 			log.debug("Request received for path:" + requestedPath);

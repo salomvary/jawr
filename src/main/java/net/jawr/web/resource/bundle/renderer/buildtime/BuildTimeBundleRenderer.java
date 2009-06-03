@@ -22,7 +22,6 @@ import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.AbstractBundleLinkRenderer;
-import net.jawr.web.servlet.RendererRequestUtils;
 
 /**
  * This class defines the basic Bundle renderer.
@@ -84,7 +83,7 @@ public class BuildTimeBundleRenderer extends AbstractBundleLinkRenderer {
     	JawrConfig config = bundler.getConfig();
 		if( config.isDebugModeOn() && 
     		config.getGeneratorRegistry().isPathGenerated(bundleId)) {
-    		bundleId = RendererRequestUtils.createGenerationPath(bundleId, config.getGeneratorRegistry());
+    		bundleId = PathNormalizer.createGenerationPath(bundleId, config.getGeneratorRegistry());
     	}
     	String fullPath = PathNormalizer.joinPaths(config.getServletMapping(), bundleId);
     	fullPath = PathNormalizer.joinPaths(contextPath,fullPath);

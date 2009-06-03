@@ -24,7 +24,6 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.generator.dwr.DWRParamWriter;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
-import net.jawr.web.servlet.RendererRequestUtils;
 
 /**
  * Abstract base class for implementations of a link renderer.
@@ -69,7 +68,13 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
 		if (null == bundle)
 			return;
 
-		if (debugOn) {
+		// If there is a fixed URL for production mode it is rendered and method returns.  
+    	if(!debugOn && null != bundle.getAlternateProductionURL()){
+    		out.write(renderLink(bundle.getAlternateProductionURL()));
+    		return;
+    	}
+    	
+        if (debugOn) {
 			addComment("Start adding members resolved by '" + requestedPath + "'. Bundle id is: '" + bundle.getName() + "'", out);
 		}
 
@@ -147,7 +152,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
 
 		// When debug mode is on and the resource is generated the path must include a parameter
 		if (bundler.getConfig().isDebugModeOn() && bundler.getConfig().getGeneratorRegistry().isPathGenerated(bundleId)) {
-			bundleId = RendererRequestUtils.createGenerationPath(bundleId, bundler.getConfig().getGeneratorRegistry());
+			bundleId = PathNormalizer.createGenerationPath(bundleId, bundler.getConfig().getGeneratorRegistry());
 		}
 		String fullPath = PathNormalizer.joinPaths(bundler.getConfig().getServletMapping(), bundleId);
 
@@ -170,7 +175,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
 
 		// allow debugOverride to pass through on the generated urls
 		if (ThreadLocalJawrContext.isDebugOverriden()) {
-			fullPath = RendererRequestUtils.addGetParameter(fullPath, "overrideKey", bundler.getConfig().getDebugOverrideKey());
+			fullPath = PathNormalizer.addGetParameter(fullPath, "overrideKey", bundler.getConfig().getDebugOverrideKey());
 		}
 
 		return renderLink(fullPath);

@@ -49,6 +49,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	private String fileExtension;
 	private String urlPrefix;
 	private String explorerConditionalExpression;
+	private String alternateProductionURL;
 	
 	private Map prefixMap;
 	
@@ -405,5 +406,22 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 */
 	public List getLocaleVariantKeys(){
 		return this.localeVariantKeys;
+	}
+
+	
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getAlternateProductionURL()
+	 */
+	public String getAlternateProductionURL() {
+		return this.alternateProductionURL;
+	}
+
+
+	/**
+	 * @param alternateProductionURL the alternateProductionURL to set
+	 */
+	public void setAlternateProductionURL(String alternateProductionURL) {
+		this.alternateProductionURL = alternateProductionURL;
 	}
 }

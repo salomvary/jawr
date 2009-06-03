@@ -55,6 +55,9 @@ public class PropertiesBasedBundlesHandlerFactory {
 	public static final String FACTORY_USE_DIR_MAPPER = "factory.use.dirmapper";
 	public static final String FACTORY_DIR_MAPPER_EXCLUSION = "factory.dirmapper.excluded";
 	
+	// Orphans switch
+	public static final String FACTORY_PROCESS_ORPHANS = "factory.use.orphans.mapper";
+
 	// Which postprocessors to use.
 	public static final String BUNDLE_FACTORY_POSTPROCESSOR = "bundle.factory.bundlepostprocessors";
 	public static final String BUNDLE_FACTORY_FILE_POSTPROCESSOR = "bundle.factory.filepostprocessors";
@@ -134,6 +137,10 @@ public class PropertiesBasedBundlesHandlerFactory {
 		factory.setSingleFileBundleName(props
 				.getProperty(FACTORY_SINGLE_FILE_NAME));
 		
+		// Use orphans resolution at all, on by default. FACTORY_PROCESS_ORPHANS
+		factory.setScanForOrphans(Boolean.valueOf(
+				props.getProperty(FACTORY_PROCESS_ORPHANS, "true")).booleanValue());
+
 		// Use the automatic directory-as-bundle mapper.
 		factory.setUseDirMapperFactory(Boolean.valueOf(
 				props.getProperty(FACTORY_USE_DIR_MAPPER, "false"))
@@ -282,6 +289,13 @@ public class PropertiesBasedBundlesHandlerFactory {
 					.getCustomBundleProperty(bundleName,
 							BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION));
 
+		// Sets the alternate URL for production mode. 
+		if (null != props.getCustomBundleProperty(bundleName,
+				BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL))
+			bundle.setAlternateProductionURL(props.getCustomBundleProperty(bundleName,
+				BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL));
+			
+		
 		if (isComposite) {
 			String childBundlesProperty = props.getCustomBundleProperty(
 					bundleName, BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES);

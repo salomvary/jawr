@@ -86,6 +86,11 @@ public class JawrConfig {
 	public static final String JAWR_DEBUG_OVERRIDE_KEY = "jawr.debug.overrideKey";
 
 	/**
+	 * The property name for the reload refresh key
+	 */
+	private static final String JAWR_CONFIG_RELOAD_REFRESH_KEY = "jawr.config.reload.refreshKey";
+
+	/**
 	 * The property name for the Debug flag
 	 */
 	public static final String JAWR_DEBUG_ON = "jawr.debug.on";
@@ -149,6 +154,11 @@ public class JawrConfig {
 	 * Key that may be passed in to override production mode
 	 */
 	private String debugOverrideKey = "";
+	
+	/**
+	 * Key that may be passed in to reload the bundles on the fly
+	 */
+	private String refreshKey = "";
 		
 	/**
 	 * Flag to switch on the gzipped resources mode. defaults to true.
@@ -253,6 +263,10 @@ public class JawrConfig {
 		
 		if (null != props.getProperty(JAWR_USE_URL_CONTEXTPATH_OVERRIDE_IN_DEBUG_MODE)) {
 			setUseContextPathOverrideInDebugMode(Boolean.valueOf(props.getProperty(JAWR_USE_URL_CONTEXTPATH_OVERRIDE_IN_DEBUG_MODE)).booleanValue());
+		}
+		
+		if (null != props.getProperty(JAWR_CONFIG_RELOAD_REFRESH_KEY)) {
+			setRefreshKey(props.getProperty(JAWR_CONFIG_RELOAD_REFRESH_KEY));
 		}
 		
 		if (null != props.getProperty(JAWR_DWR_MAPPING)) {
@@ -644,6 +658,14 @@ public class JawrConfig {
 		sb.append("[JawrConfig:'").append("charset name:'").append(this.charsetName).append("'\n").append("debugModeOn:'").append(isDebugModeOn())
 				.append("'\n").append("servletMapping:'").append(getServletMapping()).append("' ]");
 		return sb.toString();
+	}
+
+	public String getRefreshKey() {
+		return refreshKey;
+	}
+
+	public void setRefreshKey(String refreshKey) {
+		this.refreshKey = refreshKey;
 	}
 
 }

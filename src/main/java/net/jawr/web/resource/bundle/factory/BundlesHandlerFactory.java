@@ -65,6 +65,7 @@ public class BundlesHandlerFactory {
 	private Set excludedDirMapperDirs;
 	private JawrConfig jawrConfig;
 	private Map customPostprocessors;	
+	private boolean scanForOrphans = true;
 	
 
 	/**
@@ -132,28 +133,37 @@ public class BundlesHandlerFactory {
 			}
 		}
 		
-		// Add all orphan bundles
-		OrphanResourceBundlesMapper orphanFactory = new OrphanResourceBundlesMapper(baseDir,resourceHandler,resourceBundles,fileExtension);
-		List orphans = orphanFactory.getOrphansList();
-		
-		// Orphans may be added separately or as one single resource bundle. 
-		if(useSingleResourceFactory){
-			// Add extension to the filename
-			if(!singleFileBundleName.endsWith(fileExtension))
-				singleFileBundleName += fileExtension;
-				
-			if(log.isInfoEnabled())
-				log.info("Building bundle of orphan resources with the name: " + singleFileBundleName);
-
-			resourceBundles.add(buildOrphansResourceBundle(singleFileBundleName, orphans));
-		
-		}
-		else {
-			if(log.isInfoEnabled())
-				log.info("Creating mappings for orphan resources. ");
-			for(Iterator it = orphans.iterator(); it.hasNext(); ) {
-				resourceBundles.add(buildOrphanResourceBundle((String)it.next()));
+		if(this.scanForOrphans) {
+			// Add all orphan bundles
+			OrphanResourceBundlesMapper orphanFactory = new OrphanResourceBundlesMapper(baseDir,resourceHandler,resourceBundles,fileExtension);
+			List orphans = orphanFactory.getOrphansList();
+			
+			// Orphans may be added separately or as one single resource bundle. 
+			if(useSingleResourceFactory){
+				// Add extension to the filename
+				if(!singleFileBundleName.endsWith(fileExtension))
+					singleFileBundleName += fileExtension;
+					
+				if(log.isInfoEnabled())
+					log.info("Building bundle of orphan resources with the name: " + singleFileBundleName);
+	
+				resourceBundles.add(buildOrphansResourceBundle(singleFileBundleName, orphans));
+			
 			}
+			else {
+				if(log.isInfoEnabled())
+					log.info("Creating mappings for orphan resources. ");
+				for(Iterator it = orphans.iterator(); it.hasNext(); ) {
+					resourceBundles.add(buildOrphanResourceBundle((String)it.next()));
+				}
+			}
+		}
+		else if(log.isDebugEnabled()){
+			log.debug("Skipping orphan file auto processing. ");
+			if("".equals(jawrConfig.getServletMapping()))
+				log.debug("Note that there is no specified mapping for Jawr " +
+						"(it has been seet to serve *.js or *.css requests). " +
+						"The orphan files will become unreachable through the server.");
 		}
 				
 		// Build the postprocessor for bundles 
@@ -212,6 +222,9 @@ public class BundlesHandlerFactory {
 		if(null != definition.getIeConditionalExpression())
 			composite.setExplorerConditionalExpression(definition.getIeConditionalExpression());
 		
+		if(null != definition.getAlternateProductionURL())
+			composite.setAlternateProductionURL(definition.getAlternateProductionURL());
+		
 		return composite;
 	}
 	
@@ -245,6 +258,9 @@ public class BundlesHandlerFactory {
 		
 		if(null != definition.getLocaleVariantKeys())
 			newBundle.setLocaleVariantKeys(definition.getLocaleVariantKeys());
+		
+		if(null != definition.getAlternateProductionURL())
+			newBundle.setAlternateProductionURL(definition.getAlternateProductionURL());
 		
 		return newBundle;
 	}
@@ -413,6 +429,13 @@ public class BundlesHandlerFactory {
 
 	public void setCustomPostprocessors(Map customPostprocessors) {
 		this.customPostprocessors = customPostprocessors;
+	}
+
+	/**
+	 * @param scanForOrphans the scanForOrphans to set
+	 */
+	public void setScanForOrphans(boolean scanForOrphans) {
+		this.scanForOrphans = scanForOrphans;
 	}
 
 	
