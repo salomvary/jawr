@@ -133,11 +133,9 @@ public class BundlesHandlerFactory {
 		}
 		
 		// Add all orphan bundles
-		// TODO make it cleanly
-//		OrphanResourceBundlesMapper orphanFactory = new OrphanResourceBundlesMapper(baseDir,resourceHandler,resourceBundles,fileExtension);
-//		List orphans = orphanFactory.getOrphansList();
-//		
-		List orphans = new ArrayList();
+		OrphanResourceBundlesMapper orphanFactory = new OrphanResourceBundlesMapper(baseDir,resourceHandler,resourceBundles,fileExtension);
+		List orphans = orphanFactory.getOrphansList();
+		
 		// Orphans may be added separately or as one single resource bundle. 
 		if(useSingleResourceFactory){
 			// Add extension to the filename
