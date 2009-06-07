@@ -155,9 +155,9 @@ The Jawr servlet
 	file and if changes are found, the configuration will be refreshed. 
 	
 	* Define a parameter name using the  <<jawr.config.reload.refreshKey>> config parameter. Once set, make any request to the Jawr servlet 
-	which includes this parameter. Note that you don't add the parameter to a page URL, but to a Jawr matching URL (*.js or likewise). So if 
-	the parameter is named 'foo', you could request something like <http://localhost:8080/myapp/jawr/someBundle.js?foo=bar>, and the config would 
-	be refreshed. 
+	which includes a parameter named 'refreshKey' with this value. Note that you don't add the parameter to a page URL, but to a Jawr matching 
+	URL (*.js or likewise). So if the parameter is named 'foo', you could request something like 
+	<http://localhost:8080/myapp/jawr/someBundle.js?refreshKey=foo>, and the config would be refreshed. 
 	
 	[] 
 
