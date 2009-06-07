@@ -22,7 +22,6 @@ import net.jawr.web.resource.bundle.generator.GeneratorContext;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
-import net.jawr.web.servlet.JawrRequestHandler;
 
 import org.apache.log4j.Logger;
 
@@ -77,10 +76,10 @@ public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator
 		
 		path = path.replaceFirst(GeneratorRegistry.PREFIX_SEPARATOR, JawrConstant.URL_SEPARATOR);
 		if(path.endsWith("@")){
-			path = path.replace("@", "");
+			path = path.replaceAll("@", "");
 		}else{
-			path = path.replace("@", "_");
-			path = path.replace("|", "_");
+			path = path.replaceAll("@", "_");
+			path = path.replaceAll("|", "_");
 		}
 		return path+"."+JawrConstant.JS_TYPE;
 	}

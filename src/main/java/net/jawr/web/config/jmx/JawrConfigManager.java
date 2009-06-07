@@ -63,7 +63,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	 */
 	public boolean getUseContextPathOverrideInDebugMode() {
 	
-		return Boolean.parseBoolean(configProperties.getProperty(JawrConfig.JAWR_USE_URL_CONTEXTPATH_OVERRIDE_IN_DEBUG_MODE));
+		return Boolean.valueOf(configProperties.getProperty(JawrConfig.JAWR_USE_URL_CONTEXTPATH_OVERRIDE_IN_DEBUG_MODE)).booleanValue();
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	 * @see net.jawr.web.config.JawrConfig#isDebugModeOn()
 	 */
 	public boolean isDebugModeOn() {
-		return Boolean.parseBoolean(configProperties.getProperty(JawrConfig.JAWR_DEBUG_ON));
+		return Boolean.valueOf(configProperties.getProperty(JawrConfig.JAWR_DEBUG_ON)).booleanValue();
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	 * @see net.jawr.web.config.JawrConfig#isGzipResourcesForIESixOn()
 	 */
 	public boolean isGzipResourcesForIESixOn() {
-		return Boolean.parseBoolean(configProperties.getProperty(JawrConfig.JAWR_GZIP_IE6_ON));
+		return Boolean.valueOf(configProperties.getProperty(JawrConfig.JAWR_GZIP_IE6_ON)).booleanValue();
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	 * @see net.jawr.web.config.JawrConfig#isGzipResourcesModeOn()
 	 */
 	public boolean isGzipResourcesModeOn() {
-		return Boolean.parseBoolean(configProperties.getProperty(JawrConfig.JAWR_GZIP_ON));
+		return Boolean.valueOf(configProperties.getProperty(JawrConfig.JAWR_GZIP_ON)).booleanValue();
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class JawrConfigManager implements JawrConfigManagerMBean {
 	 * @see net.jawr.web.config.JawrConfig#isUsingClasspathCssImageServlet()
 	 */
 	public boolean isUsingClasspathCssImageServlet() {
-		return Boolean.parseBoolean(configProperties.getProperty(JawrConfig.JAWR_CSS_IMG_USE_CLASSPATH_SERVLET));
+		return Boolean.valueOf(configProperties.getProperty(JawrConfig.JAWR_CSS_IMG_USE_CLASSPATH_SERVLET)).booleanValue();
 	}
 
 	/**
