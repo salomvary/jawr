@@ -79,7 +79,7 @@ public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator
 			path = path.replaceAll("@", "");
 		}else{
 			path = path.replaceAll("@", "_");
-			path = path.replaceAll("|", "_");
+			path = path.replaceAll("\\|", "_");
 		}
 		return path+"."+JawrConstant.JS_TYPE;
 	}
