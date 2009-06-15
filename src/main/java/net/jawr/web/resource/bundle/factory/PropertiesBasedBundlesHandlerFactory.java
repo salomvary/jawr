@@ -44,64 +44,24 @@ import net.jawr.web.resource.bundle.locale.LocaleUtils;
  */
 public class PropertiesBasedBundlesHandlerFactory {
 
-	public static final String RESOURCES_BASEDIR = "bundle.basedir";
-	public static final String RESOURCES_USE_CACHE = "use.cache";
-
-	// Single bundle switch and param.
-	public static final String FACTORY_USE_SINGLE_BUNDLE = "factory.use.singlebundle";
-	public static final String FACTORY_SINGLE_FILE_NAME = "factory.singlebundle.bundlename";
-
-	// Dir mapper switch
-	public static final String FACTORY_USE_DIR_MAPPER = "factory.use.dirmapper";
-	public static final String FACTORY_DIR_MAPPER_EXCLUSION = "factory.dirmapper.excluded";
-	
-	// Orphans switch
-	public static final String FACTORY_PROCESS_ORPHANS = "factory.use.orphans.mapper";
-
-	// Which postprocessors to use.
-	public static final String BUNDLE_FACTORY_POSTPROCESSOR = "bundle.factory.bundlepostprocessors";
-	public static final String BUNDLE_FACTORY_FILE_POSTPROCESSOR = "bundle.factory.filepostprocessors";
-
-	// Custom bundle factory parameters
-	public static final String BUNDLE_FACTORY_CUSTOM_NAMES = "bundle.names";
-	public static final String BUNDLE_FACTORY_CUSTOM_ID = ".id";
-	public static final String BUNDLE_FACTORY_CUSTOM_MAPPINGS = ".mappings";
-	public static final String BUNDLE_FACTORY_CUSTOM_GLOBAL_FLAG = ".global";
-	public static final String BUNDLE_FACTORY_CUSTOM_ORDER = ".order";
-	public static final String BUNDLE_FACTORY_CUSTOM_DEBUGONLY = ".debugonly";
-	public static final String BUNDLE_FACTORY_CUSTOM_DEBUGNEVER = ".debugnever";
-	public static final String BUNDLE_FACTORY_CUSTOM_POSTPROCESSOR = ".bundlepostprocessors";
-	public static final String BUNDLE_FACTORY_CUSTOM_FILE_POSTPROCESSOR = ".filepostprocessors";
-	public static final String BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION = ".ieonly.condition";
-
-	public static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG = ".composite";
-	public static final String BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES = ".child.names";
-	
-	// Alternate static URL for production mode 
-	public static final String BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL = ".productionURL";
-
-	//
-	public static final String USE_BUNDLE_NAMES = "jawr.use.bundle.names";
-
-	// Custom postprocessors factory parameters
-	public static final String CUSTOM_POSTPROCESSORS = "jawr.custom.postprocessors";
-	public static final String CUSTOM_POSTPROCESSORS_NAMES = ".names";
-	public static final String CUSTOM_POSTPROCESSORS_CLASS = ".class";
-
-	// Custom generators parameter
-	public static final String CUSTOM_GENERATORS = "jawr.custom.generators";
-
-	// Locale variants
-	//public static final String BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS = ".locales";
-
+	/** The properties configuration helper */
 	private PropertiesConfigHelper props;
+	
+	/** The bundle handler factory */
 	private BundlesHandlerFactory factory;
 
+	/**
+	 * Constructor 
+	 */
+	protected PropertiesBasedBundlesHandlerFactory(){
+		
+	}
+			
 	/**
 	 * Create a PropertiesBasedBundlesHandlerFactory using the specified
 	 * properties.
 	 * 
-	 * @param properties
+	 * @param properties the properties
 	 * @param resourceType
 	 *            js or css
 	 * @param rsHandler
@@ -118,38 +78,38 @@ public class PropertiesBasedBundlesHandlerFactory {
 		factory.setBundlesType(resourceType);
 
 		// Root resources dir
-		factory.setBaseDir(props.getProperty(RESOURCES_BASEDIR, "/"));
+		factory.setBaseDir(props.getProperty(PropertiesBundleConstant.RESOURCES_BASEDIR, "/"));
 
 		// Use cache by default
 		factory.setUseInMemoryCache(Boolean.valueOf(
-				props.getProperty(RESOURCES_USE_CACHE, "true")).booleanValue());
+				props.getProperty(PropertiesBundleConstant.RESOURCES_USE_CACHE, "true")).booleanValue());
 
 		// Postprocessor definitions
 		factory.setGlobalPostProcessorKeys(props
-				.getProperty(BUNDLE_FACTORY_POSTPROCESSOR));
+				.getProperty(PropertiesBundleConstant.BUNDLE_FACTORY_POSTPROCESSOR));
 		factory.setUnitPostProcessorKeys(props
-				.getProperty(BUNDLE_FACTORY_FILE_POSTPROCESSOR));
+				.getProperty(PropertiesBundleConstant.BUNDLE_FACTORY_FILE_POSTPROCESSOR));
 
 		// Single or multiple bundle for orphans settings.
 		factory.setUseSingleResourceFactory(Boolean.valueOf(
-				props.getProperty(FACTORY_USE_SINGLE_BUNDLE, "false"))
+				props.getProperty(PropertiesBundleConstant.FACTORY_USE_SINGLE_BUNDLE, "false"))
 				.booleanValue());
 		factory.setSingleFileBundleName(props
-				.getProperty(FACTORY_SINGLE_FILE_NAME));
+				.getProperty(PropertiesBundleConstant.FACTORY_SINGLE_FILE_NAME));
 		
 		// Use orphans resolution at all, on by default. FACTORY_PROCESS_ORPHANS
 		factory.setScanForOrphans(Boolean.valueOf(
-				props.getProperty(FACTORY_PROCESS_ORPHANS, "true")).booleanValue());
+				props.getProperty(PropertiesBundleConstant.FACTORY_PROCESS_ORPHANS, "true")).booleanValue());
 
 		// Use the automatic directory-as-bundle mapper.
 		factory.setUseDirMapperFactory(Boolean.valueOf(
-				props.getProperty(FACTORY_USE_DIR_MAPPER, "false"))
+				props.getProperty(PropertiesBundleConstant.FACTORY_USE_DIR_MAPPER, "false"))
 				.booleanValue());
 		factory.setExludedDirMapperDirs(props
-				.getPropertyAsSet(FACTORY_DIR_MAPPER_EXCLUSION));
+				.getPropertyAsSet(PropertiesBundleConstant.FACTORY_DIR_MAPPER_EXCLUSION));
 
 		// Initialize custom generators
-		Iterator generators = props.getPropertyAsSet(CUSTOM_GENERATORS)
+		Iterator generators = props.getPropertyAsSet(PropertiesBundleConstant.CUSTOM_GENERATORS)
 				.iterator();
 		while (generators.hasNext()) {
 			String generatorClass = (String) generators.next();
@@ -161,9 +121,9 @@ public class PropertiesBasedBundlesHandlerFactory {
 		// Check if we should use the bundle names property or
 		// find the bundle name using the bundle id declaration :
 		// jawr.<type>.bundle.<name>.id
-		if(null != props.getProperty(BUNDLE_FACTORY_CUSTOM_NAMES)) {
+		if(null != props.getProperty(PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_NAMES)) {
 			StringTokenizer tk = new StringTokenizer(props
-					.getProperty(BUNDLE_FACTORY_CUSTOM_NAMES), ",");
+					.getProperty(PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_NAMES), ",");
 			while (tk.hasMoreTokens()) {
 				customBundles.add(buildCustomBundleDefinition(tk.nextToken()
 						.trim(), false, generatorRegistry));
@@ -182,17 +142,17 @@ public class PropertiesBasedBundlesHandlerFactory {
 		// find the postprocessor name using the postprocessor class declaration :
 		// jawr.custom.postprocessors.<name>.class
 		Map customPostprocessors = new HashMap();
-		if (null != properties.getProperty(CUSTOM_POSTPROCESSORS
-				+ CUSTOM_POSTPROCESSORS_NAMES)) {
+		if (null != properties.getProperty(PropertiesBundleConstant.CUSTOM_POSTPROCESSORS
+				+ PropertiesBundleConstant.CUSTOM_POSTPROCESSORS_NAMES)) {
 			StringTokenizer tk = new StringTokenizer(properties
-					.getProperty(CUSTOM_POSTPROCESSORS
-							+ CUSTOM_POSTPROCESSORS_NAMES), ",");
+					.getProperty(PropertiesBundleConstant.CUSTOM_POSTPROCESSORS
+							+ PropertiesBundleConstant.CUSTOM_POSTPROCESSORS_NAMES), ",");
 
 			while (tk.hasMoreTokens()) {
 				String processorKey = tk.nextToken();
 				String processorClass = properties
-						.getProperty(CUSTOM_POSTPROCESSORS + "." + processorKey
-								+ CUSTOM_POSTPROCESSORS_CLASS);
+						.getProperty(PropertiesBundleConstant.CUSTOM_POSTPROCESSORS + "." + processorKey
+								+ PropertiesBundleConstant.CUSTOM_POSTPROCESSORS_CLASS);
 				if (null != processorClass)
 					customPostprocessors.put(processorKey, processorClass);
 			}
@@ -225,14 +185,14 @@ public class PropertiesBasedBundlesHandlerFactory {
 	 * 
 	 * @param bundleName the bundle name
 	 * @param generatorRegistry the generator registry
-	 * @return BundleDefinition
+	 * @return the bundleDefinition
 	 */
 	private ResourceBundleDefinition buildCustomBundleDefinition(
 			String bundleName, boolean isChildBundle, GeneratorRegistry generatorRegistry) {
 
 		// Id for the bundle
 		String bundleId = props.getCustomBundleProperty(bundleName,
-				BUNDLE_FACTORY_CUSTOM_ID);
+				PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_ID);
 		if (null == bundleId && !isChildBundle)
 			throw new IllegalArgumentException(
 					"No id defined for the bundle with name:" + bundleName
@@ -241,64 +201,65 @@ public class PropertiesBasedBundlesHandlerFactory {
 		// Wether it's a composite or not
 		boolean isComposite = Boolean.valueOf(
 				props.getCustomBundleProperty(bundleName,
-						BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG, "false"))
+						PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG, "false"))
 				.booleanValue();
 
 		// Create definition and set its id
 		ResourceBundleDefinition bundle = new ResourceBundleDefinition();
 		bundle.setBundleId(bundleId);
-
+		bundle.setBundleName(bundleName);
+		
 		// Wether it's global or not
 		Boolean isGlobal = Boolean.valueOf(props.getCustomBundleProperty(
-				bundleName, BUNDLE_FACTORY_CUSTOM_GLOBAL_FLAG, "false"));
+				bundleName, PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_GLOBAL_FLAG, "false"));
 		bundle.setGlobal(isGlobal.booleanValue());
 
 		// Set order if its a global bundle
 		if (isGlobal.booleanValue()) {
 			Integer order = Integer.valueOf(props.getCustomBundleProperty(
-					bundleName, BUNDLE_FACTORY_CUSTOM_ORDER, "0"));
+					bundleName, PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_ORDER, "0"));
 			bundle.setInclusionOrder(order.intValue());
 		}
 
 		// Override bundle postprocessor
 		if (null != props.getCustomBundleProperty(bundleName,
-				BUNDLE_FACTORY_CUSTOM_POSTPROCESSOR))
+				PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_POSTPROCESSOR))
 			bundle.setBundlePostProcessorKeys(props.getCustomBundleProperty(
-					bundleName, BUNDLE_FACTORY_CUSTOM_POSTPROCESSOR));
+					bundleName, PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_POSTPROCESSOR));
 
 		// Override unitary postprocessor
 		if (null != props.getCustomBundleProperty(bundleName,
-				BUNDLE_FACTORY_CUSTOM_FILE_POSTPROCESSOR))
+				PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_FILE_POSTPROCESSOR))
 			bundle.setUnitaryPostProcessorKeys(props.getCustomBundleProperty(
-					bundleName, BUNDLE_FACTORY_CUSTOM_FILE_POSTPROCESSOR));
+					bundleName, PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_FILE_POSTPROCESSOR));
 
 		// Use only with debug mode on
 		Boolean isDebugOnly = Boolean.valueOf(props.getCustomBundleProperty(
-				bundleName, BUNDLE_FACTORY_CUSTOM_DEBUGONLY, "false"));
+				bundleName, PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_DEBUGONLY, "false"));
 		bundle.setDebugOnly(isDebugOnly.booleanValue());
 
 		// Use only with debug mode off
 		Boolean isDebugNever = Boolean.valueOf(props.getCustomBundleProperty(
-				bundleName, BUNDLE_FACTORY_CUSTOM_DEBUGNEVER, "false"));
+				bundleName, PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_DEBUGNEVER, "false"));
 		bundle.setDebugNever(isDebugNever.booleanValue());
 
 		// Set conditional comment for IE, in case one is specified
 		if (null != props.getCustomBundleProperty(bundleName,
-				BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION))
+				PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION))
 			bundle.setIeConditionalExpression(props
 					.getCustomBundleProperty(bundleName,
-							BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION));
+							PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_IE_CONDITIONAL_EXPRESSION));
 
 		// Sets the alternate URL for production mode. 
 		if (null != props.getCustomBundleProperty(bundleName,
-				BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL))
+				PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL))
 			bundle.setAlternateProductionURL(props.getCustomBundleProperty(bundleName,
-				BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL));
+					PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL));
 			
 		
 		if (isComposite) {
 			String childBundlesProperty = props.getCustomBundleProperty(
-					bundleName, BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES);
+					bundleName, PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_COMPOSITE_NAMES);
 			if (null == childBundlesProperty)
 				throw new IllegalArgumentException(
 						"No child bundle names were defined for the composite bundle with name:"
@@ -319,7 +280,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 			bundle.setChildren(children);
 		} else {
 			String mappingsProperty = props.getCustomBundleProperty(bundleName,
-					BUNDLE_FACTORY_CUSTOM_MAPPINGS);
+					PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_MAPPINGS);
 			if (null == mappingsProperty)
 				throw new IllegalArgumentException(
 						"No mappings were defined for the bundle with name:"
@@ -342,7 +303,6 @@ public class PropertiesBasedBundlesHandlerFactory {
 			}
 			bundle.setMappings(mappings);
 			bundle.setLocaleVariantKeys(Collections.list(Collections.enumeration(localeKeys)));
-			
 			
 //			String locales = props.getCustomBundleProperty(bundleName,
 //					BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS);

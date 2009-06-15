@@ -96,6 +96,22 @@ public class JawrConfig {
 	public static final String JAWR_DEBUG_ON = "jawr.debug.on";
 
 	/**
+	 * The property name for the jawr working directory. By default it's jawrTemp in the application server working directory
+	 * associated to the application.
+	 */
+	public static final String JAWR_WORKING_DIRECTORY = "jawr.working.directory";
+
+	/**
+	 * The property name for the flag indicating if we should process the bundle at startup
+	 */
+	public static final String JAWR_USE_BUNDLE_MAPPING = "jawr.use.bundle.mapping";
+
+	/**
+	 * The property name for the bundle mapping prefix
+	 */
+	public static final String JAWR_BUNDLE_MAPPING_PREFIX = "jawr.bundle.mapping.prefix";
+
+	/**
 	 * The property name for the debug mode system flag
 	 */
 	private static final String DEBUG_MODE_SYSTEM_FLAG = "net.jawr.debug.on";
@@ -171,6 +187,16 @@ public class JawrConfig {
 	private boolean gzipResourcesForIESixOn = true;
 
 	/**
+	 * Flag which defines if we should process the bundle at server startup. defaults to false.
+	 */
+	private boolean useBundleMapping = false;
+
+	/** 
+	 * The jqzr zorking directory path
+	 */
+	private String jawrWorkingDirectory;
+	
+	/**
 	 * Servlet mapping corresponding to this config. Defaults to an empty string
 	 */
 	private String servletMapping = "";
@@ -245,6 +271,15 @@ public class JawrConfig {
 		if (null != props.getProperty(JAWR_DEBUG_OVERRIDE_KEY)) {
 			setDebugOverrideKey(props.getProperty(JAWR_DEBUG_OVERRIDE_KEY));
 		}
+		
+		if (null != props.getProperty(JAWR_USE_BUNDLE_MAPPING)) {
+			setUseBundleMapping(Boolean.valueOf(props.getProperty(JAWR_USE_BUNDLE_MAPPING)).booleanValue());
+		}
+		
+		if (null != props.getProperty(JAWR_WORKING_DIRECTORY)) {
+			setJawrWorkingDirectory(props.getProperty(JAWR_WORKING_DIRECTORY));
+		}
+		
 		if (null != props.getProperty(JAWR_GZIP_ON)) {
 			setGzipResourcesModeOn(Boolean.valueOf(props.getProperty(JAWR_GZIP_ON)).booleanValue());
 		}
@@ -336,6 +371,54 @@ public class JawrConfig {
 		this.debugModeOn = debugMode;
 	}
 
+	/**
+	 * Returns the refresh key
+	 * @return the refresh key
+	 */
+	public String getRefreshKey() {
+		return refreshKey;
+	}
+
+	/**
+	 * Sets the refresh key
+	 * @param refreshKey the refresh key
+	 */
+	public void setRefreshKey(String refreshKey) {
+		this.refreshKey = refreshKey;
+	}
+	
+	/**
+	 * Returns the jawr working directory
+	 * @return the jawr working directory
+	 */
+	public String getJawrWorkingDirectory() {
+		return jawrWorkingDirectory;
+	}
+
+	/**
+	 * Sets the flag indicating if we should process the bundle at startup
+	 * @param dirPath the directory path to set
+	 */
+	public void setJawrWorkingDirectory(String dirPath) {
+		this.jawrWorkingDirectory = dirPath;
+	}
+
+	/**
+	 * Returns the flag indicating if we should use the bundle mapping properties file.
+	 * @return the flag indicating if we should use the bundle mapping properties file.
+	 */
+	public boolean getUseBundleMapping() {
+		return useBundleMapping;
+	}
+
+	/**
+	 * Sets the flag indicating if we should use the bundle mapping properties file.
+	 * @param bundleMappingPath the flag to set
+	 */
+	public void setUseBundleMapping(boolean useBundleMapping) {
+		this.useBundleMapping = useBundleMapping;
+	}
+	
 	/**
 	 * Get the charset to interpret and generate resource.
 	 * 
@@ -636,6 +719,8 @@ public class JawrConfig {
 	}
 
 	/**
+	 * Sets the css link flavor
+	 * 
 	 * @param cssLinkFlavor the cssLinkFlavor to set
 	 */
 	public void setCssLinkFlavor(String cssLinkFlavor) {
@@ -658,14 +743,6 @@ public class JawrConfig {
 		sb.append("[JawrConfig:'").append("charset name:'").append(this.charsetName).append("'\n").append("debugModeOn:'").append(isDebugModeOn())
 				.append("'\n").append("servletMapping:'").append(getServletMapping()).append("' ]");
 		return sb.toString();
-	}
-
-	public String getRefreshKey() {
-		return refreshKey;
-	}
-
-	public void setRefreshKey(String refreshKey) {
-		this.refreshKey = refreshKey;
 	}
 
 }

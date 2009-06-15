@@ -427,7 +427,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 			public Set getLicensesPathList() {
 				return null;
 			}
-			public String getName() {
+			public String getId() {
 				return id;
 			}
 			public String getURLPrefix(String variantKey) {
@@ -453,6 +453,23 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 			}
 			public String getAlternateProductionURL() {
 				return null;
+			}
+			public String getBundleDataHashCode(String variantKey) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			public String getName() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			public boolean isComposite() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			public void setBundleDataHashCode(String variantKey,
+					String bundleDataHashCode) {
+				// TODO Auto-generated method stub
+				
 			}};
 		
 	}

@@ -1,12 +1,11 @@
 package test.net.jawr.web.resource;
 
 import java.io.Reader;
-import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.util.Set;
 
 import net.jawr.web.resource.FileSystemResourceHandler;
-
 import test.net.jawr.web.resource.bundle.handler.ResourceHandlerBasedTest;
 
 
@@ -113,7 +112,7 @@ public class FileSystemResourceHandlerTest extends ResourceHandlerBasedTest {
 	public void testGetResourceBundleChannel() {
 		try {
 			// Retrieve a bundle
-			FileChannel chan = subject.getResourceBundleChannel("collected.js");
+			ReadableByteChannel chan = subject.getResourceBundleChannel("collected.js");
 			assertNotNull("'collected.js' was not found by the handler. ",chan);
 			
 			// Read its data and check the validity

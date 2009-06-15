@@ -46,8 +46,8 @@ public class FileSystemResourceHandler extends AbstractResourceHandler implement
 	 * @param tempDirRoot Directory to store temporary files
 	 * @param charset Charset to use for reading/writing the files. 
 	 */
-	public FileSystemResourceHandler(String baseDir, File tempDirRoot,Charset charset,GeneratorRegistry generatorRegistry) {
-		super(tempDirRoot, charset,generatorRegistry);
+	public FileSystemResourceHandler(String baseDir, File tempDirRoot,Charset charset,GeneratorRegistry generatorRegistry, String resourceType) {
+		super(tempDirRoot, charset,generatorRegistry, resourceType);
 		this.baseDir = baseDir.replace('/', File.separatorChar);
         this.baseDir = this.baseDir.replaceAll("%20", " ");
 	}

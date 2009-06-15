@@ -13,6 +13,7 @@
  */
 package net.jawr.web.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -57,6 +58,7 @@ import net.jawr.web.resource.bundle.handler.ClientSideHandlerScriptRequestHandle
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.servlet.util.MIMETypesSupport;
+import net.jawr.web.util.StringUtils;
 
 import org.apache.log4j.Logger;
 
@@ -173,7 +175,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 		initializeJawrConfig(props);
 
 		// Initialize the properties reloading checker daemon if specified
-		if (null != props.getProperty(CONFIG_RELOAD_INTERVAL)) {
+		if(!ThreadLocalJawrContext.isBundleProcessingAtBuildTime() && null != props.getProperty(CONFIG_RELOAD_INTERVAL)) {
 			int interval = Integer.valueOf(props.getProperty(CONFIG_RELOAD_INTERVAL)).intValue();
 			log.warn("Jawr started with configuration auto reloading on. "
 					+ "Be aware that a daemon thread will be checking for changes to configuration every " + interval + " seconds.");
@@ -287,7 +289,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 		if (null != jawrConfig)
 			jawrConfig.invalidate();
 
-		jawrConfig = new JawrConfig(props);
+		createJawrConfig(props);
 		
 		jawrConfig.setContext(servletContext);
 		jawrConfig.setGeneratorRegistry(generatorRegistry);
@@ -317,7 +319,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 		}
 
 		// Create a resource handler to read files from the WAR archive or exploded dir.
-		ResourceHandler rsHandler = new ServletContextResourceHandler(servletContext, jawrConfig.getResourceCharset(), jawrConfig.getGeneratorRegistry());
+		ResourceHandler rsHandler = initResourceHandler();
 		PropertiesBasedBundlesHandlerFactory factory = new PropertiesBasedBundlesHandlerFactory(props, resourceType, rsHandler, jawrConfig
 				.getGeneratorRegistry());
 		try {
@@ -326,7 +328,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 			throw new ServletException(e);
 		}
 
-		if (resourceType.equals("js"))
+		if (resourceType.equals(JawrConstant.JS_TYPE))
 			servletContext.setAttribute(JawrConstant.JS_CONTEXT_ATTRIBUTE, bundlesHandler);
 		else
 			servletContext.setAttribute(JawrConstant.CSS_CONTEXT_ATTRIBUTE, bundlesHandler);
@@ -341,6 +343,39 @@ public class JawrRequestHandler implements ConfigChangeListener {
 		if (jawrConfig.isDebugModeOn()) {
 			log.warn("Jawr initialized in DEVELOPMENT MODE. Do NOT use this mode in production or integration servers. ");
 		}
+	}
+
+	/**
+	 * Initialize the resource handler
+	 * @return the resource handler
+	 */
+	protected ResourceHandler initResourceHandler() {
+		ResourceHandler rsHandler = null;
+		if(jawrConfig.getUseBundleMapping() && StringUtils.isNotEmpty(jawrConfig.getJawrWorkingDirectory())){
+			File workingDir = new File(jawrConfig.getJawrWorkingDirectory());
+			rsHandler = new ServletContextResourceHandler(servletContext, workingDir, jawrConfig.getResourceCharset(), jawrConfig.getGeneratorRegistry(), resourceType);
+		}else{
+			rsHandler = new ServletContextResourceHandler(servletContext, jawrConfig.getResourceCharset(), jawrConfig.getGeneratorRegistry(), resourceType);
+		}
+		return rsHandler;
+	}
+
+	/**
+	 * Create the Jawr config from the properties
+	 * @param props the properties
+	 */
+	protected JawrConfig createJawrConfig(Properties props) {
+		jawrConfig = new JawrConfig(props);
+		
+		// Override properties which are incompatble with the build time bundle processing
+		if(ThreadLocalJawrContext.isBundleProcessingAtBuildTime()){
+			jawrConfig.setUseBundleMapping(false);
+			
+			// Use the standard working directory
+			jawrConfig.setJawrWorkingDirectory(null);
+		}
+		
+		return jawrConfig;
 	}
 
 	/**

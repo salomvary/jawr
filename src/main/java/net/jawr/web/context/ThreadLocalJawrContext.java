@@ -82,6 +82,22 @@ public class ThreadLocalJawrContext {
 	}
 	
 	/**
+	 * Returns the flag indicating that we are using making a bundle processing at build time
+	 * @return the flag indicating that we are using making a bundle processing at build time
+	 */
+	public static boolean isBundleProcessingAtBuildTime() {
+		return ((JawrContext) jawrContext.get()).isBundleProcessingAtBuildTime();
+	}
+
+	/**
+	 * Sets the flag indicating that we are using making a bundle processing at build time
+	 * @param bundleProcessingAtBuildTime the flqg to set
+	 */
+	public static void setBundleProcessingAtBuildTime(boolean bundleProcessingAtBuildTime) {
+		((JawrContext) jawrContext.get()).setBundleProcessingAtBuildTime(bundleProcessingAtBuildTime);
+	}
+	
+	/**
 	 * Sets the mbean object name
 	 * @param mbeanObjectName the mbean object name
 	 */
@@ -89,4 +105,6 @@ public class ThreadLocalJawrContext {
 
 		((JawrContext) jawrContext.get()).reset();
 	}
+	
+	
 }

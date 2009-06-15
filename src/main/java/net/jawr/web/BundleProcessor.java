@@ -14,7 +14,9 @@
 package net.jawr.web;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -26,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -35,9 +38,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.context.ThreadLocalJawrContext;
 import net.jawr.web.resource.FileNameUtils;
 import net.jawr.web.resource.ImageResourcesHandler;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
+import net.jawr.web.resource.bundle.JoinableResourceBundlePropertySerializer;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.buildtime.BuildTimeBundleRenderer;
@@ -63,7 +69,7 @@ import org.w3c.dom.NodeList;
  */
 public class BundleProcessor {
 
-	private static final String TYPE_INIT_PARAMETER = "type";
+	public static final String IMG_MAPPING_PREFIX = "img.mapping.";
 
 	/** The logger */
 	private static Logger logger = Logger.getLogger(BundleProcessor.class);
@@ -91,6 +97,9 @@ public class BundleProcessor {
 
 	/** The name of the load on startup tag */
 	private static final String LOAD_ON_STARTUP_TAG_NAME = "load-on-startup";
+
+	/** The init type parameter */
+	private static final String TYPE_INIT_PARAMETER = "type";
 
 	/**
 	 * Launch the bundle processing
@@ -124,7 +133,7 @@ public class BundleProcessor {
 		
 		List servletDefinitions = new ArrayList();
 		ServletContext servletContext = new MockServletContext(baseDirPath, tmpDirPath);
-		System.out.println("Base dir path = "+baseDirPath);
+		
 		for (int i = 0; i < servletNodes.getLength(); i++) {
 
 			String servletName = null;
@@ -172,7 +181,6 @@ public class BundleProcessor {
 
 		// Process the Jawr servlet to generate the bundles
 		processJawrServlets(destDirPath, jawrServletDefinitions);
-
 	}
 
 	/**
@@ -186,6 +194,9 @@ public class BundleProcessor {
 		// Sort the list taking in account the load-on-startup attribute
 		Collections.sort(servletDefinitions);
 
+		// Sets the Jawr context at "bundle processing at build time"
+		ThreadLocalJawrContext.setBundleProcessingAtBuildTime(true);
+		
 		List jawrServletDefinitions = new ArrayList();
 		for (Iterator iterator = servletDefinitions.iterator(); iterator.hasNext();) {
 			ServletDefinition servletDefinition = (ServletDefinition) iterator.next();
@@ -224,7 +235,8 @@ public class BundleProcessor {
 
 	/**
 	 * Process the Jawr Servlets
-	 * 
+	 *
+	 * @param destDirPath the destination directory path
 	 * @param jawrServletDefinitions the destination directory
 	 * @throws Exception if an exception occurs.
 	 */
@@ -232,15 +244,19 @@ public class BundleProcessor {
 
 		for (Iterator iterator = jawrServletDefinitions.iterator(); iterator.hasNext();) {
 
+			// the map which will store the bundle mapping
+			Properties bundleMapping = new Properties();
+			
 			ServletDefinition servletDef = (ServletDefinition) iterator.next();
 			ServletConfig servletConfig = servletDef.getServletConfig();
 
 			// Force the production mode, and remove config listener parameters
 			Map initParameters = ((MockServletConfig) servletConfig).getInitParameters();
 			initParameters.remove("jawr.config.reload.interval");
-
-			String mapping = servletConfig.getInitParameter("mapping");
+			
+			String servletMapping = servletConfig.getInitParameter(JawrConstant.SERVLET_MAPPING_PROPERTY_NAME);
 			ResourceBundlesHandler bundleHandler = null;
+			String bundleMappingFileName = null;
 			ImageResourcesHandler imgRsHandler = null;
 
 			// Retrieve the bundle Handler
@@ -248,20 +264,34 @@ public class BundleProcessor {
 			String type = servletConfig.getInitParameter(TYPE_INIT_PARAMETER);
 			if (type == null || type.equals(JawrConstant.JS_TYPE)) {
 				bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(JawrConstant.JS_CONTEXT_ATTRIBUTE);
+				bundleMappingFileName = JawrConstant.JAWR_JS_MAPPING_PROPERTIES_FILENAME;
 			} else if (type.equals(JawrConstant.CSS_TYPE)) {
 				bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(JawrConstant.CSS_CONTEXT_ATTRIBUTE);
+				bundleMappingFileName = JawrConstant.JAWR_CSS_MAPPING_PROPERTIES_FILENAME;
 			} else if (type.equals(JawrConstant.IMG_TYPE)) {
 				imgRsHandler = (ImageResourcesHandler) servletContext.getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
+				bundleMappingFileName = JawrConstant.JAWR_IMG_MAPPING_PROPERTIES_FILENAME;
 			}
 
 			if (bundleHandler != null) {
 
-				createBundles(servletDef.getServlet(), bundleHandler, destDirPath, mapping);
+				createBundles(servletDef.getServlet(), bundleHandler, destDirPath, servletMapping, bundleMapping);
 			} else if (imgRsHandler != null) {
-				createImageBundle(servletDef.getServlet(), imgRsHandler, destDirPath, mapping);
+				createImageBundle(servletDef.getServlet(), imgRsHandler, destDirPath, servletMapping, bundleMapping);
 			}
+			
+			// Stores the output stream
+			OutputStream out = new FileOutputStream(new File(destDirPath, bundleMappingFileName));
+			bundleMapping.store(out, "JAWR Bundle mapping");
+			IOUtils.close(out);
 		}
 
+		// Stores the output stream
+		//OutputStream out = new FileOutputStream(new File(destDirPath, JawrConstant.JAWR_JS_MAPPING_PROPERTIES_FILENAME));
+		//bundleMapping.store(out, "JAWR Bundle mapping");
+		
+		//IOUtils.close(out);
+	
 	}
 
 	/**
@@ -270,11 +300,12 @@ public class BundleProcessor {
 	 * @param servlet the servlet
 	 * @param bundleHandler the bundles handler
 	 * @param destDirPath the destination directory path
-	 * @param mapping the mapping of the servlet
+	 * @param servletMapping the mapping of the servlet
+	 * @param bundleMapping the bundle mapping
 	 * @throws IOException if an IO exception occurs
 	 * @throws ServletException if a servlet exception occurs
 	 */
-	private void createBundles(HttpServlet servlet, ResourceBundlesHandler bundleHandler, String destDirPath, String mapping) throws IOException,
+	private void createBundles(HttpServlet servlet, ResourceBundlesHandler bundleHandler, String destDirPath, String servletMapping, Properties bundleMapping) throws IOException,
 			ServletException {
 
 		List bundles = bundleHandler.getContextBundles();
@@ -285,15 +316,20 @@ public class BundleProcessor {
 		MockServletSession session = new MockServletSession(servlet.getServletContext());
 		request.setSession(session);
 
+		String resourceType = servlet.getServletConfig().getInitParameter(TYPE_INIT_PARAMETER);
+		if(resourceType == null){
+			resourceType = JawrConstant.JS_TYPE;
+		}
+		
 		// For the list of bundle defines, create the file associated
 		while (bundleIterator.hasNext()) {
 			JoinableResourceBundle bundle = (JoinableResourceBundle) bundleIterator.next();
 			
 			// Check if there is a resource file, which could be in conflict with the bundle name 
-			URL url = servlet.getServletContext().getResource(bundle.getName());
+			URL url = servlet.getServletContext().getResource(bundle.getId());
 			if(url != null){
 				logger.error("It is not recommended to use a bundle name which could be in conflict with a resource.\n" +
-						"Please rename your bundle '"+bundle.getName()+"' to avoid any issue");
+						"Please rename your bundle '"+bundle.getId()+"' to avoid any issue");
 				
 			}
 			
@@ -305,10 +341,13 @@ public class BundleProcessor {
 				localVariantKeys.add("");
 			}
 			
+			// Update the bundle mapping
+			JoinableResourceBundlePropertySerializer.serializeInProperties(bundle, resourceType, bundleMapping);
+			
 			for (Iterator iterator = localVariantKeys.iterator(); iterator.hasNext();) {
 				String localVariantKey = (String) iterator.next();
 				
-				List linksToBundle = createLinkToBundle(bundleHandler, bundle.getName(), localVariantKey);
+				List linksToBundle = createLinkToBundle(bundleHandler, bundle.getId(), localVariantKey);
 				for (Iterator iteratorLinks = linksToBundle.iterator(); iteratorLinks.hasNext();) {
 					RenderedLink renderedLink = (RenderedLink) iteratorLinks.next();
 					String path = (String) renderedLink.getLink();
@@ -319,8 +358,7 @@ public class BundleProcessor {
 					
 					String finalBundlePath = getFinalBundlePath(path, config, localVariantKey);
 					File bundleFile = new File(destDirPath, finalBundlePath);
-					
-					createBundleFile(servlet, response, request, path, bundleFile, mapping);
+					createBundleFile(servlet, response, request, path, bundleFile, servletMapping);	
 				}
 			}
 		}
@@ -356,24 +394,15 @@ public class BundleProcessor {
 			}
 			
 			// Remove servlet mapping if it exists.
-			if (!"".equals(jawrConfig.getServletMapping())) {
-				if(finalPath.startsWith("/")) {
-					finalPath = finalPath.substring(1);
-				}
-				finalPath = finalPath.substring(jawrConfig.getServletMapping().length());
-			}
+			finalPath = removeServletMappingFromPath(finalPath, jawrConfig.getServletMapping());
 			
 			finalPath = jawrConfig.getGeneratorRegistry().getDebugModeBuildTimeGenerationPath(finalPath);
 		
 		}else{
-			if(finalPath.startsWith("/")) {
-				finalPath = finalPath.substring(1);
-			}
 			
 			// Remove servlet mapping if it exists.
-			if (!"".equals(jawrConfig.getServletMapping())) {
-				finalPath = finalPath.substring(jawrConfig.getServletMapping().length() + 1);
-			} else if (finalPath.startsWith("/")) {
+			finalPath = removeServletMappingFromPath(finalPath, jawrConfig.getServletMapping());
+			if (finalPath.startsWith("/")) {
 				finalPath = finalPath.substring(1);
 			}
 
@@ -410,9 +439,8 @@ public class BundleProcessor {
 		String finalPath = path;
 
 		// Remove servlet mapping if it exists.
-		if (!"".equals(jawrConfig.getServletMapping())) {
-			finalPath = finalPath.substring(jawrConfig.getServletMapping().length() + 2);
-		} else if (finalPath.startsWith("/")) {
+		finalPath = removeServletMappingFromPath(finalPath, jawrConfig.getServletMapping());
+		if (finalPath.startsWith("/")) {
 			finalPath = finalPath.substring(1);
 		}
 
@@ -429,11 +457,12 @@ public class BundleProcessor {
 	 * @param servlet the servlet
 	 * @param imgRsHandler the image resource handler
 	 * @param destDirPath the destination directory path
-	 * @param mapping the mapping
+	 * @param servletMapping the mapping
+	 * @param bundleMapping the bundle mapping
 	 * @throws IOException if an IOExceptin occurs
 	 * @throws ServletException if an exception occurs
 	 */
-	private void createImageBundle(HttpServlet servlet, ImageResourcesHandler imgRsHandler, String destDirPath, String mapping) throws IOException,
+	private void createImageBundle(HttpServlet servlet, ImageResourcesHandler imgRsHandler, String destDirPath, String servletMapping, Map bundleMapping) throws IOException,
 			ServletException {
 		Map bundleImgMap = imgRsHandler.getImageMap();
 
@@ -446,8 +475,12 @@ public class BundleProcessor {
 			String imgPath = (String) bundleIterator.next();
 			String path = (String) bundleImgMap.get(imgPath);
 
-			File destFile = new File(destDirPath, getImageFinalPath(path, imgRsHandler.getJawrConfig()));
-			createBundleFile(servlet, response, request, path, destFile, mapping);
+			String imageFinalPath = getImageFinalPath(path, imgRsHandler.getJawrConfig());
+			File destFile = new File(destDirPath, imageFinalPath);
+			
+			// Update the bundle mapping
+			bundleMapping.put(IMG_MAPPING_PREFIX+imgPath, path);
+			createBundleFile(servlet, response, request, path, destFile, servletMapping);
 		}
 	}
 
@@ -466,6 +499,38 @@ public class BundleProcessor {
 	private void createBundleFile(HttpServlet servlet, MockServletResponse response, MockServletRequest request, String path, File destFile,
 			String mapping) throws IOException, ServletException {
 		request.setRequestPath(path);
+		
+		if(StringUtils.isNotEmpty(mapping)){
+			String pathInfo = removeServletMappingFromPath(path, mapping);
+			request.setPathInfo(pathInfo);
+		}
+		
+		// Create the parent directory of the destination file
+		if (!destFile.exists()) {
+			destFile.getParentFile().mkdirs();
+		}
+
+		// Set the response mock to write in the destination file
+		try{
+			response.setOutputStream(new FileOutputStream(destFile));
+			servlet.service(request, response);
+		}finally{
+			response.close();
+		}
+		
+		if(destFile.length() == 0){
+			logger.warn("No content retrieved for file '"+destFile.getAbsolutePath()+"', which is associated to the path : "+path);
+			System.out.println("No content retrieved for file '"+destFile.getAbsolutePath()+"', which is associated to the path : "+path);
+		}
+	}
+
+	/**
+	 * Remove the servlet mapping from the path
+	 * @param path the path
+	 * @param mapping the servlet mapping
+	 * @return the path without the servlet mapping
+	 */
+	private String removeServletMappingFromPath(String path, String mapping) {
 		if (mapping != null && mapping.length() > 0) {
 			int idx = path.indexOf(mapping);
 			if (idx > -1) {
@@ -473,23 +538,8 @@ public class BundleProcessor {
 			}
 
 			path = PathNormalizer.asPath(path);
-
-			request.setPathInfo(path);
 		}
-
-		// Create the parent directory of the destination file
-		if (!destFile.exists()) {
-			destFile.getParentFile().mkdirs();
-		}
-
-		// Set the response mock to write in the destination file
-		response.setFile(destFile);
-		servlet.service(request, response);
-		response.close();
-		
-		if(destFile.length() == 0){
-			logger.warn("No content retrieved for file '"+destFile.getAbsolutePath()+"', which is associated to the path : "+path);
-		}
+		return path;
 	}
 
 	/**
@@ -517,6 +567,8 @@ public class BundleProcessor {
 		
 		// First deals with the production mode
 		handler.getConfig().setDebugModeOn(false);
+		handler.getConfig().setGzipResourcesModeOn(useGzip);
+		
 		bundleRenderer.renderBundleLinks(path, "", variantKey, new HashSet(), useGzip, isSslRequest, sw);
 		
 		// Then take in account the debug mode

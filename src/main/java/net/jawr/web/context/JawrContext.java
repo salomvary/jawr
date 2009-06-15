@@ -30,6 +30,9 @@ public class JawrContext {
 	/** The flag indicating if we should override the debug setting */
 	private boolean debugOverriden;
 	
+	/** The flag indicating that we are using making a bundle processing at build time */
+	private boolean bundleProcessingAtBuildTime;
+	
 	/**
 	 * Constructor. 
 	 */
@@ -71,12 +74,29 @@ public class JawrContext {
 	}
 	
 	/**
+	 * Returns the flag indicating that we are using making a bundle processing at build time
+	 * @return the flag indicating that we are using making a bundle processing at build time
+	 */
+	public boolean isBundleProcessingAtBuildTime() {
+		return bundleProcessingAtBuildTime;
+	}
+
+	/**
+	 * Sets the flag indicating that we are using making a bundle processing at build time
+	 * @param bundleProcessingAtBuildTime the flqg to set
+	 */
+	public void setBundleProcessingAtBuildTime(boolean bundleProcessingAtBuildTime) {
+		this.bundleProcessingAtBuildTime = bundleProcessingAtBuildTime;
+	}
+
+	/**
 	 * Reset the context. 
 	 */
 	public void reset(){
 		
 		this.jawrConfigMgrObjectName = null;
 		this.debugOverriden = false;
+		this.bundleProcessingAtBuildTime = false;
 	}
 
 }

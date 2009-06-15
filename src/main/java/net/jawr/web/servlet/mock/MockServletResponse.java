@@ -13,11 +13,8 @@
  */
 package net.jawr.web.servlet.mock;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Locale;
@@ -26,13 +23,15 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import net.jawr.web.resource.bundle.IOUtils;
+
 /**
  * @author Ibrahim Chaehoi
  */
 public class MockServletResponse implements HttpServletResponse {
 
 	/** The destination file */
-	private FileOutputStream destFile;
+	private OutputStream outStream;
 	
 	/** The writer */
 	private PrintWriter writer;
@@ -41,22 +40,29 @@ public class MockServletResponse implements HttpServletResponse {
 	private StringWriter strWriter = new StringWriter();
 
 	
-	// private BinaryWriter binWriter = new StringWriter();
-
+	/**
+	 * Constructor 
+	 */
 	public MockServletResponse() {
 		
 	}
 
-	public void setFile(File destFile) throws IOException {
-		this.destFile = new FileOutputStream(destFile);
-		writer = new PrintWriter(new FileWriter(destFile));
+	/**
+	 * Sets the output stream for the response
+	 * @param out the output stream to set
+	 */
+	public void setOutputStream(OutputStream out) {
+		this.outStream = out;
+		writer = new PrintWriter(out);
 	}
 	
-	public void close() throws IOException {
+	/**
+	 * Close the streams 
+	 */
+	public void close() {
 		
 		writer.close();
-		destFile.close();
-		
+		IOUtils.close(outStream);
 	}
 	
 	/**
@@ -174,7 +180,7 @@ public class MockServletResponse implements HttpServletResponse {
 		ServletOutputStream out = new ServletOutputStream(){
 
 			public void write(int b) throws IOException {
-				destFile.write(b);
+				outStream.write(b);
 			}
 			
 		};

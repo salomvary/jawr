@@ -46,10 +46,11 @@ public class LocaleUtils {
 	public static String getLocalizedBundleName(String bundleName, String localeKey) {
 
 		String newName = bundleName;
-		if (StringUtils.isNotEmpty(localeKey)) {
-			newName = bundleName.substring(0, bundleName.lastIndexOf('.'));
+		int idxSeparator = bundleName.lastIndexOf('.');
+		if (StringUtils.isNotEmpty(localeKey) && idxSeparator != -1) {
+			newName = bundleName.substring(0, idxSeparator);
 			newName += '_' + localeKey;
-			newName += bundleName.substring(bundleName.lastIndexOf('.'));
+			newName += bundleName.substring(idxSeparator);
 		}
 
 		return newName;

@@ -26,6 +26,7 @@ import net.jawr.web.resource.bundle.factory.util.RegexUtil;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
+import net.jawr.web.resource.bundle.postprocess.PostProcessFactoryConstant;
 import net.jawr.web.util.StringUtils;
 
 import org.apache.log4j.Logger;
@@ -57,6 +58,13 @@ public class CSSURLPathRewriterPostProcessor extends
 																+ "((\\\\\\))|[^)])*" // any sequence of characters, except an unescaped ')'
 																+ "\\s*\\)",  // Any number of whitespaces, then ')'
 																Pattern.CASE_INSENSITIVE); // works with 'URL('
+	
+	/**
+	 * Constructor
+	 */
+	public CSSURLPathRewriterPostProcessor() {
+		super(PostProcessFactoryConstant.URL_PATH_REWRITER);
+	}
 	
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.postprocess.impl.AbstractChainedResourceBundlePostProcessor#doPostProcessBundle(net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus, java.lang.StringBuffer)
@@ -175,7 +183,7 @@ public class CSSURLPathRewriterPostProcessor extends
 	private String getFinalFullBundlePath(BundleProcessingStatus status, JawrConfig jawrConfig) {
 
 		String fullBundlePath = null;
-		String bundleName = status.getCurrentBundle().getName();
+		String bundleName = status.getCurrentBundle().getId();
 		String contextPathOverride = jawrConfig.getContextPathOverride();
 		
 		// Generation the bundle prefix

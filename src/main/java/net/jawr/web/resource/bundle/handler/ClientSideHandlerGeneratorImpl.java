@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 Jordi Hernández Sellés
+ * Copyright 2008-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -39,9 +39,12 @@ import org.apache.log4j.Logger;
  * Implementation of ClientSideHandlerGenerator
  * 
  * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  */
 public class ClientSideHandlerGeneratorImpl implements
 		ClientSideHandlerGenerator {
+	
+	/** The logger */
 	private static final Logger log = Logger.getLogger(ClientSideHandlerGeneratorImpl.class.getName());
 	
 	/**
@@ -54,12 +57,21 @@ public class ClientSideHandlerGeneratorImpl implements
 	 */
 	private List contextBundles;
 	
-	
+	/** The Jawr config */
 	private JawrConfig config;
 	
+	/** The main script template */
 	private static StringBuffer mainScriptTemplate;
+	
+	/** The debug script template */
 	private static StringBuffer debugScriptTemplate;
 
+	/**
+	 * Constructor
+	 * @param globalBundles the global bundles 
+	 * @param contextBundles teh context bundles
+	 * @param config the Jawr configuration
+	 */
 	public ClientSideHandlerGeneratorImpl(List globalBundles,
 			List contextBundles, JawrConfig config) {
 		super();
@@ -135,7 +147,7 @@ public class ClientSideHandlerGeneratorImpl implements
 			JoinableResourceBundle bundle = (JoinableResourceBundle) it.next();
 			String func = isCSSHandler ? "JAWR.loader.style(" : "JAWR.loader.script(";
 			sb.append(func)
-				.append(JavascriptStringUtil.quote(bundle.getName()))
+				.append(JavascriptStringUtil.quote(bundle.getId()))
 				.append(");\n");
 		}
 		
@@ -169,8 +181,8 @@ public class ClientSideHandlerGeneratorImpl implements
 	 * Determines which prefix should be used for the links, according to 
 	 * the context path override if present, or using the context path and 
 	 * possibly the jawr mapping. 
-	 * @param request
-	 * @return
+	 * @param request the request
+	 * @return the path prefix
 	 */
 	private String getPathPrefix(HttpServletRequest request, JawrConfig config) {
 		if(null != config.getContextPathOverride()) {
@@ -185,9 +197,10 @@ public class ClientSideHandlerGeneratorImpl implements
 	/**
 	 * Adds a javascript Resourcebundle representation for each member of a
 	 * List containing JoinableResourceBundles
-	 * @param bundles
-	 * @param variantKey
-	 * @param buf
+	 * @param bundles the bundles
+	 * @param variantKey the variant key
+	 * @param buf the buffer
+	 * @param useGzip the flag indicating if we use gzip compression or not.
 	 */
 	private void addAllBundles(List bundles, String variantKey, StringBuffer buf,boolean useGzip){
 		for(Iterator it = bundles.iterator();it.hasNext();){
@@ -201,13 +214,14 @@ public class ClientSideHandlerGeneratorImpl implements
 	
 	/**
 	 * Creates a javascript objet that represents a bundle
-	 * @param bundle
-	 * @param variantKey
-	 * @param buf
+	 * @param bundle the bundle
+	 * @param variantKey the vairant key
+	 * @param buf the buffer
+	 * @param useGzip the flag indicating if we use gzip compression or not.
 	 */
 	private void appendBundle(JoinableResourceBundle bundle,String variantKey, StringBuffer buf,boolean useGzip){
 		buf.append("r(")
-			.append(JavascriptStringUtil.quote(bundle.getName()))
+			.append(JavascriptStringUtil.quote(bundle.getId()))
 			.append(",");
 		if(useGzip){
 			String path = bundle.getURLPrefix(variantKey);
@@ -218,7 +232,7 @@ public class ClientSideHandlerGeneratorImpl implements
 		
 		boolean skipItems = false;
 		if(bundle.getItemPathList().size() == 1 && null == bundle.getExplorerConditionalExpression()){
-			skipItems = bundle.getItemPathList().get(0).equals(bundle.getName());
+			skipItems = bundle.getItemPathList().get(0).equals(bundle.getId());
 		}
 		
 		if(!skipItems) {
@@ -255,7 +269,7 @@ public class ClientSideHandlerGeneratorImpl implements
 	
 	/**
 	 * Loads a template containing the functions which convert properties into methods. 
-	 * @return
+	 * @return the script template
 	 */
 	private StringBuffer loadScriptTemplate(String path) {
 		StringWriter sw = new StringWriter();

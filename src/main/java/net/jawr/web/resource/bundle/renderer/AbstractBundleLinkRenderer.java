@@ -53,6 +53,14 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
 		this.useRandomParam = useRandomParam;
 	}
 
+	/**
+	 * Returns the resource bundles handler
+	 * @return the resource bundles handler
+	 */
+	public ResourceBundlesHandler getBundler() {
+		return bundler;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -75,7 +83,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
     	}
     	
         if (debugOn) {
-			addComment("Start adding members resolved by '" + requestedPath + "'. Bundle id is: '" + bundle.getName() + "'", out);
+			addComment("Start adding members resolved by '" + requestedPath + "'. Bundle id is: '" + bundle.getId() + "'", out);
 		}
 
 		// If DWR is being used, add a path var to the page
@@ -87,7 +95,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
 		}
 
 		// Retrieve the name or names of bundle(s) that belong to/with the requested path.
-		ResourceBundlePathsIterator it = bundler.getBundlePaths(bundle.getName(), new ConditionalCommentRenderer(out), variantKey);
+		ResourceBundlePathsIterator it = bundler.getBundlePaths(bundle.getId(), new ConditionalCommentRenderer(out), variantKey);
 
 		// Add resources to the page as links.
 		while (it.hasNext()) {
@@ -200,17 +208,11 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
 	/**
 	 * Creates a link to a bundle in the page, using its identifier.
 	 * 
-	 * @param bundleId
-	 * @param contextPath
-	 * @return String
+	 * @param fullPath the full path
+	 * @return a link to a bundle in the page
 	 */
 	protected abstract String renderLink(String fullPath);
 
-	/**
-	 * @return ResourceBundlesHandler The resources handler.
-	 */
-	public ResourceBundlesHandler getBundler() {
-		return bundler;
-	}
+	
 
 }

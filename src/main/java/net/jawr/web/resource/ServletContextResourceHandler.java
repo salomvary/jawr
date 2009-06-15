@@ -39,19 +39,39 @@ import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
  */
 public class ServletContextResourceHandler extends AbstractResourceHandler implements ResourceHandler {
 	
-	private ServletContext context;
+	/** The servlet temp directory property name */
 	private static final String SERVLET_CONTEXT_TEMPDIR = "javax.servlet.context.tempdir";
 	
+	/** The servlet context */
+	private ServletContext context;
+	
 	/**
-	 * @param resourceDir
-	 * @param context
+	 * Constructor
+	 * @param context the servlet context
+	 * @param charset the charset
+	 * @param generatorRegistry the generator registry
+	 * @param resourceType the resource type
 	 */
-	public ServletContextResourceHandler(ServletContext context, Charset charset,GeneratorRegistry generatorRegistry) {
-		super((File) context.getAttribute(SERVLET_CONTEXT_TEMPDIR),charset,generatorRegistry);		
+	public ServletContextResourceHandler(ServletContext context, Charset charset,GeneratorRegistry generatorRegistry, String resourceType) {
+		super((File) context.getAttribute(SERVLET_CONTEXT_TEMPDIR),charset,generatorRegistry, resourceType);		
 		this.context  = context;
 		this.charset = charset;
 	}
 
+	/**
+	 * Constructor
+	 * @param context the servlet context
+	 * @param workingDirectory the working directory
+	 * @param charset the charset
+	 * @param generatorRegistry the generator registry
+	 * @param resourceType the resource type
+	 */
+	public ServletContextResourceHandler(ServletContext context, File workingDirectory, Charset charset,GeneratorRegistry generatorRegistry, String resourceType) {
+		super(workingDirectory,charset,generatorRegistry, resourceType, false);		
+		this.context  = context;
+		this.charset = charset;
+	}
+	
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.ResourceHandler#getResourceInputStream(java.lang.String)
 	 */

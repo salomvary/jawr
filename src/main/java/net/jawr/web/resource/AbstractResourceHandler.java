@@ -19,6 +19,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.channels.Channels;
@@ -26,12 +28,16 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.JoinableResourceBundleContent;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
+import net.jawr.web.util.StringUtils;
 
 import org.apache.log4j.Logger;
 
@@ -47,9 +53,6 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 	/** The logger */
 	private static final Logger log = Logger.getLogger(AbstractResourceHandler.class.getName());
 	
-	/** The generator registry */
-	private GeneratorRegistry generatorRegistry;
-
 	/** The name of the Jawr temp directory */
 	protected static final String TEMP_SUBDIR = "jawrTmp";
 	
@@ -61,6 +64,12 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 	
 	/** The name of the directory which contain the CSS defined in classpath for the DEBUG mode */
 	protected static final String TEMP_CSS_CLASSPATH_SUBDIR = "cssClasspath";
+	
+	/** The generator registry */
+	private GeneratorRegistry generatorRegistry;
+
+	/** The path of the temporary working directory */
+	protected String tempDirPath;
 	
 	/** The path of the directory which contain the bundles in text format */
 	protected String textDirPath;
@@ -74,18 +83,54 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 	/** The charset to use for the files */
 	protected Charset charset;
 	
+	/** The mapping file name */
+	protected String mappingFileName;
+	
+	/** The resource type */
+	private String resourceType;
+	
 	/**
      * Build a resource handler based on the specified temporary files root path and charset. 
      * @param tempDirRoot Root dir for storing bundle files. 
      * @param charset Charset to read/write characters. 
-     */
-	protected AbstractResourceHandler(File tempDirRoot,Charset charset,GeneratorRegistry generatorRegistry) {
+     * @param generatorRegistry the generator registry
+     * @param resourceType the resource type
+	 */
+	protected AbstractResourceHandler(File tempDirRoot,Charset charset,GeneratorRegistry generatorRegistry, String resourceType) {
+	
+		this(tempDirRoot, charset, generatorRegistry, resourceType, true);
+	}
+	
+	/**
+     * Build a resource handler based on the specified temporary files root path and charset. 
+     * @param tempDirRoot Root dir for storing bundle files. 
+     * @param charset Charset to read/write characters. 
+     * @param generatorRegistry the generator registry
+	 * @param resourceType the resource type
+	 * @param createTempSubDir the flag indicating if we should use the jawrTemp sub directory
+	 */
+	protected AbstractResourceHandler(File tempDirRoot,Charset charset,GeneratorRegistry generatorRegistry, String resourceType, boolean createTempSubDir) {
 		super();
+		this.resourceType = resourceType;
 		this.charset = charset;
 		this.generatorRegistry = generatorRegistry;
+		
+		if(StringUtils.isEmpty(resourceType) || resourceType.equals(JawrConstant.JS_TYPE)){
+			mappingFileName = JawrConstant.JAWR_JS_MAPPING_PROPERTIES_FILENAME;
+		}else if(resourceType.equals(JawrConstant.CSS_TYPE)){
+			mappingFileName = JawrConstant.JAWR_CSS_MAPPING_PROPERTIES_FILENAME;
+		}else if(resourceType.equals(JawrConstant.IMG_TYPE)){
+			mappingFileName = JawrConstant.JAWR_IMG_MAPPING_PROPERTIES_FILENAME;
+		}
+		
 		try {
-			String tempDirPath = tempDirRoot.getCanonicalPath() + File.separator + TEMP_SUBDIR;
-             // In windows, pathnames with spaces are returned as %20
+			tempDirPath = tempDirRoot.getCanonicalPath();
+			
+			if(createTempSubDir){
+				tempDirPath = tempDirPath+ File.separator + TEMP_SUBDIR;
+			}
+            
+			// In windows, pathnames with spaces are returned as %20
             if(tempDirPath.indexOf("%20") != -1)
                 tempDirPath = tempDirPath.replaceAll("%20"," ");
             
@@ -100,6 +145,14 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 		} catch (IOException e) {
 			throw new RuntimeException("Unexpected IOException creating temporary jawr directory",e);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.ResourceHandler#getResourceType()
+	 */
+	public String getResourceType() {
+		
+		return resourceType;
 	}
 
 	/* (non-Javadoc)
@@ -129,13 +182,76 @@ public abstract class AbstractResourceHandler  implements ResourceHandler{
 	 */
 	protected abstract Reader doGetResource(String resourceName) throws ResourceNotFoundException;
 	
-	
-
     /* (non-Javadoc)
 	 * @see net.jawr.web.resource.ResourceHandler#isResourceGenerated(java.lang.String)
 	 */
 	public boolean isResourceGenerated(String path) {
 		return generatorRegistry.isPathGenerated(path);
+	}
+
+	/**
+	 * Checks if the mapping file exists in the working directory 
+	 * @return true if the mapping file exists in the working directory 
+	 */
+	public boolean isExistingMappingFile(){
+		
+		return getBundleMappingFile().exists();
+	}
+	
+	/**
+	 * Returns the bundle mapping
+	 * @return the bundle mapping
+	 */
+	public Properties getJawrBundleMapping(){
+		
+		Properties bundleMapping = new Properties();
+		InputStream is = null;
+		try {
+			File mappingFile = getBundleMappingFile();
+			if(mappingFile.exists()){
+				is = new FileInputStream(mappingFile);
+				if (is != null) {
+					((Properties) bundleMapping).load(is);
+				} else {
+					log.error("The jawr bundle mapping '" + mappingFile.getName() + "' is not found");
+				}
+			}
+			
+
+		} catch (IOException e) {
+			log.error("Error while loading the jawr bundle mapping '" + JawrConstant.JAWR_JS_MAPPING_PROPERTIES_FILENAME + "'");
+		} finally {
+			IOUtils.close(is);
+		}
+		
+		return bundleMapping;
+	}
+
+	/**
+	 * Returns the bundle mapping file
+	 * @return the bundle mapping file
+	 */
+	private File getBundleMappingFile() {
+	
+		return new File(tempDirPath, mappingFileName);
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.ResourceHandler#storeJawrBundleMapping(java.util.Properties)
+	 */
+	public void storeJawrBundleMapping(Properties bundleMapping) {
+		
+		File bundleMappingFile = getBundleMappingFile();
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream(bundleMappingFile);
+			bundleMapping.store(out, "Jawr mapping");
+		} catch (IOException e) {
+			log.error("Unable to store the bundle mapping");
+		}finally{
+			IOUtils.close(out);
+		}
+		
 	}
 
 	/* (non-Javadoc)

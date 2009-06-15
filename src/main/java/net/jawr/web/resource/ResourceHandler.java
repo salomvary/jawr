@@ -13,10 +13,10 @@
  */
 package net.jawr.web.resource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.channels.FileChannel;
+import java.util.Properties;
 import java.util.Set;
 
 import net.jawr.web.exception.ResourceNotFoundException;
@@ -31,6 +31,12 @@ import net.jawr.web.resource.bundle.JoinableResourceBundleContent;
  */
 public interface ResourceHandler {
 
+	/**
+	 * Returns the resource type managed by the resource handler
+	 * @return the resource type
+	 */
+	public String getResourceType();
+	
 	/**
 	 * Retrieves the resource input stream of a resource. 
 	 * @param resourceName String Name of the resource.  
@@ -91,6 +97,23 @@ public interface ResourceHandler {
 	 */
 	public Set getResourceNames(String path);
 	
+	/**
+	 * Checks if the mapping file exists in the working directory 
+	 * @return true if the mapping file exists in the working directory 
+	 */
+	public boolean isExistingMappingFile();
+	
+	/**
+	 * Returns the jawr bundle mapping from the working directory. 
+	 * @return the jawr bundle mapping.
+	 */
+	public Properties getJawrBundleMapping();
+	
+	/**
+	 * Store the bundle mapping.
+	 * @param bundleMapping the bundle mapping to store
+	 */
+	public void storeJawrBundleMapping(Properties bundleMapping);
 	
 	/**
 	 * Determines wether a given path is a directory. 
@@ -108,4 +131,6 @@ public interface ResourceHandler {
 	 * a resource either java generated or read from elsewhere
 	 */
 	public boolean isResourceGenerated(String path);
+
+	
 }

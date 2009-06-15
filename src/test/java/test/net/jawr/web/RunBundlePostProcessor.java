@@ -3,6 +3,8 @@
  */
 package test.net.jawr.web;
 
+import javax.servlet.ServletException;
+
 import net.jawr.web.BundleProcessor;
 
 /**
@@ -27,8 +29,9 @@ public class RunBundlePostProcessor {
 			bundleProcessor.process(baseDirPath, tmpDirPath, destDirPath);
 		}catch(Exception e){
 			e.printStackTrace();
-			e.getCause().printStackTrace();
-			
+			if(e instanceof ServletException){
+				((ServletException)e).getRootCause().printStackTrace();
+			}
 		}
 		
 		//String bundlePath = FileUtils.getClasspathRootDir()+"/bundleProcessor/tmpDir/jawrTmp/text/bundle/global.js";
