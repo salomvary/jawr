@@ -1,7 +1,6 @@
 package test.net.jawr.web;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.Properties;
 
 import junit.framework.Assert;
@@ -107,7 +106,7 @@ public class BundleProcessorTestCase extends TestCase {
 		FileUtils.clearDirectory(tmpDirPath);
 		FileUtils.clearDirectory(destDirPath);
 		
-		bundleProcessor.process(baseDirPath, tmpDirPath, destDirPath);
+		bundleProcessor.process(baseDirPath, tmpDirPath, destDirPath, true);
 		
 		String bundlePath = FileUtils.getClasspathRootDir()+"/bundleProcessor/tmpDir/jawrTmp/text/bundle/global.js";
 		Assert.assertTrue("Bundle has not been created", new File(bundlePath).exists());
