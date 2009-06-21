@@ -63,7 +63,7 @@ public class JawrConfig {
 	/**
 	 * The property name for the flag indicating if we should use or not the url context path override even in debug mode
 	 */
-	public static final String JAWR_USE_URL_CONTEXTPATH_OVERRIDE_IN_DEBUG_MODE = "jawr.url.contextpath.override.use.in.debug.mode";
+	public static final String JAWR_USE_URL_CONTEXTPATH_OVERRIDE_IN_DEBUG_MODE = "jawr.url.contextpath.override.used.in.debug.mode";
 
 	/**
 	 * The property name for the Gzip IE6 flag
@@ -218,14 +218,6 @@ public class JawrConfig {
 	 * The default value is false.
 	 */
 	private boolean useContextPathOverrideInDebugMode = false;
-
-	/**
-	 * Override value to use instead of the relative path of the application when css urls paths are re-written. urls are generated to be relative if
-	 * this is not set. (//cssbackgroundimageserverlocation)
-	 * 
-	 * Note that absolute urls will not be re-written in the css files.
-	 */
-	private String cssImagePathOverride;
 
 	/**
 	 * Determines if the servlet, which provide CSS image for CSS define in the classpath should be used or not
@@ -542,30 +534,6 @@ public class JawrConfig {
 	 */
 	public void setUseContextPathOverrideInDebugMode(boolean useContextPathOverrideInDebugMode) {
 		this.useContextPathOverrideInDebugMode = useContextPathOverrideInDebugMode;
-	}
-
-	/**
-	 * Get the path which will be used to override CSS image.
-	 * 
-	 * @return The string that will be prepended to css url paths after the ../'s have been removed.
-	 * 
-	 *         So: background:transparent url(../../img/bkrnd/header_1_sprite.gif) no-repeat 0 0; Becomes: background:transparent
-	 *         url(getCssImagePathOverride()+img/bkrnd/header_1_sprite.gif) no-repeat 0 0;
-	 */
-	public String getCssImagePathOverride() {
-		return cssImagePathOverride;
-	}
-
-	/**
-	 * Set the path which will be used to override CSS image.
-	 * 
-	 * @param The string that will be prepended to css url paths after the ../'s have been removed.
-	 * 
-	 *            So: background:transparent url(../../img/bkrnd/header_1_sprite.gif) no-repeat 0 0; Becomes: background:transparent
-	 *            url(getCssImagePathOverride()+img/bkrnd/header_1_sprite.gif) no-repeat 0 0;
-	 */
-	public void setCssImagePathOverride(String cssImagePathOverride) {
-		this.cssImagePathOverride = cssImagePathOverride;
 	}
 
 	/**

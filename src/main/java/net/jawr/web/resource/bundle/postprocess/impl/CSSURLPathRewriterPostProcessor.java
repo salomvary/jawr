@@ -103,8 +103,7 @@ public class CSSURLPathRewriterPostProcessor extends
 	private String getUrlPath(String match, String fullBundlePath, BundleProcessingStatus status) throws IOException {
 
 		JawrConfig jawrConfig = status.getJawrConfig();
-		String imagePathOverride = jawrConfig.getCssImagePathOverride();
-		
+				
 		// Retrieve the image servlet mapping
 		ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) jawrConfig.getContext().getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
 		String classPathImgServletPath = "";
@@ -148,24 +147,6 @@ public class CSSURLPathRewriterPostProcessor extends
 		String fullImgPath = getFinalFullImagePath(url, classPathImgServletPath, status, imgRsHandler);
 		String imgUrl = PathNormalizer.getRelativeWebPath(PathNormalizer.getParentPath(fullBundlePath), fullImgPath);
 		
-		// append the override url here if need be
-		if(imagePathOverride != null){
-			StringBuffer sb = new StringBuffer("url(");
-			sb.append(quoteStr).append(imagePathOverride);
-			
-			String currentCss = status.getLastPathAdded();
-			
-			// If class path image don't take it from the CDN, use the servlet instead
-			if(isClassPathCss(currentCss, status)){
-				sb.append(imgUrl);
-			}else{
-				sb.append(url);
-			}
-			
-			sb.append(quoteStr).append(")");
-			return sb.toString();
-		}
-
 		// Start rendering the result, starting by the initial quote, if any. 
 		StringBuffer urlPrefix = new StringBuffer("url(").append(quoteStr);
 		return PathNormalizer.normalizePath(urlPrefix.append(imgUrl).append(quoteStr).append(")").toString());
