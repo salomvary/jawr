@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -66,22 +66,18 @@ public class ServletContextResourceHandler extends AbstractResourceHandler imple
 	 * @param generatorRegistry the generator registry
 	 * @param resourceType the resource type
 	 */
-	public ServletContextResourceHandler(ServletContext context, File workingDirectory, Charset charset,GeneratorRegistry generatorRegistry, String resourceType) {
+	public ServletContextResourceHandler(ServletContext context, String workingDirectory, Charset charset,GeneratorRegistry generatorRegistry, String resourceType) {
 		super(workingDirectory,charset,generatorRegistry, resourceType, false);		
 		this.context  = context;
 		this.charset = charset;
 	}
 	
 	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.ResourceHandler#getResourceInputStream(java.lang.String)
+	 * @see net.jawr.web.resource.AbstractResourceHandler#doGetResourceAsStream(java.lang.String)
 	 */
-	public InputStream getResourceAsStream(String resourceName) throws ResourceNotFoundException {
+	protected InputStream doGetResourceAsStream(String resourceName) {
 		
-		InputStream is = context.getResourceAsStream(resourceName);		
-		if(null == is)
-			throw new ResourceNotFoundException(resourceName);
-		
-		return is;
+		return context.getResourceAsStream(resourceName);	
 	}
 	
 	/* (non-Javadoc)

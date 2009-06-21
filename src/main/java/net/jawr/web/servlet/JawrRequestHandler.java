@@ -13,7 +13,6 @@
  */
 package net.jawr.web.servlet;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -54,6 +53,7 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.factory.util.PropsFilePropertiesSource;
 import net.jawr.web.resource.bundle.factory.util.ServletContextAware;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
+import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 import net.jawr.web.resource.bundle.handler.ClientSideHandlerScriptRequestHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
@@ -352,8 +352,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	protected ResourceHandler initResourceHandler() {
 		ResourceHandler rsHandler = null;
 		if(jawrConfig.getUseBundleMapping() && StringUtils.isNotEmpty(jawrConfig.getJawrWorkingDirectory())){
-			File workingDir = new File(jawrConfig.getJawrWorkingDirectory());
-			rsHandler = new ServletContextResourceHandler(servletContext, workingDir, jawrConfig.getResourceCharset(), jawrConfig.getGeneratorRegistry(), resourceType);
+			rsHandler = new ServletContextResourceHandler(servletContext, jawrConfig.getJawrWorkingDirectory(), jawrConfig.getResourceCharset(), jawrConfig.getGeneratorRegistry(), resourceType);
 		}else{
 			rsHandler = new ServletContextResourceHandler(servletContext, jawrConfig.getResourceCharset(), jawrConfig.getGeneratorRegistry(), resourceType);
 		}
@@ -369,7 +368,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 		
 		// Override properties which are incompatble with the build time bundle processing
 		if(ThreadLocalJawrContext.isBundleProcessingAtBuildTime()){
-			jawrConfig.setUseBundleMapping(false);
+			jawrConfig.setUseBundleMapping(true);
 			
 			// Use the standard working directory
 			jawrConfig.setJawrWorkingDirectory(null);
@@ -479,6 +478,13 @@ public class JawrRequestHandler implements ConfigChangeListener {
 			} else {
 
 				// In debug mode, we take in account the image defined in the classpath
+				// The following code will rewrite the URL path for the classpath images,
+				// because in debug mode, we are retrieving the CSS ressources directly from the webapp
+				// and if the CSS contains image classpath, we should rewrite the URL.
+				//
+				// TODO Create a temporary file which will store the result,
+				// and use a map which will allow us to associate a path to a hashcode.
+				// We will process the file only if the hashcode of the content change
 				if (this.jawrConfig.isDebugModeOn() && resourceType.equals(JawrConstant.CSS_TYPE)) {
 
 					// Write the content of the CSS in the Stringwriter
@@ -493,7 +499,7 @@ public class JawrRequestHandler implements ConfigChangeListener {
 					}
 
 					// Define the replacement pattern for the image define in the classpath (like jar:img/myImg.png)
-					String relativeRootUrlPath = getRootRelativeUrlPath(request, requestedPath);
+					String relativeRootUrlPath = getRootRelativeCssUrlPath(request, requestedPath);
 					String replacementPattern = PathNormalizer.normalizePath("$1" + relativeRootUrlPath + imageServletMapping + "/cpCbDebug/" + "$4$5");
 					
 					Matcher matcher = CSS_CLASSPATH_IMG_PATTERN.matcher(content);
@@ -535,21 +541,24 @@ public class JawrRequestHandler implements ConfigChangeListener {
 	}
 
 	/**
-	 * Returns the depth level of an url
+	 * Returns the relative path of an url to go back to the root.
+	 * For example : if the url path is defined as "/cssServletPath/css/myStyle.css" -> "../../"
 	 * 
 	 * @param request the request
 	 * @param url the requested url
-	 * @return the depth level of an url
+	 * @return the relative path of an url to go back to the root.
 	 */
-	private String getRootRelativeUrlPath(HttpServletRequest request, String url) {
+	private String getRootRelativeCssUrlPath(HttpServletRequest request, String url) {
 
 		String servletPath = "".equals(jawrConfig.getServletMapping()) ? "" : request.getServletPath();
-		url = servletPath + url;
-
-		if (!url.startsWith("/")) {
-			url = "/" + url;
+		String originalRequestPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
+		// Deals with Jawr generated resource path containing /jawr_generator.css
+		if(originalRequestPath.startsWith(ResourceGenerator.CSS_DEBUGPATH)){
+			url = ResourceGenerator.CSS_DEBUGPATH;
 		}
 
+		url = PathNormalizer.asPath(servletPath + url);
+		
 		Matcher matcher = URL_SEPARATOR_PATTERN.matcher(url);
 		StringBuffer result = new StringBuffer();
 		int i = 0;

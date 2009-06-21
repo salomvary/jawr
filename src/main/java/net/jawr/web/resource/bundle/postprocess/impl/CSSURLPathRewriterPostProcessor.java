@@ -110,7 +110,7 @@ public class CSSURLPathRewriterPostProcessor extends
 		String classPathImgServletPath = "";
 		
 		if(imgRsHandler != null){
-			classPathImgServletPath = imgRsHandler.getJawrConfig().getServletMapping();
+			classPathImgServletPath = PathNormalizer.asPath(imgRsHandler.getJawrConfig().getServletMapping());
 		}
 		
 		String url = match.substring(match.indexOf('(')+1,match.lastIndexOf(')'))
@@ -184,32 +184,18 @@ public class CSSURLPathRewriterPostProcessor extends
 
 		String fullBundlePath = null;
 		String bundleName = status.getCurrentBundle().getId();
-		String contextPathOverride = jawrConfig.getContextPathOverride();
 		
 		// Generation the bundle prefix
 		String bundlePrefix = "";
-		if(!jawrConfig.isDebugModeOn()){
+		if(!bundleName.equals(ResourceGenerator.CSS_DEBUGPATH)){
 			bundlePrefix = FAKE_BUNDLE_PREFIX;
 		}
 		
 		// Add path reference for the servlet mapping if it exists 
 		if(! "".equals(jawrConfig.getServletMapping())){
-			bundlePrefix = "/"+jawrConfig.getServletMapping()+bundlePrefix;
+			bundlePrefix = PathNormalizer.asPath(jawrConfig.getServletMapping()+bundlePrefix)+"/";
+			
 		}  
-		
-		// Add the overriden context path if we are not in debug mode, and if it exists
-		// In debug mode, the references are taken from the application not from the CDN
-		if(!jawrConfig.isDebugModeOn() && !"".equals(contextPathOverride)){
-			
-			bundlePrefix = PathNormalizer.concatWebPath(contextPathOverride, bundlePrefix);
-		}else { 
-			
-			// If we are in debug mode and the CSS file is a classpath CSS, 
-			// the bundleName point to the CSS debug path
-			if(jawrConfig.isDebugModeOn() && isClassPathCss(status.getLastPathAdded(), status)){
-				bundleName = ResourceGenerator.CSS_DEBUGPATH;
-			}
-		}	
 		
 		// Concatenate the bundle prefix and the bundle name
 		fullBundlePath = PathNormalizer.concatWebPath(bundlePrefix, bundleName);
@@ -232,7 +218,6 @@ public class CSSURLPathRewriterPostProcessor extends
 	private String getFinalFullImagePath(String url, String imgServletPath, BundleProcessingStatus status,
 			ImageResourcesHandler imgRsHandler) throws IOException {
 		
-		JawrConfig jawrConfig = status.getJawrConfig();
 		String imgUrl = null;
 		
 		// Retrieve the current CSS file from which the CSS image is referenced
@@ -242,17 +227,6 @@ public class CSSURLPathRewriterPostProcessor extends
 		boolean classpathCss = isClassPathCss(currentCss, status);
 		
 		String rootPath = currentCss;
-		String imagePathOverride = "";
-		
-		// Add the overriden context path if we are not in debug mode, and if it exists
-		// In debug mode, the references are taken from the application not from the CDN
-		if(!jawrConfig.isDebugModeOn()){
-			if(StringUtils.isNotEmpty(jawrConfig.getContextPathOverride())){
-				imagePathOverride = jawrConfig.getContextPathOverride();
-			} else if(StringUtils.isNotEmpty(jawrConfig.getCssImagePathOverride())){
-				imagePathOverride = jawrConfig.getCssImagePathOverride();
-			}
-		}
 		
 		// If the CSS image is taken from the classpath, add the classpath cache prefix
 		if(classpathImg || classpathCss){
@@ -279,7 +253,6 @@ public class CSSURLPathRewriterPostProcessor extends
 			if(imgRsHandler != null){
 				imgCacheUrl = imgRsHandler.getCacheUrl(imgUrl);
 				if(imgCacheUrl != null){
-					//imgCacheUrl = imgCacheUrl.substring(1);
 					imgUrl = imgCacheUrl;
 				}
 			}
@@ -296,12 +269,7 @@ public class CSSURLPathRewriterPostProcessor extends
 			imgUrl = imgServletPath+URL_SEPARATOR+imgUrl;
 		}
 		
-		// Concatenate the overridden image path, if it's defined 
-		if(StringUtils.isNotEmpty(imagePathOverride)){
-			imgUrl =  PathNormalizer.concatWebPath(imagePathOverride, imgUrl);
-		}
-		
-		return imgUrl;
+		return PathNormalizer.asPath(imgUrl);
 	}
 
 

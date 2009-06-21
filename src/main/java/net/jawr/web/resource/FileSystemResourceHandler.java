@@ -55,14 +55,14 @@ public class FileSystemResourceHandler extends AbstractResourceHandler implement
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.ResourceHandler#getResourceInputStream(java.lang.String)
 	 */
-	public InputStream getResourceAsStream(String resourceName) throws ResourceNotFoundException {
+	public InputStream doGetResourceAsStream(String resourceName) {
 		
 		InputStream is = null;
 		try {
 			File resource = new File(baseDir, resourceName);
 			is = new FileInputStream( resource );
 		} catch (FileNotFoundException e) {
-			throw new ResourceNotFoundException(baseDir +  resourceName);
+			// Nothing to do
 		}
 		
 		return is; 

@@ -16,7 +16,6 @@ package net.jawr.web;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -28,7 +27,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -41,9 +39,7 @@ import net.jawr.web.config.JawrConfig;
 import net.jawr.web.context.ThreadLocalJawrContext;
 import net.jawr.web.resource.FileNameUtils;
 import net.jawr.web.resource.ImageResourcesHandler;
-import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
-import net.jawr.web.resource.bundle.JoinableResourceBundlePropertySerializer;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.buildtime.BuildTimeBundleRenderer;
@@ -55,6 +51,7 @@ import net.jawr.web.servlet.mock.MockServletContext;
 import net.jawr.web.servlet.mock.MockServletRequest;
 import net.jawr.web.servlet.mock.MockServletResponse;
 import net.jawr.web.servlet.mock.MockServletSession;
+import net.jawr.web.util.FileUtils;
 import net.jawr.web.util.StringUtils;
 
 import org.apache.log4j.Logger;
@@ -68,6 +65,8 @@ import org.w3c.dom.NodeList;
  * @author Ibrahim Chaehoi
  */
 public class BundleProcessor {
+
+	private static final String CDN_DIR_NAME = "/CDN";
 
 	public static final String IMG_MAPPING_PREFIX = "img.mapping.";
 
@@ -107,11 +106,12 @@ public class BundleProcessor {
 	 * @param baseDirPath the base directory path
 	 * @param tmpDirPath the temp directory path
 	 * @param destDirPath the destination directory path
+	 * @param generateCdnFiles the flag indicating if we should generate the CDN files or not
 	 * @throws Exception if an exception occurs
 	 */
-	public void process(String baseDirPath, String tmpDirPath, String destDirPath) throws Exception {
+	public void process(String baseDirPath, String tmpDirPath, String destDirPath, boolean generateCdnFiles) throws Exception {
 
-		process(baseDirPath, tmpDirPath, destDirPath, new ArrayList());
+		process(baseDirPath, tmpDirPath, destDirPath, new ArrayList(), generateCdnFiles);
 	}
 
 	/**
@@ -121,9 +121,10 @@ public class BundleProcessor {
 	 * @param tmpDirPath the temp directory path
 	 * @param destDirPath the destination directory path
 	 * @param servletNames the list of the name of servlets to initialized
+	 * @param generateCdnFiles the flag indicating if we should generate the CDN files or not
 	 * @throws Exception if an exception occurs
 	 */
-	public void process(String baseDirPath, String tmpDirPath, String destDirPath, List servletNames) throws Exception {
+	public void process(String baseDirPath, String tmpDirPath, String destDirPath, List servletNames, boolean generateCdnFiles) throws Exception {
 
 		// Retrieve the parameters from baseDir+"/WEB-INF/web.xml"
 		File webXml = new File(baseDirPath, WEB_XML_FILE_PATH);
@@ -179,8 +180,13 @@ public class BundleProcessor {
 		// Initialize the servlets and retrieve the jawr servlet definitions
 		List jawrServletDefinitions = initServlets(servletDefinitions);
 
-		// Process the Jawr servlet to generate the bundles
-		processJawrServlets(destDirPath, jawrServletDefinitions);
+		// Stores the output stream
+		FileUtils.copyDirectory(new File(tmpDirPath), new File(destDirPath));
+		
+		if(generateCdnFiles){
+			// Process the Jawr servlet to generate the bundles
+			processJawrServlets(destDirPath, jawrServletDefinitions);
+		}
 	}
 
 	/**
@@ -244,9 +250,6 @@ public class BundleProcessor {
 
 		for (Iterator iterator = jawrServletDefinitions.iterator(); iterator.hasNext();) {
 
-			// the map which will store the bundle mapping
-			Properties bundleMapping = new Properties();
-			
 			ServletDefinition servletDef = (ServletDefinition) iterator.next();
 			ServletConfig servletConfig = servletDef.getServletConfig();
 
@@ -256,7 +259,6 @@ public class BundleProcessor {
 			
 			String servletMapping = servletConfig.getInitParameter(JawrConstant.SERVLET_MAPPING_PROPERTY_NAME);
 			ResourceBundlesHandler bundleHandler = null;
-			String bundleMappingFileName = null;
 			ImageResourcesHandler imgRsHandler = null;
 
 			// Retrieve the bundle Handler
@@ -264,34 +266,19 @@ public class BundleProcessor {
 			String type = servletConfig.getInitParameter(TYPE_INIT_PARAMETER);
 			if (type == null || type.equals(JawrConstant.JS_TYPE)) {
 				bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(JawrConstant.JS_CONTEXT_ATTRIBUTE);
-				bundleMappingFileName = JawrConstant.JAWR_JS_MAPPING_PROPERTIES_FILENAME;
 			} else if (type.equals(JawrConstant.CSS_TYPE)) {
 				bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(JawrConstant.CSS_CONTEXT_ATTRIBUTE);
-				bundleMappingFileName = JawrConstant.JAWR_CSS_MAPPING_PROPERTIES_FILENAME;
 			} else if (type.equals(JawrConstant.IMG_TYPE)) {
 				imgRsHandler = (ImageResourcesHandler) servletContext.getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
-				bundleMappingFileName = JawrConstant.JAWR_IMG_MAPPING_PROPERTIES_FILENAME;
 			}
 
+			String cdnDestDirPath = destDirPath + CDN_DIR_NAME;
 			if (bundleHandler != null) {
-
-				createBundles(servletDef.getServlet(), bundleHandler, destDirPath, servletMapping, bundleMapping);
+				createBundles(servletDef.getServlet(), bundleHandler, cdnDestDirPath, servletMapping);
 			} else if (imgRsHandler != null) {
-				createImageBundle(servletDef.getServlet(), imgRsHandler, destDirPath, servletMapping, bundleMapping);
+				createImageBundle(servletDef.getServlet(), imgRsHandler, cdnDestDirPath, servletMapping);
 			}
-			
-			// Stores the output stream
-			OutputStream out = new FileOutputStream(new File(destDirPath, bundleMappingFileName));
-			bundleMapping.store(out, "JAWR Bundle mapping");
-			IOUtils.close(out);
 		}
-
-		// Stores the output stream
-		//OutputStream out = new FileOutputStream(new File(destDirPath, JawrConstant.JAWR_JS_MAPPING_PROPERTIES_FILENAME));
-		//bundleMapping.store(out, "JAWR Bundle mapping");
-		
-		//IOUtils.close(out);
-	
 	}
 
 	/**
@@ -301,11 +288,10 @@ public class BundleProcessor {
 	 * @param bundleHandler the bundles handler
 	 * @param destDirPath the destination directory path
 	 * @param servletMapping the mapping of the servlet
-	 * @param bundleMapping the bundle mapping
 	 * @throws IOException if an IO exception occurs
 	 * @throws ServletException if a servlet exception occurs
 	 */
-	private void createBundles(HttpServlet servlet, ResourceBundlesHandler bundleHandler, String destDirPath, String servletMapping, Properties bundleMapping) throws IOException,
+	private void createBundles(HttpServlet servlet, ResourceBundlesHandler bundleHandler, String destDirPath, String servletMapping) throws IOException,
 			ServletException {
 
 		List bundles = bundleHandler.getContextBundles();
@@ -342,7 +328,7 @@ public class BundleProcessor {
 			}
 			
 			// Update the bundle mapping
-			JoinableResourceBundlePropertySerializer.serializeInProperties(bundle, resourceType, bundleMapping);
+			//JoinableResourceBundlePropertySerializer.serializeInProperties(bundle, resourceType, bundleMapping);
 			
 			for (Iterator iterator = localVariantKeys.iterator(); iterator.hasNext();) {
 				String localVariantKey = (String) iterator.next();
@@ -452,17 +438,34 @@ public class BundleProcessor {
 	}
 
 	/**
+	 * Remove the servlet mapping from the path
+	 * @param path the path
+	 * @param mapping the servlet mapping
+	 * @return the path without the servlet mapping
+	 */
+	private String removeServletMappingFromPath(String path, String mapping) {
+		if (mapping != null && mapping.length() > 0) {
+			int idx = path.indexOf(mapping);
+			if (idx > -1) {
+				path = path.substring(idx + mapping.length());
+			}
+
+			path = PathNormalizer.asPath(path);
+		}
+		return path;
+	}
+	
+	/**
 	 * Create the image bundle
 	 * 
 	 * @param servlet the servlet
 	 * @param imgRsHandler the image resource handler
 	 * @param destDirPath the destination directory path
 	 * @param servletMapping the mapping
-	 * @param bundleMapping the bundle mapping
 	 * @throws IOException if an IOExceptin occurs
 	 * @throws ServletException if an exception occurs
 	 */
-	private void createImageBundle(HttpServlet servlet, ImageResourcesHandler imgRsHandler, String destDirPath, String servletMapping, Map bundleMapping) throws IOException,
+	private void createImageBundle(HttpServlet servlet, ImageResourcesHandler imgRsHandler, String destDirPath, String servletMapping) throws IOException,
 			ServletException {
 		Map bundleImgMap = imgRsHandler.getImageMap();
 
@@ -479,7 +482,6 @@ public class BundleProcessor {
 			File destFile = new File(destDirPath, imageFinalPath);
 			
 			// Update the bundle mapping
-			bundleMapping.put(IMG_MAPPING_PREFIX+imgPath, path);
 			createBundleFile(servlet, response, request, path, destFile, servletMapping);
 		}
 	}
@@ -498,13 +500,9 @@ public class BundleProcessor {
 	 */
 	private void createBundleFile(HttpServlet servlet, MockServletResponse response, MockServletRequest request, String path, File destFile,
 			String mapping) throws IOException, ServletException {
-		request.setRequestPath(path);
 		
-		if(StringUtils.isNotEmpty(mapping)){
-			String pathInfo = removeServletMappingFromPath(path, mapping);
-			request.setPathInfo(pathInfo);
-		}
-		
+		request.setRequestPath(mapping, path);
+				
 		// Create the parent directory of the destination file
 		if (!destFile.exists()) {
 			destFile.getParentFile().mkdirs();
@@ -522,24 +520,6 @@ public class BundleProcessor {
 			logger.warn("No content retrieved for file '"+destFile.getAbsolutePath()+"', which is associated to the path : "+path);
 			System.out.println("No content retrieved for file '"+destFile.getAbsolutePath()+"', which is associated to the path : "+path);
 		}
-	}
-
-	/**
-	 * Remove the servlet mapping from the path
-	 * @param path the path
-	 * @param mapping the servlet mapping
-	 * @return the path without the servlet mapping
-	 */
-	private String removeServletMappingFromPath(String path, String mapping) {
-		if (mapping != null && mapping.length() > 0) {
-			int idx = path.indexOf(mapping);
-			if (idx > -1) {
-				path = path.substring(idx + mapping.length());
-			}
-
-			path = PathNormalizer.asPath(path);
-		}
-		return path;
 	}
 
 	/**

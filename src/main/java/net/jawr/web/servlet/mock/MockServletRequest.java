@@ -30,6 +30,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
+import net.jawr.web.util.StringUtils;
+
 /**
  * This class define a mock Http Servlet request.
  * This class is used by the Jawr build time class handler,
@@ -41,6 +44,9 @@ public class MockServletRequest implements HttpServletRequest {
 
 	/** The requested path */
 	private String requestPath;
+
+	/** The servlet path */
+	private String servletPath;
 
 	/** The path info */
 	private String pathInfo;
@@ -62,11 +68,42 @@ public class MockServletRequest implements HttpServletRequest {
 	 * Sets the requested path
 	 * @param path the requested path
 	 */
-	public void setRequestPath(String path) {
+	public void setRequestPath(String mapping, String path) {
 		this.requestPath = path;
+		if(StringUtils.isEmpty(mapping)){
+			int idx = requestPath.indexOf("?");
+			if(idx != -1){
+				this.servletPath = requestPath.substring(0, idx);
+			}else{
+				this.servletPath = requestPath;
+			}
+		}else{
+			this.servletPath = PathNormalizer.asPath(mapping);
+			String pathInfo = removeServletMappingFromPath(path, mapping);
+			this.pathInfo = pathInfo;
+		}
 		initParameters();
+		
 	}
 
+	/**
+	 * Remove the servlet mapping from the path
+	 * @param path the path
+	 * @param mapping the servlet mapping
+	 * @return the path without the servlet mapping
+	 */
+	private String removeServletMappingFromPath(String path, String mapping) {
+		if (mapping != null && mapping.length() > 0) {
+			int idx = path.indexOf(mapping);
+			if (idx > -1) {
+				path = path.substring(idx + mapping.length());
+			}
+
+			path = PathNormalizer.asPath(path);
+		}
+		return path;
+	}
+	
 	/**
 	 * Initialize the parameters from the request path
 	 * This is a naive implementation which serves only the purpose of bundle generation.
@@ -238,7 +275,7 @@ public class MockServletRequest implements HttpServletRequest {
 	 * @see javax.servlet.http.HttpServletRequest#getServletPath()
 	 */
 	public String getServletPath() {
-		return requestPath;
+		return servletPath;
 	}
 
 	/* (non-Javadoc)

@@ -14,7 +14,6 @@
 package net.jawr.web.resource.bundle.generator;
 
 import net.jawr.web.JawrConstant;
-import net.jawr.web.servlet.JawrRequestHandler;
 
 /**
  * Abstract implementation of ResourceGenerator with a default return value for the getMappingPrefix method.

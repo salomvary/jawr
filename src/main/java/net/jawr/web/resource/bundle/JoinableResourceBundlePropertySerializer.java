@@ -34,14 +34,26 @@ public class JoinableResourceBundlePropertySerializer {
 	/**
 	 * This method will serialize the properties of the bundle in the Properties object
 	 * 
-	 * @param bundle the bundle
+	 * This method will serialize all bundle except the childs of composite bundle,
+	 * for which the mappings will be part of their parent bundles.  
+	 * The properties associated to a bundle are the same as the one define in the jawr configuration file.
+	 * Only the following properties are different from the standard configuration file :
+	 *   - The mapping, which will contains path to each resources of the bundle ( no wildcard like : myfolder/** ) 
+	 *   - The locale variants which will be explicitly specified.
+	 *   - The bundle hash codes will be define as properties, so we will not have to compute them.
+	 *   For a bundle with local variants, there will be an hash code for each variant + one, which is the hash 
+	 *   code of the default bundle.
+	 *   - The licence path list.
+	 *   
+	 * @param bundle the bundle to serialize
 	 * @param props the properties to update
 	 */
 	public static void serializeInProperties(JoinableResourceBundle bundle,
 			String type, Properties props) {
 
-		// If the bundle is a composite one, no need to serialize it, it will be integrated
-		if (StringUtils.isEmpty(bundle.getId())) { // TODO check if that condition is the right one
+		// If the bundle is a child of a composite bundle, 
+		// no need to serialize it, it will be integrated with the composite bundle
+		if (StringUtils.isEmpty(bundle.getId())) {
 			return;
 		}
 
@@ -62,10 +74,6 @@ public class JoinableResourceBundlePropertySerializer {
 					.getInclusionOrder()));
 		}
 
-		if (bundle.isComposite()) {
-			props.put(prefix + PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG, Boolean.toString(bundle
-					.isComposite()));
-		}
 		if (inclusion.isIncludeOnDebug()) {
 			props.put(prefix + PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_DEBUGONLY, Boolean.toString(inclusion
 					.isIncludeOnDebug()));

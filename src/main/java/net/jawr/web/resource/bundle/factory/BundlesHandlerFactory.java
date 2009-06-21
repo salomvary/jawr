@@ -294,7 +294,7 @@ public class BundlesHandlerFactory {
 				definition.isDebugNever());
 
 		CompositeResourceBundle composite = new CompositeResourceBundle(
-				definition.getBundleName(), definition.getBundleId(),
+				definition.getBundleId(), definition.getBundleName(), 
 				childBundles, include, resourceHandler, fileExtension,
 				jawrConfig);
 		if (null != definition.getBundlePostProcessorKeys())
