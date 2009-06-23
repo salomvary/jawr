@@ -61,6 +61,12 @@ public interface JoinableResourceBundle {
 	public InclusionPattern getInclusionPattern();
 	
 	/**
+	 * Sets the mappings, which should be used for the bundle
+	 * @param mappings the mapping of the resources of the bundle
+	 */
+	public void setMappings(List mappings);
+	
+	/**
 	 * Returns an ordered list with all the items pertaining to this bundle. 
 	 * @return an ordered list with all the items pertaining to this bundle. 
 	 */
@@ -154,4 +160,6 @@ public interface JoinableResourceBundle {
      * @return
      */
     public String getAlternateProductionURL();
+
+	
 }

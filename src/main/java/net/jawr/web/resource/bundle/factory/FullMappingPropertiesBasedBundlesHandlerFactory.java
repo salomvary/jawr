@@ -30,7 +30,6 @@ import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.JoinableResourceBundleImpl;
 import net.jawr.web.resource.bundle.factory.processor.PostProcessorChainFactory;
 import net.jawr.web.resource.bundle.factory.util.PropertiesConfigHelper;
-import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.util.StringUtils;
 
 /**
@@ -42,33 +41,44 @@ import net.jawr.web.util.StringUtils;
  */
 public class FullMappingPropertiesBasedBundlesHandlerFactory {
 
-	/** The properties configuration helper */
-	private PropertiesConfigHelper props;
-
 	/** The post processor chain factory */
 	private PostProcessorChainFactory chainFactory;
 
-	/** The custom bundles loaded from the the property file */
-	private List customBundles;
-
+	/** The resource type */
+	private String resourceType;
+	
+	/** The resource handler */
+	private ResourceHandler rsHandler;
+	
 	/**
 	 * Create a PropertiesBasedBundlesHandlerFactory using the specified properties.
 	 * 
-	 * @param properties the configuration properties
 	 * @param resourceType js or css
 	 * @param rsHandler ResourceHandler to access files.
+	 * @param generatorRegistry the generator registry
+	 * @param chainFactory the post processor chain factory
 	 */
-	public FullMappingPropertiesBasedBundlesHandlerFactory(Properties properties,
-			String resourceType, ResourceHandler rsHandler,
-			GeneratorRegistry generatorRegistry,
+	public FullMappingPropertiesBasedBundlesHandlerFactory(String resourceType, 
+			ResourceHandler rsHandler,
 			PostProcessorChainFactory chainFactory) {
 
-		this.props = new PropertiesConfigHelper(properties, resourceType);
+		this.resourceType = resourceType;
 		this.chainFactory = chainFactory;
+		this.rsHandler = rsHandler;
+	}
+
+	/**
+	 * Returns the list of joinable resource bundle
+	 * 
+	 * @return the list of joinable resource bundle
+	 */
+	public List getResourceBundles(Properties properties) {
+		
+		PropertiesConfigHelper props = new PropertiesConfigHelper(properties, resourceType);
 		String fileExtension = "." + resourceType;
 
 		// Initialize custom bundles
-		customBundles = new ArrayList();
+		List customBundles = new ArrayList();
 		// Check if we should use the bundle names property or
 		// find the bundle name using the bundle id declaration :
 		// jawr.<type>.bundle.<name>.id
@@ -79,59 +89,41 @@ public class FullMappingPropertiesBasedBundlesHandlerFactory {
 							.getProperty(PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_NAMES),
 					",");
 			while (tk.hasMoreTokens()) {
-				customBundles.add(buildJoinableResourceBundle(tk.nextToken()
-						.trim(), fileExtension, generatorRegistry, rsHandler));
+				customBundles.add(buildJoinableResourceBundle(props, tk.nextToken()
+						.trim(), fileExtension, rsHandler));
 			}
 		} else {
 			Iterator bundleNames = props.getPropertyBundleNameSet().iterator();
 			while (bundleNames.hasNext()) {
-				customBundles.add(buildJoinableResourceBundle(
+				customBundles.add(buildJoinableResourceBundle(props, 
 						(String) bundleNames.next(), fileExtension,
-						generatorRegistry, rsHandler));
+						rsHandler));
 			}
 		}
-	}
-
-	/**
-	 * Returns the list of joinable resource bundle
-	 * 
-	 * @return the list of joinable resource bundle
-	 */
-	public List getResourceBundles() {
+		
 		return customBundles;
 	}
 
 	/**
 	 * Create a JoinableResourceBundle based on the properties file.
 	 * 
+	 * @param props the properties config helper
 	 * @param bundleName the bundle name
-	 * @param generatorRegistry the generator registry
 	 * @param rsHandler the resource handler
 	 * @return BundleDefinition
 	 */
 	private JoinableResourceBundle buildJoinableResourceBundle(
-			String bundleName, String fileExtension,
-			GeneratorRegistry generatorRegistry, ResourceHandler rsHandler) {
+			PropertiesConfigHelper props, String bundleName, String fileExtension,
+			ResourceHandler rsHandler) {
 
 		// Id for the bundle
 		String bundleId = props.getCustomBundleProperty(bundleName,
 				PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_ID);
 
-		InclusionPattern inclusionPattern = getInclusionPattern(bundleName);
+		InclusionPattern inclusionPattern = getInclusionPattern(props, bundleName);
 		JoinableResourceBundleImpl bundle = new JoinableResourceBundleImpl(
 				bundleId, bundleName, fileExtension, inclusionPattern,
 				rsHandler);
-
-		// Wether it's a composite or not
-//		boolean isComposite = Boolean
-//				.valueOf(
-//						props
-//								.getCustomBundleProperty(
-//										bundleName,
-//										PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_COMPOSITE_FLAG,
-//										"false")).booleanValue();
-
-		// Create definition and set its id
 
 		// Override bundle postprocessor
 		String bundlePostProcessors = props.getCustomBundleProperty(bundleName,
@@ -228,10 +220,11 @@ public class FullMappingPropertiesBasedBundlesHandlerFactory {
 	/**
 	 * Returns the inclusion pattern for a bundle
 	 * 
+	 * @param props the properties helper
 	 * @param bundleName the bundle name
 	 * @return the inclusion pattern for a bundle
 	 */
-	private InclusionPattern getInclusionPattern(String bundleName) {
+	private InclusionPattern getInclusionPattern(PropertiesConfigHelper props, String bundleName) {
 		// Wether it's global or not
 		boolean isGlobal = Boolean
 				.valueOf(

@@ -171,6 +171,11 @@ public class OrphanResourceBundlesMapperTest extends  ResourceHandlerBasedTest {
 					String bundleDataHashCode) {
 				// TODO Auto-generated method stub
 				
+			}
+
+			public void setMappings(List mappings) {
+				// TODO Auto-generated method stub
+				
 			}};		
 	}
 }

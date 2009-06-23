@@ -13,9 +13,12 @@
  */
 package net.jawr.web;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -39,6 +42,7 @@ import net.jawr.web.config.JawrConfig;
 import net.jawr.web.context.ThreadLocalJawrContext;
 import net.jawr.web.resource.FileNameUtils;
 import net.jawr.web.resource.ImageResourcesHandler;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
@@ -65,10 +69,6 @@ import org.w3c.dom.NodeList;
  * @author Ibrahim Chaehoi
  */
 public class BundleProcessor {
-
-	private static final String CDN_DIR_NAME = "/CDN";
-
-	public static final String IMG_MAPPING_PREFIX = "img.mapping.";
 
 	/** The logger */
 	private static Logger logger = Logger.getLogger(BundleProcessor.class);
@@ -100,6 +100,39 @@ public class BundleProcessor {
 	/** The init type parameter */
 	private static final String TYPE_INIT_PARAMETER = "type";
 
+	/** The CDN directory name */
+	private static final String CDN_DIR_NAME = "/CDN";
+
+	// The following constants are related to the jawr-apache-httpd.conf file
+
+	/** The file name of the jawr-apache-httpd.conf file */
+	private static final String JAWR_APACHE_HTTPD_CONF_FILE = "jawr-apache-httpd.conf";
+
+	/** 
+	 * The statement which define that we should check the JS servlet mapping is defined,
+	 * before processing the next line
+	 */
+	private static final String CHECKS_JAWR_JS_SERVLET_MAPPING_EXISTS = "## if <jawr.js.servlet.mapping>";
+
+	/** 
+	 * The statement which define that we should check the CSS servlet mapping is defined,
+	 * before processing the next line
+	 */
+	private static final String CHECK_JAWR_CSS_SERVLET_MAPPING_EXISTS = "## if <jawr.css.servlet.mapping>";
+
+	/** The pattern for the jawr image servlet mapping in the template file	*/
+	private static final String JAWR_IMG_SERVLET_MAPPING_PATTERN = "<jawr\\.img\\.servlet\\.mapping>";
+
+	/** The pattern for the jawr CSS servlet mapping in the template file */
+	private static final String JAWR_CSS_SERVLET_MAPPING_PATTERN = "<jawr\\.css\\.servlet\\.mapping>";
+
+	/** The pattern for the jawr JS servlet mapping in the template file */
+	private static final String JAWR_JS_SERVLET_MAPPING_PATTERN = "<jawr\\.js\\.servlet\\.mapping>";
+
+	/** The root directory which will contains the resource on the CDN */
+	private static final String APP_ROOT_DIR_PATTERN = "<app\\.root\\.dir>";
+
+	
 	/**
 	 * Launch the bundle processing
 	 * 
@@ -248,6 +281,13 @@ public class BundleProcessor {
 	 */
 	private void processJawrServlets(String destDirPath, List jawrServletDefinitions) throws Exception {
 
+		String appRootDir = "";
+		String jsServletMapping = "";
+		String cssServletMapping = "";
+		String imgServletMapping = "";
+		
+		String cdnDestDirPath = destDirPath + CDN_DIR_NAME;
+		
 		for (Iterator iterator = jawrServletDefinitions.iterator(); iterator.hasNext();) {
 
 			ServletDefinition servletDef = (ServletDefinition) iterator.next();
@@ -266,18 +306,100 @@ public class BundleProcessor {
 			String type = servletConfig.getInitParameter(TYPE_INIT_PARAMETER);
 			if (type == null || type.equals(JawrConstant.JS_TYPE)) {
 				bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(JawrConstant.JS_CONTEXT_ATTRIBUTE);
+				String contextPathOverride = bundleHandler.getConfig().getContextPathOverride();
+				int idx = contextPathOverride.indexOf("//");
+				if(idx != -1){
+					idx = contextPathOverride.indexOf("/", idx+2);
+					if(idx != -1){
+						appRootDir = PathNormalizer.asPath(contextPathOverride.substring(idx));
+					}
+				}
+				
+				if(servletMapping != null){
+					jsServletMapping = PathNormalizer.asPath(servletMapping);
+				}
+				
 			} else if (type.equals(JawrConstant.CSS_TYPE)) {
 				bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(JawrConstant.CSS_CONTEXT_ATTRIBUTE);
+				if(servletMapping != null){
+					cssServletMapping = PathNormalizer.asPath(servletMapping);
+				}
 			} else if (type.equals(JawrConstant.IMG_TYPE)) {
 				imgRsHandler = (ImageResourcesHandler) servletContext.getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
+				if(servletMapping != null){
+					imgServletMapping = PathNormalizer.asPath(servletMapping);
+				}
 			}
 
-			String cdnDestDirPath = destDirPath + CDN_DIR_NAME;
 			if (bundleHandler != null) {
 				createBundles(servletDef.getServlet(), bundleHandler, cdnDestDirPath, servletMapping);
 			} else if (imgRsHandler != null) {
 				createImageBundle(servletDef.getServlet(), imgRsHandler, cdnDestDirPath, servletMapping);
 			}
+		}
+		
+		// Create the apache rewrite config file.
+		createApacheRewriteConfigFile(cdnDestDirPath, appRootDir,
+				jsServletMapping, cssServletMapping, imgServletMapping);
+		
+	}
+
+	/**
+	 * Create the apache rewrite configuration file
+	 * 
+	 * @param cdnDestDirPath the CDN destination directory
+	 * @param appRootDir the application root dir path in the CDN
+	 * @param jsServletMapping the JS servlet mapping
+	 * @param cssServletMapping the CSS servlet mapping
+	 * @param imgServletMapping the image servlet mapping
+	 * @throws IOException if an IOException occurs.
+	 */
+	private void createApacheRewriteConfigFile(String cdnDestDirPath,
+			String appRootDir, String jsServletMapping,
+			String cssServletMapping, String imgServletMapping)
+			throws IOException {
+	
+		BufferedReader templateFileReader = null;
+		FileWriter fileWriter = null;
+		try{
+			
+			templateFileReader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/net/jawr/web/resource/template-jawr-apache-httpd.conf")));
+			fileWriter = new FileWriter(cdnDestDirPath+File.separator+JAWR_APACHE_HTTPD_CONF_FILE);
+			String line = null;
+			
+			boolean processNextString = true;
+			while((line = templateFileReader.readLine()) != null){
+				
+				// If the line starts with the condition to check the existence of the JS servlet mapping,
+				// sets the processNextString flag accordingly
+				if(line.startsWith(CHECKS_JAWR_JS_SERVLET_MAPPING_EXISTS)){
+					if(StringUtils.isEmpty(jsServletMapping)){
+						processNextString = false;
+					}
+				// If the line starts with the condition to check the existence of the servlet mapping,
+				// sets the processNextString flag accordingly
+				}else if(line.startsWith(CHECK_JAWR_CSS_SERVLET_MAPPING_EXISTS)){
+					if(StringUtils.isEmpty(cssServletMapping)){
+						processNextString = false;
+					}
+				// If the processNextString flag is set to false, skip the current line, and process the next one
+				}else if(processNextString == false){
+					processNextString = true;
+				}else{
+					
+					// Make the replacement
+					line = line.replaceAll(APP_ROOT_DIR_PATTERN, appRootDir);
+					line = line.replaceAll(JAWR_JS_SERVLET_MAPPING_PATTERN, jsServletMapping);
+					line = line.replaceAll(JAWR_CSS_SERVLET_MAPPING_PATTERN, cssServletMapping);
+					line = line.replaceAll(JAWR_IMG_SERVLET_MAPPING_PATTERN, imgServletMapping);
+					fileWriter.write(line+"\n");
+				}
+			}
+		}finally{
+			
+			IOUtils.close(templateFileReader);
+			IOUtils.close(fileWriter);
+			
 		}
 	}
 

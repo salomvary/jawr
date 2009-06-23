@@ -46,7 +46,6 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 	
 	public void testBasicURLRewriting() {
 		// basic test
-		// TODO Why this test case is wrong?
 		StringBuffer data = new StringBuffer("background-image:url(../../../../../images/someImage.gif);");
 		//StringBuffer data = new StringBuffer("background-image:url(../../../../images/someImage.gif);");
 		// the image is at /images
@@ -370,7 +369,6 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		data.append("\n");
 		data.append("{");
 		data.append("\n");
-		// TODO Why this test case is wrong
 		//data.append("\tbackground-image:url( ../../../../../images/someImage.gif );");
 		data.append("\tbackground-image:url( ../images/someImage.gif );");
 		data.append("\n");
@@ -455,20 +453,19 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 				return null;
 			}
 			public String getBundleDataHashCode(String variantKey) {
-				// TODO Auto-generated method stub
 				return null;
 			}
 			public String getName() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 			public boolean isComposite() {
-				// TODO Auto-generated method stub
 				return false;
 			}
 			public void setBundleDataHashCode(String variantKey,
 					String bundleDataHashCode) {
-				// TODO Auto-generated method stub
+				
+			}
+			public void setMappings(List mappings) {
 				
 			}};
 		

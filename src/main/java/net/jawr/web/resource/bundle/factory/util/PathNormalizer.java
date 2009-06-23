@@ -59,6 +59,15 @@ public class PathNormalizer {
 	}
 	
 	/**
+	 * Normalizes a path and adds a separator at its start and its end. 
+	 * @param path the path
+	 * @return the normalized path
+	 */
+	public static final String asDirPath(String path) {
+		return(JawrConstant.URL_SEPARATOR + normalizePath(path) + JawrConstant.URL_SEPARATOR);
+	}
+	
+	/**
 	 * Normalizes two paths and joins them as a single path. 
 	 * @param prefix
 	 * @param path

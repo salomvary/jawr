@@ -178,4 +178,34 @@ public class IOUtils {
 		}
 	}
 
+	/**
+	 * Close the reader
+	 * @param reader the reader to close
+	 */
+	public static void close(Reader reader) {
+		if (reader != null) {
+
+			try {
+				reader.close();
+			} catch (IOException e) {
+				// Nothing to do
+			}
+		}
+	}
+	
+	/**
+	 * Close the writer
+	 * @param writer the writer to close
+	 */
+	public static void close(Writer writer) {
+		if (writer != null) {
+
+			try {
+				writer.close();
+			} catch (IOException e) {
+				// Nothing to do
+			}
+		}
+	}
+
 }

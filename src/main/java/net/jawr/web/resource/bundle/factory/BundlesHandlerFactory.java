@@ -182,10 +182,10 @@ public class BundlesHandlerFactory {
 			log.info("Building bundles from the full bundle mapping. The bundles will not be processed.");
 		}
 		Properties mappingProperties = resourceHandler.getJawrBundleMapping();
-		FullMappingPropertiesBasedBundlesHandlerFactory factory = new FullMappingPropertiesBasedBundlesHandlerFactory(
-				mappingProperties, resourceType, resourceHandler, jawrConfig
-						.getGeneratorRegistry(), chainFactory);
-		resourceBundles.addAll(factory.getResourceBundles());
+		FullMappingPropertiesBasedBundlesHandlerFactory factory = new FullMappingPropertiesBasedBundlesHandlerFactory(resourceType, 
+				resourceHandler, chainFactory);
+		
+		resourceBundles.addAll(factory.getResourceBundles(mappingProperties));
 	}
 
 	/**
