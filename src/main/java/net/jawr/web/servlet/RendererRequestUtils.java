@@ -108,8 +108,8 @@ public class RendererRequestUtils {
 		// make sure we have set an overrideKey
 		// make sure the overrideKey exists in the request
 		// lastly, make sure the keys match
-		if (jawrConfig.getDebugOverrideKey().length() > 0 && null != req.getParameter("overrideKey")
-				&& jawrConfig.getDebugOverrideKey().equals(req.getParameter("overrideKey"))) {
+		if (jawrConfig.getDebugOverrideKey().length() > 0 && null != req.getParameter(JawrConstant.OVERRIDE_KEY_PARAMETER_NAME)
+				&& jawrConfig.getDebugOverrideKey().equals(req.getParameter(JawrConstant.OVERRIDE_KEY_PARAMETER_NAME))) {
 			ThreadLocalJawrContext.setDebugOverriden(true);
 		} else {
 			ThreadLocalJawrContext.setDebugOverriden(false);

@@ -81,4 +81,6 @@ public class JawrConstant {
 	/** The file URI prefix */
 	public static final String FILE_URI_PREFIX = "file://";
 
+	public static final String OVERRIDE_KEY_PARAMETER_NAME = "overrideKey";
+
 }

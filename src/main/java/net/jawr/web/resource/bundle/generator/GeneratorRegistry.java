@@ -60,11 +60,11 @@ public class GeneratorRegistry {
 	/** The generator prefix separator */
 	public static final String PREFIX_SEPARATOR = ":";
 	
-	/** The generator registry */
-	private static final Map registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
-	
 	/** The generator prefix registry */
 	private static final List prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
+	
+	/** The generator registry */
+	private final Map registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
 	
 	/** The resource type */
 	private String resourceType;
