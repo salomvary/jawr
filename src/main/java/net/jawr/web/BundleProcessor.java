@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -132,7 +133,6 @@ public class BundleProcessor {
 	/** The root directory which will contains the resource on the CDN */
 	private static final String APP_ROOT_DIR_PATTERN = "<app\\.root\\.dir>";
 
-	
 	/**
 	 * Launch the bundle processing
 	 * 
@@ -159,6 +159,13 @@ public class BundleProcessor {
 	 */
 	public void process(String baseDirPath, String tmpDirPath, String destDirPath, List servletNames, boolean generateCdnFiles) throws Exception {
 
+		// 	this(new URL("file://"+webAppPath+"/WEB-INF/classes/"), new URL("file://"+webAppPath+"/WEB-INF/lib/"));
+		
+		URL webAppClasses = new File(baseDirPath+"/WEB-INF/classes/").toURL();
+		URL webAppLibs =  new File(baseDirPath+"/WEB-INF/lib/").toURL();
+		ClassLoader webAppClassLoader = new JawrBundleProcessorCustomClassLoader(new URL[]{webAppClasses, webAppLibs}, getClass().getClassLoader());
+		Thread.currentThread().setContextClassLoader(webAppClassLoader);
+		
 		// Retrieve the parameters from baseDir+"/WEB-INF/web.xml"
 		File webXml = new File(baseDirPath, WEB_XML_FILE_PATH);
 		DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -188,7 +195,7 @@ public class BundleProcessor {
 				} else if (servletChildNode.getNodeName().equals(SERVLET_CLASS_TAG_NAME)) {
 
 					String servletClassName = servletChildNode.getFirstChild().getNodeValue();
-					servletClass = getClass().getClassLoader().loadClass(servletClassName);
+					servletClass = webAppClassLoader.loadClass(servletClassName);
 
 				} else if (servletChildNode.getNodeName().equals(INIT_PARAM_TAG_NAME)) {
 
@@ -307,11 +314,13 @@ public class BundleProcessor {
 			if (type == null || type.equals(JawrConstant.JS_TYPE)) {
 				bundleHandler = (ResourceBundlesHandler) servletContext.getAttribute(JawrConstant.JS_CONTEXT_ATTRIBUTE);
 				String contextPathOverride = bundleHandler.getConfig().getContextPathOverride();
-				int idx = contextPathOverride.indexOf("//");
-				if(idx != -1){
-					idx = contextPathOverride.indexOf("/", idx+2);
+				if(StringUtils.isNotEmpty(contextPathOverride)){
+					int idx = contextPathOverride.indexOf("//");
 					if(idx != -1){
-						appRootDir = PathNormalizer.asPath(contextPathOverride.substring(idx));
+						idx = contextPathOverride.indexOf("/", idx+2);
+						if(idx != -1){
+							appRootDir = PathNormalizer.asPath(contextPathOverride.substring(idx));
+						}
 					}
 				}
 				
@@ -694,6 +703,34 @@ public class BundleProcessor {
 		return linksToBundle;
 	}
 
+	/**
+	 * This is the custom class loader for Jawr Bundle processor
+	 * 
+	 * @author Ibrahim Chaehoi
+	 *
+	 */
+	private class JawrBundleProcessorCustomClassLoader extends URLClassLoader {
+		
+		/**
+		 * @param urls
+		 * @param parent
+		 */
+		public JawrBundleProcessorCustomClassLoader(URL[] urls, ClassLoader parent) {
+			super(urls, parent);
+		}
+
+		/* (non-Javadoc)
+		 * @see java.net.URLClassLoader#findResource(java.lang.String)
+		 */
+		public URL findResource(String name) {
+			URL url = super.findResource(name);
+			if(url == null && name.startsWith("/")){
+				url = super.findResource(name.substring(1));
+			}
+			return url;
+		}
+	}
+	
 	/**
 	 * This class is used internally to handle the definition of a servlet.
 	 * 
