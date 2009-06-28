@@ -14,8 +14,10 @@
 package net.jawr.web.resource.bundle.factory.processor;
 
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
+import net.jawr.web.resource.bundle.postprocess.ChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.PostProcessFactoryConstant;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
+import net.jawr.web.resource.bundle.postprocess.impl.CSSImportPostProcessor;
 import net.jawr.web.resource.bundle.postprocess.impl.CSSMinPostProcessor;
 import net.jawr.web.resource.bundle.postprocess.impl.CSSURLPathRewriterPostProcessor;
 import net.jawr.web.resource.bundle.postprocess.impl.yui.YUICSSCompressor;
@@ -34,7 +36,7 @@ public class CSSPostProcessorChainFactory extends
 	 * @see net.jawr.web.resource.bundle.factory.processor.PostProcessorChainFactory#buildDefaultProcessorChain()
 	 */
 	public ResourceBundlePostProcessor buildDefaultProcessorChain() {
-		CSSMinPostProcessor processor = new CSSMinPostProcessor();
+		ChainedResourceBundlePostProcessor processor = new CSSMinPostProcessor();
 		processor.addNextProcessor(buildLicensesProcessor());
 		return processor;
 	}
@@ -43,7 +45,11 @@ public class CSSPostProcessorChainFactory extends
 	 * @see net.jawr.web.resource.bundle.factory.processor.PostProcessorChainFactory#buildDefaultUnitProcessorChain()
 	 */
 	public ResourceBundlePostProcessor buildDefaultUnitProcessorChain() {
-		return new CSSURLPathRewriterPostProcessor();
+		
+		// The default unit post processor is CSSImport,CSSIrlPathRewriter
+		ChainedResourceBundlePostProcessor processor = new CSSImportPostProcessor();
+		processor.addNextProcessor(new CSSURLPathRewriterPostProcessor());
+		return processor;
 	}
 	
 	
@@ -56,6 +62,8 @@ public class CSSPostProcessorChainFactory extends
 			return buildLicensesProcessor();
 		else if(PostProcessFactoryConstant.CSS_MINIFIER.equals(processorKey))
 			return new CSSMinPostProcessor();
+		else if(PostProcessFactoryConstant.CSS_IMPORT.equals(processorKey))
+			return new CSSImportPostProcessor();
 		else if (PostProcessFactoryConstant.URL_PATH_REWRITER.equals(processorKey))
 			return new CSSURLPathRewriterPostProcessor();
 		else if (PostProcessFactoryConstant.YUI_COMPRESSOR.equals(processorKey))
