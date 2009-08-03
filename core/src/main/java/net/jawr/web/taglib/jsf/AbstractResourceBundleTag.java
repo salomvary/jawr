@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -21,6 +21,7 @@ import javax.faces.context.ResponseWriter;
 import javax.servlet.http.HttpServletRequest;
 
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
+import net.jawr.web.resource.bundle.renderer.BundleRendererContext;
 import net.jawr.web.servlet.RendererRequestUtils;
 
 /**
@@ -29,11 +30,15 @@ import net.jawr.web.servlet.RendererRequestUtils;
  * to its src attribute.  
  * 
  * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  *
  */
 public abstract class AbstractResourceBundleTag extends UIOutput {
 
+	/** The bundle renderer */
 	protected BundleRenderer renderer;
+	
+	/** The flag indicating if we use the random parameter or not */
 	protected boolean useRandomParam = true;    
 	
 	/* (non-Javadoc)
@@ -59,19 +64,11 @@ public abstract class AbstractResourceBundleTag extends UIOutput {
         ResponseWriter writer = context.getResponseWriter();
         HttpServletRequest request = ((HttpServletRequest)context.getExternalContext().getRequest());
         RendererRequestUtils.setRequestDebuggable(request,renderer.getBundler().getConfig());
-        String localeKey = this.renderer.getBundler().getConfig().getLocaleResolver().resolveLocaleCode(request);
-       
-        // Determine if gzip is feasible for the current client. 
-        boolean isGzippable = RendererRequestUtils.isRequestGzippable(request,renderer.getBundler().getConfig());
-
+        
+        BundleRendererContext ctx = RendererRequestUtils.getBundleRendererContext(request, renderer);
         renderer.renderBundleLinks( src,
-                                     request.getContextPath(),
-                                     localeKey,
-                                     RendererRequestUtils.getAddedBundlesLog(request),
-                                     isGzippable,
-                                     writer);
+                ctx, writer);
 
-		
 		super.encodeBegin(context);
 	}
 	

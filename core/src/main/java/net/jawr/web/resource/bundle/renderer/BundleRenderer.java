@@ -15,7 +15,6 @@ package net.jawr.web.resource.bundle.renderer;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Set;
 
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 
@@ -34,20 +33,23 @@ public interface BundleRenderer {
     /**
      * Render a link to the specified resource. 
      * @param requestedPath String Path that identifies a resource bundle id or one of its members. 
-     * @param contextPath String The context path to prepend to the URL. 
-     * @param includedBundles Set A set of names previously added. None of them will be written out as links to avoid duplication. 
-     * @param useGzip boolean If true, the gzip prefix is added to the URLs so the link will point to the gzipped version. 
-     * @param out Writer Writer to output the tags, typically a JSPWriter. 
+     * @param ctx the bundle renderer context
+	 * @param out Writer Writer to output the tags, typically a JSPWriter.
+	 * @throws IOException if an IO exception occurs
      */
-    public void renderBundleLinks(  String requestedPath,
-                                    String contextPath,
-                                    String variantKey,
-                                    final Set includedBundles, 
-                                    boolean useGzip, 
-                                    Writer out ) throws IOException;
-    
+	public void renderBundleLinks(String requestedPath, BundleRendererContext ctx,
+			Writer out) throws IOException;
+	
     /**
      * @return ResourceBundlesHandler The resources handler used by this renderer.
      */
     public ResourceBundlesHandler getBundler();
+    
+    /**
+     * Returns the resource type 
+     * 
+     * @return the resource type
+     */
+    public String getResourceType();
+
 }

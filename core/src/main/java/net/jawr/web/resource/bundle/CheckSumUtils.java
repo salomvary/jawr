@@ -55,15 +55,17 @@ public final class CheckSumUtils {
 	 * @return the cache busted url
 	 * @throws IOException if an IO exception occurs.
 	 */
-	public static String getCacheBustedUrl(String url, ResourceHandler rsHandler, JawrConfig jawrConfig, boolean fromClasspath) throws IOException{
+	public static String getCacheBustedUrl(String url, ResourceHandler rsHandler, JawrConfig jawrConfig) throws IOException{
 		
 		String checksum = null;
 		String classpathResourceUrl = null;
 		InputStream is = null;
+		boolean fromClasspath = url.startsWith(JawrConstant.CLASSPATH_RESOURCE_PREFIX);
 		try {
 			
 			if(fromClasspath){
-				classpathResourceUrl = url;
+				
+				classpathResourceUrl = url.substring(JawrConstant.CLASSPATH_RESOURCE_PREFIX.length());
 				is = ClassLoaderResourceUtils.getResourceAsStream(classpathResourceUrl, CheckSumUtils.class);
 			}else{
 				url = PathNormalizer.asPath(url);
@@ -107,9 +109,10 @@ public final class CheckSumUtils {
 	 * @return the cache busted url
 	 * @throws IOException if an IO exception occurs.
 	 */
-	public static String getCacheBustedUrl(String url, InputStream is, JawrConfig jawrConfig, boolean fromClasspath) throws IOException{
+	public static String getCacheBustedUrl(String url, InputStream is, JawrConfig jawrConfig) throws IOException{
 		
 		String checksum = null;
+		boolean fromClasspath = url.startsWith(JawrConstant.CLASSPATH_RESOURCE_PREFIX);
 		
 		try {
 			checksum = CheckSumUtils.getChecksum(is, jawrConfig.getImageHashAlgorithm());
@@ -136,6 +139,7 @@ public final class CheckSumUtils {
 		// Add the cache buster extension
 		return PathNormalizer.asPath(result+url);
 	}
+	
 	
 	/**
 	 * Returns the checksum value of the input stream taking in count the algorithm passed in parameter

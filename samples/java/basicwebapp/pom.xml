@@ -12,7 +12,7 @@
     <dependency>
       <groupId>net.jawr</groupId>
       <artifactId>jawr</artifactId>
-      <version>2.5.1</version>
+      <version>3.0</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -31,11 +31,11 @@
       <artifactId>log4j</artifactId>
       <version>1.2.9</version>
     </dependency>    
-		<dependency>
-		    <groupId>com.yahoo.platform.yui</groupId>
-		    <artifactId>yuicompressor</artifactId>
-		    <version>2.2.5</version>
-		</dependency>
+	<dependency>
+	    <groupId>com.yahoo.platform.yui</groupId>
+	    <artifactId>yuicompressor</artifactId>
+	    <version>2.2.5</version>
+	</dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -50,7 +50,33 @@
         <artifactId>maven-jetty-plugin</artifactId>
         <version>6.0.1</version>
       </plugin>
+      <plugin>
+			<artifactId>maven-eclipse-plugin</artifactId>
+			<version>2.4</version>
+			<configuration>
+				<downloadSources>true</downloadSources>
+				<wtpversion>1.5</wtpversion>
+			</configuration>
+	 </plugin>
+	 <plugin>
+	        <groupId>net.jawr</groupId>
+	        <artifactId>maven-jawr-plugin</artifactId>
+	        <version>1.0</version>
+	        <executions>
+	          <execution>
+	            <!-- Use this phase so that maven war includes our bundles -->
+	            <phase>prepare-package</phase>
+	          </execution>
+	        </executions>
+	        <configuration>
+	            <generateCDNFiles>true</generateCDNFiles>
+	        </configuration>
+	  </plugin>
+
+	  
+      
     </plugins>
+    
     <finalName>basicwebapp</finalName>
   </build>
 </project>
