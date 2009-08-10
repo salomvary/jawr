@@ -120,7 +120,12 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 
 		// Initialize the resource handler
 		rsHandler = initResourceHandler();
-		bundleMapping = rsHandler.getJawrBundleMapping();
+		
+		if(jawrConfig.getUseBundleMapping()){
+			bundleMapping = rsHandler.getJawrBundleMapping();
+		}else{
+			bundleMapping = new Properties();
+		}
 		
 		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(jawrConfig, rsHandler);
 		initImageMapping(imgRsHandler);
@@ -207,6 +212,8 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			bundleMapping.put(imgPath, resultPath);
 		} catch (IOException e) {
 			log.error("An exception occurs while defining the mapping for the file : " + imgPath, e);
+		} catch (ResourceNotFoundException e) {
+			log.error("Impossible to define the checksum for the resource '"+imgPath+"'. Unable to retrieve the content of the file.");
 		}
 	}
 
