@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 Jordi Hernández Sellés
+ * Copyright 2008-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -14,12 +14,14 @@
 package net.jawr.web.resource.bundle.locale;
 
 import java.io.Reader;
+import java.util.List;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.AbstractJavascriptGenerator;
 import net.jawr.web.resource.bundle.generator.GeneratorContext;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
+import net.jawr.web.resource.bundle.generator.LocaleAwareResourceGenerator;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
 
@@ -30,9 +32,10 @@ import org.apache.log4j.Logger;
  * The generated script can be used to reference the message literals easily from javascript.  
  * 
  * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  *
  */
-public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator implements ResourceGenerator {
+public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator implements ResourceGenerator, LocaleAwareResourceGenerator {
 	
 	/** The logger */
 	private static final Logger log = Logger.getLogger(ResourceBundleMessagesGenerator.class);
@@ -82,5 +85,13 @@ public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator
 			path = path.replaceAll("\\|", "_");
 		}
 		return path+"."+JawrConstant.JS_TYPE;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.handler.LocaleAwareResourceReader#getAvailableLocales(java.lang.String)
+	 */
+	public List getAvailableLocales(String resource) {
+		
+		return LocaleUtils.getAvailableLocaleSuffixesForBundle(resource);
 	}
 }

@@ -6,7 +6,7 @@
   <artifactId>jawr</artifactId>
   <packaging>jar</packaging>
   <name>Java web resources bundling and compression</name>
-  <version>3.1.2</version>
+  <version>3.2</version>
   <description>Javascript/CSS bundling and compressing tool for java web apps.
   	By using jawr resources are automatically bundled together and optionally minified and gzipped. 
   	Jawr provides tag libraries to reference a generated bundle either by id or by using the name of any of its members.</description>
@@ -30,7 +30,7 @@
 		<id>icefox</id>
 		<name>Ibrahim Chaehoi</name>
 		<roles>
-			<role>Developer</role>
+			<role>Project owner</role>
 		</roles>
 	</developer>
   </developers>
@@ -96,6 +96,12 @@
       <name>Java.net Repository for Maven</name>
       <url>http://download.java.net/maven/2/</url>
     </repository>
+    <repository>
+      <id>maven2-repository.smartsprites</id>
+      <name>Smartsprites Maven Repository</name>
+      <url>http://download.csssprites.org/maven2/</url>
+    </repository>
+    
   </repositories>
   <dependencies>
     <dependency>
@@ -158,6 +164,14 @@
       <version>1.1.2</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+	  <groupId>org.apache.wicket</groupId>
+	  <artifactId>wicket</artifactId>
+	  <version>1.4.3</version>
+	  <scope>provided</scope>
+    </dependency>
+
+    
     <!--
 			The following dependencies are used for JMX on JDK 1.4. If you build
 			Jawr with a JDK greater or equals to JDK 1.5, you could comment the
@@ -187,6 +201,14 @@
 	    <scope>provided</scope>
 	</dependency>
 	<!-- End Of JMX dependencies  -->
+	
+	<!-- Smartsprites dependencies  -->
+	<dependency>
+		<groupId>org.carrot2</groupId>
+		<artifactId>smartsprites</artifactId>
+		<version>0.2.5</version>
+		<scope>provided</scope>
+	</dependency>
 	
   </dependencies>
   <reporting>

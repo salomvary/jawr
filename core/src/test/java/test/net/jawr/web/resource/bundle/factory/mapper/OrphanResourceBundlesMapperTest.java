@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Set;
 
 import net.jawr.web.exception.DuplicateBundlePathException;
-import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.mapper.OrphanResourceBundlesMapper;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
+import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 import test.net.jawr.web.resource.bundle.handler.ResourceHandlerBasedTest;
 
 /**
@@ -29,7 +29,7 @@ public class OrphanResourceBundlesMapperTest extends  ResourceHandlerBasedTest {
 		try {			
 			Charset charsetUtf = Charset.forName("UTF-8"); 
 			
-			ResourceHandler rsHandler = createResourceHandler(ROOT_TESTDIR,charsetUtf);
+			ResourceReaderHandler rsHandler = createResourceReaderHandler(ROOT_TESTDIR,charsetUtf);
 			List bundles = new ArrayList();
 			
 			List globalPaths = new ArrayList();
@@ -153,28 +153,31 @@ public class OrphanResourceBundlesMapperTest extends  ResourceHandlerBasedTest {
 			}
 
 			public String getBundleDataHashCode(String variantKey) {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
 			public String getName() {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
 			public boolean isComposite() {
-				// TODO Auto-generated method stub
 				return false;
 			}
 
 			public void setBundleDataHashCode(String variantKey,
 					String bundleDataHashCode) {
-				// TODO Auto-generated method stub
 				
 			}
 
 			public void setMappings(List mappings) {
-				// TODO Auto-generated method stub
+				
+			}
+
+			public List getDependencies() {
+				return null;
+			}
+
+			public void setDependencies(List bundleDependencies) {
 				
 			}};		
 	}

@@ -36,6 +36,27 @@ import net.jawr.web.util.StringUtils;
  */
 public class PathNormalizer {
 	
+	/**
+	 * Removes the URL prefix defined in the configuration from a path. If the prefix contains a variant information, it adds it to the name.
+	 * 
+	 * @param path the path
+	 * @return the path without the prefix
+	 */
+	public static String removeVariantPrefixFromPath(String path) {
+		// Remove first slash
+		path = path.substring(1, path.length());
+
+		// eval the existence of a suffix
+		String prefix = path.substring(0, path.indexOf("/"));
+
+		// The prefix also contains variant information after a '.'
+		if (prefix.indexOf('.') != -1) {
+			String suffix = '_' + prefix.substring(prefix.indexOf('.') + 1) + path.substring(path.lastIndexOf('.'));
+			path = path.substring(path.indexOf("/"), path.lastIndexOf('.')) + suffix;
+		} else
+			path = path.substring(path.indexOf("/"), path.length());
+		return path;
+	}
 	
 	/**
 	 * Normalizes a bundle path mapping. If it ends with a wildcard, the wildcard is removed. 
@@ -676,37 +697,37 @@ public class PathNormalizer {
             toTokeniser.nextToken();
         }
 
-        String relativePath = "";
+        StringBuffer relativePath = new StringBuffer();
 
         // add back refs for the rest of from location.
         while ( fromTokeniser.hasMoreTokens() )
         {
             fromTokeniser.nextToken();
 
-            relativePath += "..";
+            relativePath.append("..");
 
             if ( fromTokeniser.hasMoreTokens() )
             {
-                relativePath += separatorChar;
+            	relativePath.append(separatorChar);
             }
         }
 
         if ( relativePath.length() != 0 && toTokeniser.hasMoreTokens() )
         {
-            relativePath += separatorChar;
+        	relativePath.append(separatorChar);
         }
 
         // add fwd fills for whatevers left of newPath.
         while ( toTokeniser.hasMoreTokens() )
         {
-            relativePath += toTokeniser.nextToken();
+        	relativePath.append(toTokeniser.nextToken());
 
             if ( toTokeniser.hasMoreTokens() )
             {
-                relativePath += separatorChar;
+            	relativePath.append(separatorChar);
             }
         }
-        return relativePath;
+        return relativePath.toString();
     }
 
 	

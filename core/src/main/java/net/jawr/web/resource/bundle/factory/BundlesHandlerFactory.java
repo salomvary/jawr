@@ -15,6 +15,7 @@ package net.jawr.web.resource.bundle.factory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,24 +24,29 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.exception.BundleDependencyException;
 import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.resource.FileNameUtils;
-import net.jawr.web.resource.ResourceHandler;
 import net.jawr.web.resource.bundle.CompositeResourceBundle;
 import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.JoinableResourceBundleImpl;
+import net.jawr.web.resource.bundle.factory.global.preprocessor.BasicProcessorChainFactory;
+import net.jawr.web.resource.bundle.factory.global.preprocessor.GlobalPreprocessorChainFactory;
 import net.jawr.web.resource.bundle.factory.mapper.OrphanResourceBundlesMapper;
 import net.jawr.web.resource.bundle.factory.mapper.ResourceBundleDirMapper;
-import net.jawr.web.resource.bundle.factory.processor.CSSPostProcessorChainFactory;
-import net.jawr.web.resource.bundle.factory.processor.JSPostProcessorChainFactory;
-import net.jawr.web.resource.bundle.factory.processor.PostProcessorChainFactory;
+import net.jawr.web.resource.bundle.factory.postprocessor.CSSPostProcessorChainFactory;
+import net.jawr.web.resource.bundle.factory.postprocessor.JSPostProcessorChainFactory;
+import net.jawr.web.resource.bundle.factory.postprocessor.PostProcessorChainFactory;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.factory.util.ResourceBundleDefinition;
+import net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessor;
 import net.jawr.web.resource.bundle.handler.CachedResourceBundlesHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandlerImpl;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
+import net.jawr.web.resource.handler.bundle.ResourceBundleHandler;
+import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 
 import org.apache.log4j.Logger;
 
@@ -75,14 +81,26 @@ public class BundlesHandlerFactory {
 	/** The keys of the unitary post processors */
 	private String unitPostProcessorKeys;
 	
+	/** The keys of the resource type processors */
+	private String resourceTypeProcessorKeys;
+	
 	/** The set of bundle definitions */
 	private Set bundleDefinitions;
 	
+	/** The set of bundle definitions with dependencies */
+	private Set bundleDefinitionsWithDependencies;
+	
 	/** The resource handler */
-	private ResourceHandler resourceHandler;
+	private ResourceReaderHandler resourceReaderHandler;
+	
+	/** The resource bundle handler */
+	private ResourceBundleHandler resourceBundleHandler;
 	
 	/** The post processor chain factory */
 	private PostProcessorChainFactory chainFactory;
+	
+	/** The global preprocessor chain factory */
+	private GlobalPreprocessorChainFactory resourceTypeChainFactory;
 	
 	/** The flag indicating if we should use a single resource factory for the orphans resource of the base directory */
 	private boolean useSingleResourceFactory = false;
@@ -102,6 +120,9 @@ public class BundlesHandlerFactory {
 	/** The map of custom post processor */
 	private Map customPostprocessors;
 	
+	/** The map of custom global pre processor */
+	private Map customGlobalPreprocessors;
+	
 	/** The flag indicating if we should skip the scan for the orphans */
 	private boolean scanForOrphans = true;
 
@@ -111,9 +132,10 @@ public class BundlesHandlerFactory {
 	 * @param jawrConfig the jawr config
 	 * @return the resource bundles handler
 	 * @throws DuplicateBundlePathException if two bundles are defined with the same path
+	 * @throws BundleDependencyException if an error exists in the dependency definition
 	 */
 	public ResourceBundlesHandler buildResourceBundlesHandler()
-			throws DuplicateBundlePathException {
+			throws DuplicateBundlePathException, BundleDependencyException {
 		if (log.isInfoEnabled())
 			log.info("Building resources handler... ");
 
@@ -122,7 +144,7 @@ public class BundlesHandlerFactory {
 			throw new IllegalStateException(
 					"Must set the JawrConfig for this factory before invoking buildResourceBundlesHandler(). ");
 
-		if (null == resourceHandler)
+		if (null == resourceReaderHandler)
 			throw new IllegalStateException(
 					"Must set the resourceHandler for this factory before invoking buildResourceBundlesHandler(). ");
 		if (useSingleResourceFactory && null == singleFileBundleName)
@@ -137,7 +159,7 @@ public class BundlesHandlerFactory {
 		List resourceBundles = new ArrayList();
 
 		boolean processBundle = !jawrConfig.getUseBundleMapping()
-				|| !resourceHandler.isExistingMappingFile();
+				|| !resourceBundleHandler.isExistingMappingFile();
 		if (processBundle) {
 			initResourceBundles(resourceBundles);
 		} else {
@@ -159,11 +181,23 @@ public class BundlesHandlerFactory {
 		else
 			unitProcessor = this.chainFactory
 					.buildPostProcessorChain(unitPostProcessorKeys);
+		
+		// Build the reource type processor to use on resources.
+		// Initialize custom postprocessors before using the factory to build the postprocessing chains
+		if (null != customGlobalPreprocessors)
+			resourceTypeChainFactory.setCustomGlobalPreprocessors(customGlobalPreprocessors);
+
+		GlobalPreprocessor resourceTypeProcessor = null;
+		if (null == this.resourceTypeProcessorKeys)
+			resourceTypeProcessor = this.resourceTypeChainFactory.buildDefaultProcessorChain();
+		else
+			resourceTypeProcessor = this.resourceTypeChainFactory
+					.buildProcessorChain(resourceTypeProcessorKeys);
 
 		// Build the handler
 		ResourceBundlesHandler collector = new ResourceBundlesHandlerImpl(
-				resourceBundles, resourceHandler, jawrConfig, processor,
-				unitProcessor);
+				resourceBundles, resourceReaderHandler, resourceBundleHandler, jawrConfig, processor,
+				unitProcessor, resourceTypeProcessor);
 
 		// Use the cached proxy if specified when debug mode is off.
 		if (useInMemoryCache && !jawrConfig.isDebugModeOn())
@@ -182,9 +216,9 @@ public class BundlesHandlerFactory {
 		if (log.isInfoEnabled()){
 			log.info("Building bundles from the full bundle mapping. The bundles will not be processed.");
 		}
-		Properties mappingProperties = resourceHandler.getJawrBundleMapping();
+		Properties mappingProperties = resourceBundleHandler.getJawrBundleMapping();
 		FullMappingPropertiesBasedBundlesHandlerFactory factory = new FullMappingPropertiesBasedBundlesHandlerFactory(resourceType, 
-				resourceHandler, chainFactory);
+				resourceReaderHandler, chainFactory);
 		
 		resourceBundles.addAll(factory.getResourceBundles(mappingProperties));
 	}
@@ -194,11 +228,13 @@ public class BundlesHandlerFactory {
 	 * 
 	 * @param resourceBundles the resource bundles
 	 * @throws DuplicateBundlePathException if two bundles are defined with the same path 
+	 * @throws BundleDependencyException if an error exists in the dependency definition
 	 */
 	private void initResourceBundles(List resourceBundles)
-			throws DuplicateBundlePathException {
+			throws DuplicateBundlePathException, BundleDependencyException  {
 
 		// Create custom defined bundles
+		bundleDefinitionsWithDependencies = new HashSet();
 		if (null != bundleDefinitions) {
 			if (log.isInfoEnabled())
 				log.info("Adding custom bundle definitions. ");
@@ -227,8 +263,8 @@ public class BundlesHandlerFactory {
 			if (log.isInfoEnabled())
 				log.info("Using ResourceBundleDirMapper. ");
 
-			ResourceBundleDirMapper dirFactory = new ResourceBundleDirMapper(
-					baseDir, resourceHandler, resourceBundles, fileExtension,
+			 ResourceBundleDirMapper dirFactory = new ResourceBundleDirMapper(
+					baseDir, resourceReaderHandler, resourceBundles, fileExtension,
 					excludedDirMapperDirs);
 			Map mappings = dirFactory.getBundleMapping();
 			for (Iterator it = mappings.entrySet().iterator(); it.hasNext();) {
@@ -241,7 +277,7 @@ public class BundlesHandlerFactory {
 		if (this.scanForOrphans) {
 			// Add all orphan bundles
 			OrphanResourceBundlesMapper orphanFactory = new OrphanResourceBundlesMapper(
-					baseDir, resourceHandler, resourceBundles, fileExtension);
+					baseDir, resourceReaderHandler, resourceBundles, fileExtension);
 			List orphans = orphanFactory.getOrphansList();
 
 			// Orphans may be added separately or as one single resource bundle.
@@ -274,6 +310,35 @@ public class BundlesHandlerFactory {
 								+ "(it has been seet to serve *.js or *.css requests). "
 								+ "The orphan files will become unreachable through the server.");
 		}
+		
+		// Initialize bundle dependencies
+		for (Iterator iterator = bundleDefinitionsWithDependencies.iterator(); iterator.hasNext();) {
+			ResourceBundleDefinition definition = (ResourceBundleDefinition) iterator.next();
+			JoinableResourceBundle bundle = getBundleFromName(definition.getBundleName(), resourceBundles);
+			if(bundle != null){
+				bundle.setDependencies(getBundleDependencies(definition, resourceBundles));
+			}
+		}
+	}
+	
+	/**
+	 * Returns a bundle from its name
+	 * @param name the bundle name
+	 * @param bundles the list of bundle
+	 * @return a bundle from its name
+	 */
+	private JoinableResourceBundle getBundleFromName(String name, List bundles){
+		
+		JoinableResourceBundle bundle = null;
+		for (Iterator iterator = bundles.iterator(); iterator.hasNext();) {
+			JoinableResourceBundle aBundle = (JoinableResourceBundle) iterator.next();
+			if(aBundle.getName().equals(name)){
+				bundle = aBundle;
+				break;
+			}
+		}
+		
+		return bundle;
 	}
 
 	/**
@@ -296,7 +361,7 @@ public class BundlesHandlerFactory {
 
 		CompositeResourceBundle composite = new CompositeResourceBundle(
 				definition.getBundleId(), definition.getBundleName(), 
-				childBundles, include, resourceHandler, fileExtension,
+				childBundles, include, resourceReaderHandler, fileExtension,
 				jawrConfig);
 		if (null != definition.getBundlePostProcessorKeys())
 			composite.setBundlePostProcessor(chainFactory
@@ -315,6 +380,9 @@ public class BundlesHandlerFactory {
 		if (null != definition.getAlternateProductionURL())
 			composite.setAlternateProductionURL(definition
 					.getAlternateProductionURL());
+		
+		if (null != definition.getDependencies() && !definition.getDependencies().isEmpty())
+			bundleDefinitionsWithDependencies.add(definition);
 
 		return composite;
 	}
@@ -324,9 +392,10 @@ public class BundlesHandlerFactory {
 	 * 
 	 * @param definition the resource bundle definition
 	 * @return a JoinableResourceBundle
+	 * @throws BundleDependencyException  if an error exists in the dependency definition
 	 */
 	private JoinableResourceBundle buildResourcebundle(
-			ResourceBundleDefinition definition) {
+			ResourceBundleDefinition definition) throws BundleDependencyException {
 		if (log.isDebugEnabled())
 			log.debug("Init bundle with id:" + definition.getBundleId());
 
@@ -337,7 +406,7 @@ public class BundlesHandlerFactory {
 		JoinableResourceBundleImpl newBundle = new JoinableResourceBundleImpl(
 				definition.getBundleId(), definition.getBundleName(), 
 				fileExtension, include, definition.getMappings(),
-				resourceHandler);
+				resourceReaderHandler);
 		if (null != definition.getBundlePostProcessorKeys())
 			newBundle.setBundlePostProcessor(chainFactory
 					.buildPostProcessorChain(definition
@@ -359,9 +428,97 @@ public class BundlesHandlerFactory {
 			newBundle.setAlternateProductionURL(definition
 					.getAlternateProductionURL());
 
+		if (null != definition.getDependencies() && !definition.getDependencies().isEmpty()){
+			
+			bundleDefinitionsWithDependencies.add(definition);
+		}
+			
 		return newBundle;
 	}
 
+	/**
+	 * Returns the bundle dependencies from the resource bundle definition
+	 * 
+	 * @param definition the resource definition
+	 * @param bundles the list of bundles
+	 * 
+	 * @throws BundleDependencyException  if an error exists in the dependency definition
+	 */
+	private List getBundleDependencies(ResourceBundleDefinition definition, List bundles) throws BundleDependencyException {
+
+		List dependencies = new ArrayList();
+		List processedBundles = new ArrayList();
+		if(definition.isGlobal() && definition.getDependencies() != null && !definition.getDependencies().isEmpty()){
+			throw new BundleDependencyException(definition.getBundleName(), "The dependencies property is not allowed for global bundles. Please use the order property " +
+					"to define the import order.");
+		}
+		initBundleDependencies(definition.getBundleName(), definition, dependencies, processedBundles, bundles);
+		return dependencies;
+	}
+	
+	/**
+	 * Initialize the bundle dependencies
+	 * 
+	 * @param rootBundleDefinition the name of the bundle, whose is initalized
+	 * @param definition the current resource bundle definition
+	 * @param bundleDependencies the bundle dependencies
+	 * @param processedBundles the list of bundles already processed during the dependency resolution
+	 * @param bundles the list of reference bundles
+	 * 
+	 * @throws BundleDependencyException if an error exists in the dependency definition
+	 */
+	private void initBundleDependencies(String rootBundleDefinition, ResourceBundleDefinition definition,
+			List bundleDependencies, List processedBundles, List bundles) throws BundleDependencyException {
+
+		List bundleDefDependencies = definition.getDependencies();
+		if(definition.isGlobal()){
+			if(log.isInfoEnabled()){
+				log.info("The global bundle '"+definition.getBundleName()+"' belongs to the dependencies of '"+rootBundleDefinition+"'." +
+						"As it's a global bundle, it will not be defined as part of the dependencies.");
+			}
+			return;
+		}
+		
+		if (bundleDefDependencies != null && !bundleDefDependencies.isEmpty()) {
+			if (processedBundles.contains(definition.getBundleName())) {
+				throw new BundleDependencyException(rootBundleDefinition, "There is a circular dependency. The bundle in conflict is '"+definition.getBundleName()+"'");	
+			
+			} else {
+			
+				processedBundles.add(definition.getBundleName());
+				for (Iterator iterator = bundleDefDependencies.iterator(); iterator
+						.hasNext();) {
+					String dependency = (String) iterator.next();
+					for (Iterator itDep = bundleDefinitions.iterator(); itDep
+							.hasNext();) {
+						ResourceBundleDefinition dependencyBundle = (ResourceBundleDefinition) itDep
+								.next();
+						String dependencyBundleName = dependencyBundle.getBundleName();
+						if (dependencyBundleName.equals(dependency)) {
+
+							if (!bundleDependencies.contains(dependencyBundleName)){
+								
+								if(!processedBundles.contains(dependencyBundleName)) {
+									initBundleDependencies(rootBundleDefinition, dependencyBundle,
+											bundleDependencies, processedBundles, bundles);
+									bundleDependencies.add(getBundleFromName(dependencyBundleName, bundles));
+								}else{
+									throw new BundleDependencyException(rootBundleDefinition, "There is a circular dependency. The bundle in conflict is '"+dependencyBundleName+"'");
+								}
+							} else {
+								if(log.isInfoEnabled()){
+									log.info("The bundle '"
+											+ dependencyBundle.getBundleId()
+											+ "' occurs multiple time in the dependencies hierarchy of the bundle '"+rootBundleDefinition+"'.");	
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Build a bundle based on a mapping returned by the ResourceBundleDirMapperFactory.
 	 * 
@@ -374,7 +531,7 @@ public class BundlesHandlerFactory {
 		List path = Collections.singletonList(pathMapping);
 		JoinableResourceBundle newBundle = new JoinableResourceBundleImpl(
 				bundleId, generateBundleNameFromBundleId(bundleId),
-				fileExtension, new InclusionPattern(), path, resourceHandler);
+				fileExtension, new InclusionPattern(), path, resourceReaderHandler);
 		return newBundle;
 	}
 
@@ -409,7 +566,7 @@ public class BundlesHandlerFactory {
 		JoinableResourceBundle newBundle = new JoinableResourceBundleImpl(
 				bundleId, generateBundleNameFromBundleId(bundleId), 
 				fileExtension, new InclusionPattern(), orphanPaths,
-				resourceHandler);
+				resourceReaderHandler);
 		return newBundle;
 	}
 
@@ -425,7 +582,7 @@ public class BundlesHandlerFactory {
 		List paths = Collections.singletonList(mapping);
 		JoinableResourceBundle newBundle = new JoinableResourceBundleImpl(
 				orphanPath, generateBundleNameFromBundleId(orphanPath), 
-				fileExtension, new InclusionPattern(), paths, resourceHandler);
+				fileExtension, new InclusionPattern(), paths, resourceReaderHandler);
 		return newBundle;
 	}
 
@@ -438,7 +595,7 @@ public class BundlesHandlerFactory {
 		// Set the extension for resources and bundles
 		this.resourceType = resourceType;
 		this.fileExtension = "." + resourceType.toLowerCase();
-
+		this.resourceTypeChainFactory = new BasicProcessorChainFactory();
 		// Create the chain factory.
 		if ("js".equals(resourceType))
 			this.chainFactory = new JSPostProcessorChainFactory();
@@ -481,14 +638,33 @@ public class BundlesHandlerFactory {
 	public void setUnitPostProcessorKeys(String unitPostProcessorKeys) {
 		this.unitPostProcessorKeys = unitPostProcessorKeys;
 	}
-
+	
+	/**
+	 * Set the keys to pass to the processor factory upon global processors creation. If none specified, the default version is used.
+	 * 
+	 * @param resourceTypeProcessorKeys String Comma separated list of processor keys.
+	 */
+	public void setResourceTypeProcessorKeys(String resourceTypeProcessorKeys) {
+		this.resourceTypeProcessorKeys = resourceTypeProcessorKeys;
+	}
+	
+	
 	/**
 	 * Set the resource handler to use for file access.
 	 * 
 	 * @param rsHandler
 	 */
-	public void setResourceHandler(ResourceHandler rsHandler) {
-		this.resourceHandler = rsHandler;
+	public void setResourceReaderHandler(ResourceReaderHandler rsHandler) {
+		this.resourceReaderHandler = rsHandler;
+	}
+
+	/**
+	 * Set the resource bundle handler to use for file access.
+	 * 
+	 * @param rsBundleHandler
+	 */
+	public void setResourceBundleHandler(ResourceBundleHandler rsBundleHandler) {
+		this.resourceBundleHandler = rsBundleHandler;
 	}
 
 	/**
@@ -557,7 +733,14 @@ public class BundlesHandlerFactory {
 	}
 
 	/**
-	 * Sets the flag inficating if we should scan or not for the orphan resources
+	 * Sets the map of custom global preprocessor
+	 * @param customGlobalPreprocessors the map to set
+	 */
+	public void setCustomGlobalPreprocessors(Map customGlobalPreprocessors) {
+		this.customGlobalPreprocessors = customGlobalPreprocessors;
+	}
+	/**
+	 * Sets the flag indicating if we should scan or not for the orphan resources
 	 * @param scanForOrphans the flag to set
 	 */
 	public void setScanForOrphans(boolean scanForOrphans) {

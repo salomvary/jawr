@@ -13,6 +13,7 @@
  */
 package net.jawr.web.config;
 
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
@@ -33,7 +34,10 @@ import net.jawr.web.resource.bundle.renderer.CSSHTMLBundleLinkRenderer;
  * @author Ibrahim Chaehoi
  * @author Matt Ruby
  */
-public class JawrConfig {
+public class JawrConfig implements Serializable {
+
+	/** The serial version UID */
+	private static final long serialVersionUID = -6243263853446050289L;
 
 	/**
 	 * The property name for the css link flavor
@@ -70,6 +74,11 @@ public class JawrConfig {
 	 */
 	public static final String JAWR_GZIP_IE6_ON = "jawr.gzip.ie6.on";
 
+	/**
+	 * The property name to force the CSS bundle in debug mode
+	 */
+	public static final String JAWR_DEBUG_IE_FORCE_CSS_BUNDLE = "jawr.debug.ie.force.css.bundle";
+	
 	/**
 	 * The property name for the charset name
 	 */
@@ -113,9 +122,15 @@ public class JawrConfig {
 
 	/**
 	 * The property name for the flag indicating if JAWR should override the CSS image url to map the classpath image servlet
+	 * TODO remove this property. It's replaced by jawr.css.classpath.handling.image
 	 */
 	public static final String JAWR_CSS_IMG_USE_CLASSPATH_SERVLET = "jawr.css.image.classpath.use.servlet";
-
+	
+	/**
+	 * The property name for the flag indicating if the CSS image for the CSS retrieved from classpath must be also retrieved from classpath
+	 */
+	public static final String JAWR_CSS_CLASSPATH_HANDLE_IMAGE = "jawr.css.classpath.handle.image";
+	
 	/**
 	 * The property name for the image hash algorithm.
 	 */
@@ -182,6 +197,11 @@ public class JawrConfig {
 	private boolean gzipResourcesForIESixOn = true;
 
 	/**
+	 * Flag to switch on css resources bundle in debug mode. defaults to false.
+	 */
+	private boolean forceCssBundleInDebugForIEOn = false;
+	
+	/**
 	 * Flag which defines if we should process the bundle at server startup. defaults to false.
 	 */
 	private boolean useBundleMapping = false;
@@ -217,7 +237,7 @@ public class JawrConfig {
 	/**
 	 * Determines if the servlet, which provide CSS image for CSS define in the classpath should be used or not
 	 */
-	private boolean useClasspathCssImageServlet;
+	private boolean classpathCssHandleImage;
 
 	/**
 	 * Defines the image resources definition.
@@ -276,6 +296,9 @@ public class JawrConfig {
 		if (null != props.getProperty(JAWR_GZIP_IE6_ON)) {
 			setGzipResourcesForIESixOn(Boolean.valueOf(props.getProperty(JAWR_GZIP_IE6_ON)).booleanValue());
 		}
+		if (null != props.getProperty(JAWR_DEBUG_IE_FORCE_CSS_BUNDLE)) {
+			setForceCssBundleInDebugForIEOn(Boolean.valueOf(props.getProperty(JAWR_DEBUG_IE_FORCE_CSS_BUNDLE)).booleanValue());
+		}
 		if (null != props.getProperty(JAWR_URL_CONTEXTPATH_OVERRIDE)) {
 			setContextPathOverride(props.getProperty(JAWR_URL_CONTEXTPATH_OVERRIDE));
 		}
@@ -304,10 +327,18 @@ public class JawrConfig {
 			setCssLinkFlavor(props.getProperty(JAWR_CSSLINKS_FLAVOR).trim());
 		}
 
-		if (null != props.getProperty(JAWR_CSS_IMG_USE_CLASSPATH_SERVLET)) {
-			setUseClasspathCssImageServlet(Boolean.valueOf(props.getProperty(JAWR_CSS_IMG_USE_CLASSPATH_SERVLET)).booleanValue());
+		if (null != props.getProperty(JAWR_CSS_IMG_USE_CLASSPATH_SERVLET)
+				 && null != props.getProperty(JAWR_CSS_CLASSPATH_HANDLE_IMAGE)) {
+			throw new IllegalStateException("You are using in the same configuration file '"+JAWR_CSS_IMG_USE_CLASSPATH_SERVLET+"' and '"+JAWR_CSS_CLASSPATH_HANDLE_IMAGE+"'. " +
+					"The property '"+JAWR_CSS_IMG_USE_CLASSPATH_SERVLET+"' is deprecated. Please use only the property '"+JAWR_CSS_CLASSPATH_HANDLE_IMAGE+"'");
 		}
-
+		if (null != props.getProperty(JAWR_CSS_IMG_USE_CLASSPATH_SERVLET)) {
+			setCssClasspathImageHandledByClasspathCss(Boolean.valueOf(props.getProperty(JAWR_CSS_IMG_USE_CLASSPATH_SERVLET)).booleanValue());
+		}
+		if (null != props.getProperty(JAWR_CSS_CLASSPATH_HANDLE_IMAGE)) {
+			setCssClasspathImageHandledByClasspathCss(Boolean.valueOf(props.getProperty(JAWR_CSS_CLASSPATH_HANDLE_IMAGE)).booleanValue());
+		}
+		
 		if (null != props.getProperty(JAWR_IMAGE_HASH_ALGORITHM)) {
 			setImageHashAlgorithm(props.getProperty(JAWR_IMAGE_HASH_ALGORITHM).trim());
 		}
@@ -484,6 +515,24 @@ public class JawrConfig {
 	}
 
 	/**
+	 * Returns the flag indicating if the CSS resources must be bundle for IE in debug mode
+	 * 
+	 * @return the flag indicating if the CSS resources must be bundle for IE in debug mode
+	 */
+	public boolean isForceCssBundleInDebugForIEOn() {
+		return forceCssBundleInDebugForIEOn;
+	}
+
+	/**
+	 * Sets the flag indicating if the CSS resources must be bundle for IE in debug mode
+	 * 
+	 * @param forceBundleCssForIEOn the flag to set
+	 */
+	public void setForceCssBundleInDebugForIEOn(boolean forceBundleCssForIEOn) {
+		this.forceCssBundleInDebugForIEOn = forceBundleCssForIEOn;
+	}
+
+	/**
 	 * Get the the string to use instead of the regular context path. If it is an empty string, urls will be relative to the path (i.e, not start with
 	 * a slash).
 	 * 
@@ -541,8 +590,8 @@ public class JawrConfig {
 	 *         url(getCssImageServletPath()+style/default/ img/bkrnd/header_1_sprite.gif) no-repeat 0 0; And the CSS image servlet will be in charge
 	 *         of loading the image from the classpath.
 	 */
-	public boolean isUsingClasspathCssImageServlet() {
-		return useClasspathCssImageServlet;
+	public boolean isCssClasspathImageHandledByClasspathCss() {
+		return classpathCssHandleImage;
 	}
 
 	/**
@@ -555,8 +604,8 @@ public class JawrConfig {
 	 *            url(getCssImageServletPath()+style /default/img/bkrnd/header_1_sprite.gif) no-repeat 0 0; And the CSS image servlet will be in
 	 *            charge of loading the image from the classpath.
 	 */
-	public void setUseClasspathCssImageServlet(boolean useClasspathCssImgServlet) {
-		this.useClasspathCssImageServlet = useClasspathCssImgServlet;
+	public void setCssClasspathImageHandledByClasspathCss(boolean classpathCssHandleImage) {
+		this.classpathCssHandleImage = classpathCssHandleImage;
 	}
 
 	/**
@@ -696,6 +745,15 @@ public class JawrConfig {
 					+ "Please check the docs for valid values ");
 	}
 
+	/**
+	 * Returns the value of the property associated to the key passed in parameter
+	 * @param key the key of the property
+	 * @return the value of the property
+	 */
+	public String getProperty(String key){
+		return configProperties.getProperty(key);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
