@@ -18,11 +18,13 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
+import net.jawr.web.util.StringUtils;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -41,7 +43,7 @@ import org.springframework.web.util.UrlPathHelper;
 public class JawrSpringController implements Controller, ServletContextAware, InitializingBean {
 	
 	/** The logger */
-	private static final Logger log = Logger.getLogger(JawrSpringController.class);
+	private static final Logger LOGGER = Logger.getLogger(JawrSpringController.class);
 
 	/** The request handler */
 	private JawrRequestHandler requestHandler;
@@ -91,6 +93,22 @@ public class JawrSpringController implements Controller, ServletContextAware, In
 	}
 
 	/**
+	 * Returns the type of resource handled by the controller
+	 * @return the type of resource handled by the controller
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * Returns the init parameters
+	 * @return the init parameters
+	 */
+	public Map getInitParams() {
+		return initParams;
+	}
+
+	/**
 	 * Sets the type
 	 * @param type the type to set
 	 */
@@ -137,11 +155,12 @@ public class JawrSpringController implements Controller, ServletContextAware, In
 	 */
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		String requestedPath = (null == mapping) ? helper.getPathWithinApplication(request) : 
+		String requestedPath = (StringUtils.isEmpty(mapping)) ? helper.getPathWithinApplication(request) : 
 												 helper.getPathWithinServletMapping(request);
 		
-		if(null != controllerMapping)
-			requestedPath = request.getPathInfo().substring(controllerMapping.length());
+		if(StringUtils.isNotEmpty(controllerMapping)){
+			requestedPath = requestedPath.substring(controllerMapping.length());
+		}
 		
 		requestHandler.processRequest(requestedPath, request, response);
 		return null;
@@ -155,20 +174,25 @@ public class JawrSpringController implements Controller, ServletContextAware, In
 		initParams.put("type",type);
 		initParams.put("configPropertiesSourceClass",configPropertiesSourceClass);
 		initParams.put("configLocation", configLocation);
-		if(configLocation != null){
-			configuration = null;
-		}
 		
+		if (null == configuration && null == configLocation && null == configPropertiesSourceClass)
+			throw new ServletException("Neither configuration nor configLocation nor configPropertiesSourceClass init params were set."
+					+ " You must set at least the configuration or the configLocation param. Please check your web.xml file");
+
 		String fullMapping = "";
-		if(null != mapping)
+		if(StringUtils.isNotEmpty(mapping))
 			fullMapping = mapping;
 		
-		if(null != controllerMapping)
+		if(StringUtils.isNotEmpty(controllerMapping))
 			fullMapping = PathNormalizer.joinPaths(fullMapping, controllerMapping);
 		
-		initParams.put("mapping",fullMapping);
-		if(log.isDebugEnabled())
-			log.debug("Initializing Jawr Controller's JawrRequestHandler");
+		initParams.put(JawrConstant.SERVLET_MAPPING_PROPERTY_NAME,fullMapping);
+		if(mapping != null){
+			initParams.put(JawrConstant.SPRING_SERVLET_MAPPING_PROPERTY_NAME, PathNormalizer.asDirPath(mapping));
+		}
+		
+		if(LOGGER.isDebugEnabled())
+			LOGGER.debug("Initializing Jawr Controller's JawrRequestHandler");
 		
 		if(JawrConstant.IMG_TYPE.equals(type)){
 			requestHandler = new JawrImageRequestHandler(context,initParams, configuration);

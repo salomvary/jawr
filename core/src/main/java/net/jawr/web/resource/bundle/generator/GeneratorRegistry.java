@@ -28,6 +28,7 @@ import net.jawr.web.resource.bundle.generator.classpath.ClassPathCSSGenerator;
 import net.jawr.web.resource.bundle.generator.classpath.ClassPathImgResourceGenerator;
 import net.jawr.web.resource.bundle.generator.classpath.ClasspathJSGenerator;
 import net.jawr.web.resource.bundle.generator.dwr.DWRGeneratorFactory;
+import net.jawr.web.resource.bundle.generator.img.SpriteGenerator;
 import net.jawr.web.resource.bundle.generator.validator.CommonsValidatorGenerator;
 import net.jawr.web.resource.bundle.locale.ResourceBundleMessagesGenerator;
 import net.jawr.web.resource.handler.reader.ResourceReader;
@@ -62,6 +63,9 @@ public class GeneratorRegistry {
 	
 	/** The IE CSS generator bundle prefix */
 	public static final String IE_CSS_GENERATOR_PREFIX = "ieCssGen";
+
+	/** The sprite generator prefix */
+	public static final String SPRITE_GENERATOR_PREFIX = "sprite";
 
 	/** The generator prefix separator */
 	public static final String PREFIX_SEPARATOR = ":";
@@ -108,6 +112,7 @@ public class GeneratorRegistry {
 		prefixRegistry.add(COMMONS_VALIDATOR_PREFIX + PREFIX_SEPARATOR);
 		prefixRegistry.add(MESSAGE_BUNDLE_PREFIX + PREFIX_SEPARATOR);
 		prefixRegistry.add(IE_CSS_GENERATOR_PREFIX + PREFIX_SEPARATOR);
+		prefixRegistry.add(SPRITE_GENERATOR_PREFIX + PREFIX_SEPARATOR);
 	}
 	
 	/**
@@ -153,6 +158,9 @@ public class GeneratorRegistry {
 			generator = new CommonsValidatorGenerator();
 		}else if(resourceType.equals(JawrConstant.CSS_TYPE) && (IE_CSS_GENERATOR_PREFIX + PREFIX_SEPARATOR).equals(generatorKey)){
 			generator = new IECssBundleGenerator();
+		}else if((resourceType.equals(JawrConstant.CSS_TYPE) ||
+				resourceType.equals(JawrConstant.IMG_TYPE)) && (SPRITE_GENERATOR_PREFIX+PREFIX_SEPARATOR).equals(generatorKey)){
+			generator = new SpriteGenerator(rsHandler, config);
 		}
 		
 		if(generator != null){
@@ -244,44 +252,6 @@ public class GeneratorRegistry {
 	public boolean isPathGenerated(String path) {
 		return null != matchPath(path);
 	}
-	
-	/**
-	 * Creates the contents corresponding to a path, by using the appropriate generator. 
-	 * @param path the resource path
-	 * @param resourceHandler the current resource handler
-	 * @param processingBundle the flag indicating if if we are currently processing the bundles
-	 * @return the reader for the contents
-	 */
-	public Reader createResource(String path,
-			ResourceReaderHandler resourceHandler, boolean processingBundle) {
-		String key = matchPath(path);
-		Locale locale = null;
-		
-		if(path.indexOf('@') != -1){
-			String localeKey = path.substring(path.indexOf('@')+1);
-			path = path.substring(0,path.indexOf('@'));
-			
-			// Resourcebundle should be doing this for me...
-			String[] params = localeKey.split("_");			
-			switch(params.length) {
-				case 3:
-					locale = new Locale(params[0],params[1],params[2]);
-					break;
-				case 2: 
-					locale = new Locale(params[0],params[1]);
-					break;
-				default:
-					locale = new Locale(localeKey);
-			}
-		}
-		GeneratorContext context = new GeneratorContext(config, path.substring(key.length()));
-		context.setLocale(locale);
-		context.setResourceReaderHandler(resourceHandler);
-		context.setProcessingBundle(processingBundle);
-		
-		return ((ResourceGenerator)registry.get(key)).createResource(context);
-	}
-	
 	
 	/**
 	 * Returns the path to use in the generation URL for debug mode. 

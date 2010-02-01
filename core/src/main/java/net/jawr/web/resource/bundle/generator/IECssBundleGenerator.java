@@ -61,6 +61,8 @@ public class IECssBundleGenerator extends AbstractCSSGenerator {
 		ResourceBundlesHandler bundlesHandler = (ResourceBundlesHandler) context
 				.getServletContext().getAttribute(
 						JawrConstant.CSS_CONTEXT_ATTRIBUTE);
+		
+		// TODO Manage skin variant
 		String variantKey = null;
 		String bundlePath = PathNormalizer.removeVariantPrefixFromPath(context
 				.getPath());
@@ -100,7 +102,7 @@ public class IECssBundleGenerator extends AbstractCSSGenerator {
 					Reader cssReader = context.getResourceReaderHandler()
 							.getResource(resourcePath, true);
 					StringWriter writer = new StringWriter();
-					IOUtils.copy(cssReader, writer);
+					IOUtils.copy(cssReader, writer, true);
 					StringBuffer resourceData = postProcessor
 							.postProcessBundle(tempStatus, writer.getBuffer());
 					result.append("/** CSS resource : " + resourcePath

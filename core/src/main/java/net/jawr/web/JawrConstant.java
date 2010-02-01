@@ -81,6 +81,9 @@ public class JawrConstant {
 	/** The servlet mapping property name */
 	public static final String SERVLET_MAPPING_PROPERTY_NAME = "mapping";
 
+	/** The spring servlet mapping property name */
+	public static final String SPRING_SERVLET_MAPPING_PROPERTY_NAME = "springServletMapping";
+
 	/** The file URI prefix */
 	public static final String FILE_URI_PREFIX = "file://";
 
@@ -108,5 +111,9 @@ public class JawrConstant {
 	/** The WEB-INF directory prefix */
 	public static final String WEB_INF_DIR_PREFIX = "/WEB-INF/";
 
-	
+	/** The directory for CSS created by generators */
+	public static final String SPRITE_GENERATED_CSS_DIR = "/generatedCss/";
+
+	/** The directory for image created the sprite generator */
+	public static final String SPRITE_GENERATED_IMG_DIR = "/generatedSpriteImg/";
 }
