@@ -1,5 +1,5 @@
 /**
- * Copyright 2009 Ibrahim Chaehoi
+ * Copyright 2009-2010 Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -18,10 +18,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.ServletContext;
 
@@ -30,7 +30,10 @@ import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.generator.PrefixedResourceGenerator;
+import net.jawr.web.resource.handler.reader.grails.GrailsServletContextResourceReader;
 import net.jawr.web.util.StringUtils;
+
+import org.apache.log4j.Logger;
 
 /**
  * This class defines the manager for resource reader.
@@ -39,6 +42,9 @@ import net.jawr.web.util.StringUtils;
  */
 public class ServletContextResourceReaderHandler implements ResourceReaderHandler {
 
+	/** The logger */
+	private static final Logger LOGGER = Logger.getLogger(ServletContextResourceReaderHandler.class);
+	
 	/** The servlet context */
 	private ServletContext servletContext;
 	
@@ -75,13 +81,28 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 		this.servletContext = servletContext;
 		this.generatorRegistry = generatorRegistry;
 		this.generatorRegistry.setResourceReaderHandler(this);
-		
 		if (tempWorkingDirectory.startsWith(JawrConstant.FILE_URI_PREFIX)) {
 			tempWorkingDirectory = tempWorkingDirectory.substring(JawrConstant.FILE_URI_PREFIX.length());
 		} 
 		this.workingDirectory = tempWorkingDirectory;
 		
-		ServletContextResourceReader rd = new ServletContextResourceReader(servletContext, jawrConfig);
+		ServletContextResourceReader rd = null;
+		
+		// In grails apps, the generator uses a special implementation
+		if(null == servletContext.getAttribute(JawrConstant.GRAILS_WAR_DEPLOYED)){
+			if(LOGGER.isDebugEnabled()){
+				LOGGER.debug("Using standard servlet context resource reader.");
+			}
+		
+			rd = new ServletContextResourceReader(servletContext, jawrConfig);
+		}else{
+			
+			if(LOGGER.isDebugEnabled()){
+				LOGGER.debug("Using grails context resource reader.");
+			}
+		
+			rd = new GrailsServletContextResourceReader(servletContext, jawrConfig);
+		}
 		addResourceReaderToEnd(rd);
 	}
 	
@@ -220,32 +241,34 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 	}
 
 	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.handler.ResourceReaderHandler#getResourceNames(java.lang.String)
+	 * @see net.jawr.web.resource.handler.reader.ResourceBrowser#getResourceNames(java.lang.String)
 	 */
 	public Set getResourceNames(String dirName) {
-		Set resourceNames = new HashSet();
+		Set resourceNames = new TreeSet();
 		for (Iterator iterator = resourceInfoProviders.iterator(); iterator.hasNext();) {
 			ResourceBrowser rsBrowser = (ResourceBrowser) iterator.next();
 			if(generatorRegistry.isPathGenerated(dirName)){
 				if (rsBrowser instanceof PrefixedResourceGenerator) {
 					PrefixedResourceGenerator rsGeneratorBrowser = (PrefixedResourceGenerator) rsBrowser;
-					if(dirName.startsWith(rsGeneratorBrowser.getMappingPrefix()+GeneratorRegistry.PREFIX_SEPARATOR)){
-						resourceNames = rsBrowser.getResourceNames(dirName);
+					String prefix = rsGeneratorBrowser.getMappingPrefix()+GeneratorRegistry.PREFIX_SEPARATOR;
+					if(dirName.startsWith(prefix)){
+						resourceNames.addAll(rsBrowser.getResourceNames(dirName));
 						break;
 					}
 				}
 			}else{
 				if (!(rsBrowser instanceof PrefixedResourceGenerator)) {
-						resourceNames = rsBrowser.getResourceNames(dirName);
+					resourceNames.addAll(rsBrowser.getResourceNames(dirName));
 						break;
 				}
 			}
 		}
+		
 		return resourceNames;
 	}
 
 	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.handler.reader.ResourceReaderHandler#isDirectory(java.lang.String)
+	 * @see net.jawr.web.resource.handler.reader.ResourceBrowser#isDirectory(java.lang.String)
 	 */
 	public boolean isDirectory(String resourceName) {
 		boolean result = false;
@@ -254,7 +277,8 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 			if(generatorRegistry.isPathGenerated(resourceName)){
 				if (rsBrowser instanceof PrefixedResourceGenerator) {
 					PrefixedResourceGenerator rsGeneratorBrowser = (PrefixedResourceGenerator) rsBrowser;
-					if(resourceName.startsWith(rsGeneratorBrowser.getMappingPrefix()+GeneratorRegistry.PREFIX_SEPARATOR)){
+					String prefix = rsGeneratorBrowser.getMappingPrefix()+GeneratorRegistry.PREFIX_SEPARATOR;
+					if(resourceName.startsWith(prefix)){
 						result = rsBrowser.isDirectory(resourceName);
 					}
 				}
@@ -265,14 +289,6 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 			}
 		}
 		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.handler.reader.ResourceReaderHandler#isResourceGenerated(java.lang.String)
-	 */
-	public boolean isResourceGenerated(String pathMapping) {
-		
-		return generatorRegistry.isPathGenerated(pathMapping);
 	}
 	
 }

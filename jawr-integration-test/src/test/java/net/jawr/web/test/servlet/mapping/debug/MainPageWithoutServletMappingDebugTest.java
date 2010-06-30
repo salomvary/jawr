@@ -1,6 +1,8 @@
 package net.jawr.web.test.servlet.mapping.debug;
 
 import static org.junit.Assert.assertEquals;
+import static net.jawr.web.test.JawrIntegrationServer.SERVER_URL;
+import static net.jawr.web.test.JawrIntegrationServer.CONTEXT_PATH;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +48,7 @@ public class MainPageWithoutServletMappingDebugTest extends MainPageWithoutServl
 				script.getSrcAttribute());
 		script = (HtmlScript) scripts.get(1);
 		assertEquals(
-				CONTEXT_PATH+"/jawr_generator.js?generationConfigParam=testJs%3AgeneratedContent.js%40en_US",
+				CONTEXT_PATH+"/jawr_generator.js?generationConfigParam=testJs%3AgeneratedContent.js",
 				script.getSrcAttribute());
 	}
 
@@ -70,7 +72,7 @@ public class MainPageWithoutServletMappingDebugTest extends MainPageWithoutServl
 		assertEquals(2, styleSheets.size());
 		HtmlLink css = (HtmlLink) styleSheets.get(0);
 		Utils.assertGeneratedLinkEquals(
-				CONTEXT_PATH+"/jawr_generator.css?generationConfigParam=jar%3Afwk%2Fcss%2Ftemp.css%40en_US",
+				CONTEXT_PATH+"/jawr_generator.css?generationConfigParam=jar%3Afwk%2Fcss%2Ftemp.css",
 				css.getHrefAttribute());
 		
 		css = (HtmlLink) styleSheets.get(1);

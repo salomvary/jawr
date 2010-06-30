@@ -1,5 +1,5 @@
 /**
- * Copyright 2009 Ibrahim Chaehoi
+ * Copyright 2009-2010 Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -57,6 +57,12 @@ public class PropertiesBundleConstant {
 	/** The suffix for the property defining the file post processors */ 
 	public static final String BUNDLE_FACTORY_FILE_POSTPROCESSOR = "bundle.factory.filepostprocessors";
 
+	/** The suffix for the property defining the composite bundle post processors */ 
+	public static final String COMPOSITE_BUNDLE_FACTORY_POSTPROCESSOR = "bundle.factory.composite.bundlepostprocessors";
+	
+	/** The suffix for the property defining the file composite post processors */ 
+	public static final String COMPOSITE_BUNDLE_FACTORY_FILE_POSTPROCESSOR = "bundle.factory.composite.filepostprocessors";
+
 	/** The name of the property indicating if we must use the bundle names property to define the bundles to process */
 	public static final String USE_BUNDLE_NAMES = "jawr.use.bundle.names";
 
@@ -70,6 +76,9 @@ public class PropertiesBundleConstant {
 
 	/** The suffix for the property defining the custom generators */
 	public static final String CUSTOM_GENERATORS = "custom.generators";
+	
+	/** The suffix for the property defining the custom resolvers */
+	public static final String CUSTOM_RESOLVERS = "custom.resolvers";
 	
 	// Custom bundle factory parameters
 	/** The suffix for the property defining the names of the bundles  */
@@ -114,8 +123,8 @@ public class PropertiesBundleConstant {
 	/** The suffix for the property defining the alternate static URL for production mode */
 	public static final String BUNDLE_FACTORY_CUSTOM_PRODUCTION_ALT_URL = ".productionURL";
 
-	/** The suffix for the property defining the locales for a bundle */
-	public static final String BUNDLE_FACTORY_CUSTOM_LOCALE_VARIANTS = ".locales";
+	/** The suffix for the property defining the variants for a bundle */
+	public static final String BUNDLE_FACTORY_CUSTOM_VARIANTS = ".variants";
 	
 	// Bundle hashcode
 	/** The suffix for the property defining the bundle hascode for a bundle */

@@ -48,7 +48,7 @@ public abstract class AbstractJawrImageReference extends WebMarkupContainer {
 	private static final long serialVersionUID = 8981244472547751100L;
 
 	/** The logger */
-	private static final Logger log = Logger.getLogger(AbstractJawrReference.class);
+	private static final Logger LOGGER = Logger.getLogger(AbstractJawrReference.class);
 
 	/** The image renderer */
 	private ImgRenderer renderer;
@@ -72,7 +72,8 @@ public abstract class AbstractJawrImageReference extends WebMarkupContainer {
             final IValueMap attributes = tag.getAttributes();
 
             String src = (String) attributes.get("src");
-
+            boolean base64 = Boolean.valueOf((String) attributes.get("base64")).booleanValue();
+            
             // src is mandatory
             if (null == src) {
                 throw new IllegalStateException("The src attribute is mandatory for this Jawr tag. ");
@@ -89,15 +90,17 @@ public abstract class AbstractJawrImageReference extends WebMarkupContainer {
 		
 		
             final Response response = getResponse();
-            src =  ImageTagUtils.getImageUrl(src, imgRsHandler, request, getHttpServletResponseUrlEncoder(response));
-            Writer writer = new RedirectWriter(response);
+            
+    		src = ImageTagUtils.getImageUrl(src, base64, imgRsHandler, request, getHttpServletResponseUrlEncoder(response));
+    		
+    		Writer writer = new RedirectWriter(response);
               
            	this.renderer.renderImage(src, 
            								attributes, 
     	   								writer);
     		
         } catch (IOException ex) {
-            log.error("onRender() error : ", ex);
+            LOGGER.error("onRender() error : ", ex);
         }
 
         markupStream.skipComponent();

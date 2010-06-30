@@ -15,10 +15,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.JoinableResourceBundleImpl;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandlerImpl;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
@@ -45,6 +47,9 @@ public class LicensesIncluderPostProcessorTest  extends  ResourceHandlerBasedTes
 		rsHandler = createResourceReaderHandler(ROOT_TESTDIR,charsetUtf);
 		rsBundleHandler = createResourceBundleHandler(ROOT_TESTDIR,charsetUtf);
 		jeesConfig = new JawrConfig(new Properties());
+		GeneratorRegistry generatorRegistry = new GeneratorRegistry(JawrConstant.JS_TYPE);
+		generatorRegistry.setConfig(jeesConfig);
+		jeesConfig.setGeneratorRegistry(generatorRegistry);
 		jeesConfig.setCharsetName("UTF-8");
 		
 		List c = Collections.singletonList("js/**");
@@ -52,7 +57,7 @@ public class LicensesIncluderPostProcessorTest  extends  ResourceHandlerBasedTes
 										".js",
 										new InclusionPattern(true,0),
 										c,
-										rsHandler);
+										rsHandler, generatorRegistry);
 		
 		processor = new LicensesIncluderPostProcessor();
 
@@ -77,7 +82,7 @@ public class LicensesIncluderPostProcessorTest  extends  ResourceHandlerBasedTes
 	    WritableByteChannel wrChannel = Channels.newChannel(baOs);
 	    Writer writer = Channels.newWriter(wrChannel, jeesConfig.getResourceCharset().name());
 	    collector.writeBundleTo("/js/script.js", writer);
-	    BundleProcessingStatus status = new BundleProcessingStatus(resourcebundle,rsHandler,jeesConfig);
+	    BundleProcessingStatus status = new BundleProcessingStatus(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE, resourcebundle,rsHandler,jeesConfig);
 	    StringBuffer sb = processor.postProcessBundle(status, new StringBuffer(baOs.toString(jeesConfig.getResourceCharset().name())));
 	    String contents = sb.toString();
 	    assertTrue("License in root folder not included",(contents.indexOf("/** License in folder **/")!=-1));

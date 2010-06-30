@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 Jordi Hernández Sellés
+ * Copyright 2008-2010 Jordi Hernández Sellés
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -13,25 +13,33 @@
  */
 package net.jawr.web.resource.bundle.locale;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Defult implementation of the LocaleResolver interface. 
+ * Default implementation of the LocaleResolver interface. 
  * Uses request.getLocale() to determine the user's Locale. 
  * 
  * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  */
-public class DefaultLocaleResolver implements LocaleResolver {
+public class DefaultLocaleResolver implements LocaleResolver, Serializable {
+
+	/** The serial version UID */
+	private static final long serialVersionUID = -6079547159706255940L;
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.locale.LocaleResolver#resolveLocaleCode(javax.servlet.http.HttpServletRequest)
 	 */
-	public String resolveLocaleCode(HttpServletRequest request) {
-		if(request.getLocale() != Locale.getDefault())
-			return request.getLocale().toString();
-		else return null;
+	public String resolveLocaleCode(final HttpServletRequest request) {
+		
+		String localCode = null;
+		if(request.getLocale() != Locale.getDefault()){
+			localCode = request.getLocale().toString();
+		}
+		
+		return localCode;
 	}
-
 }

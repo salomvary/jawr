@@ -1,5 +1,5 @@
 /**
- * Copyright 2008-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2008-2010 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -14,16 +14,24 @@
 package net.jawr.web.resource.bundle.locale;
 
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletContext;
 
 import net.jawr.web.JawrConstant;
+import net.jawr.web.config.JawrConfig;
+import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.AbstractJavascriptGenerator;
+import net.jawr.web.resource.bundle.generator.ConfigurationAwareResourceGenerator;
 import net.jawr.web.resource.bundle.generator.GeneratorContext;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
-import net.jawr.web.resource.bundle.generator.LocaleAwareResourceGenerator;
 import net.jawr.web.resource.bundle.generator.ResourceGenerator;
+import net.jawr.web.resource.bundle.generator.variant.VariantResourceGenerator;
 import net.jawr.web.resource.bundle.locale.message.MessageBundleScriptCreator;
+import net.jawr.web.resource.bundle.variant.VariantSet;
 
 import org.apache.log4j.Logger;
 
@@ -35,14 +43,36 @@ import org.apache.log4j.Logger;
  * @author Ibrahim Chaehoi
  *
  */
-public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator implements ResourceGenerator, LocaleAwareResourceGenerator {
+public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator implements ResourceGenerator, VariantResourceGenerator, ConfigurationAwareResourceGenerator {
 	
 	/** The logger */
-	private static final Logger log = Logger.getLogger(ResourceBundleMessagesGenerator.class);
+	private static final Logger LOGGER = Logger.getLogger(ResourceBundleMessagesGenerator.class);
 	
-	public static final String GRAILS_WAR_DEPLOYED = "jawr.grails.war.deployed";
-	
+	/** The grails message generator */
 	private static final String GRAILS_MESSAGE_CREATOR = "net.jawr.web.resource.bundle.locale.message.GrailsMessageBundleScriptCreator";
+	
+	/** The resource path prefix for grails i18n messages */
+	private static final String GRAILS_APP_I18N_RESOURCE_PREFIX = "grails-app.i18n.";
+
+	/** The servlet context */
+	private ServletContext servletContext;
+	
+	/** The flag indicating if we are in a grails context */
+	private boolean grailsContext;
+	
+	/** The flag indicating if we are in a grails war is deployed */
+	private boolean grailsWarDeployed;
+	
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.generator.ConfigurationAwareResourceGenerator#setConfig(net.jawr.web.config.JawrConfig)
+	 */
+	public void setConfig(JawrConfig config){
+		servletContext = config.getContext();
+		grailsContext = servletContext.getAttribute(JawrConstant.GRAILS_WAR_DEPLOYED) != null;
+		if(grailsContext){
+			grailsWarDeployed = ((Boolean)servletContext.getAttribute(JawrConstant.GRAILS_WAR_DEPLOYED)).booleanValue();
+		}
+	}
 	
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.ResourceGenerator#createResource(java.lang.String, java.nio.charset.Charset)
@@ -50,18 +80,19 @@ public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator
 	public Reader createResource(GeneratorContext context) {
 		MessageBundleScriptCreator creator = null;
 		// In grails apps, the generator uses a special implementation
-		if(null == context.getServletContext().getAttribute(ResourceBundleMessagesGenerator.GRAILS_WAR_DEPLOYED)){
-			if(log.isDebugEnabled())
-				log.debug("Using standard messages generator. ");
-			creator = new MessageBundleScriptCreator(context);
-		}
-		else {
-			if(log.isDebugEnabled())
-				log.debug("Using grails messages generator. ");
+		if(grailsContext){
+			if(LOGGER.isDebugEnabled())
+				LOGGER.debug("Using grails messages generator. ");
 			// Loading this way prevents unwanted dependencies in non grails applications. 
 			Object[] param = {context};
 			creator = (MessageBundleScriptCreator) ClassLoaderResourceUtils.buildObjectInstance(GRAILS_MESSAGE_CREATOR,param);
 		}
+		else {
+			if(LOGGER.isDebugEnabled())
+				LOGGER.debug("Using standard messages generator. ");
+			creator = new MessageBundleScriptCreator(context);
+		}
+		
 		return creator.createScript(context.getCharset());
 	}
 
@@ -77,14 +108,14 @@ public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator
 	 */
 	public String getDebugModeBuildTimeGenerationPath(String path) {
 		
-		path = path.replaceFirst(GeneratorRegistry.PREFIX_SEPARATOR, JawrConstant.URL_SEPARATOR);
-		if(path.endsWith("@")){
-			path = path.replaceAll("@", "");
+		String debugPath = path.replaceFirst(GeneratorRegistry.PREFIX_SEPARATOR, JawrConstant.URL_SEPARATOR);
+		if(debugPath.endsWith("@")){
+			debugPath = debugPath.replaceAll("@", "");
 		}else{
-			path = path.replaceAll("@", "_");
-			path = path.replaceAll("\\|", "_");
+			debugPath = debugPath.replaceAll("@", "_");
+			debugPath = debugPath.replaceAll("\\|", "_");
 		}
-		return path+"."+JawrConstant.JS_TYPE;
+		return debugPath+"."+JawrConstant.JS_TYPE;
 	}
 
 	/* (non-Javadoc)
@@ -92,6 +123,28 @@ public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator
 	 */
 	public List getAvailableLocales(String resource) {
 		
-		return LocaleUtils.getAvailableLocaleSuffixesForBundle(resource);
+		List availableLocales = null;
+		if(grailsContext && grailsWarDeployed && resource.startsWith(GRAILS_APP_I18N_RESOURCE_PREFIX)){
+			availableLocales = LocaleUtils.getAvailableLocaleSuffixesForBundle(resource, servletContext); 
+		}else{
+			availableLocales = LocaleUtils.getAvailableLocaleSuffixesForBundle(resource);
+		}
+		return availableLocales;
 	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.generator.variant.VariantResourceGenerator#getAvailableVariants(java.lang.String)
+	 */
+	public Map getAvailableVariants(String resource) {
+		
+		List localeVariants = getAvailableLocales(resource);
+		if(localeVariants.isEmpty()){
+			throw new BundlingProcessException("Enable to find the resource bundle : "+resource);
+		}
+		Map variants = new HashMap();
+		VariantSet variantSet = new VariantSet(JawrConstant.LOCALE_VARIANT_TYPE, "", localeVariants);
+		variants.put(JawrConstant.LOCALE_VARIANT_TYPE, variantSet);
+		return variants;
+	}
+
 }

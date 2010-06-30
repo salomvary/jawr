@@ -3,9 +3,8 @@ package test.net.jawr.web.resource.bundle.postprocess.impl;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.servlet.ServletContext;
 
@@ -14,14 +13,12 @@ import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ImageResourcesHandler;
-import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
-import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.impl.CSSURLPathRewriterPostProcessor;
-import net.jawr.web.resource.handler.reader.ResourceReader;
-import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
+import test.net.jawr.web.resource.bundle.MockJoinableResourceBundle;
+import test.net.jawr.web.resource.bundle.handler.MockResourceReaderHandler;
 import test.net.jawr.web.servlet.mock.MockServletContext;
 
 public class CSSURLRewriterPostProcessorTest extends TestCase {
@@ -46,7 +43,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		config.setContext(servletContext);
 		config.setServletMapping("/js");
 		config.setCharsetName("UTF-8");		
-		status = new BundleProcessingStatus(bundle,null,config);
+		status = new BundleProcessingStatus(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE,bundle,null,config);
 		addGeneratorRegistryToConfig(config, "js");
 		status.setLastPathAdded("/css/someCSS.css");
 		processor = new CSSURLPathRewriterPostProcessor();
@@ -56,7 +53,12 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		GeneratorRegistry generatorRegistry = new GeneratorRegistry(type){
 
 			public boolean isHandlingCssImage(String cssResourcePath) {
-				return false;
+				
+				boolean result = false;
+				if(cssResourcePath.startsWith("jar:")){
+					result = true;
+				}
+				return result;
 			}
 		};
 		generatorRegistry.setConfig(config);
@@ -78,6 +80,33 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		
 	}
 	
+	public void testBasicURLWithAbsolutePathRewriting() {
+		// basic test
+		StringBuffer data = new StringBuffer("background-image:url(/images/someImage.gif);");
+		//StringBuffer data = new StringBuffer("background-image:url(../../../../images/someImage.gif);");
+		// the image is at /images
+		String filePath = "/css/folder/subfolder/subfolder/someCSS.css";
+		// Expected: goes 1 back for servlet mapping, 1 back for prefix, 1 back for the id having a subdir path. 
+		String expectedURL = "background-image:url(/images/someImage.gif);";
+		status.setLastPathAdded(filePath);		
+		String result = processor.postProcessBundle(status, data).toString();		
+		assertEquals("URL was not rewritten properly",expectedURL, result);
+		
+	}
+	
+	public void testBasicURLWithAbsolutePathInContextPathRewriting() {
+		// basic test
+		StringBuffer data = new StringBuffer("background-image:url(/myApp/images/someImage.gif);");
+		config.getConfigProperties().put("jawr.css.url.rewriter.context.path", "/myApp/");
+		//StringBuffer data = new StringBuffer("background-image:url(../../../../images/someImage.gif);");
+		// the image is at /images
+		String filePath = "/css/folder/subfolder/subfolder/someCSS.css";
+		// Expected: goes 1 back for servlet mapping, 1 back for prefix, 1 back for the id having a subdir path. 
+		String expectedURL = "background-image:url(../../../images/someImage.gif);";
+		status.setLastPathAdded(filePath);		
+		String result = processor.postProcessBundle(status, data).toString();		
+		assertEquals("URL was not rewritten properly",expectedURL, result);
+	}
 	
 	public void testBackReferenceAndSpaces() {
 		// Now a back reference must be created, and there are quotes and spaces
@@ -277,11 +306,12 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		imgServletJawrConfig.setServletMapping("/cssImg/");
 		addGeneratorRegistryToConfig(imgServletJawrConfig, "img");
 		FakeResourceReaderHandler rsHandler = new FakeResourceReaderHandler();
+		config.getGeneratorRegistry().setResourceReaderHandler(rsHandler);
 		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(imgServletJawrConfig, rsHandler, null);
 		imgServletJawrConfig.getGeneratorRegistry().setResourceReaderHandler(rsHandler);
 		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE, imgRsHandler);
 		
-		status = new BundleProcessingStatus(bundle, null, config);
+		status = new BundleProcessingStatus(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE, bundle, null, config);
 
 		// Css data
 		StringBuffer data = new StringBuffer(
@@ -325,7 +355,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(imgServletJawrConfig, rsHandler, null);
 		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE, imgRsHandler);
 		
-		status = new BundleProcessingStatus(bundle, null, config);
+		status = new BundleProcessingStatus(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE, bundle, null, config);
 
 		// Css data
 		StringBuffer data = new StringBuffer(
@@ -363,7 +393,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(imgServletJawrConfig, null, null);
 		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE, imgRsHandler);
 		
-		status = new BundleProcessingStatus(bundle, null, config);
+		status = new BundleProcessingStatus(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE, bundle, null, config);
 
 		// Css data
 		StringBuffer data = new StringBuffer(
@@ -393,7 +423,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		config.setServletMapping("/css");
 		config.setCharsetName("UTF-8");
 		addGeneratorRegistryToConfig(config, "css");
-		status = new BundleProcessingStatus(bundle, null, config);
+		status = new BundleProcessingStatus(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE, bundle, null, config);
 
 		// Set up the Image servlet Jawr config
 		props = new Properties();
@@ -428,7 +458,7 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 		config.setCharsetName("UTF-8");
 		addGeneratorRegistryToConfig(config, "css");
 		FakeResourceReaderHandler rsHandler = new FakeResourceReaderHandler();
-		status = new BundleProcessingStatus(bundle, rsHandler, config);
+		status = new BundleProcessingStatus(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE, bundle, rsHandler, config);
 
 		// Set up the Image servlet Jawr config
 		props = new Properties();
@@ -508,73 +538,23 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 	}
 	private JoinableResourceBundle buildFakeBundle(final String id, final String urlPrefix) {
 		
-		return new JoinableResourceBundle(){
-			public boolean belongsToBundle(String itemPath) {
-				return false;
-			}
-			public InclusionPattern getInclusionPattern() {
-				return null;
-			}
-			public List getItemPathList() {
-				return null;
-			}
-			public Set getLicensesPathList() {
-				return null;
-			}
+		return new MockJoinableResourceBundle(){
+			
+			/* (non-Javadoc)
+			 * @see test.net.jawr.web.resource.bundle.MockJoinableResourceBundle#getId()
+			 */
 			public String getId() {
 				return id;
 			}
-			public String getURLPrefix(String variantKey) {
+
+			public String getURLPrefix(Map variants) {
 				return urlPrefix;
-			}
-			public ResourceBundlePostProcessor getBundlePostProcessor() {
-				return null;
-			}
-			public ResourceBundlePostProcessor getUnitaryPostProcessor() {
-				return null;
-			}
-			public void setBundleDataHashCode(String var, int bundleDataHashCode) {
-				
-			}
-			public String getExplorerConditionalExpression() {
-				return null;
-			}
-			public List getItemPathList(String variantKey) {
-				return null;
-			}
-			public List getLocaleVariantKeys() {
-				return null;
-			}
-			public String getAlternateProductionURL() {
-				return null;
-			}
-			public String getBundleDataHashCode(String variantKey) {
-				return null;
-			}
-			public String getName() {
-				return null;
-			}
-			public boolean isComposite() {
-				return false;
-			}
-			public void setBundleDataHashCode(String variantKey,
-					String bundleDataHashCode) {
-				
-			}
-			public void setMappings(List mappings) {
-				
-			}
-			public List getDependencies() {
-				return null;
-			}
-			public void setDependencies(List bundleDependencies) {
-				
 			}
 		};
 			
 	}
 	
-	private static class FakeResourceReaderHandler implements ResourceReaderHandler {
+	private static class FakeResourceReaderHandler extends MockResourceReaderHandler {
 
 		public Reader getResource(String resourceName)
 				throws ResourceNotFoundException {
@@ -603,34 +583,5 @@ public class CSSURLRewriterPostProcessorTest extends TestCase {
 			
 			throw new ResourceNotFoundException(resourceName);
 		}
-
-		public void addResourceReaderToEnd(ResourceReader rd) {
-			
-		}
-
-		public void addResourceReaderToStart(ResourceReader rd) {
-			
-		}
-
-		public void setWorkingDirectory(String workingDir) {
-			
-		}
-
-		public Set getResourceNames(String dirPath) {
-			return null;
-		}
-
-		public String getWorkingDirectory() {
-			return null;
-		}
-
-		public boolean isDirectory(String resourcePath) {
-			return false;
-		}
-
-		public boolean isResourceGenerated(String path) {
-			return false;
-		}
-		
 	}
 }

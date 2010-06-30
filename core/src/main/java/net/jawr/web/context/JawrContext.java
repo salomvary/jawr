@@ -33,6 +33,9 @@ public class JawrContext {
 	/** The flag indicating that we are using making a bundle processing at build time */
 	private boolean bundleProcessingAtBuildTime;
 	
+	/** The current request URL*/
+	private String requestURL;
+	
 	/**
 	 * Constructor. 
 	 */
@@ -90,6 +93,22 @@ public class JawrContext {
 	}
 
 	/**
+	 * Returns the current request URL
+	 * @return the current request URL
+	 */
+	public String getRequestURL() {
+		return requestURL;
+	}
+
+	/**
+	 * Sets the current request URL
+	 * @param request the request URL to set
+	 */
+	public void setRequestURL(String requestURL) {
+		this.requestURL = requestURL;
+	}
+
+	/**
 	 * Reset the context. 
 	 */
 	public void reset(){
@@ -97,6 +116,7 @@ public class JawrContext {
 		this.jawrConfigMgrObjectName = null;
 		this.debugOverriden = false;
 		this.bundleProcessingAtBuildTime = false;
+		this.requestURL = null;
 	}
 
 }

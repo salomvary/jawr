@@ -13,6 +13,9 @@
  */
 package net.jawr.web.servlet;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -38,10 +41,13 @@ import org.apache.log4j.Logger;
 public class RendererRequestUtils {
 	
 	/** The logger */
-	private static final Logger log = Logger.getLogger(RendererRequestUtils.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(RendererRequestUtils.class.getName());
 	
 	/** The bundle renderer context attribute name */
 	private static final String BUNDLE_RENDERER_CONTEXT_ATTR_PREFIX = "net.jawr.web.resource.renderer.BUNDLE_RENDERER_CONTEXT";
+	
+	/** The IE user agent pattern */
+	private static Pattern IE_USER_AGENT_PATTERN = Pattern.compile("MSIE (\\d+)");
 	
 	/**
 	 * Returns the bundle renderer context.
@@ -92,8 +98,8 @@ public class RendererRequestUtils {
 			// If gzip for IE6 or less is off, the user agent is checked to avoid compression.
 			if (!jawrConfig.isGzipResourcesForIESixOn() && isIE6orLess(req)) {
 				rets = false;
-				if (log.isDebugEnabled()){
-					log.debug("Gzip enablement for IE executed, with result:" + rets);
+				if (LOGGER.isDebugEnabled()){
+					LOGGER.debug("Gzip enablement for IE executed, with result:" + rets);
 				}
 			} else
 				rets = true;
@@ -120,19 +126,43 @@ public class RendererRequestUtils {
 	 */
 	public static boolean isIE6orLess(HttpServletRequest req) {
 	
-		boolean rets = false;
-		String agent = req.getHeader("User-Agent");
-		if (log.isDebugEnabled()){
-			log.debug("User-Agent for this request:" + agent);
-		}
-		
-		if (null != agent && agent.indexOf("MSIE") != -1) {
-			rets = agent.indexOf("MSIE 4") != -1 || agent.indexOf("MSIE 5") != -1 || agent.indexOf("MSIE 6") != -1;
-		}
-		
-		return rets;
+		return isIEVersionInferiorOrEqualTo(req, 6);
 	}
 
+	/**
+	 * Checks if the user agent is IE7 or less
+	 * @param req the request
+	 * @return true if the user agent is IE7 or less
+	 */
+	public static boolean isIE7orLess(HttpServletRequest req) {
+	
+		return isIEVersionInferiorOrEqualTo(req, 7);
+	}
+
+	/**
+	 * Checks if the user agent is IE and the version is equal or less than the one passed in parameter
+	 * @param req the request
+	 * @param the ie version to check
+	 * @return true if the user agent is IE and the version is equal or less than the one passed in parameter
+	 */
+	private static boolean isIEVersionInferiorOrEqualTo(HttpServletRequest req, int ieVersion) {
+		
+		boolean result = false;
+		String agent = req.getHeader("User-Agent");
+		if (LOGGER.isDebugEnabled()){
+			LOGGER.debug("User-Agent for this request:" + agent);
+		}
+		
+		Matcher matcher = IE_USER_AGENT_PATTERN.matcher(agent);
+		if(matcher.find()){
+			int version = Integer.parseInt(matcher.group(1));
+			if(version <= ieVersion){
+				result = true;
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Determines wether to override the debug settings. Sets the debugOverride status on ThreadLocalJawrContext
 	 * 
@@ -197,12 +227,15 @@ public class RendererRequestUtils {
 	 * @param sslRequest the flag indicating if it's an SSL request or not
 	 * @return the new URL
 	 */
-	public static String getRenderedUrl(String newUrl, JawrConfig jawrConfig,
+	public static String getRenderedUrl(String url, JawrConfig jawrConfig,
 			String contextPath, boolean sslRequest) {
+		
 		String contextPathOverride = getContextPathOverride(sslRequest, jawrConfig);
 		// If the contextPathOverride is not null and we are in production mode,
 		// or if we are in debug mode but we should use the contextPathOverride even in debug mode
 		// then use the contextPathOverride
+		
+		String renderedUrl = url;
 		if(contextPathOverride != null && 
 				((jawrConfig.isDebugModeOn() && jawrConfig.isUseContextPathOverrideInDebugMode()) ||
 				!jawrConfig.isDebugModeOn())) {
@@ -210,12 +243,15 @@ public class RendererRequestUtils {
 				String override = contextPathOverride;
 				// Blank override, create url relative to path
 				if ("".equals(override)) {
-					newUrl = newUrl.substring(1);
-				} else
-					newUrl = PathNormalizer.joinPaths(override, newUrl);
-		} else
-			newUrl = PathNormalizer.joinPaths(contextPath, newUrl);
-		return newUrl;
+					renderedUrl = renderedUrl.substring(1);
+				} else{
+					renderedUrl = PathNormalizer.joinPaths(override, renderedUrl);
+				}
+		} else{
+			renderedUrl = PathNormalizer.joinPaths(contextPath, renderedUrl);
+		}
+		
+		return renderedUrl;
 	}
 
 	/**

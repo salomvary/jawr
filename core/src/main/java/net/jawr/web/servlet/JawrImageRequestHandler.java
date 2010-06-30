@@ -1,5 +1,5 @@
 /**
- * Copyright 2009  Ibrahim Chaehoi
+ * Copyright 2009-2010  Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -42,6 +42,7 @@ import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.factory.PropertiesBundleConstant;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.factory.util.PropertiesConfigHelper;
+import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.handler.bundle.ResourceBundleHandler;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 import net.jawr.web.util.StringUtils;
@@ -60,13 +61,13 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	private static final long serialVersionUID = -8342090032443416738L;
 
 	/** The logger */
-	private static final Logger log = Logger
+	private static final Logger LOGGER = Logger
 			.getLogger(JawrImageRequestHandler.class);
 
 	/** The cache buster pattern */
 	private static Pattern cacheBusterPattern = Pattern.compile("("
 			+ "(([a-zA-Z0-9]+)_)?" + JawrConstant.CACHE_BUSTER_PREFIX
-			+ ")[a-zA-Z0-9]+/(.*)$");
+			+ ")[a-zA-Z0-9]+(/.*)$");
 
 	/** The index of the generated image prefix in the cache buster pattern */
 	private static final int GENERATED_IMAGE_PREFIX_INDEX = 3;
@@ -83,6 +84,9 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	/** The resource handler */
 	private ResourceBundleHandler rsBundleHandler;
 
+	/** The image resource handler */
+	private ImageResourcesHandler imgRsHandler;
+	
 	/** The bundle mapping */
 	private Properties bundleMapping;
 
@@ -130,6 +134,10 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 */
 	protected void initializeJawrConfig(Properties props)
 			throws ServletException {
+		
+		// init registry
+		generatorRegistry = new GeneratorRegistry(resourceType);
+
 		// Initialize config
 		if (null != jawrConfig)
 			jawrConfig.invalidate();
@@ -150,6 +158,9 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			jawrConfig.setServletMapping(mapping);
 		}
 
+		// Initialize the IllegalBundleRequest handler
+		initIllegalBundleRequestHandler();
+		
 		// Initialize the resource handler
 		rsReaderHandler = initResourceReaderHandler();
 		rsBundleHandler = initResourceBundleHandler();
@@ -170,21 +181,21 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			bundleMapping = new Properties();
 		}
 
-		ImageResourcesHandler imgRsHandler = new ImageResourcesHandler(
+		imgRsHandler = new ImageResourcesHandler(
 				jawrConfig, rsReaderHandler, rsBundleHandler);
 		initImageMapping(imgRsHandler);
 
 		servletContext.setAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE,
 				imgRsHandler);
 
-		if (log.isDebugEnabled()) {
-			log.debug("Configuration read. Current config:");
-			log.debug(jawrConfig);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Configuration read. Current config:");
+			LOGGER.debug(jawrConfig);
 		}
 
 		// Warn when in debug mode
 		if (jawrConfig.isDebugModeOn()) {
-			log
+			LOGGER
 					.warn("Jawr initialized in DEVELOPMENT MODE. Do NOT use this mode in production or integration servers. ");
 		}
 	}
@@ -238,7 +249,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 					} else if (hasImageFileExtension(pathMapping)) {
 						addImagePath(imgRsHandler, pathMapping);
 					} else
-						log
+						LOGGER
 								.warn("Wrong mapping ["
 										+ pathMapping
 										+ "] for image bundle. Please check configuration. ");
@@ -252,8 +263,8 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			rsBundleHandler.storeJawrBundleMapping(bundleMapping);
 		}
 
-		if (log.isDebugEnabled())
-			log.debug("Finish creation of map for image bundle");
+		if (LOGGER.isDebugEnabled())
+			LOGGER.debug("Finish creation of map for image bundle");
 	}
 
 	/**
@@ -275,11 +286,11 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			imgRsHandler.addMapping(imgPath, resultPath);
 			bundleMapping.put(imgPath, resultPath);
 		} catch (IOException e) {
-			log.error(
+			LOGGER.error(
 					"An exception occurs while defining the mapping for the file : "
 							+ imgPath, e);
 		} catch (ResourceNotFoundException e) {
-			log.error("Impossible to define the checksum for the resource '"
+			LOGGER.error("Impossible to define the checksum for the resource '"
 					+ imgPath
 					+ "'. Unable to retrieve the content of the file.");
 		}
@@ -319,8 +330,8 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			String dirName, boolean addSubDirs) {
 		Set resources = rsReaderHandler.getResourceNames(dirName);
 
-		if (log.isDebugEnabled()) {
-			log.debug("Adding " + resources.size() + " resources from path ["
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Adding " + resources.size() + " resources from path ["
 					+ dirName + "] to image bundle");
 		}
 
@@ -334,8 +345,8 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			if (hasImageFileExtension(resourceName)) {
 				addImagePath(imgRsHandler, resourcePath);
 
-				if (log.isDebugEnabled())
-					log.debug("Added to item path list:"
+				if (LOGGER.isDebugEnabled())
+					LOGGER.debug("Added to item path list:"
 							+ PathNormalizer.asPath(resourcePath));
 			} else if (addSubDirs) {
 
@@ -344,8 +355,8 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 						folders.add(resourceName);
 					}
 				} catch (InvalidPathException e) {
-					if (log.isDebugEnabled())
-						log
+					if (LOGGER.isDebugEnabled())
+						LOGGER
 								.debug("Enable to define if the following resource is a directory : "
 										+ PathNormalizer.asPath(resourcePath));
 				}
@@ -386,62 +397,107 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		if (log.isDebugEnabled())
-			log.debug("Request received for path:" + requestedPath);
+		// manual reload request
+		if (this.jawrConfig.getRefreshKey().length() > 0 && null != request.getParameter("refreshKey")
+				&& this.jawrConfig.getRefreshKey().equals(request.getParameter("refreshKey"))) {
+			this.configChanged(propertiesSource.getConfigProperties());
+		}
+		
+		if (LOGGER.isDebugEnabled())
+			LOGGER.debug("Request received for path:" + requestedPath);
 
-		// Retrieve the file path
-		//String filePath = getFilePath(request);
-		if (requestedPath == null) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+		if(handleSpecificRequest(requestedPath, requestedPath, request, response)){
 			return;
 		}
-
-		// Retrieve the content type
-		String imgContentType = getContentType(request, requestedPath);
-		if (imgContentType == null) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
-			return;
-		}
+		
+		// Handle the strict mode
+		boolean validBundle = isValidBundle(requestedPath);
 
 		// Set the content type
-		response.setContentType(imgContentType);
-		// If debug mode is off, check for If-Modified-Since and If-none-match
-		// headers and set response caching headers.
+		response.setContentType(getContentType(requestedPath, request));
+		
+		boolean writeResponseHeader = false;
+		
+		// If debug mode is off, check for If-Modified-Since and If-none-match headers and set response caching headers.
 		if (!this.jawrConfig.isDebugModeOn()) {
 			// If a browser checks for changes, always respond 'no changes'.
-			if (null != request.getHeader(IF_MODIFIED_SINCE_HEADER)
-					|| null != request.getHeader(IF_NONE_MATCH_HEADER)) {
+			if (validBundle && (null != request.getHeader(IF_MODIFIED_SINCE_HEADER) || null != request.getHeader(IF_NONE_MATCH_HEADER))) {
 				response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-				if (log.isDebugEnabled())
-					log.debug("Returning 'not modified' header. ");
+				if (LOGGER.isDebugEnabled())
+					LOGGER.debug("Returning 'not modified' header. ");
 				return;
 			}
 
-			// Add caching headers
-			setResponseHeaders(response);
+			if(validBundle){
+				// Add caching headers
+				setResponseHeaders(response);
+			}else{
+				
+				writeResponseHeader = illegalBundleRequestHandler.writeResponseHeader(requestedPath, request, response);
+				if(!writeResponseHeader){
+					// Add caching headers
+					setResponseHeaders(response);
+				}
+			}
 		}
-
+		
 		// Returns the real file path
 		String filePath = getRealFilePath(requestedPath);
 
 		try {
-			if (isValidRequestedPath(filePath)) {
+			if(isValidRequestedPath(filePath) && (validBundle || illegalBundleRequestHandler.canWriteContent(requestedPath, request))){
 				writeContent(response, filePath);
-			} else {
-				log.error("Unable to load the image for the request URI : "
-						+ request.getRequestURI());
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			}else{
+				if(!writeResponseHeader){
+					LOGGER.error("Unable to load the image for the request URI : "
+							+ request.getRequestURI());
+					response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				}
 			}
-
 		} catch (Exception ex) {
 
-			log.error("Unable to load the image for the request URI : "
+			LOGGER.error("Unable to load the image for the request URI : "
 					+ request.getRequestURI(), ex);
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 
-		if (log.isDebugEnabled())
-			log.debug("request succesfully attended");
+		if (LOGGER.isDebugEnabled())
+			LOGGER.debug("request succesfully attended");
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.servlet.JawrRequestHandler#isValidBundle(java.lang.String)
+	 */
+	protected boolean isValidBundle(String requestedPath) {
+		boolean validBundle = true;
+		if(!jawrConfig.isDebugModeOn() && jawrConfig.isStrictMode()){
+			validBundle = imgRsHandler.containsValidBundleHashcode(requestedPath);
+		}
+		return validBundle;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.servlet.JawrRequestHandler#handleSpecificRequest(java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	protected boolean handleSpecificRequest(String requestedPath,String contentType,
+			HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		boolean processed = false;
+		// Retrieve the file path
+		//String filePath = getFilePath(request);
+		if (requestedPath == null) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			processed = true;
+		}else{
+			// Ckeck the content type
+			if (contentType == null) {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				processed = true;
+			}
+		}
+		
+		return processed;
 	}
 
 	/**
@@ -453,21 +509,21 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 *            the image file path
 	 * @return the content type of the image
 	 */
-	private String getContentType(HttpServletRequest request, String filePath) {
+	protected String getContentType(String filePath, HttpServletRequest request) {
 		String requestUri = request.getRequestURI();
 
 		// Retrieve the extension
 		String extension = getExtension(filePath);
 		if (extension == null) {
 
-			log.error("No extension found for the request URI : " + requestUri);
+			LOGGER.error("No extension found for the request URI : " + requestUri);
 			return null;
 		}
 
 		String contentType = (String) imgMimeMap.get(extension);
 		if (contentType == null) {
 
-			log.error("No image extension match the extension '" + extension
+			LOGGER.error("No image extension match the extension '" + extension
 					+ "' for the request URI : " + requestUri);
 			return null;
 		}
@@ -508,30 +564,31 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		OutputStream os = response.getOutputStream();
 		InputStream is = null;
 
-		if (!jawrConfig.getGeneratorRegistry().isGeneratedImage(fileName)
-				&& !fileName.startsWith("/")) {
-			fileName = "/" + fileName;
+		String resourceName = fileName;
+		if (!jawrConfig.getGeneratorRegistry().isGeneratedImage(resourceName)
+				&& !resourceName.startsWith("/")) {
+			resourceName = "/" + resourceName;
 		}
 
 		try {
-			is = rsReaderHandler.getResourceAsStream(fileName);
+			is = rsReaderHandler.getResourceAsStream(resourceName);
 		} catch (ResourceNotFoundException e) {
 			// Nothing to do here
 		}
 
 		if (is == null) {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			if (log.isInfoEnabled())
-				log
+			if (LOGGER.isInfoEnabled())
+				LOGGER
 						.info("Received a request for a non existing image resource: "
-								+ fileName);
+								+ resourceName);
 			return;
 		}
 
 		try {
 			IOUtils.copy(is, os);
 		} catch (EOFException eofex) {
-			log.debug("Browser cut off response", eofex);
+			LOGGER.debug("Browser cut off response", eofex);
 		}
 		finally{
 			IOUtils.close(is);
@@ -547,10 +604,12 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 */
 	private String getRealFilePath(String fileName) {
 
-		if (fileName.startsWith("/")) {
-			fileName = fileName.substring(1);
+		String realFilePath = fileName;
+		if (realFilePath.startsWith("/")) {
+			realFilePath = realFilePath.substring(1);
 		}
-		Matcher matcher = cacheBusterPattern.matcher(fileName);
+		
+		Matcher matcher = cacheBusterPattern.matcher(realFilePath);
 		StringBuffer result = new StringBuffer();
 		if (matcher.find()) {
 			matcher
@@ -562,7 +621,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 			return result.toString();
 		}
 
-		return fileName;
+		return realFilePath;
 	}
 
 }

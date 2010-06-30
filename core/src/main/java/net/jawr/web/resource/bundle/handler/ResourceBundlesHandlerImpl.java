@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2007-2010 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -13,11 +13,13 @@
  */
 package net.jawr.web.resource.bundle.handler;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.channels.Channels;
@@ -25,16 +27,18 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
+import java.util.zip.GZIPOutputStream;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.context.ThreadLocalJawrContext;
+import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.bundle.CompositeResourceBundle;
@@ -43,18 +47,20 @@ import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.JoinableResourceBundleContent;
 import net.jawr.web.resource.bundle.JoinableResourceBundlePropertySerializer;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
-import net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessor;
 import net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessingContext;
+import net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessor;
+import net.jawr.web.resource.bundle.hashcode.BundleHashcodeGenerator;
 import net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler;
 import net.jawr.web.resource.bundle.iterator.DebugModePathsIteratorImpl;
 import net.jawr.web.resource.bundle.iterator.PathsIteratorImpl;
 import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
-import net.jawr.web.resource.bundle.locale.LocaleUtils;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.sorting.GlobalResourceBundleComparator;
+import net.jawr.web.resource.bundle.variant.VariantUtils;
 import net.jawr.web.resource.handler.bundle.ResourceBundleHandler;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
+import net.jawr.web.util.StringUtils;
 
 import org.apache.log4j.Logger;
 
@@ -67,7 +73,7 @@ import org.apache.log4j.Logger;
 public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 
 	/** The logger */
-	private static final Logger log = Logger
+	private static final Logger LOGGER = Logger
 			.getLogger(ResourceBundlesHandler.class);
 
 	/**
@@ -85,6 +91,11 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 */
 	private List contextBundles;
 
+	/**
+	 * The bundles that will be processed once when the server will be up and running.
+	 */
+	private List liveProcessBundles = new ArrayList();
+	
 	/** The resource handler */
 	private ResourceReaderHandler resourceHandler;
 
@@ -100,12 +111,21 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	/** The unitary post processor */
 	private ResourceBundlePostProcessor unitaryPostProcessor;
 
+	/** The post processor for composite bundle */
+	private ResourceBundlePostProcessor compositePostProcessor;
+
+	/** The unitary post processor for composite bundle */
+	private ResourceBundlePostProcessor unitaryCompositePostProcessor;
+
 	/** The resourceTypeBundle processor */
 	private GlobalPreprocessor resourceTypeProcessor;
 
 	/** The client side handler generator */
 	private ClientSideHandlerGenerator clientSideHandlerGenerator;
 
+	/** The bundle hashcode generator */
+	private BundleHashcodeGenerator bundleHashcodeGenerator;
+	
 	/** The bundle mapping */
 	private Properties bundleMapping;
 
@@ -123,7 +143,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			ResourceReaderHandler resourceHandler,
 			ResourceBundleHandler resourceBundleHandler, JawrConfig config) {
 		this(bundles, resourceHandler, resourceBundleHandler, config, null,
-				null, null);
+				null, null, null, null);
 	}
 
 	/**
@@ -143,13 +163,18 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			ResourceBundleHandler resourceBundleHandler, JawrConfig config,
 			ResourceBundlePostProcessor postProcessor,
 			ResourceBundlePostProcessor unitaryPostProcessor,
+			ResourceBundlePostProcessor compositePostProcessor,
+			ResourceBundlePostProcessor unitaryCompositePostProcessor,
 			GlobalPreprocessor resourceTypeProcessor) {
 		super();
 		this.resourceHandler = resourceHandler;
 		this.resourceBundleHandler = resourceBundleHandler;
 		this.config = config;
+		this.bundleHashcodeGenerator = config.getBundleHashcodeGenerator();
 		this.postProcessor = postProcessor;
 		this.unitaryPostProcessor = unitaryPostProcessor;
+		this.compositePostProcessor = compositePostProcessor;
+		this.unitaryCompositePostProcessor = unitaryCompositePostProcessor;
 		this.resourceTypeProcessor = resourceTypeProcessor;
 		this.bundles = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 		this.bundles.addAll(bundles);
@@ -238,10 +263,10 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 			boolean debugMode,
 			ConditionalCommentCallbackHandler commentCallbackHandler,
-			String variantKey) {
+			Map variants) {
 
 		return getBundleIterator(debugMode, globalBundles,
-				commentCallbackHandler, variantKey);
+				commentCallbackHandler, variants);
 	}
 
 	/*
@@ -254,10 +279,10 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 */
 	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 			ConditionalCommentCallbackHandler commentCallbackHandler,
-			String variantKey) {
+			Map variants) {
 
 		return getBundleIterator(getConfig().isDebugModeOn(), globalBundles,
-				commentCallbackHandler, variantKey);
+				commentCallbackHandler, variants);
 	}
 
 	/*
@@ -271,7 +296,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 			String bundleId,
 			ConditionalCommentCallbackHandler commentCallbackHandler,
-			String variantKey) {
+			Map variants) {
 
 		List bundles = new ArrayList();
 		for (Iterator it = globalBundles.iterator(); it.hasNext();) {
@@ -282,7 +307,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			}
 		}
 		return getBundleIterator(getConfig().isDebugModeOn(), bundles,
-				commentCallbackHandler, variantKey);
+				commentCallbackHandler, variants);
 	}
 
 	/*
@@ -294,10 +319,10 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 */
 	public ResourceBundlePathsIterator getBundlePaths(String bundleId,
 			ConditionalCommentCallbackHandler commentCallbackHandler,
-			String variantKey) {
+			Map variants) {
 
 		return getBundlePaths(getConfig().isDebugModeOn(), bundleId,
-				commentCallbackHandler, variantKey);
+				commentCallbackHandler, variants);
 	}
 
 	/*
@@ -312,7 +337,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	public ResourceBundlePathsIterator getBundlePaths(boolean debugMode,
 			String bundleId,
 			ConditionalCommentCallbackHandler commentCallbackHandler,
-			String variantKey) {
+			Map variants) {
 
 		List bundles = new ArrayList();
 
@@ -331,7 +356,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		}
 
 		return getBundleIterator(debugMode, bundles, commentCallbackHandler,
-				variantKey);
+				variants);
 	}
 
 	/**
@@ -341,21 +366,21 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 *            the flag indicating if we are in debug mode or not
 	 * @param commentCallbackHandler
 	 *            the comment callback handler
-	 * @param variantKey
-	 *            the variant key
+	 * @param variants
+	 *            the variant map
 	 * @return the bundle iterator
 	 */
 	private ResourceBundlePathsIterator getBundleIterator(boolean debugMode,
 			List bundles,
 			ConditionalCommentCallbackHandler commentCallbackHandler,
-			String variantKey) {
+			Map variants) {
 		ResourceBundlePathsIterator bundlesIterator;
 		if (debugMode) {
 			bundlesIterator = new DebugModePathsIteratorImpl(bundles,
-					commentCallbackHandler, variantKey);
+					commentCallbackHandler, variants);
 		} else
 			bundlesIterator = new PathsIteratorImpl(bundles,
-					commentCallbackHandler, variantKey);
+					commentCallbackHandler, variants);
 		return bundlesIterator;
 	}
 
@@ -371,25 +396,49 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 
 		Reader rd = null;
 
-		// If debug mode is on, resources are retrieved one by one.
-		if (config.isDebugModeOn()) {
-
-			rd = resourceHandler.getResource(bundlePath);
-		} else {
-			// Prefixes are used only in production mode
-			bundlePath = PathNormalizer.removeVariantPrefixFromPath(bundlePath);
-			rd = resourceBundleHandler.getResourceBundleReader(bundlePath);
-		}
-
 		try {
+			
+			// If debug mode is on, resources are retrieved one by one.
+			if (config.isDebugModeOn()) {
+
+				rd = resourceHandler.getResource(bundlePath);
+			} else {
+				// Prefixes are used only in production mode
+				String path = PathNormalizer.removeVariantPrefixFromPath(bundlePath);
+				rd = resourceBundleHandler.getResourceBundleReader(path);
+				if(liveProcessBundles.contains(path)){
+					rd = processInLive(rd);
+				}
+			}
+			
 			IOUtils.copy(rd, writer);
 			writer.flush();
 		} catch (IOException e) {
-			throw new RuntimeException("Unexpected IOException writing bundle["
+			throw new BundlingProcessException("Unexpected IOException writing bundle["
 					+ bundlePath + "]", e);
 		}finally{
 			IOUtils.close(rd);
 		}
+	}
+
+	/**
+	 * Process the bundle content in live
+	 * @param reader the reader
+	 * @return the processed bundle content
+	 * @throws IOException if an IOException occured
+	 */
+	private StringReader processInLive(Reader reader)
+			throws IOException {
+		
+		String requestURL = ThreadLocalJawrContext.getRequestURL();
+		StringWriter swriter = new StringWriter(); 
+		IOUtils.copy(reader, swriter, true);
+		String updatedContent = swriter.getBuffer().toString();
+		if(requestURL != null){
+			
+			updatedContent = updatedContent.replaceAll(JawrConstant.JAWR_BUNDLE_PATH_PLACEHOLDER_PATTERN, requestURL);
+		}
+		return new StringReader(updatedContent);
 	}
 
 	/*
@@ -403,18 +452,36 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			throws ResourceNotFoundException {
 
 		// Remove prefix, which are used only in production mode
-		bundlePath = PathNormalizer.removeVariantPrefixFromPath(bundlePath);
+		String path = PathNormalizer.removeVariantPrefixFromPath(bundlePath);
 		ReadableByteChannel data = null;
 		try {
-
-			data = resourceBundleHandler
-					.getResourceBundleChannel(bundlePath);
+			if(liveProcessBundles.contains(path)){
+				
+				Reader rd = resourceBundleHandler.getResourceBundleReader(path);
+				StringReader strRd = processInLive(rd);
+				StringWriter strWriter = new StringWriter();
+				IOUtils.copy(strRd, strWriter);
+				
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				GZIPOutputStream gzOut = new GZIPOutputStream(bos);
+				byte[] byteData = strWriter.getBuffer().toString().getBytes(
+						config.getResourceCharset().name());
+				gzOut.write(byteData, 0, byteData.length);
+				gzOut.close();
+				ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+				data = Channels.newChannel(bis);
+			
+			}else{
+				data = resourceBundleHandler.getResourceBundleChannel(path);
+			}
+			
+			
 			WritableByteChannel outChannel = Channels.newChannel(out);
 			IOUtils.copy(data, outChannel);
-
+		
 		} catch (IOException e) {
-			throw new RuntimeException(
-					"Unexpected IOException writing bundle [" + bundlePath
+			throw new BundlingProcessException(
+					"Unexpected IOException writing bundle [" + path
 							+ "]", e);
 		}finally{
 			IOUtils.close(data);
@@ -460,8 +527,8 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			boolean processBundle = processBundleFlag;
 			if (!ThreadLocalJawrContext.isBundleProcessingAtBuildTime()
 					&& null != bundle.getAlternateProductionURL()) {
-				if (log.isDebugEnabled()) {
-					log
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER
 							.debug("No bundle generated for '"
 									+ bundle.getId()
 									+ "' because a production URL is defined for this bundle.");
@@ -529,57 +596,113 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 */
 	private void joinAndStoreCompositeResourcebundle(
 			CompositeResourceBundle composite, boolean processBundle) {
-		JoinableResourceBundleContent store = null;
 
+		BundleProcessingStatus status = new BundleProcessingStatus(BundleProcessingStatus.FILE_PROCESSING_TYPE, composite,
+				resourceHandler, config);
+		
 		// Collect all variant names from child bundles
-		Set variants = new HashSet();
+		Map compositeBundleVariants = new HashMap();
 		for (Iterator it = composite.getChildBundles().iterator(); it.hasNext();) {
 			JoinableResourceBundle childbundle = (JoinableResourceBundle) it
 					.next();
-			if (null != childbundle.getLocaleVariantKeys())
-				variants.addAll(childbundle.getLocaleVariantKeys());
+			if (null != childbundle.getVariants())
+				compositeBundleVariants = VariantUtils.concatVariants(compositeBundleVariants, childbundle.getVariants());
 		}
+		composite.setVariants(compositeBundleVariants);
+		status.setSearchingPostProcessorVariants(true);
+		joinAndPostProcessBundle(composite, status, processBundle);
 
+		Map postProcessVariants = status.getPostProcessVariants();
+		if(!postProcessVariants.isEmpty()){
+			if(LOGGER.isDebugEnabled()){
+				LOGGER.debug("Post process variants found for bundle "+composite.getId()+":"+ postProcessVariants);
+			}
+			Map newVariants =  VariantUtils.concatVariants(composite.getVariants(), postProcessVariants);
+			composite.setVariants(newVariants);
+			status.setSearchingPostProcessorVariants(false);
+			joinAndPostProcessBundle(composite, status, processBundle);
+		}
+		
+	}
+
+	/**
+	 * Joins and post process the variant composite bundle
+	 * @param composite the composite bundle
+	 * @param status the status
+	 * @param compositeBundleVariants the variants
+	 * @param processBundle the flag indicating if we must process the bundle or not.
+	 */
+	private void joinAndPostProcessBundle(CompositeResourceBundle composite,
+			BundleProcessingStatus status, boolean processBundle) {
+		JoinableResourceBundleContent store;
+		
+		List allVariants = VariantUtils.getAllVariants(composite.getVariants());
+		// Add the default bundle variant (the non variant one)
+		allVariants.add(null);
 		// Process all variants
-		for (Iterator vars = variants.iterator(); vars.hasNext();) {
+		for (Iterator vars = allVariants.iterator(); vars.hasNext();) {
 
-			String variant = (String) vars.next();
+			Map variants = (Map) vars.next();
+			status.setBundleVariants(variants);
 			store = new JoinableResourceBundleContent();
 			for (Iterator it = composite.getChildBundles().iterator(); it
 					.hasNext();) {
 				JoinableResourceBundle childbundle = (JoinableResourceBundle) it
 						.next();
-				store.append(joinandPostprocessBundle(childbundle, variant,
-						processBundle));
+				
+				JoinableResourceBundleContent childContent = joinAndPostprocessBundle(childbundle, variants,
+						status, processBundle);
+				// Do unitary postprocessing.
+				status.setProcessingType(BundleProcessingStatus.FILE_PROCESSING_TYPE);
+				StringBuffer content = executeUnitaryPostProcessing(composite, status, childContent.getContent(), this.unitaryCompositePostProcessor);
+				childContent.setContent(content);
+				store.append(childContent);
 			}
-
+			
+			// Post process composite bundle as needed
+			store = postProcessJoinedCompositeBundle(composite, store.getContent(), status);
+			
 			if (processBundle) {
-				String name = LocaleUtils.getLocalizedBundleName(composite
-						.getId(), variant);
-				resourceBundleHandler.storeBundle(name, store);
-				initBundleDataHashcode(composite, store, variant);
+				
+				String variantKey = VariantUtils.getVariantKey(variants);
+				String name = VariantUtils.getVariantBundleName(composite
+						.getId(), variantKey);
+				storeBundle(name, store);
+				initBundleDataHashcode(composite, store, variantKey);
 			}
 		}
+	}
 
-		// Create the default bundle (the non variant one)
-		store = new JoinableResourceBundleContent();
-		for (Iterator it = composite.getChildBundles().iterator(); it.hasNext();) {
-			JoinableResourceBundle childbundle = (JoinableResourceBundle) it
-					.next();
-			store.append(joinandPostprocessBundle(childbundle, null,
-					processBundle));
+	/**
+	 * Postprocess the composite bundle only if a composite bundle post processor is defined
+	 * @param composite the composite bundle
+	 * @param content the content
+	 * @param status the status
+	 * @return the content
+	 */
+	private JoinableResourceBundleContent postProcessJoinedCompositeBundle(CompositeResourceBundle composite,
+			StringBuffer content, BundleProcessingStatus status) {
+		
+		JoinableResourceBundleContent store = new JoinableResourceBundleContent();
+		StringBuffer processedContent = null;
+		status.setProcessingType(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE);
+		ResourceBundlePostProcessor bundlePostProcessor = composite.getBundlePostProcessor();
+		if (null != bundlePostProcessor){
+			
+			processedContent = bundlePostProcessor.postProcessBundle(
+					status, content);
 		}
-
-		// Store the collected resources as a single file, both in text and gzip
-		// formats.
-		if (processBundle) {
-
-			resourceBundleHandler.storeBundle(composite.getId(), store);
-			// Set the data hascode in the bundle, in case the prefix needs to
-			// be generated
-			initBundleDataHashcode(composite, store, null);
+		else if (null != this.compositePostProcessor){
+			
+			processedContent = this.compositePostProcessor.postProcessBundle(status, content);
 		}
-
+		else{
+			processedContent = content;
+		}
+		
+		store.setContent(processedContent);
+		
+		return store;
 	}
 
 	/**
@@ -592,11 +715,35 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 *            the data to store
 	 */
 	private void initBundleDataHashcode(JoinableResourceBundle bundle,
-			JoinableResourceBundleContent store, String localeVariant) {
-		int bundleHashcode = store.toString().hashCode();
-		bundle.setBundleDataHashCode(localeVariant, bundleHashcode);
+			JoinableResourceBundleContent store, String variant) {
+		
+		String bundleHashcode = bundleHashcodeGenerator.generateHashCode(config, store.toString());
+		bundle.setBundleDataHashCode(variant, bundleHashcode);
 	}
 
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#containsValidBundleHashcode(java.lang.String)
+	 */
+	public boolean containsValidBundleHashcode(String requestedPath) {
+		
+		boolean validHashcode = false;
+		
+		String[] pathInfos = PathNormalizer.extractBundleInfoFromPath(requestedPath);
+		String bundleId = pathInfos[0];
+		String variantKey = pathInfos[1];
+		String hashcode = pathInfos[2];
+		
+		JoinableResourceBundle bundle = resolveBundleForPath(bundleId);
+		if(bundle != null){
+			String bundleHashcode = bundle.getBundleDataHashCode(variantKey);
+			if(hashcode == null && bundleHashcode == null ||
+					hashcode!= null && hashcode.equals(bundleHashcode)){
+				validHashcode = true;
+			}
+		}
+		return validHashcode;
+	}
+	
 	/**
 	 * Joins the members of a bundle and stores it
 	 * 
@@ -610,25 +757,29 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		
 		if(processBundle){
 			
+			BundleProcessingStatus status = new BundleProcessingStatus(BundleProcessingStatus.FILE_PROCESSING_TYPE, bundle,
+					resourceHandler, config);
 			JoinableResourceBundleContent store = null;
-			// Process the locale specific variants
-			if (null != bundle.getLocaleVariantKeys()) {
-				for (Iterator it = bundle.getLocaleVariantKeys().iterator(); it
-						.hasNext();) {
-					String variantKey = (String) it.next();
-					String name = LocaleUtils.getLocalizedBundleName(bundle
-							.getId(), variantKey);
-					store = joinandPostprocessBundle(bundle, variantKey,
-							processBundle);
-					resourceBundleHandler.storeBundle(name, store);
-					initBundleDataHashcode(bundle, store, variantKey);
+			
+			// Process the bundle
+			status.setSearchingPostProcessorVariants(true);
+			joinAndPostProcessBundle(bundle, status, processBundle);
+			
+			Map postProcessVariants = status.getPostProcessVariants();
+			if(!postProcessVariants.isEmpty()){
+				if(LOGGER.isDebugEnabled()){
+					LOGGER.debug("Post process variants found for bundle "+bundle.getId()+":"+ postProcessVariants);
 				}
+				Map newVariants =  VariantUtils.concatVariants(bundle.getVariants(), postProcessVariants);
+				bundle.setVariants(newVariants);
+				status.setSearchingPostProcessorVariants(false);
+				joinAndPostProcessBundle(bundle, status, processBundle);
 			}
-
+			
 			// Store the collected resources as a single file, both in text and gzip
 			// formats.
-			store = joinandPostprocessBundle(bundle, null, processBundle);
-			resourceBundleHandler.storeBundle(bundle.getId(), store);
+			store = joinAndPostprocessBundle(bundle, null, status, processBundle);
+			storeBundle(bundle.getId(), store);
 			// Set the data hascode in the bundle, in case the prefix needs to
 			// be generated
 			initBundleDataHashcode(bundle, store, null);
@@ -637,21 +788,74 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	}
 
 	/**
+	 * Store the bundle
+	 * @param bundleId the bundle Id to store
+	 * @param store the bundle
+	 */
+	private void storeBundle(String bundleId,
+			JoinableResourceBundleContent store) {
+		
+		if(bundleMustBeProcessedInLive(store.getContent().toString())){
+			liveProcessBundles.add(bundleId);
+		}
+		resourceBundleHandler.storeBundle(bundleId, store);
+	}
+
+	/**
+	 * Checks if the bundle must be processed in live
+	 * @param the bundle content 
+	 * @return true if the bundle must be processed in live
+	 */
+	private boolean bundleMustBeProcessedInLive(
+			String content) {
+		return content.indexOf(JawrConstant.JAWR_BUNDLE_PATH_PLACEHOLDER) != -1;
+	}
+
+	/**
+	 * Join and post process the bundle taking in account all its variants.
+	 * @param bundle the bundle
+	 * @param status the bundle processing status
+	 * @param processBundle the flag indicating if we must process the bundle or not
+	 */
+	private void joinAndPostProcessBundle(JoinableResourceBundle bundle,
+			BundleProcessingStatus status, boolean processBundle) {
+		
+		JoinableResourceBundleContent store;
+		List allVariants = VariantUtils.getAllVariants(bundle.getVariants());
+		// Add the default bundle variant (the non variant one)
+		allVariants.add(null);
+		
+		for (Iterator it = allVariants.iterator(); it
+				.hasNext();) {
+			Map variantMap = (Map) it.next();
+			status.setBundleVariants(variantMap);
+			String variantKey = VariantUtils.getVariantKey(variantMap);
+			String name = VariantUtils.getVariantBundleName(bundle
+					.getId(), variantKey);
+			store = joinAndPostprocessBundle(bundle, variantMap,
+					status, processBundle);
+			storeBundle(name, store);
+			initBundleDataHashcode(bundle, store, variantKey);
+		}
+	}
+	
+	/**
 	 * Reads all the members of a bundle and executes all associated
 	 * postprocessors.
 	 * 
 	 * @param bundle
 	 *            the bundle
-	 * @param variantKey
-	 *            the variant key
+	 * @param variants
+	 *            the variant map
+	 * @param the bundling processing status           
 	 * @param the
 	 *            flag indicating if we should process the bundle or not
 	 * @return the resource bundle content, where all postprocessors have been
 	 *         executed
 	 */
-	private JoinableResourceBundleContent joinandPostprocessBundle(
-			JoinableResourceBundle bundle, String variantKey,
-			boolean processBundle) {
+	private JoinableResourceBundleContent joinAndPostprocessBundle(
+			JoinableResourceBundle bundle, Map variants,
+			BundleProcessingStatus status, boolean processBundle) {
 
 		JoinableResourceBundleContent bundleContent = new JoinableResourceBundleContent();
 
@@ -667,12 +871,9 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		StringBuffer bundleData = new StringBuffer();
 		StringBuffer store = null;
 
-		BundleProcessingStatus status = new BundleProcessingStatus(bundle,
-				resourceHandler, config);
-
 		try {
 			// Run through all the files belonging to the bundle
-			for (Iterator it = bundle.getItemPathList(variantKey).iterator(); it
+			for (Iterator it = bundle.getItemPathList(variants).iterator(); it
 					.hasNext();) {
 
 				// File is first created in memory using a stringwriter.
@@ -680,8 +881,8 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 				BufferedWriter bwriter = new BufferedWriter(writer);
 
 				String path = (String) it.next();
-				if (log.isDebugEnabled())
-					log.debug("Adding file [" + path + "] to bundle "
+				if (LOGGER.isDebugEnabled())
+					LOGGER.debug("Adding file [" + path + "] to bundle "
 							+ bundle.getId());
 
 				// Get a reader on the resource, with appropiate encoding
@@ -692,7 +893,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 				} catch (ResourceNotFoundException e) {
 					// If a mapped file does not exist, a warning is issued and
 					// process continues normally.
-					log.warn("A mapped resource was not found: [" + path
+					LOGGER.warn("A mapped resource was not found: [" + path
 							+ "]. Please check your configuration");
 					continue;
 				}
@@ -700,54 +901,86 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 				// Update the status.
 				status.setLastPathAdded(path);
 
-				// Make a buffered reader, to read line by line.
-				BufferedReader bRd = new BufferedReader(rd);
-				String line;
-
-				// Write each line and the corresponding new line.
-				while ((line = bRd.readLine()) != null) {
-					bwriter.write(line);
-					bwriter.newLine();
+				// Copy the content
+				IOUtils.copy(rd, bwriter, true);
+				
+				// Add new line at the end if it doesn't exist
+				if(!writer.getBuffer().toString().endsWith(StringUtils.LINE_SEPARATOR)){
+					writer.getBuffer().append(StringUtils.LINE_SEPARATOR);
 				}
-				bRd.close();
-				bwriter.close();
-
+				
 				// Do unitary postprocessing.
-				if (null != bundle.getUnitaryPostProcessor()) {
-					StringBuffer resourceData = bundle
-							.getUnitaryPostProcessor().postProcessBundle(
-									status, writer.getBuffer());
-
-					bundleData.append(resourceData);
-				} else if (null != this.unitaryPostProcessor) {
-					if (log.isDebugEnabled())
-						log.debug("POSTPROCESSING UNIT:"
-								+ status.getLastPathAdded());
-					StringBuffer resourceData = this.unitaryPostProcessor
-							.postProcessBundle(status, writer.getBuffer());
-					bundleData.append(resourceData);
-				} else
-					bundleData.append(writer.getBuffer());
+				status.setProcessingType(BundleProcessingStatus.FILE_PROCESSING_TYPE);
+				bundleData.append(executeUnitaryPostProcessing(bundle, status, writer.getBuffer(), this.unitaryPostProcessor));
 			}
 
 			// Post process bundle as needed
-			if (null != bundle.getBundlePostProcessor())
-				store = bundle.getBundlePostProcessor().postProcessBundle(
-						status, bundleData);
-			else if (null != this.postProcessor)
-				store = this.postProcessor
-						.postProcessBundle(status, bundleData);
-			else
-				store = bundleData;
+			store = executeBundlePostProcessing(bundle, status, bundleData);
 
 		} catch (IOException e) {
-			throw new RuntimeException(
+			throw new BundlingProcessException(
 					"Unexpected IOException generating collected file ["
 							+ bundle.getId() + "].", e);
 		}
 
 		bundleContent.setContent(store);
 		return bundleContent;
+	}
+
+	/**
+	 * Executes the unitary resource post processing
+	 * @param bundle the bundle
+	 * @param status the bundle processing status
+	 * @param content the content to process
+	 * @return the processed content
+	 */
+	private StringBuffer executeUnitaryPostProcessing(JoinableResourceBundle bundle,
+			BundleProcessingStatus status, StringBuffer content, ResourceBundlePostProcessor defaultPostProcessor) {
+		
+		StringBuffer bundleData = new StringBuffer();
+		status.setProcessingType(BundleProcessingStatus.FILE_PROCESSING_TYPE);
+		if (null != bundle.getUnitaryPostProcessor()) {
+			StringBuffer resourceData = bundle
+					.getUnitaryPostProcessor().postProcessBundle(
+							status, content);
+
+			bundleData.append(resourceData);
+		} else if (null != defaultPostProcessor) {
+			if (LOGGER.isDebugEnabled())
+				LOGGER.debug("POSTPROCESSING UNIT:"
+						+ status.getLastPathAdded());
+			StringBuffer resourceData = defaultPostProcessor
+					.postProcessBundle(status, content);
+			bundleData.append(resourceData);
+		} else{
+			bundleData = content;
+		}
+		
+		return bundleData;
+	}
+
+	/**
+	 * Execute the bundle post processing
+	 * @param bundle the bundle
+	 * @param status the status
+	 * @param bundleData the bundle data
+	 * @return the processed content
+	 */
+	private StringBuffer executeBundlePostProcessing(
+			JoinableResourceBundle bundle, BundleProcessingStatus status,
+			StringBuffer bundleData) {
+		
+		StringBuffer store;
+		status.setProcessingType(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE);
+		if (null != bundle.getBundlePostProcessor())
+			store = bundle.getBundlePostProcessor().postProcessBundle(
+					status, bundleData);
+		else if (null != this.postProcessor)
+			store = this.postProcessor
+					.postProcessBundle(status, bundleData);
+		else
+			store = bundleData;
+		return store;
 	}
 
 	/*
@@ -778,5 +1011,5 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	public ClientSideHandlerGenerator getClientSideHandler() {
 		return this.clientSideHandlerGenerator;
 	}
-
+	
 }

@@ -54,7 +54,6 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.factory.util.PropsFilePropertiesSource;
 import net.jawr.web.resource.bundle.factory.util.ServletContextAware;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
-import net.jawr.web.resource.bundle.generator.ResourceGenerator;
 import net.jawr.web.resource.bundle.handler.ClientSideHandlerScriptRequestHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
@@ -79,7 +78,7 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	private static final long serialVersionUID = 5762937687546882131L;
 
 	/** The logger */
-	private static final Logger log = Logger.getLogger(JawrRequestHandler.class);
+	private static final Logger LOGGER = Logger.getLogger(JawrRequestHandler.class);
 
 	/** The cache control header parameter name */
 	protected static final String CACHE_CONTROL_HEADER = "Cache-Control";
@@ -120,12 +119,6 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	/** The generated image pattern */
 	private static final Pattern GENERATED_IMG_PATTERN = Pattern.compile("(url\\(([\"' ]*))(([a-zA-Z]+)(?! (http|data)):(/)?)([^\\)\"']*)([\"']?\\))");
 
-	/** The URL separator pattern */
-	private static final Pattern URL_SEPARATOR_PATTERN = Pattern.compile("([^/]*)/");
-
-	/** The pattern to go to the root */
-	private static final String ROOT_REPLACE_PATTERN = "../";
-
 	/** The resource bundles handler */
 	protected ResourceBundlesHandler bundlesHandler;
 	
@@ -165,6 +158,9 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	/** The image MIME map, associating the image extension to their MIME type */
 	protected Map imgMimeMap;
 	
+	/** The handler for the illegal bundle request */
+	protected IllegalBundleRequestHandler illegalBundleRequestHandler;
+	
 	/**
 	 * Reads the properties file and initializes all configuration using the ServletConfig object. If applicable, a ConfigChangeListenerThread will be
 	 * started to listen to changes in the properties configuration.
@@ -182,8 +178,8 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 		}
 		initParameters.put("handlerName", config.getServletName());
 
-		if (log.isInfoEnabled())
-			log.info("Initializing jawr config for servlet named " + config.getServletName());
+		if (LOGGER.isInfoEnabled())
+			LOGGER.info("Initializing jawr config for servlet named " + config.getServletName());
 		
 		initRequestHandler(context, null);
 
@@ -213,8 +209,8 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	private void initRequestHandler(ServletContext context, Properties configProps) throws ServletException {
 		
 		long initialTime = System.currentTimeMillis();
-		if (log.isInfoEnabled())
-			log.info("Initializing jawr config for request handler named " + getInitParameter("handlerName"));
+		if (LOGGER.isInfoEnabled())
+			LOGGER.info("Initializing jawr config for request handler named " + getInitParameter("handlerName"));
 
 		this.imgMimeMap = MIMETypesSupport.getSupportedProperties(this);
 		this.servletContext = context;
@@ -259,9 +255,6 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 			props.putAll(overrideProperties);
 		}
 		
-		// init registry
-		generatorRegistry = new GeneratorRegistry(resourceType);
-
 		// hang onto the propertiesSource for manual reloads
 		this.propertiesSource = propsSrc;
 
@@ -271,7 +264,7 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 		// Initialize the properties reloading checker daemon if specified
 		if(!ThreadLocalJawrContext.isBundleProcessingAtBuildTime() && null != props.getProperty(CONFIG_RELOAD_INTERVAL)) {
 			int interval = Integer.valueOf(props.getProperty(CONFIG_RELOAD_INTERVAL)).intValue();
-			log.warn("Jawr started with configuration auto reloading on. "
+			LOGGER.warn("Jawr started with configuration auto reloading on. "
 					+ "Be aware that a daemon thread will be checking for changes to configuration every " + interval + " seconds.");
 
 			this.configChangeListenerThread = new ConfigChangeListenerThread(propsSrc, this.overrideProperties, 
@@ -280,13 +273,13 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 		}
 
 		// initialize the jmx Bean
-		if(isJmxEnabled()){
+		if(JmxUtils.isJmxEnabled()){
 				JmxUtils.initJMXBean(this, servletContext, resourceType, jawrConfig.getConfigProperties());
 		}
 		
-		if (log.isInfoEnabled()) {
+		if (LOGGER.isInfoEnabled()) {
 			long totaltime = System.currentTimeMillis() - initialTime;
-			log.info("Init method succesful. jawr started in " + (totaltime / 1000) + " seconds....");
+			LOGGER.info("Init method succesful. jawr started in " + (totaltime / 1000) + " seconds....");
 		}
 	}
 
@@ -300,24 +293,21 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	}
 	
 	/**
-	 * Returns true if JMX is enabled for the applcation
-	 * @return true if JMX is enabled for the applcation
-	 */
-	private boolean isJmxEnabled() {
-		return System.getProperty(JawrConstant.JMX_ENABLE_FLAG_SYSTEL_PROPERTY) != null;
-	}
-
-	/**
 	 * Initialize the Jawr config
 	 * 
 	 * @param props the properties
 	 * @throws ServletException if an exception occurs
 	 */
 	protected void initializeJawrConfig(Properties props) throws ServletException {
-		// Initialize config
-		if (null != jawrConfig)
-			jawrConfig.invalidate();
+		
+		// init registry
+		generatorRegistry = new GeneratorRegistry(resourceType);
 
+		// Initialize config
+		if (null != jawrConfig){
+			jawrConfig.invalidate();
+		}
+		
 		createJawrConfig(props);
 		
 		jawrConfig.setContext(servletContext);
@@ -336,17 +326,20 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 		if (jawrConfig.isCssClasspathImageHandledByClasspathCss() && resourceType.equals("css")) {
 			ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) servletContext.getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
 			if (imgRsHandler == null) {
-				log.error("You are using the CSS classpath image feature, but the JAWR Image servlet is yet initialized.\n"
+				LOGGER.error("You are using the CSS classpath image feature, but the JAWR Image servlet is yet initialized.\n"
 						+ "The JAWR Image servlet must be initialized before the JAWR CSS servlet.\n"
 						+ "Please check you web application configuration.");
 			}
 		}
 
-		if (log.isDebugEnabled()) {
-			log.debug("Configuration read. Current config:");
-			log.debug(jawrConfig);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Configuration read. Current config:");
+			LOGGER.debug(jawrConfig);
 		}
 
+		// Initialize the IllegalBundleRequest handler
+		initIllegalBundleRequestHandler();
+		
 		// Create a resource handler to read files from the WAR archive or exploded dir.
 		rsReaderHandler = initResourceReaderHandler();
 		ResourceBundleHandler rsBundleHandler = initResourceBundleHandler();
@@ -367,13 +360,25 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 
 		this.clientSideScriptRequestHandler = new ClientSideHandlerScriptRequestHandler(bundlesHandler, jawrConfig);
 
-		if (log.isDebugEnabled()) {
-			log.debug("content type set to: " + contentType);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("content type set to: " + contentType);
 		}
 
 		// Warn when in debug mode
 		if (jawrConfig.isDebugModeOn()) {
-			log.warn("Jawr initialized in DEVELOPMENT MODE. Do NOT use this mode in production or integration servers. ");
+			LOGGER.warn("Jawr initialized in DEVELOPMENT MODE. Do NOT use this mode in production or integration servers. ");
+		}
+	}
+
+	/**
+	 * Initialize the illegal bundle request handler  
+	 */
+	protected void initIllegalBundleRequestHandler() {
+		String illegalBundleRequestandlerClassName = jawrConfig.getProperty(JawrConstant.ILLEGAL_BUNDLE_REQUEST_HANDLER);
+		if(illegalBundleRequestandlerClassName != null){
+			illegalBundleRequestHandler = (IllegalBundleRequestHandler) ClassLoaderResourceUtils.buildObjectInstance(illegalBundleRequestandlerClassName);
+		}else{
+			illegalBundleRequestHandler = new IllegalBundleRequestHandlerImpl();
 		}
 	}
 
@@ -437,29 +442,18 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		try{
-			// Initialize the Thread local for the Jawr context
-			if(isJmxEnabled()){
-				ThreadLocalJawrContext.setJawrConfigMgrObjectName(JmxUtils.getMBeanObjectName(request.getContextPath(), resourceType));
-			}
-			
-			RendererRequestUtils.setRequestDebuggable(request, jawrConfig);
 			
 			String requestedPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
 			processRequest(requestedPath, request, response);
 			
 		} catch (Exception e) {
 			
-			if (log.isDebugEnabled()){
-				log.debug("ServletException : ", e);
+			if (LOGGER.isDebugEnabled()){
+				LOGGER.debug("ServletException : ", e);
 			}
 			
 			throw new ServletException(e);
-		}finally{
-			
-			// Reset the Thread local for the Jawr context
-			ThreadLocalJawrContext.reset();
 		}
-		
 	}
 
 	/**
@@ -480,117 +474,256 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	 */
 	public void processRequest(String requestedPath, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		// manual reload request
-		if (this.jawrConfig.getRefreshKey().length() > 0 && null != request.getParameter("refreshKey")
-				&& this.jawrConfig.getRefreshKey().equals(request.getParameter("refreshKey"))) {
-			this.configChanged(propertiesSource.getConfigProperties());
+		try{
+			// Initialize the Thread local for the Jawr context
+			if(JmxUtils.isJmxEnabled()){
+				ThreadLocalJawrContext.setJawrConfigMgrObjectName(JmxUtils.getMBeanObjectName(request.getContextPath(), resourceType));
+			}
+			
+			ThreadLocalJawrContext.setRequest(request.getRequestURL().toString());
+			
+			RendererRequestUtils.setRequestDebuggable(request, jawrConfig);
+			
+			// manual reload request
+			if (this.jawrConfig.getRefreshKey().length() > 0 && null != request.getParameter("refreshKey")
+					&& this.jawrConfig.getRefreshKey().equals(request.getParameter("refreshKey"))) {
+				this.configChanged(propertiesSource.getConfigProperties());
+			}
+	
+			if (LOGGER.isDebugEnabled())
+				LOGGER.debug("Request received for path:" + requestedPath);
+	
+			String contentType = getContentType(requestedPath, request);
+			
+			if(handleSpecificRequest(requestedPath, contentType, request, response)){
+				return;
+			}
+	
+			// Handle the strict mode
+			boolean validBundle = isValidBundle(requestedPath);
+			processRequest(requestedPath, request, response, contentType, validBundle);
+		}finally{
+			
+			// Reset the Thread local for the Jawr context
+			ThreadLocalJawrContext.reset();
 		}
+	}
 
-		if (log.isDebugEnabled())
-			log.debug("Request received for path:" + requestedPath);
-
+	/**
+	 * Handle the specific requests 
+	 * @param requestedPath the requested path
+	 * @param contentType the content type
+	 * @param request the request
+	 * @param response the response
+	 * @return true if the request has been processed
+	 * @throws ServletException if a servlet exception occurs 
+	 * @throws IOException if a IO exception occurs 
+	 */
+	protected boolean handleSpecificRequest(String requestedPath, String contentType,
+			HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		boolean processed = false;
 		if (CLIENTSIDE_HANDLER_REQ_PATH.equals(requestedPath)) {
 			this.clientSideScriptRequestHandler.handleClientSideHandlerRequest(request, response);
-			return;
-		}
+			processed = true;
+		}else{
+			
+			// CSS images would be requested through this handler in case servletMapping is used
+			// if( this.jawrConfig.isDebugModeOn() && !("".equals(this.jawrConfig.getServletMapping())) && null == request.getParameter(GENERATION_PARAM)) {
+			if (JawrConstant.CSS_TYPE.equals(resourceType) && 
+					!JawrConstant.CSS_TYPE.equals(getExtension(requestedPath)) &&
+					this.imgMimeMap.containsKey(getExtension(requestedPath))) {
 
-		// CSS images would be requested through this handler in case servletMapping is used
-		// if( this.jawrConfig.isDebugModeOn() && !("".equals(this.jawrConfig.getServletMapping())) && null == request.getParameter(GENERATION_PARAM)) {
-		if (JawrConstant.CSS_TYPE.equals(resourceType) && 
-				!JawrConstant.CSS_TYPE.equals(getExtension(requestedPath)) &&
-				this.imgMimeMap.containsKey(getExtension(requestedPath))) {
-
-			if (null == bundlesHandler.resolveBundleForPath(requestedPath)) {
-				if (log.isDebugEnabled())
-					log.debug("Path '" + requestedPath + "' does not belong to a bundle. Forwarding request to the server. ");
-				request.getRequestDispatcher(requestedPath).forward(request, response);
-				return;
+				if (null == bundlesHandler.resolveBundleForPath(requestedPath)) {
+					if (LOGGER.isDebugEnabled())
+						LOGGER.debug("Path '" + requestedPath + "' does not belong to a bundle. Forwarding request to the server. ");
+					request.getRequestDispatcher(requestedPath).forward(request, response);
+					processed = true;
+				}
 			}
 		}
 
+		return processed;
+	}
+
+	/**
+	 * Returns true if the bundle is a valid bundle
+	 * @param requestedPath the requested path
+	 * @return true if the bundle is a valid bundle
+	 */
+	protected boolean isValidBundle(String requestedPath) {
+		boolean validBundle = true;
+		if(!jawrConfig.isDebugModeOn() && jawrConfig.isStrictMode()){
+			validBundle = bundlesHandler.containsValidBundleHashcode(requestedPath);
+		}
+		return validBundle;
+	}
+
+	/**
+	 * Process the request
+	 * @param requestedPath the requested path
+	 * @param request the request
+	 * @param response the response
+	 * @param validBundle the flag indicating if the requested bundle is a valid bundle
+	 * @throws IOException if an IOException occurs
+	 */
+	protected void processRequest(String requestedPath,
+			HttpServletRequest request, HttpServletResponse response,
+			String contentType, boolean validBundle) throws IOException {
+		
+		boolean writeResponseHeader = false;
+		
+		if (this.jawrConfig.isDebugModeOn() && null != request.getParameter(GENERATION_PARAM))
+			requestedPath = request.getParameter(GENERATION_PARAM);
+		
 		// If debug mode is off, check for If-Modified-Since and If-none-match headers and set response caching headers.
 		if (!this.jawrConfig.isDebugModeOn()) {
 			// If a browser checks for changes, always respond 'no changes'.
-			if (null != request.getHeader(IF_MODIFIED_SINCE_HEADER) || null != request.getHeader(IF_NONE_MATCH_HEADER)) {
+			if (validBundle && (null != request.getHeader(IF_MODIFIED_SINCE_HEADER) || null != request.getHeader(IF_NONE_MATCH_HEADER))) {
 				response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-				if (log.isDebugEnabled())
-					log.debug("Returning 'not modified' header. ");
+				if (LOGGER.isDebugEnabled())
+					LOGGER.debug("Returning 'not modified' header. ");
 				return;
 			}
 
-			// Add caching headers
-			setResponseHeaders(response);
-		} else if (null != request.getParameter(GENERATION_PARAM))
-			requestedPath = request.getParameter(GENERATION_PARAM);
-
-		// By setting content type, the response writer will use appropiate encoding
-		response.setContentType(contentType);
-
+			if(validBundle){
+				// Add caching headers
+				setResponseHeaders(response);
+			}else{
+				
+				writeResponseHeader = illegalBundleRequestHandler.writeResponseHeader(requestedPath, request, response);
+				if(!writeResponseHeader){
+					// Add caching headers
+					setResponseHeaders(response);
+				}
+			}
+		}
+		
 		try {
-			// Send gzipped resource if user agent supports it.
-			if (requestedPath.startsWith(BundleRenderer.GZIP_PATH_PREFIX)) {
-				requestedPath = "/" + requestedPath.substring(BundleRenderer.GZIP_PATH_PREFIX.length(), requestedPath.length());
-				response.setHeader("Content-Encoding", "gzip");
-				bundlesHandler.streamBundleTo(requestedPath, response.getOutputStream());
-			} else {
-
-				// In debug mode, we take in account the image generated from a StreamGenerator like classpath Image generator
-				// The following code will rewrite the URL path for the generated images,
-				// because in debug mode, we are retrieving the CSS ressources directly from the webapp
-				// and if the CSS contains generated images, we should rewrite the URL.
-				ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) servletContext.getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
-				if (imgRsHandler != null && this.jawrConfig.isDebugModeOn() && resourceType.equals(JawrConstant.CSS_TYPE)) {
-
-					// Write the content of the CSS in the Stringwriter
-					Writer writer = new StringWriter();
-					Reader rd = rsReaderHandler.getResource(requestedPath);
-					if(rd == null){
-						throw new ResourceNotFoundException(requestedPath);
-					}
-					IOUtils.copy(rd, writer);
-					String content = writer.toString();
-
-					String imageServletMapping = imgRsHandler.getJawrConfig().getServletMapping();
-					
-					if (imageServletMapping == null) {
-						imageServletMapping = "";
-					}
-
-					// Define the replacement pattern for the generated image (like jar:img/myImg.png)
-					String relativeRootUrlPath = getRootRelativeCssUrlPath(request, requestedPath);
-					String replacementPattern = PathNormalizer.normalizePath("$1" + relativeRootUrlPath + imageServletMapping + "/$4_cbDebug/$7$8");
-					
-					Matcher matcher = GENERATED_IMG_PATTERN.matcher(content);
-
-					// Rewrite the images define in the classpath, to point to the image servlet
-					StringBuffer result = new StringBuffer();
-					while (matcher.find()) {
-						matcher.appendReplacement(result, replacementPattern);
-					}
-					matcher.appendTail(result);
-					Writer out = response.getWriter();
-					out.write(result.toString());
-				} else {
-
-					if(isValidRequestedPath(requestedPath)){
-						Writer out = response.getWriter();
-						bundlesHandler.writeBundleTo(requestedPath, out);	
-					}else{
-						throw new ResourceNotFoundException(requestedPath);
-					}
+			if(validBundle || illegalBundleRequestHandler.canWriteContent(requestedPath, request)){
+				// By setting content type, the response writer will use appropriate encoding
+				response.setContentType(contentType);
+				writeContent(requestedPath, request, response);
+				if (LOGGER.isDebugEnabled())
+					LOGGER.debug("request succesfully attended");
+			}else{
+				if(!writeResponseHeader){
+					logBundleNotFound(requestedPath);
+					response.sendError(HttpServletResponse.SC_NOT_FOUND);
 				}
 			}
 		} catch (EOFException eofex) {
-			log.debug("Browser cut off response", eofex);
+			LOGGER.debug("Browser cut off response", eofex);
 		} catch (ResourceNotFoundException e) {
+			logBundleNotFound(requestedPath);
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			if (log.isInfoEnabled())
-				log.info("Received a request for a non existing bundle: " + requestedPath);
 			return;
 		}
+	}
 
-		if (log.isDebugEnabled())
-			log.debug("request succesfully attended");
+	/**
+	 * Logs that the requested bundle was not found
+	 * @param requestedPath
+	 */
+	private void logBundleNotFound(String requestedPath) {
+		if (LOGGER.isInfoEnabled())
+			LOGGER.info("Received a request for a non existing bundle: " + requestedPath);
+	}
+
+	/**
+	 * Returns the content type of the requested path
+	 * @param requestedPath the requested path
+	 * @param request the request
+	 * @return the content type of the requested path
+	 */
+	protected String getContentType(String requestedPath, HttpServletRequest request) {
+		return contentType;
+	}
+
+	/**
+	 * Writes the content to the ouput stream
+	 * @param requestedPath the requested path
+	 * @param request the request
+	 * @param response the response
+	 * @throws IOException if an IOException occurs
+	 * @throws ResourceNotFoundException if the resource is not found
+	 */
+	protected void writeContent(String requestedPath, HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ResourceNotFoundException {
+		
+		// Send gzipped resource if user agent supports it.
+		if (requestedPath.startsWith(BundleRenderer.GZIP_PATH_PREFIX)) {
+			requestedPath = "/" + requestedPath.substring(BundleRenderer.GZIP_PATH_PREFIX.length(), requestedPath.length());
+			response.setHeader("Content-Encoding", "gzip");
+			bundlesHandler.streamBundleTo(requestedPath, response.getOutputStream());
+		} else {
+
+			// In debug mode, we take in account the image generated from a StreamGenerator like classpath Image generator
+			// The following code will rewrite the URL path for the generated images,
+			// because in debug mode, we are retrieving the CSS ressources directly from the webapp
+			// and if the CSS contains generated images, we should rewrite the URL.
+			ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) servletContext.getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
+			if (imgRsHandler != null && this.jawrConfig.isDebugModeOn() && resourceType.equals(JawrConstant.CSS_TYPE)) {
+
+				handleGeneratedCssInDebugMode(requestedPath, request,
+						response, imgRsHandler);
+			} else {
+
+				if(isValidRequestedPath(requestedPath)){
+					Writer out = response.getWriter();
+					bundlesHandler.writeBundleTo(requestedPath, out);	
+				}else{
+					throw new ResourceNotFoundException(requestedPath);
+				}
+			}
+		}
+		
+	}
+
+	/**
+	 * Handle the generated CSS content in debug mode.
+	 * @param requestedPath the request path
+	 * @param request the request
+	 * @param response the response
+	 * @param imgRsHandler the image resource handler
+	 * @throws ResourceNotFoundException if the resource is not found
+	 * @throws IOException if an IO exception occurs
+	 */
+	private void handleGeneratedCssInDebugMode(String requestedPath,
+			HttpServletRequest request, HttpServletResponse response,
+			ImageResourcesHandler imgRsHandler)
+			throws ResourceNotFoundException, IOException {
+		
+		// Write the content of the CSS in the Stringwriter
+		Writer writer = new StringWriter();
+		Reader rd = rsReaderHandler.getResource(requestedPath);
+		if(rd == null){
+			throw new ResourceNotFoundException(requestedPath);
+		}
+		IOUtils.copy(rd, writer);
+		String content = writer.toString();
+
+		String imageServletMapping = imgRsHandler.getJawrConfig().getServletMapping();
+		
+		if (imageServletMapping == null) {
+			imageServletMapping = "";
+		}
+
+		// Define the replacement pattern for the generated image (like jar:img/myImg.png)
+		String relativeRootUrlPath = PathNormalizer.getRootRelativePath(getRequestPath(request));
+		String replacementPattern = PathNormalizer.normalizePath("$1" + relativeRootUrlPath + imageServletMapping + "/$4_cbDebug/$7$8");
+		
+		Matcher matcher = GENERATED_IMG_PATTERN.matcher(content);
+
+		// Rewrite the images define in the classpath, to point to the image servlet
+		StringBuffer result = new StringBuffer();
+		while (matcher.find()) {
+			matcher.appendReplacement(result, replacementPattern);
+		}
+		matcher.appendTail(result);
+		Writer out = response.getWriter();
+		out.write(result.toString());
 	}
 
 	/**
@@ -627,39 +760,20 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	}
 
 	/**
-	 * Returns the relative path of an url to go back to the root.
-	 * For example : if the url path is defined as "/cssServletPath/css/myStyle.css" -> "../../"
-	 * 
+	 * Returns the request path
 	 * @param request the request
-	 * @param url the requested url
-	 * @return the relative path of an url to go back to the root.
+	 * @return the request path
 	 */
-	private String getRootRelativeCssUrlPath(HttpServletRequest request, String url) {
-
-		String finalUrl = url;
-		String servletPath = "".equals(jawrConfig.getServletMapping()) ? "" : request.getServletPath();
-		String originalRequestPath = "".equals(jawrConfig.getServletMapping()) ? request.getServletPath() : request.getPathInfo();
-		// Deals with Jawr generated resource path containing /jawr_generator.css
-		if(originalRequestPath.startsWith(ResourceGenerator.CSS_DEBUGPATH)){
-			finalUrl = ResourceGenerator.CSS_DEBUGPATH;
-		}
-
-		finalUrl = PathNormalizer.asPath(servletPath + finalUrl);
+	private String getRequestPath(HttpServletRequest request) {
 		
-		Matcher matcher = URL_SEPARATOR_PATTERN.matcher(finalUrl);
-		StringBuffer result = new StringBuffer();
-		boolean first = true;
-		while (matcher.find()) {
-			if (first) {
-				matcher.appendReplacement(result, "");
-				first = false;
-			} else {
-				matcher.appendReplacement(result, ROOT_REPLACE_PATTERN);
-			}
-
+		String finalUrl = null;
+		String servletPath = request.getServletPath();
+		if("".equals(jawrConfig.getServletMapping())){
+			finalUrl = PathNormalizer.asPath(servletPath);
+		}else{
+			finalUrl = PathNormalizer.asPath(servletPath + request.getPathInfo());
 		}
-
-		return result.toString();
+		return finalUrl;
 	}
 
 	/**
@@ -692,11 +806,11 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	 * @see net.jawr.web.resource.bundle.factory.util.ConfigChangeListener#configChanged(java.util.Properties)
 	 */
 	public synchronized void configChanged(Properties newConfig) {
-		if (log.isDebugEnabled())
-			log.debug("Reloading Jawr configuration");
+		if (LOGGER.isDebugEnabled())
+			LOGGER.debug("Reloading Jawr configuration");
 		try {
 			// Initialize the Thread local for the Jawr context
-			if(isJmxEnabled()){
+			if(JmxUtils.isJmxEnabled()){
 				ThreadLocalJawrContext.setJawrConfigMgrObjectName(JmxUtils.getMBeanObjectName(servletContext, resourceType));
 			}
 			
@@ -709,7 +823,7 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 			ThreadLocalJawrContext.reset();
 		}
 		
-		if (log.isDebugEnabled())
-			log.debug("Jawr configuration succesfully reloaded. ");
+		if (LOGGER.isDebugEnabled())
+			LOGGER.debug("Jawr configuration succesfully reloaded. ");
 	}
 }

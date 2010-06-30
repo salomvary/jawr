@@ -1,5 +1,5 @@
 /**
- * Copyright 2008  Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2008-2010  Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -26,6 +26,7 @@ import javax.management.ObjectName;
 import net.jawr.web.JawrConstant;
 import net.jawr.web.config.jmx.JmxUtils;
 import net.jawr.web.context.ThreadLocalJawrContext;
+import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.exception.ResourceNotFoundException;
 
 import org.apache.log4j.Logger;
@@ -33,12 +34,13 @@ import org.apache.log4j.Logger;
 /**
  * Utilities to access resources from the classpath
  * 
- * @author Jordi Hernández Sellés, Ibrahim Chaehoi
- *
+ * @author Jordi Hernández Sellés
+ * @author Ibrahim Chaehoi
  */
 public class ClassLoaderResourceUtils {
 
-	private static Logger log = Logger.getLogger(ClassLoaderResourceUtils.class);
+	/** The logger */
+	private static final Logger LOGGER = Logger.getLogger(ClassLoaderResourceUtils.class);
 	
 	/**
 	 * Attempots to load a resource from the classpath, either usinf the caller's class loader or the current thread's 
@@ -85,7 +87,7 @@ public class ClassLoaderResourceUtils {
 							ClassLoader cl = mbs.getClassLoaderFor(name);
 							is = cl.getResourceAsStream(resourcePath);
 						} catch (Exception e) {
-							log.error("Unable to instanciate the Jawr MBean '"+name.getCanonicalName()+"'", e);
+							LOGGER.error("Unable to instanciate the Jawr MBean '"+name.getCanonicalName()+"'", e);
 						}
 					}
 				}
@@ -172,11 +174,11 @@ public class ClassLoaderResourceUtils {
 	 */
 	public static Object buildObjectInstance(String classname) {
 		Object rets = null;
-		Class clazz = locateClass(classname);
+		Class clazz = getClass(classname);
 		try {
 			rets = clazz.newInstance();
 		}catch(Exception e) {
-				throw new RuntimeException(e.getMessage() 
+				throw new BundlingProcessException(e.getMessage() 
 											+ " [The custom class " 
 											+ classname 
 											+ " could not be instantiated, check wether it is available on the classpath and" 
@@ -186,7 +188,12 @@ public class ClassLoaderResourceUtils {
 		return rets;
 	}
 	
-	private static Class locateClass(String classname) {
+	/**
+	 * Returns the class associated to the class name given in parameter
+	 * @param classname the class name
+	 * @return the class
+	 */
+	public static Class getClass(String classname) {
 		Class clazz = null;
 		try {
 			clazz = Class.forName(classname);
@@ -208,7 +215,7 @@ public class ClassLoaderResourceUtils {
 					try{
 						clazz = Class.forName(classname, true, threadClassLoader);
 					}catch(Exception e){
-						throw new RuntimeException(e.getMessage() 
+						throw new BundlingProcessException(e.getMessage() 
 								+ " [The custom class " 
 								+ classname 
 								+ " could not be instantiated, check wether it is available on the classpath and" 
@@ -216,7 +223,7 @@ public class ClassLoaderResourceUtils {
 								+ " The specific error message is: " + e.getClass().getName() + ":" + e.getMessage(),e);
 					}
 				}else{
-					throw new RuntimeException(classNotFoundEx.getMessage() 
+					throw new BundlingProcessException(classNotFoundEx.getMessage() 
 							+ " [The custom class " 
 							+ classname 
 							+ " could not be instantiated, check wether it is available on the classpath and" 
@@ -243,11 +250,11 @@ public class ClassLoaderResourceUtils {
 		}
 		
 		try {
-			Class clazz = locateClass(classname);
+			Class clazz = getClass(classname);
 			rets = clazz.getConstructor(paramTypes).newInstance(params);
 			
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage() 
+			throw new BundlingProcessException(e.getMessage() 
 										+ " [The custom class " 
 										+ classname 
 										+ " could not be instantiated, check wether it is available on the classpath and" 

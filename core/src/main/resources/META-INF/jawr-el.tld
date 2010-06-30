@@ -44,6 +44,21 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<name>alternate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>displayAlternate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>title</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 	<tag>
         <name>imagePath</name>
@@ -62,6 +77,16 @@
                 <![CDATA[
                   <p>The URL of the image.</p>
                   ]]>
+            </description>
+        </attribute>
+        <attribute>
+            <name>base64</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                <![CDATA[
+                  <p>The flag indicating if the base64 encoded image should be rendered.</p>
+                ]]>
             </description>
         </attribute>
     </tag>
@@ -115,6 +140,16 @@
                   <p>And alternative text to be displayed in browsers that
                      don't support graphics.  Also used often as type of
                      context help over images.</p>
+                ]]>
+            </description>
+        </attribute>
+        <attribute>
+            <name>base64</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                <![CDATA[
+                  <p>The flag indicating if the base64 encoded image should be rendered.</p>
                 ]]>
             </description>
         </attribute>
@@ -432,7 +467,17 @@
                 ]]>
             </description>
         </attribute>
-       <attribute>
+       	<attribute>
+            <name>base64</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                <![CDATA[
+                  <p>The flag indicating if the base64 encoded image should be rendered.</p>
+                ]]>
+            </description>
+        </attribute>
+        <attribute>
             <name>border</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>

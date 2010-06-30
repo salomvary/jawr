@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2007-2010 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -51,7 +51,7 @@ public class CompositeResourceBundle extends JoinableResourceBundleImpl {
 									String fileExtension, 
 									JawrConfig config) {
 		
-		super(id, name, fileExtension, inclusionPattern, resourceHandler);
+		super(id, name, fileExtension, inclusionPattern, resourceHandler, config.getGeneratorRegistry());
 		this.childBundles = childBundles;
 		
 		boolean debugModeOn = config.isDebugModeOn();
@@ -100,4 +100,10 @@ public class CompositeResourceBundle extends JoinableResourceBundleImpl {
 		return childBundles;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "CompositeResourceBundleImpl [id=" + getId() + ", name=" + getName() + "]";
+	}
 }

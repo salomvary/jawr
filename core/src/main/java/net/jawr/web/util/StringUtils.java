@@ -10,6 +10,8 @@
  */
 package net.jawr.web.util;
 
+import java.util.regex.Pattern;
+
 /**
  * 
  * Utility method for String manipulation.
@@ -42,6 +44,9 @@ package net.jawr.web.util;
  */
 public class StringUtils {
 
+	/** The new line separator */
+	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	
 	/**
 	 * <code>\u000a</code> linefeed LF ('\n').
 	 * 
@@ -249,5 +254,16 @@ public class StringUtils {
             return str.substring(0, str.length() - sep.length());
         }
         return str;
+    }
+    
+    /**
+     * Split the String passed in parameter, the trailing empty string are kept. 
+     * @param str the string to split
+     * @param separator the separator
+     * @return the splitted string
+     */
+    public static String[] split(String str, String separator){
+    
+    	return Pattern.compile(separator).split(str, -1);
     }
 }

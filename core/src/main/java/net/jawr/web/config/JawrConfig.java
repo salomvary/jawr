@@ -24,9 +24,16 @@ import net.jawr.web.context.ThreadLocalJawrContext;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
+import net.jawr.web.resource.bundle.hashcode.BundleHashcodeGenerator;
+import net.jawr.web.resource.bundle.hashcode.BundleStringHashcodeGenerator;
+import net.jawr.web.resource.bundle.hashcode.MD5BundleHascodeGenerator;
 import net.jawr.web.resource.bundle.locale.DefaultLocaleResolver;
 import net.jawr.web.resource.bundle.locale.LocaleResolver;
+import net.jawr.web.resource.bundle.locale.LocaleVariantResolverWrapper;
 import net.jawr.web.resource.bundle.renderer.CSSHTMLBundleLinkRenderer;
+import net.jawr.web.resource.bundle.variant.VariantResolver;
+import net.jawr.web.resource.bundle.variant.resolver.BrowserResolver;
+import net.jawr.web.resource.bundle.variant.resolver.ConnectionTypeResolver;
 import net.jawr.web.util.StringUtils;
 
 /**
@@ -50,6 +57,21 @@ public class JawrConfig implements Serializable {
 	 * The property name for the locale resolver
 	 */
 	public static final String JAWR_LOCALE_RESOLVER = "jawr.locale.resolver";
+
+	/**
+	 * The property name for the browser resolver
+	 */
+	public static final String JAWR_BROWSER_RESOLVER = "jawr.browser.resolver";
+	
+	/**
+	 * The property name for the bundle hashcode generator
+	 */
+	public static final String JAWR_BUNDLE_HASHCODE_GENERATOR = "jawr.bundle.hashcode.generator";
+	
+	/**
+	 * The property name for the connection type resolver
+	 */
+	public static final String JAWR_CONNECTION_TYPE_SCHEME_RESOLVER = "jawr.url.connection.type.resolver";
 
 	/**
 	 * The property name for the dwr mapping
@@ -134,6 +156,11 @@ public class JawrConfig implements Serializable {
 	public static final String JAWR_CSS_CLASSPATH_HANDLE_IMAGE = "jawr.css.classpath.handle.image";
 	
 	/**
+	 * The property name for the name of the cookie used to store the CSS skin
+	 */
+	public static final String JAWR_CSS_SKIN_COOKIE = "jawr.css.skin.cookie";
+	
+	/**
 	 * The property name for the image hash algorithm.
 	 */
 	public static final String JAWR_IMAGE_HASH_ALGORITHM = "jawr.image.hash.algorithm";
@@ -142,6 +169,11 @@ public class JawrConfig implements Serializable {
 	 * The property name for the image resources.
 	 */
 	public static final String JAWR_IMAGE_RESOURCES = "jawr.image.resources";
+	
+	/**
+	 * The property name for the Jawr strict mode.
+	 */
+	public static final String JAWR_STRICT_MODE = "jawr.strict.mode";
 
 	/**
 	 * The generator registry
@@ -153,6 +185,9 @@ public class JawrConfig implements Serializable {
 	 */
 	private LocaleResolver localeResolver;
 
+	/** The bundle hashcode generator */
+	private BundleHashcodeGenerator bundleHashcodeGenerator;
+	
 	/**
 	 * The servlet context
 	 */
@@ -173,6 +208,12 @@ public class JawrConfig implements Serializable {
 	 */
 	private Charset resourceCharset;
 
+	/**
+	 * Flag to switch on the strict mode. defaults to false.
+	 * In strict mode, Jawr checks that the hashcode of the bundle requested is the right one or not.
+	 */
+	private boolean strictMode = false;
+	
 	/**
 	 * Flag to switch on the debug mode. defaults to false.
 	 */
@@ -239,7 +280,7 @@ public class JawrConfig implements Serializable {
 	/**
 	 * Determines if the servlet, which provide CSS image for CSS define in the classpath should be used or not
 	 */
-	private boolean classpathCssHandleImage;
+	private boolean classpathCssHandleImage = false;
 
 	/**
 	 * Defines the image resources definition.
@@ -256,19 +297,22 @@ public class JawrConfig implements Serializable {
 	/**
 	 * Used to check if a configuration has not been outdated by a new one.
 	 */
-	private boolean isValid = true;
+	private boolean valid = true;
 
 	/**
 	 * Mapping path to the dwr servlet, in case it is integrated with jawr.
 	 */
 	private String dwrMapping;
 
+	/** The skin cookie name*/
+	private String skinCookieName = JawrConstant.JAWR_SKIN;
+	
 	/**
 	 * Initialize configuration using params contained in the initialization properties file.
 	 * 
 	 * @param props the properties
 	 */
-	public JawrConfig(Properties props) {
+	public JawrConfig(final Properties props) {
 		this.configProperties = props;
 		if (null != props.getProperty(JAWR_DEBUG_ON)) {
 			this.debugModeOn = Boolean.valueOf(props.getProperty(JAWR_DEBUG_ON)).booleanValue();
@@ -279,6 +323,10 @@ public class JawrConfig implements Serializable {
 		}
 		if (null != props.getProperty(JAWR_DEBUG_OVERRIDE_KEY)) {
 			this.debugOverrideKey = props.getProperty(JAWR_DEBUG_OVERRIDE_KEY);
+		}
+		
+		if (null != props.getProperty(JAWR_STRICT_MODE)) {
+			this.strictMode = Boolean.valueOf(props.getProperty(JAWR_STRICT_MODE)).booleanValue();
 		}
 		
 		if (null != props.getProperty(JAWR_USE_BUNDLE_MAPPING)) {
@@ -320,11 +368,25 @@ public class JawrConfig implements Serializable {
 			this.dwrMapping = props.getProperty(JAWR_DWR_MAPPING);
 		}
 
-		if (null != props.getProperty(JAWR_LOCALE_RESOLVER)) {
-			localeResolver = (LocaleResolver) ClassLoaderResourceUtils.buildObjectInstance(props.getProperty(JAWR_LOCALE_RESOLVER));
-		} else
+		if (props.getProperty(JAWR_LOCALE_RESOLVER) == null) {
 			localeResolver = new DefaultLocaleResolver();
-
+		} else{
+			localeResolver = (LocaleResolver) ClassLoaderResourceUtils.buildObjectInstance(props.getProperty(JAWR_LOCALE_RESOLVER));
+		}
+		
+		String bundleHashCodeGenerator = props.getProperty(JAWR_BUNDLE_HASHCODE_GENERATOR, "").trim();
+		if(bundleHashCodeGenerator.length() == 0 || JawrConstant.DEFAULT.equalsIgnoreCase(bundleHashCodeGenerator)){
+			bundleHashcodeGenerator = new BundleStringHashcodeGenerator();
+		}else if(JawrConstant.MD5_ALGORITHM.equalsIgnoreCase(bundleHashCodeGenerator)){
+			bundleHashcodeGenerator = new MD5BundleHascodeGenerator();
+		}else{
+			bundleHashcodeGenerator = (BundleHashcodeGenerator) ClassLoaderResourceUtils.buildObjectInstance(bundleHashCodeGenerator);
+		}
+		
+		if (null != props.getProperty(JAWR_CSS_SKIN_COOKIE)) {
+			skinCookieName = props.getProperty(JAWR_CSS_SKIN_COOKIE).trim();
+		}
+		
 		if (null != props.getProperty(JAWR_CSSLINKS_FLAVOR)) {
 			setCssLinkFlavor(props.getProperty(JAWR_CSSLINKS_FLAVOR).trim());
 		}
@@ -352,6 +414,22 @@ public class JawrConfig implements Serializable {
 	}
 	
 	/**
+	 * Returns the flag indicating if we are in strict mode or not
+	 * @return the strict mode flag
+	 */
+	public boolean isStrictMode() {
+		return strictMode;
+	}
+
+	/**
+	 * Sets the flag indicating if we are in strict mode or not
+	 * @param strictMode the flag to set
+	 */
+	public void setStrictMode(boolean strictMode) {
+		this.strictMode = strictMode;
+	}
+
+	/**
 	 * Get the debugOverrideKey
 	 * 
 	 * @return the debugOverrideKey that is used to override production mode per request
@@ -365,7 +443,7 @@ public class JawrConfig implements Serializable {
 	 * 
 	 * @param debugOverrideKey the String to set as the key
 	 */
-	public void setDebugOverrideKey(String debugOverrideKey) {
+	public void setDebugOverrideKey(final String debugOverrideKey) {
 		this.debugOverrideKey = debugOverrideKey;
 	}
 
@@ -387,7 +465,7 @@ public class JawrConfig implements Serializable {
 	 * 
 	 * @param debugModeOn the flag to set
 	 */
-	public void setDebugModeOn(boolean debugMode) {
+	public void setDebugModeOn(final boolean debugMode) {
 		this.debugModeOn = debugMode;
 	}
 
@@ -403,7 +481,7 @@ public class JawrConfig implements Serializable {
 	 * Sets the refresh key
 	 * @param refreshKey the refresh key
 	 */
-	public void setRefreshKey(String refreshKey) {
+	public void setRefreshKey(final String refreshKey) {
 		this.refreshKey = refreshKey;
 	}
 	
@@ -419,7 +497,7 @@ public class JawrConfig implements Serializable {
 	 * Sets the flag indicating if we should process the bundle at startup
 	 * @param dirPath the directory path to set
 	 */
-	public void setJawrWorkingDirectory(String dirPath) {
+	public void setJawrWorkingDirectory(final String dirPath) {
 		this.jawrWorkingDirectory = dirPath;
 	}
 
@@ -456,10 +534,18 @@ public class JawrConfig implements Serializable {
 	 * 
 	 * @param charsetName the charset name to set
 	 */
-	public void setCharsetName(String charsetName) {
+	public final void setCharsetName(String charsetName) {
 		if (!Charset.isSupported(charsetName))
 			throw new IllegalArgumentException("The specified charset [" + charsetName + "] is not supported by the jvm.");
 		this.charsetName = charsetName;
+	}
+
+	/**
+	 * Returns the bundle hashcode generator
+	 * @return the bundleHashcodeGenerator
+	 */
+	public BundleHashcodeGenerator getBundleHashcodeGenerator() {
+		return bundleHashcodeGenerator;
 	}
 
 	/**
@@ -647,7 +733,7 @@ public class JawrConfig implements Serializable {
 	 * configuration is reloaded.
 	 */
 	public void invalidate() {
-		this.isValid = false;
+		this.valid = false;
 	}
 
 	/**
@@ -656,7 +742,7 @@ public class JawrConfig implements Serializable {
 	 * @return the flag indicating if the configuration has been invalidated.
 	 */
 	public boolean isValid() {
-		return this.isValid;
+		return this.valid;
 	}
 
 	/**
@@ -676,6 +762,36 @@ public class JawrConfig implements Serializable {
 	public void setGeneratorRegistry(GeneratorRegistry generatorRegistry) {
 		this.generatorRegistry = generatorRegistry;
 		this.generatorRegistry.setConfig(this);
+		localeResolver = null;
+		if (configProperties.getProperty(JAWR_LOCALE_RESOLVER) == null) {
+			localeResolver = new DefaultLocaleResolver();
+		} else{
+			localeResolver = (LocaleResolver) ClassLoaderResourceUtils.buildObjectInstance(configProperties.getProperty(JAWR_LOCALE_RESOLVER));
+		}
+
+		this.generatorRegistry.registerVariantResolver(new LocaleVariantResolverWrapper(localeResolver));
+		
+		registerResolver(new BrowserResolver(), JAWR_BROWSER_RESOLVER);
+		registerResolver(new ConnectionTypeResolver(), JAWR_CONNECTION_TYPE_SCHEME_RESOLVER);
+		
+	}
+
+	/**
+	 * Register a resolver in the generator registry
+	 * @param defaultResolver the default resolver
+	 * @param configPropertyName the configuration property whose the value define the resolver class
+	 * @return
+	 */
+	private VariantResolver registerResolver(VariantResolver defaultResolver, String configPropertyName ) {
+		VariantResolver resolver = null;
+		if (configProperties.getProperty(configPropertyName) == null) {
+			resolver = defaultResolver;
+		} else{
+			resolver = (VariantResolver) ClassLoaderResourceUtils.buildObjectInstance(configProperties.getProperty(configPropertyName));
+		}
+		
+		this.generatorRegistry.registerVariantResolver(resolver);
+		return resolver;
 	}
 
 	/**
@@ -737,14 +853,15 @@ public class JawrConfig implements Serializable {
 	 * 
 	 * @param cssLinkFlavor the cssLinkFlavor to set
 	 */
-	public void setCssLinkFlavor(String cssLinkFlavor) {
+	public final void setCssLinkFlavor(String cssLinkFlavor) {
 		if (CSSHTMLBundleLinkRenderer.FLAVORS_HTML.equalsIgnoreCase(cssLinkFlavor)
 				|| CSSHTMLBundleLinkRenderer.FLAVORS_XHTML.equalsIgnoreCase(cssLinkFlavor)
 				|| CSSHTMLBundleLinkRenderer.FLAVORS_XHTML_EXTENDED.equalsIgnoreCase(cssLinkFlavor))
 			CSSHTMLBundleLinkRenderer.setClosingTag(cssLinkFlavor);
-		else
+		else{
 			throw new IllegalArgumentException("The value for the jawr.csslinks.flavor " + "property [" + cssLinkFlavor + "] is invalid. "
 					+ "Please check the docs for valid values ");
+		}
 	}
 
 	/**
@@ -766,15 +883,23 @@ public class JawrConfig implements Serializable {
 		return useBundleMapping && StringUtils.isNotEmpty(jawrWorkingDirectory) && !jawrWorkingDirectory.startsWith(JawrConstant.FILE_URI_PREFIX);
 	}
 	
+	/**
+	 * Returns the skin cookie name
+	 * @return the skinCookieName
+	 */
+	public String getSkinCookieName() {
+		return skinCookieName;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("[JawrConfig:'").append("charset name:'").append(this.charsetName).append("'\n").append("debugModeOn:'").append(isDebugModeOn())
-				.append("'\n").append("servletMapping:'").append(getServletMapping()).append("' ]");
+		StringBuffer sb = new StringBuffer(65);
+		sb.append("[JawrConfig:'charset name:'").append(this.charsetName).append("'\ndebugModeOn:'").append(isDebugModeOn())
+				.append("'\nservletMapping:'").append(getServletMapping()).append("' ]");
 		return sb.toString();
 	}
 

@@ -60,8 +60,14 @@ public class JawrConstant {
 	/** The image servlet context attribute name */
 	public static final String IMG_CONTEXT_ATTRIBUTE = "net.jawr.web.resource.bundle.IMG_CONTEXT_ATTRIBUTE";
 
+	/** The http scheme */
+	public static final String HTTP = "http";
+	
 	/** The https scheme */
 	public static final String HTTPS = "https";
+	
+	/** The ssl protocole name */
+	public static final String SSL = "ssl";
 	
 	/** The https url prefix */
 	public static final String HTTPS_URL_PREFIX = "https://";
@@ -116,4 +122,122 @@ public class JawrConstant {
 
 	/** The directory for image created the sprite generator */
 	public static final String SPRITE_GENERATED_IMG_DIR = "/generatedSpriteImg/";
+
+	/** The name for the default value */
+	public static final String DEFAULT = "default";
+	
+	/** The MD5 algorithm name */
+	public static final String MD5_ALGORITHM = "MD5";
+
+	/** The CRC32 algorithm name */
+	public static final String CRC32_ALGORITHM = "CRC32";
+
+	/** The name of the cookie where the Jawr skin is stored by default */
+	public static final String JAWR_SKIN = "jawrSkin";
+
+	/** The locale variant type */
+	public static final String LOCALE_VARIANT_TYPE = "locale";
+
+	/** The skin variant type */
+	public static final String SKIN_VARIANT_TYPE = "skin";
+
+	/** The browser variant type */
+	public static final String BROWSER_VARIANT_TYPE = "browser";
+
+	/** The property name for the default root directories for Css skin */
+	public static final String SKIN_DEFAULT_ROOT_DIRS = "skin.default.root.dirs";
+
+	/** The default variant finder for CSS skin generator */
+	public static final String DEFAULT_SKIN_VARIANT_FINDER = "net.jawr.web.resource.bundle.generator.variant.css.CssSkinVariantFinder";
+
+	/** The property name for the default root directories for Css skin */
+	public static final String SKIN_TYPE_MAPPING_CONFIG_PARAM = "jawr.css.skin.type.mapping";
+
+	/** The "skin_locale" type for the skin resource mapping */
+	public static final String SKIN_TYPE_MAPPING_SKIN_LOCALE = "skin_locale";
+
+	/** The "locale_skin" type for the skin resource mapping */
+	public static final String SKIN_TYPE_MAPPING_LOCALE_SKIN = "locale_skin";
+
+	/** The variant separator character */
+	public static final char VARIANT_SEPARATOR_CHAR = '@';
+	
+	// Tag
+	/** The name of the media attribute */
+	public static final String MEDIA_ATTR = "media";
+	
+	/** The name of the title attribute */
+	public static final String TITLE_ATTR = "title";
+	
+	/** The name of the alternate attribute */
+	public static final String ALTERNATE_ATTR = "alternate";
+	
+	/** The name of the displayAlternate attribute */
+	public static final String DISPLAY_ALTERNATE_ATTR = "displayAlternate";
+	
+	/** The name of the href attribute */
+	public static final String HREF_ATTR = "href";
+	
+	/** The name of the src attribute */
+	public static final String SRC_ATTR = "src";
+
+	/** Max file size jawr property name */
+	public static final String BASE64_MAX_IMG_FILE_SIZE = 
+		"jawr.css.postprocessor.base64ImageEncoder.maxFileLength";
+
+	public static final String BASE64_ENCODE_BY_DEFAULT = "jawr.css.postprocessor.base64ImageEncoder.encode.by.default";
+	
+	public static final String BASE64_ENCODE_SPRITE = "jawr.css.postprocessor.base64ImageEncoder.encode.sprite";
+	
+	public static final String POST_PROCESSING_CTX_JAWR_IMAGE_MAPPING = "jawrImageMapping";
+
+	public static final String BASE64_ENCODED_RESOURCES = "BASE64_ENCODED_RESOURCES";
+
+	public static final String BROWSER_IE7 = "ie7";
+
+	public static final String BROWSER_IE6 = "ie6";
+
+	public static final String CONNECTION_TYPE_VARIANT_TYPE = "connectionType";
+
+	public static final String URL_SCHEME_VARIANT_TYPE = "urlScheme";
+
+	public static final String JAWR_BUNDLE_PATH_PLACEHOLDER = "{JAWR_BUNDLE_PATH}";
+
+	public static final String JAWR_BUNDLE_PATH_PLACEHOLDER_PATTERN = "\\{JAWR_BUNDLE_PATH\\}";
+
+	public static final String ILLEGAL_BUNDLE_REQUEST_HANDLER = "jawr.illegal.bundle.request.handler";
+
+	public static final String JAWR_CSS_URL_REWRITER_CONTEXT_PATH = "jawr.css.url.rewriter.context.path";
+
+	// Grails constant 
+	/** The attribute name of the Grails plugins paths */
+	public static final String JAWR_GRAILS_PLUGIN_PATHS = "net.jawr.grails.plugins.paths";
+
+	/** The attribute name of the flag determining if we are in deployed war mode or not */
+	public static final String GRAILS_WAR_DEPLOYED = "jawr.grails.war.deployed";
+
+	/** The attribute name of the JS request handler */
+	public static final String JAWR_GRAILS_JS_REQUEST_HANDLER  = "net.jawr.grails.js.request.handler";
+	
+	/** The attribute name of the CSS request handler */
+	public static final String JAWR_GRAILS_CSS_REQUEST_HANDLER  = "net.jawr.grails.css.request.handler";
+	
+	/** The attribute name of the IMG request handler */
+	public static final String JAWR_GRAILS_IMG_REQUEST_HANDLER  = "net.jawr.grails.img.request.handler";
+	
+	/** The attribute name of the JS config */
+	public static final String JAWR_GRAILS_JS_CONFIG  = "net.jawr.grails.js.config";
+	
+	/** The attribute name of the JS config */
+	public static final String JAWR_GRAILS_CSS_CONFIG = "net.jawr.grails.css.config";
+	
+	/** The attribute name of the JS config */
+	public static final String JAWR_GRAILS_IMG_CONFIG = "net.jawr.grails.img.config";
+	
+	/** The attribute name of the config hashcode */
+	public static final String JAWR_GRAILS_CONFIG_HASH = "net.jawr.grails.config.hash";
+	
+	/** The attribute name of the config properties */
+	public static final String JAWR_GRAILS_CONFIG_PROPERTIES_KEY = "configProperties";
+	
 }

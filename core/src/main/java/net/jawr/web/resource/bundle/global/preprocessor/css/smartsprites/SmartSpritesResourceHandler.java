@@ -1,5 +1,5 @@
 /**
- * Copyright 2009 Ibrahim Chaehoi
+ * Copyright 2009-2010 Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 import net.jawr.web.JawrConstant;
+import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.FileNameUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
@@ -46,6 +47,9 @@ public class SmartSpritesResourceHandler implements ResourceHandler {
 	/** The resource handler for image resources */
 	private ResourceReaderHandler imgRsHandler;
 	
+	/** The Css generator registry */
+	private GeneratorRegistry cssGeneratorRegistry;
+	
 	/** The image generator registry */
 	private GeneratorRegistry imgGeneratorRegistry;
 	
@@ -67,10 +71,12 @@ public class SmartSpritesResourceHandler implements ResourceHandler {
 	public SmartSpritesResourceHandler(
 			ResourceReaderHandler rsHandler,
 			ResourceReaderHandler imgRsHandler, 
+			GeneratorRegistry cssGeneratorRegistry,
 			GeneratorRegistry imgGeneratorRegistry,
 			String charset, MessageLog messageLog) {
 		this.rsHandler = rsHandler;
 		this.imgRsHandler = imgRsHandler;
+		this.cssGeneratorRegistry = cssGeneratorRegistry;
 		this.imgGeneratorRegistry = imgGeneratorRegistry;
 		this.charset = charset;
 		this.workingDir = rsHandler.getWorkingDirectory()+JawrConstant.CSS_SMARTSPRITES_TMP_DIR;
@@ -134,12 +140,14 @@ public class SmartSpritesResourceHandler implements ResourceHandler {
 		String generatedFilePath = resourceName.substring(workingDir.length());
 		if(!FileNameUtils.isExtension(generatedFilePath, JawrConstant.CSS_TYPE) && imgGeneratorRegistry.isGeneratedImage(generatedFilePath)){
 			// for generated image put it  in the generated Image directory
-			resourceName = workingDir+JawrConstant.SPRITE_GENERATED_IMG_DIR+generatedFilePath.replace(":","/");
-		}else if(rsHandler.isResourceGenerated(generatedFilePath)) { // Rename resource for For generated CSS
-			resourceName = workingDir+JawrConstant.SPRITE_GENERATED_CSS_DIR+generatedFilePath.replace(":","/");
+			generatedFilePath = workingDir+JawrConstant.SPRITE_GENERATED_IMG_DIR+generatedFilePath.replace(':','/');
+		}else if(cssGeneratorRegistry.isPathGenerated(generatedFilePath)) { // Rename resource for For generated CSS
+			generatedFilePath = workingDir+JawrConstant.SPRITE_GENERATED_CSS_DIR+generatedFilePath.replace(':','/');
+		}else{
+			generatedFilePath = resourceName;
 		}
 		
-		final File parentFile = new File(resourceName).getParentFile();
+		final File parentFile = new File(generatedFilePath).getParentFile();
 		if (!parentFile.exists()) {
 			if (!parentFile.mkdirs()) {
 				throw new IOException("Unable to create the directory : "
@@ -147,7 +155,7 @@ public class SmartSpritesResourceHandler implements ResourceHandler {
 			}
 		}
 		
-		File file = new File(resourceName);
+		File file = new File(generatedFilePath);
 		try {
 			file = file.getCanonicalFile();
 		} catch (final IOException e) {
@@ -168,7 +176,7 @@ public class SmartSpritesResourceHandler implements ResourceHandler {
 					charset);
 		} catch (UnsupportedEncodingException e) {
 			// Should not happen as we're checking the charset in constructor
-			throw new RuntimeException(e);
+			throw new BundlingProcessException(e);
 		}
 	}
 }

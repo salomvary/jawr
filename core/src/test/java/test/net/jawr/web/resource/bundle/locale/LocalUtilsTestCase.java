@@ -48,4 +48,6 @@ public class LocalUtilsTestCase extends TestCase {
 		Assert.assertEquals("",result.get(0));
 		Assert.assertEquals("es",result.get(1));
 	}
+	
+	// TODO test for Grails with servlet context
 }

@@ -44,6 +44,10 @@ public class ImagePathTag extends TagSupport {
      */
     private String var;
     
+    /**
+     * The flag indicating if the image should be encoded in base 64
+     */
+    private boolean base64;
     
 	/**
 	 * @return the var
@@ -78,20 +82,31 @@ public class ImagePathTag extends TagSupport {
 	 */
 	public void setSrc(String imgSrc) throws JspException {
 
-		ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) pageContext
-				.getServletContext().getAttribute(
-						JawrConstant.IMG_CONTEXT_ATTRIBUTE);
-		if (null == imgRsHandler)
-			throw new JspException(
-					"You are using a Jawr image tag while the Jawr Image servlet has not been initialized. Initialization of Jawr Image servlet either failed or never occurred.");
+		this.src =  imgSrc;
+	}
 
-		HttpServletResponse response = (HttpServletResponse) pageContext
-				.getResponse();
-		
-		HttpServletRequest request = (HttpServletRequest) pageContext
-				.getRequest();
-		
-		this.src =  ImageTagUtils.getImageUrl(imgSrc, imgRsHandler, request, response);
+	/**
+	 * Returns the flag indicating if the image should be encoded in base 64
+	 * @return the flag value to return
+	 */
+	public boolean getBase64() {
+		return base64;
+	}
+
+	/**
+	 * Returns the flag indicating if the image should be encoded in base 64
+	 * @param base64 the base64 to set
+	 */
+	public void setBase64(boolean base64) {
+		this.base64 = base64;
+	}
+	
+	/**
+	 * Returns the flag indicating if the image should be encoded in base 64
+	 * @param base64 the base64 to set
+	 */
+	public void setBase64(String base64) {
+		this.base64 = Boolean.valueOf(base64).booleanValue();
 	}
 
 	/* (non-Javadoc)
@@ -99,18 +114,42 @@ public class ImagePathTag extends TagSupport {
 	 */
 	public int doEndTag() throws JspException {
 		
+		String imgSrc = getImgSrcToRender();
+		
 		if(null == var) {
 			try {
-				pageContext.getOut().print(src);
+				pageContext.getOut().print(imgSrc);
 			} catch (IOException e) {
 				throw new JspException(e);
 			}
 		}
 		else {
-			pageContext.setAttribute(var, src);
+			pageContext.setAttribute(var, imgSrc);
 		}
 		
 		return super.doEndTag();
+	}
+
+	/**
+	 * Returns the image source to render
+	 * @return the image source to render
+	 * @throws JspException if a JSP exception occurs.
+	 */
+	protected String getImgSrcToRender() throws JspException {
+		
+		ImageResourcesHandler imgRsHandler = (ImageResourcesHandler) pageContext
+			.getServletContext().getAttribute(JawrConstant.IMG_CONTEXT_ATTRIBUTE);
+		if (null == imgRsHandler)
+			throw new JspException(
+					"You are using a Jawr image tag while the Jawr Image servlet has not been initialized. Initialization of Jawr Image servlet either failed or never occurred.");
+		
+		HttpServletResponse response = (HttpServletResponse) pageContext
+				.getResponse();
+		
+		HttpServletRequest request = (HttpServletRequest) pageContext
+				.getRequest();
+
+		return ImageTagUtils.getImageUrl(src, base64, imgRsHandler, request, response);
 	}
 
 	/* (non-Javadoc)

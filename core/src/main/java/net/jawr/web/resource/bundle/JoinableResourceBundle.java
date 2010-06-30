@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2007-2010 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -14,6 +14,7 @@
 package net.jawr.web.resource.bundle;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
@@ -90,7 +91,7 @@ public interface JoinableResourceBundle {
      * when needed. 
      * @return the URL prefix for this Bundle.
      */
-    public String getURLPrefix(String variantKey);
+    public String getURLPrefix(Map variants);
     
     /**
      * Get the postprocessor to use in resources before adding them to the bundle
@@ -117,15 +118,6 @@ public interface JoinableResourceBundle {
      * Used to generate an automatic version url prefix. 
      * 
      * @param the variant key
-     * @param hashCode the hash code
-     */
-    public void setBundleDataHashCode(String variantKey, int bundleDataHashCode);
-	
-    /**
-     * Set the hashcode of the string representing the bundled files. 
-     * Used to generate an automatic version url prefix. 
-     * 
-     * @param the variant key
      * @param hashCode the string representation of the hash code where the minus is replace by a "N" character.
      */
     public void setBundleDataHashCode(String variantKey, String bundleDataHashCode);
@@ -141,18 +133,30 @@ public interface JoinableResourceBundle {
     
        
     /**
-     * Returns a list with the specified locale variants of this bundle. 
-     * @return a list with the specified locale variants of this bundle. 
+     * Returns the map of variants by type for this bundle. 
+     * @return the map of variants by type for this bundle. 
      */
-    public List getLocaleVariantKeys();
+    public Map getVariants();
+    
+    /**
+     * Sets the map of variants by type for this bundle. 
+     * @param the map of variants by type for this bundle. 
+     */
+    public void setVariants(Map variants);
+    
+    /**
+     * Returns the list of variant keys. 
+     * @return the list of variant keys. 
+     */
+    public List getVariantKeys();
     
     /**
      * Returns an ordered list with all the items pertaining to this bundle, with the variations 
      * corresponding to the specified variant key. 
-     * @param variantKey the variant key
+     * @param variants the variant map
      * @return an ordered list with all the items pertaining to this bundle
      */
-    public List getItemPathList(String variantKey);
+    public List getItemPathList(Map variants);
     
     /**
 	 * Returns the bundle dependencies
@@ -171,9 +175,5 @@ public interface JoinableResourceBundle {
      * @return
      */
     public String getAlternateProductionURL();
-
-	
-	
-
 	
 }

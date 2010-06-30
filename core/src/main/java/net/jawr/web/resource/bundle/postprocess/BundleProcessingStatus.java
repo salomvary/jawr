@@ -17,7 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
+import net.jawr.web.resource.bundle.variant.VariantSet;
+import net.jawr.web.resource.bundle.variant.VariantUtils;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 
 /**
@@ -28,6 +31,11 @@ import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
  * @author Ibrahim Chaehoi
  */
 public class BundleProcessingStatus {
+	
+	/** */
+	public static final String FILE_PROCESSING_TYPE = "file";
+	
+	public static final String BUNDLE_PROCESSING_TYPE = "bundle";
 	
 	/** The current bundle */
 	private final JoinableResourceBundle currentBundle;
@@ -41,8 +49,20 @@ public class BundleProcessingStatus {
 	/** The last path added */
 	private String lastPathAdded;
 	
-	/** The image resource mapping */
-	private Map imgResourceMapping = new HashMap();
+	/** The flag indicating if the post processor must search for post process variants or not */
+	private boolean searchingPostProcessorVariants = true;
+	
+	/** The map of current variants of the bundle to process  */
+	private Map bundleVariants = new HashMap();
+	
+	/** The map of variants which must be generated from the post processors */
+	private Map postProcessVariants = new HashMap();
+	
+	/** The map containing the data used by the processor */
+	private Map dataMap = new HashMap();
+	
+	/** The processing type (bundle, file)*/
+	private String processingType;
 	
 	/**
 	 * Constructor
@@ -50,14 +70,47 @@ public class BundleProcessingStatus {
 	 * @param rsHandler the resource handler
 	 * @param jawrConfig the Jawr config
 	 */
-	public BundleProcessingStatus(final JoinableResourceBundle currentBundle,
+	public BundleProcessingStatus(final String processingType, final JoinableResourceBundle currentBundle,
 			final ResourceReaderHandler rsHandler,final JawrConfig jawrConfig) {
 		super();
+		this.processingType = processingType;
 		this.currentBundle = currentBundle;
 		this.rsReader = rsHandler;
 		this.jawrConfig = jawrConfig;
 	}
 	
+	/**
+	 * Constructor
+	 * @param status the bundle processing status
+	 */
+	public BundleProcessingStatus(BundleProcessingStatus status) {
+		super();
+		this.processingType = status.processingType;
+		this.currentBundle = status.currentBundle;
+		this.rsReader = status.rsReader;
+		this.jawrConfig = status.jawrConfig;
+		this.dataMap = status.dataMap;
+		this.bundleVariants = status.bundleVariants;
+		this.lastPathAdded = status.lastPathAdded;
+		this.searchingPostProcessorVariants = status.searchingPostProcessorVariants;
+	}
+	
+	/**
+	 * Returns the processing type
+	 * @return the processingType
+	 */
+	public String getProcessingType() {
+		return processingType;
+	}
+
+	/**
+	 * Set the processing type
+	 * @param processingType the processingType to set
+	 */
+	public void setProcessingType(String processingType) {
+		this.processingType = processingType;
+	}
+
 	/**
 	 * Returns the last (current) resource path added to the bundle. 
 	 * @return The last (current) resource path added to the bundle. 
@@ -99,37 +152,99 @@ public class BundleProcessingStatus {
 	}
 	
 	/**
-	 * Returns the image resource map
-	 * @return the image resource map
+	 * Returns true if we are searching for post processor variants.
+	 * @return true if we are searching for post processor variants.
 	 */
-	public Map getImgResourceMapping() {
-		return imgResourceMapping;
+	public boolean isSearchingPostProcessorVariants() {
+		return searchingPostProcessorVariants;
 	}
 
 	/**
-	 * Sets the image resource map
-	 * @param imgResourceMapping the map to set
+	 * Sets the flag indicating if we are searching for post processor variants.
+	 * @param searchingPostProcessVariants the flag to set
 	 */
-	public void setImgResourceMapping(Map imgResourceMapping) {
-		this.imgResourceMapping = imgResourceMapping;
+	public void setSearchingPostProcessorVariants(boolean searchingPostProcessorVariants) {
+		this.searchingPostProcessorVariants = searchingPostProcessorVariants;
+	}
+
+	/**
+	 * Returns the current bundle variants used for the processing
+	 * @return the bundle variants
+	 */
+	public Map getBundleVariants() {
+		return bundleVariants;
+	}
+
+	/**
+	 * Sets the current bundle variants used for the processing
+	 * @param bundleVariants the bundle variants to set
+	 */
+	public void setBundleVariants(Map bundleVariants) {
+		this.bundleVariants = bundleVariants;
+	}
+
+	/**
+	 * Returns the current variant for the variant type specified in parameter
+	 * @param variantType the variant type
+	 * @return the current variant
+	 */
+	public String getVariant(String variantType) {
+		String variant = null;
+		if (bundleVariants != null) {
+			variant = (String) bundleVariants.get(variantType);
+		}
+		return variant;
 	}
 	
 	/**
-	 * Sets the image mapping for a image resource
-	 * @param resourceKey the image source
-	 * @param resourceValue the result imaged source
+	 * Returns the extra bundle variants generated by the post processors
+	 * @return the variants
 	 */
-	public void setImageMapping(String resourceKey, String resourceValue){
-		this.imgResourceMapping.put(resourceKey, resourceValue);
+	public Map getPostProcessVariants() {
+		return postProcessVariants;
 	}
 
 	/**
-	 * Gets the image mapping for a image resource
-	 * @param resourceKey the image source
-	 * @return the result imaged source
+	 * Add a post process variant
+	 * @param variantType the variant type
+	 * @param variantSet the variant set
 	 */
-	public String getImageMapping(String resourceKey){
-		return (String) this.imgResourceMapping.get(resourceKey);
+	public void addPostProcessVariant(String variantType, VariantSet variantSet){
+		
+		Map variantMap = new HashMap();
+		variantMap.put(variantType, variantSet);
+		addPostProcessVariant(variantMap);
 	}
-
+	
+	/**
+	 * Add a post process variant
+	 * @param variantType the variant type
+	 * @param variantSet the variant set
+	 */
+	public void addPostProcessVariant(Map variants){
+		
+		if(!searchingPostProcessorVariants){
+			throw new BundlingProcessException("You are not allowed to define post process variants if we are not searching for post processor variants.");
+		}
+		postProcessVariants = VariantUtils.concatVariants(postProcessVariants, variants);
+	}
+	
+	/**
+	 * Sets the data using the key
+	 * @param key the key
+	 * @param value the value
+	 */
+	public void putData(String key, Object value){
+		dataMap.put(key, value);
+	}
+	
+	/**
+	 * Gets the data from its key
+	 * @param key th key
+	 * @return the data
+	 */
+	public Object getData(String key){
+		return dataMap.get(key);
+	}
+	
 }

@@ -23,8 +23,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import net.jawr.web.exception.InvalidPathException;
 import net.jawr.web.resource.bundle.IOUtils;
 
 /**
@@ -109,7 +113,7 @@ public class FileUtils {
      */
     public static void copyFileToDirectory(File srcFile, File destDir, boolean preserveFileDate) throws IOException {
         if (destDir == null) {
-            throw new NullPointerException("Destination must not be null");
+            throw new IllegalArgumentException("Destination must not be null");
         }
         if (destDir.exists() && destDir.isDirectory() == false) {
             throw new IllegalArgumentException("Destination '" + destDir + "' is not a directory");
@@ -158,10 +162,10 @@ public class FileUtils {
     public static void copyFile(File srcFile, File destFile,
             boolean preserveFileDate) throws IOException {
         if (srcFile == null) {
-            throw new NullPointerException("Source must not be null");
+            throw new IllegalArgumentException("Source must not be null");
         }
         if (destFile == null) {
-            throw new NullPointerException("Destination must not be null");
+            throw new IllegalArgumentException("Destination must not be null");
         }
         if (srcFile.exists() == false) {
             throw new FileNotFoundException("Source '" + srcFile + "' does not exist");
@@ -344,10 +348,10 @@ public class FileUtils {
     public static void copyDirectory(File srcDir, File destDir,
             FileFilter filter, boolean preserveFileDate) throws IOException {
         if (srcDir == null) {
-            throw new NullPointerException("Source must not be null");
+            throw new IllegalArgumentException("Source must not be null");
         }
         if (destDir == null) {
-            throw new NullPointerException("Destination must not be null");
+            throw new IllegalArgumentException("Destination must not be null");
         }
         if (srcDir.exists() == false) {
             throw new FileNotFoundException("Source '" + srcDir + "' does not exist");
@@ -417,5 +421,30 @@ public class FileUtils {
                 }
             }
         }
+    }
+    
+    /**
+     * Returns the resource names contained in a directory, and
+     * for directory resource, a trailing '/' is added
+     * @param dir the directory
+     * @return the resource names
+     */
+    public static Set getResourceNames(File dir){
+    	     
+    	Set resourceNames = new HashSet();
+		
+    	// If the path is not valid throw an exception
+		String[] resArray = dir.list();
+		String absolutePath = dir.getAbsolutePath();
+		
+		if(resArray != null){
+			// Make the returned dirs end with '/', to match a servletcontext behavior. 
+			for (int i = 0; i < resArray.length; i++) {
+				if(new File(dir, resArray[i]).isDirectory())
+					resArray[i] += '/';
+			}
+			resourceNames.addAll(Arrays.asList(resArray));
+		}
+		return resourceNames;
     }
 }

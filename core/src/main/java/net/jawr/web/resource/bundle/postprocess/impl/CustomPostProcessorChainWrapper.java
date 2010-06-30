@@ -20,7 +20,7 @@ import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 
 /**
- * Wrapper class for custom user made postprocessors. I adds chaining funcionality to the 
+ * Wrapper class for custom user made postprocessors. Adds chaining functionality to the 
  * custom postprocessor. 
  * 
  * @author Jordi Hernández Sellés

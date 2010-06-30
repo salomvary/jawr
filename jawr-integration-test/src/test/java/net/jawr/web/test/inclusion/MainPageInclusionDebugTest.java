@@ -2,6 +2,8 @@ package net.jawr.web.test.inclusion;
 
 import static net.jawr.web.test.utils.Utils.assertGeneratedLinkEquals;
 import static org.junit.Assert.assertEquals;
+import static net.jawr.web.test.JawrIntegrationServer.SERVER_URL;
+import static net.jawr.web.test.JawrIntegrationServer.CONTEXT_PATH;
 
 import java.util.List;
 
@@ -58,11 +60,11 @@ public class MainPageInclusionDebugTest extends AbstractPageTest {
 				script.getSrcAttribute());
 		script = (HtmlScript) scripts.get(1);
 		assertGeneratedLinkEquals(
-				CONTEXT_PATH+"/js/inclusion/global/global_1.js?d=11111",
+				CONTEXT_PATH+"/js/inclusion/global/global.js?d=11111",
 				script.getSrcAttribute());
 		script = (HtmlScript) scripts.get(2);
 		assertGeneratedLinkEquals(
-				CONTEXT_PATH+"/js/inclusion/global/global.js?d=11111",
+				CONTEXT_PATH+"/js/inclusion/global/global_1.js?d=11111",
 				script.getSrcAttribute());
 		script = (HtmlScript) scripts.get(3);
 		assertGeneratedLinkEquals(
@@ -70,7 +72,7 @@ public class MainPageInclusionDebugTest extends AbstractPageTest {
 				script.getSrcAttribute());
 		script = (HtmlScript) scripts.get(4);
 		assertGeneratedLinkEquals(
-				CONTEXT_PATH+"/jawr_generator.js?generationConfigParam=testJs%3AgeneratedContent.js%40en_US",
+				CONTEXT_PATH+"/jawr_generator.js?generationConfigParam=testJs%3AgeneratedContent.js",
 				script.getSrcAttribute());
 		script = (HtmlScript) scripts.get(5);
 		assertGeneratedLinkEquals(
@@ -96,11 +98,11 @@ public class MainPageInclusionDebugTest extends AbstractPageTest {
 		
 		script = (HtmlScript) scripts.get(1);
 		page = getJavascriptPage(script);
-		assertContentEquals("/net/jawr/web/inclusion/debug/resources/js/global_1.js", page);
+		assertContentEquals("/net/jawr/web/inclusion/debug/resources/js/global.js", page);
 		
 		script = (HtmlScript) scripts.get(2);
 		page = getJavascriptPage(script);
-		assertContentEquals("/net/jawr/web/inclusion/debug/resources/js/global.js", page);
+		assertContentEquals("/net/jawr/web/inclusion/debug/resources/js/global_1.js", page);
 		
 		script = (HtmlScript) scripts.get(3);
 		page = getJavascriptPage(script);
@@ -144,7 +146,7 @@ public class MainPageInclusionDebugTest extends AbstractPageTest {
 				css.getHrefAttribute());
 		css = (HtmlLink) styleSheets.get(3);
 		assertGeneratedLinkEquals(
-				CONTEXT_PATH+"/jawr_generator.css?generationConfigParam=testCss%3AgeneratedContent.css%40en_US",
+				CONTEXT_PATH+"/jawr_generator.css?generationConfigParam=testCss%3AgeneratedContent.css",
 				css.getHrefAttribute());
 		css = (HtmlLink) styleSheets.get(4);
 		assertGeneratedLinkEquals(
