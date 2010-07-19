@@ -326,12 +326,9 @@ public class PropertiesBasedBundlesHandlerFactory {
 		}
 
 		// dependencies
-		String dependenciesProperty = props.getCustomBundleProperty(bundleName,
+		List dependencies = props.getCustomBundlePropertyAsList(bundleName,
 				PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_DEPENDENCIES);
-		if(!StringUtils.isEmpty(dependenciesProperty)){
-			String[] dependencies = dependenciesProperty.split(JawrConstant.COMMA_SEPARATOR);
-			bundle.setDependencies(Arrays.asList(dependencies));
-		}
+		bundle.setDependencies(dependencies);
 		
 		return bundle;
 	}
