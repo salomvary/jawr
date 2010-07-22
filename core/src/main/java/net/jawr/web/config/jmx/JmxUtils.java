@@ -27,6 +27,7 @@ import javax.servlet.ServletContext;
 import net.jawr.web.JawrConstant;
 import net.jawr.web.exception.JmxConfigException;
 import net.jawr.web.servlet.JawrRequestHandler;
+import net.jawr.web.util.StringUtils;
 
 import org.apache.log4j.Logger;
 
@@ -208,7 +209,7 @@ public final class JmxUtils {
 			contextPath = servletContext.getInitParameter(CONTEXT_PATH_PARAM_NAME);
 		}
 		
-		if(contextPath == null){
+		if(StringUtils.isEmpty(contextPath)){
 			LOGGER.warn("No context path defined for this web application. You will face issues, if you are deploying mutiple web app, without defining the context.\n" +
 					"If you are using a server with Servlet API less than 2.5, please use the context parameter 'contextPath' in your web.xml to define the context path of the application.");
 			
@@ -253,7 +254,7 @@ public final class JmxUtils {
 	public static ObjectName getMBeanObjectName(final String contextPath, final String resourceType) {
 		
 		String curCtxPath = contextPath;
-		if(curCtxPath == null){
+		if(StringUtils.isEmpty(curCtxPath)){
 			LOGGER.warn("No context path defined for this web application. You will face issues, if you are deploying mutiple web app, without defining the context.\n" +
 				"If you are using a server with Servlet API less than 2.5, please use the context parameter 'contextPath' in your web.xml to define your context path of the application.");
 	
