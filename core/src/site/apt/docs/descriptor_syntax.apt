@@ -7,7 +7,7 @@
 Descriptor file syntax
 
 	The Jawr descriptor file consists of a simple properties file. All property names begin with <jawr.>, followed by either <js.>, <css.> or <img.> to denote 
-	which servlet will use them.	A few common properties will not have the filetype prefix since they apply globally. 
+	which servlet will use them.	A few common properties will not have the filetype prefix since they apply globally. Some configuration properties are using name of the class to use, the full qualified name containing package prefix is expected.
 	
 * Basic global properties
 
