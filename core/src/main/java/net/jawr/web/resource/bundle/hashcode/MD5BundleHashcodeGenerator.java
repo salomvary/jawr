@@ -18,13 +18,14 @@ import java.io.IOException;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.resource.bundle.CheckSumUtils;
+import net.jawr.web.util.Base64Encoder;
 
 /**
  * This class defines the bundle hashcode generator which use MD5 as hashcode algorithm
  * 
  * @author Ibrahim Chaehoi
  */
-public class MD5BundleHascodeGenerator implements BundleHashcodeGenerator {
+public class MD5BundleHashcodeGenerator implements BundleHashcodeGenerator {
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.hash.BundleHashcodeGenerator#generateHashCode(net.jawr.web.config.JawrConfig, java.lang.String)
@@ -32,7 +33,8 @@ public class MD5BundleHascodeGenerator implements BundleHashcodeGenerator {
 	public String generateHashCode(JawrConfig config, String content) {
 		
 		try {
-			return CheckSumUtils.getMD5Checksum(content, config.getResourceCharset());
+			String checkSum = CheckSumUtils.getMD5Checksum(content, config.getResourceCharset());
+			return Base64Encoder.encodeString(checkSum);
 		} catch (IOException e) {
 			throw new BundlingProcessException("Unable to generate the bundle hashcode", e);
 		}
