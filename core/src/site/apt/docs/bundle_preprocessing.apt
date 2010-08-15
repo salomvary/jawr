@@ -110,6 +110,8 @@ Bundle preprocessing
 	 	
 		* <<generateCdnFiles>> the flag indicating if we should generate the CDN files or not
 	
+		* <<keepUrlMapping>> The flag indicating if we want to keep the jawr URL mapping or if we rewrite it to remove resource hashcode.
+	
 ** Limitations
 	
 	As we have seen, the bundle preprocessing has almost the same behaviour as the standard bundle processing.
