@@ -192,7 +192,7 @@
 	      		 <li>
 	      		 	<strong>Issue #163 fixed:</strong> Issue with bundle hashcode generation which must be based on bundle content      
 	      		 </li>
-	      		 Thanks to the users which report these issues through the discussion forum.
+	      		 Thanks to Mark W. for reporting the hashcode generation issue.
 	      	</ul>
       	  </li>	
 	      <li> <strong>07/20/2009</strong>: Version 3.3.2 released:<br/>
