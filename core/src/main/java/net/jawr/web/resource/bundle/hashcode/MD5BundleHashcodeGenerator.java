@@ -24,7 +24,7 @@ import net.jawr.web.resource.bundle.CheckSumUtils;
  * 
  * @author Ibrahim Chaehoi
  */
-public class MD5BundleHascodeGenerator implements BundleHashcodeGenerator {
+public class MD5BundleHashcodeGenerator implements BundleHashcodeGenerator {
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.hash.BundleHashcodeGenerator#generateHashCode(net.jawr.web.config.JawrConfig, java.lang.String)

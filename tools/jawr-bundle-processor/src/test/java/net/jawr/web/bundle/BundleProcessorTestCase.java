@@ -254,8 +254,8 @@ public class BundleProcessorTestCase extends TestCase {
 
 	private void checkGeneratedContentWithNoFileRemapping(String destDirPath){
 		
-		checkContentCreated(destDirPath+"/CDN//N469053776/bundle/js/global.js");
-		checkContentCreated(destDirPath+"/CDN/cssJawrPath/692232853/bundle/css/component.css");
+		checkContentCreated(destDirPath+"/CDN//780537719/bundle/js/global.js");
+		checkContentCreated(destDirPath+"/CDN/cssJawrPath/1981141074/bundle/css/component.css");
 		checkContentCreated(destDirPath+"/CDN/cssJawrPath/css/one.css");
 		checkContentCreated(destDirPath+"/CDN/cb1b43d6c4267824d03225a192305c6601/img/mysprite.png");
 		checkContentCreated(destDirPath+"/CDN/cbfc517da02d6a64a68e5fea9a5de472f1/img/appIcons/application.png");

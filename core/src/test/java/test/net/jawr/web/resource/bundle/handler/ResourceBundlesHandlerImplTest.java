@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
@@ -61,6 +62,11 @@ public class ResourceBundlesHandlerImplTest  extends  ResourceHandlerBasedTest {
 			System.out.println("Error in test constructor");
 			e.printStackTrace();
 		}
+	}
+	
+	public void testHashCodeGeneration(){
+		JoinableResourceBundle bundle = defaultHandler.resolveBundleForPath("/script.js");
+		assertEquals("107739304", bundle.getBundleDataHashCode(null));
 	}
 	
 	public void testGetSingleFilePath() {

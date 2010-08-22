@@ -717,7 +717,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	private void initBundleDataHashcode(JoinableResourceBundle bundle,
 			JoinableResourceBundleContent store, String variant) {
 		
-		String bundleHashcode = bundleHashcodeGenerator.generateHashCode(config, store.toString());
+		String bundleHashcode = bundleHashcodeGenerator.generateHashCode(config, store.getContent().toString());
 		bundle.setBundleDataHashCode(variant, bundleHashcode);
 	}
 

@@ -31,6 +31,9 @@ Jawr Ant task
 	* <<generateCDNFiles>> The flag indicating if we should generate the CDN files or not
 	Default value: true 
 	
+	* <<keepUrlMapping>> The flag indicating if we want to keep the jawr URL mapping or if we rewrite it to remove resource hashcode.
+	Default value: false 
+	
 +------------------------------------------+	
 
 	<!-- Definition of the Jawr bundle task -->
