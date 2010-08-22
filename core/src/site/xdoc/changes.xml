@@ -8,7 +8,28 @@
 	
     <section name="Announcementes and change log">
     <ul>
-    	<li> <strong>07/20/2009</strong>: Version 3.3.2 released:<br/>
+    	<li> <strong>08/15/2009</strong>: Version 3.3.3 released:<br/>
+	      	This version contains 2 bug fixes including a major one. It is highly recommended to upgrade to this version.<br/><br/>
+	      	There was an issue in the hashcode generation, which causes the bundle to be reloaded even if the bundle content didn't change.
+	      	This implies some performance penalties.<br/>
+	      	The hashcode was based on the Java object ID instead of the bundle content.<br/>
+	      	The consequences are :
+	      		<ul>
+	      			<li>If you restart your application server, for the same application, Jawr could generate different hashcodes for the same bundle.</li>
+	      			<li>If you are using load balancing and run the same application on 2 servers, they could generate different hashcodes for the same bundle.</li>
+	      		</ul>
+	      	<strong>Fixed issues: </strong>
+	    	 <ul>   
+	    	 	 <li>
+	      		 	<strong>Issue #160 fixed:</strong> An exception is thrown, when using JMX on an application whose the context path is empty     
+	      		 </li>      
+	      		 <li>
+	      		 	<strong>Issue #163 fixed:</strong> Issue with bundle hashcode generation which must be based on bundle content      
+	      		 </li>
+	      		 Thanks to Mark W. for reporting the hashcode generation issue.
+	      	</ul>
+      	  </li>	
+      	  <li> <strong>07/20/2009</strong>: Version 3.3.2 released:<br/>
 	      	This version contains only bug fixes.<br/><br/>
 	      	<strong>Fixed issues: </strong>
 	    	 <ul>   
