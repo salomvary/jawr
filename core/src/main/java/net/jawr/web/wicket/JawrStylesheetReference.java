@@ -13,19 +13,12 @@
  */
 package net.jawr.web.wicket;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import net.jawr.web.JawrConstant;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
-import net.jawr.web.resource.bundle.renderer.BundleRendererContext;
 import net.jawr.web.resource.bundle.renderer.CSSHTMLBundleLinkRenderer;
-import net.jawr.web.servlet.RendererRequestUtils;
 import net.jawr.web.util.StringUtils;
 
-import org.apache.log4j.Logger;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.value.IValueMap;
@@ -42,9 +35,6 @@ public class JawrStylesheetReference extends AbstractJawrReference {
     /** The serial version UID */
 	private static final long serialVersionUID = -8704775670669437484L;
 
-	/** The logger */
-	private static final Logger LOGGER = Logger
-			.getLogger(JawrStylesheetReference.class);
 	/**
 	 * Constructor
 	 * @param id the ID

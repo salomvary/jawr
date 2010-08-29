@@ -129,7 +129,7 @@ public class PropertyUtils {
      * @exception IllegalArgumentException if <code>beanClass</code> is null
      */
     public static PropertyDescriptor[]
-            getPropertyDescriptors(Class beanClass) {
+            getPropertyDescriptors(Class<?> beanClass) {
 
         if (beanClass == null) {
             throw new IllegalArgumentException("No bean class specified");

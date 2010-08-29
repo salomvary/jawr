@@ -242,10 +242,12 @@ public abstract class AbstractJawrImageReference extends WebMarkupContainer {
 				
 			}
 
+			@SuppressWarnings("unused")
 			public String getContentType() {
 				return null;
 			}
 
+			@SuppressWarnings("unused")
 			public void setCharacterEncoding(String charset) {
 				
 			}

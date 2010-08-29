@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.jawr.web.exception.InvalidPathException;
 import net.jawr.web.resource.bundle.IOUtils;
 
 /**
@@ -364,11 +363,11 @@ public class FileUtils {
         }
 
         // Cater for destination being directory within the source directory (see IO-141)
-        List exclusionList = null;
+        List<String> exclusionList = null;
         if (destDir.getCanonicalPath().startsWith(srcDir.getCanonicalPath())) {
             File[] srcFiles = filter == null ? srcDir.listFiles() : srcDir.listFiles(filter);
             if (srcFiles != null && srcFiles.length > 0) {
-                exclusionList = new ArrayList(srcFiles.length);
+                exclusionList = new ArrayList<String>(srcFiles.length);
                 for (int i = 0; i < srcFiles.length; i++) {
                     File copiedFile = new File(destDir, srcFiles[i].getName());
                     exclusionList.add(copiedFile.getCanonicalPath());
@@ -390,7 +389,7 @@ public class FileUtils {
      * @since Commons IO 1.1
      */
     private static void doCopyDirectory(File srcDir, File destDir, FileFilter filter,
-            boolean preserveFileDate, List exclusionList) throws IOException {
+            boolean preserveFileDate, List<String> exclusionList) throws IOException {
         if (destDir.exists()) {
             if (destDir.isDirectory() == false) {
                 throw new IOException("Destination '" + destDir + "' exists but is not a directory");
@@ -429,13 +428,12 @@ public class FileUtils {
      * @param dir the directory
      * @return the resource names
      */
-    public static Set getResourceNames(File dir){
+    public static Set<String> getResourceNames(File dir){
     	     
-    	Set resourceNames = new HashSet();
+    	Set<String> resourceNames = new HashSet<String>();
 		
     	// If the path is not valid throw an exception
 		String[] resArray = dir.list();
-		String absolutePath = dir.getAbsolutePath();
 		
 		if(resArray != null){
 			// Make the returned dirs end with '/', to match a servletcontext behavior. 

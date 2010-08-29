@@ -56,6 +56,7 @@ public final class ConcurrentCollectionsFactory {
 	 * Collections.synchronizedMap is used to create the instance. 
 	 * @return a concurrent hashmap
 	 */
+	@SuppressWarnings("rawtypes")
 	public static Map buildConcurrentHashMap() {
 		Class mapClass = null;
 		try {
@@ -83,7 +84,8 @@ public final class ConcurrentCollectionsFactory {
 	 * @param mapClass the concurrent HashMap class
 	 * @return a concurrent HashMap
 	 */
-	private static Map instantiateConcurrentHashMap(final Class mapClass) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static Map instantiateConcurrentHashMap(final Class<?> mapClass) {
 		
 		Map syncMap = null;
 		if(null != mapClass) {
@@ -112,9 +114,9 @@ public final class ConcurrentCollectionsFactory {
 	 * Returns the concurrent hashMap class of edu.emory.mathcs.backport 
 	 * @return the concurrent hashMap class of edu.emory.mathcs.backport 
 	 */
-	private static Class getBackPortConcurrentHashMapClass() {
+	private static Class<?> getBackPortConcurrentHashMapClass() {
 		
-		Class mapClass = null;
+		Class<?> mapClass = null;
 		try {
 			mapClass = Class.forName("edu.emory.mathcs.backport.java.util.concurrent.ConcurrentHashMap");
 			if(logOnHashMap){
@@ -133,9 +135,10 @@ public final class ConcurrentCollectionsFactory {
 	 *  
 	 * @return a concurrent list
 	 */
+	@SuppressWarnings("rawtypes")
 	public static List buildCopyOnWriteArrayList() {
 		
-		Class listClass = null;
+		Class<?> listClass = null;
 		List cowList = null;
 		try {
 			listClass = Class.forName("java.util.concurrent.CopyOnWriteArrayList");
@@ -163,7 +166,8 @@ public final class ConcurrentCollectionsFactory {
 	 * @param listClass the concurrent list class
 	 * @return a concurrent list
 	 */
-	private static List instantiateConcurrentList(final Class listClass) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static List instantiateConcurrentList(final Class<?> listClass) {
 		
 		List cowList = null;
 		if(null != listClass) {
@@ -192,9 +196,9 @@ public final class ConcurrentCollectionsFactory {
 	 * Returns the concurrent list class of edu.emory.mathcs.backport 
 	 * @return the concurrent list class of edu.emory.mathcs.backport 
 	 */
-	private static Class getBackportConcurrentListClass() {
+	private static Class<?> getBackportConcurrentListClass() {
 		
-		Class listClass = null;
+		Class<?> listClass = null;
 		try {
 			listClass = Class.forName("edu.emory.mathcs.backport.java.util.concurrent.CopyOnWriteArrayList");
 			if(logOnArray){

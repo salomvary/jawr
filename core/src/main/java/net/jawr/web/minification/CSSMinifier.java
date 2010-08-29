@@ -94,7 +94,7 @@ public class CSSMinifier {
 		String compressed = COMMENTS_PATTERN.matcher(data.toString()).replaceAll("");
 
 		// Temporarily replace the strings with a placeholder
-		final List strings = new ArrayList();		
+		final List<String> strings = new ArrayList<String>();		
 		Matcher stringMatcher = QUOTED_CONTENT_PATTERN.matcher(compressed);
 		
 		compressed = new MatcherProcessorCallback(){
@@ -141,7 +141,7 @@ public class CSSMinifier {
 
 		// Restore all Strings
 		Matcher restoreMatcher = STRING_PLACE_HOLDE_PATTERN.matcher(compressed);		
-		final Iterator it = strings.iterator();
+		final Iterator<String> it = strings.iterator();
 		compressed = new MatcherProcessorCallback(){
 			String matchCallback(Matcher matcher) {
 				
