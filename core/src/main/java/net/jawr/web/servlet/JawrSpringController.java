@@ -49,7 +49,7 @@ public class JawrSpringController implements Controller, ServletContextAware, In
 	private JawrRequestHandler requestHandler;
 	
 	/** The initialization parameters */
-	private Map initParams;
+	private Map<Object, Object> initParams;
 	
 	// Init params
 	/** The type */
@@ -104,7 +104,7 @@ public class JawrSpringController implements Controller, ServletContextAware, In
 	 * Returns the init parameters
 	 * @return the init parameters
 	 */
-	public Map getInitParams() {
+	public Map<Object, Object> getInitParams() {
 		return initParams;
 	}
 
@@ -172,7 +172,7 @@ public class JawrSpringController implements Controller, ServletContextAware, In
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	public void afterPropertiesSet() throws Exception {
-		initParams = new HashMap(3);
+		initParams = new HashMap<Object, Object>(3);
 		initParams.put("type",type);
 		initParams.put("configPropertiesSourceClass",configPropertiesSourceClass);
 		initParams.put("configLocation", configLocation);

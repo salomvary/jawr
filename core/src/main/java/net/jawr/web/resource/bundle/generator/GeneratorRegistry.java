@@ -87,16 +87,20 @@ public class GeneratorRegistry {
 	public static final String PREFIX_SEPARATOR = ":";
 	
 	/** The generator prefix registry */
-	private final List prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
+	@SuppressWarnings("unchecked")
+	private final List<String> prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 	
 	/** The CSS image resource prefix registry */
-	private final List cssImageResourceGeneratorPrefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
+	@SuppressWarnings("unchecked")
+	private final List<String> cssImageResourceGeneratorPrefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 	
 	/** The image resource prefix registry */
-	private final List imageResourceGeneratorPrefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
+	@SuppressWarnings("unchecked")
+	private final List<String> imageResourceGeneratorPrefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
 	
 	/** The generator registry */
-	private final Map registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+	@SuppressWarnings("unchecked")
+	private final Map<String, PrefixedResourceGenerator> registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
 	
 	/** The resource type */
 	private String resourceType;
@@ -108,7 +112,8 @@ public class GeneratorRegistry {
 	private ResourceReaderHandler rsHandler;
 	
 	/** The map of variant resolvers */
-	private final Map variantResolvers = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+	@SuppressWarnings("unchecked")
+	private final Map<String, VariantResolver> variantResolvers = ConcurrentCollectionsFactory.buildConcurrentHashMap();
 	
 	/**
 	 * Use only for testing purposes.
@@ -229,8 +234,8 @@ public class GeneratorRegistry {
 	 */
 	public void registerVariantResolver(VariantResolver resolver){
 		
-		for (Iterator itResolver = variantResolvers.values().iterator(); itResolver.hasNext();) {
-			VariantResolver variantResolver = (VariantResolver) itResolver.next();
+		for (Iterator<VariantResolver> itResolver = variantResolvers.values().iterator(); itResolver.hasNext();) {
+			VariantResolver variantResolver = itResolver.next();
 			if(StringUtils.isEmpty(resolver.getVariantType())){
 				throw new IllegalStateException("The getVariantType() method must return something at " + resolver.getClass());
 			}
@@ -345,8 +350,8 @@ public class GeneratorRegistry {
 	 */
 	private String matchPath(String path) {
 		String generatorKey = null;
-		for(Iterator it = prefixRegistry.iterator();it.hasNext() && generatorKey == null;) {
-			String prefix = (String) it.next();
+		for(Iterator<String> it = prefixRegistry.iterator();it.hasNext() && generatorKey == null;) {
+			String prefix = it.next();
 			if(path.startsWith(prefix))
 				generatorKey = prefix;			
 		}	
@@ -371,22 +376,21 @@ public class GeneratorRegistry {
 	 * @param bundle the bundle
 	 * @return the available variant for a bundle
 	 */
-	public Map getAvailableVariants(String bundle) {
+	public Map<String, VariantSet> getAvailableVariants(String bundle) {
 		
-		Map availableVariants = new TreeMap();
+		Map<String, VariantSet> availableVariants = new TreeMap<String, VariantSet>();
 		String generatorKey = matchPath(bundle);
 		if(generatorKey != null){
 			ResourceGenerator generator = (ResourceGenerator) registry.get(generatorKey);
 			if(generator instanceof VariantResourceGenerator){
 				
-				Map tempResult = ((VariantResourceGenerator)generator).getAvailableVariants(bundle.substring(generatorKey.length()));
+				Map<String, VariantSet> tempResult = ((VariantResourceGenerator)generator).getAvailableVariants(bundle.substring(generatorKey.length()));
 				if(tempResult != null){
 					availableVariants = tempResult;
 				}
 			}else if(generator instanceof LocaleAwareResourceGenerator){
-				List availableLocales = ((LocaleAwareResourceGenerator)generator).getAvailableLocales(bundle.substring(generatorKey.length()));
+				List<String> availableLocales = ((LocaleAwareResourceGenerator)generator).getAvailableLocales(bundle.substring(generatorKey.length()));
 				if(availableLocales != null){
-					availableVariants = new HashMap();
 					VariantSet variantSet = new VariantSet(JawrConstant.LOCALE_VARIANT_TYPE, "", availableLocales);
 					availableVariants.put(JawrConstant.LOCALE_VARIANT_TYPE, variantSet);
 				}
@@ -401,20 +405,20 @@ public class GeneratorRegistry {
 	 * @param path the path
 	 * @return he variant types for a generated resource
 	 */
-	public Set getGeneratedResourceVariantTypes(String path) {
+	public Set<String> getGeneratedResourceVariantTypes(String path) {
 		
-		Set variantTypes = new HashSet();
+		Set<String> variantTypes = new HashSet<String>();
 		String generatorKey = matchPath(path);
 		if(generatorKey != null){
 			ResourceGenerator generator = (ResourceGenerator) registry.get(generatorKey);
 			if(generator instanceof VariantResourceGenerator){
 				
-				Set tempResult = ((VariantResourceGenerator)generator).getAvailableVariants(path.substring(generatorKey.length())).keySet();
+				Set<String> tempResult = ((VariantResourceGenerator)generator).getAvailableVariants(path.substring(generatorKey.length())).keySet();
 				if(tempResult != null){
 					variantTypes = tempResult;
 				}
 			}else if(generator instanceof LocaleAwareResourceGenerator){
-				variantTypes = new HashSet();
+				variantTypes = new HashSet<String>();
 				variantTypes.add(JawrConstant.LOCALE_VARIANT_TYPE);
 			}
 		}
@@ -461,11 +465,11 @@ public class GeneratorRegistry {
 	 * @param request the request
 	 * @return the map of variants defined in the request
 	 */
-	public Map resolveVariants(HttpServletRequest request){
+	public Map<String, String> resolveVariants(HttpServletRequest request){
 		
-		Map variants = new TreeMap();
-		for (Iterator itVariantResolver = variantResolvers.values().iterator(); itVariantResolver.hasNext();) {
-			VariantResolver resolver = (VariantResolver) itVariantResolver.next();
+		Map<String, String> variants = new TreeMap<String, String>();
+		for (Iterator<VariantResolver> itVariantResolver = variantResolvers.values().iterator(); itVariantResolver.hasNext();) {
+			VariantResolver resolver = itVariantResolver.next();
 			String value = resolver.resolveVariant(request);
 			if(value != null){
 				variants.put(resolver.getVariantType(), value);
@@ -481,18 +485,18 @@ public class GeneratorRegistry {
 	 * @param curVariants the current variant
 	 * @return the available variants
 	 */
-	public Map getAvailableVariantMap(Map variants, Map curVariants){
+	public Map<String, String> getAvailableVariantMap(Map<String, VariantSet> variants, Map<String, String> curVariants){
 		
-		Map availableVariantMap = new HashMap();
-		for (Iterator iterator = curVariants.entrySet().iterator(); iterator.hasNext();) {
-			Entry entry = (Entry) iterator.next();
-			String variantType = (String) entry.getKey();
-			String variant = (String) entry.getValue();
+		Map<String, String> availableVariantMap = new HashMap<String, String>();
+		for (Iterator<Entry<String, String>> iterator = curVariants.entrySet().iterator(); iterator.hasNext();) {
+			Entry<String, String> entry =  iterator.next();
+			String variantType = entry.getKey();
+			String variant = entry.getValue();
 			
 			if(variants.containsKey(variantType)){
-				VariantResolver resolver = (VariantResolver) variantResolvers.get(variantType);
+				VariantResolver resolver = variantResolvers.get(variantType);
 				if(resolver != null){
-					variant = resolver.getAvailableVariant(variant, (VariantSet) variants.get(variantType));
+					variant = resolver.getAvailableVariant(variant, variants.get(variantType));
 				}
 				
 				availableVariantMap.put(variantType, variant);

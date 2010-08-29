@@ -75,7 +75,7 @@ public class DWRBeanGenerator extends AbstractJavascriptGenerator implements Res
 	private static final String WEBWORK_PATH = "org/directwebremoting/webwork/DWRActionUtil.js";
 	
 	// Convenience map to avoid many if-elses later
-	private static final Map DWR_LIBRARIES = new HashMap(3);
+	private static final Map<String, String> DWR_LIBRARIES = new HashMap<String, String>(3);
 	
 	// Script replacement to refer to a javascript var that JAWR creates
 	private static final String JS_PATH_REF = "'+JAWR.jawr_dwr_path+'";
@@ -154,8 +154,9 @@ public class DWRBeanGenerator extends AbstractJavascriptGenerator implements Res
 	 * @param engineScript
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private StringBuffer buildEngineScript(StringBuffer engineScript,ServletContext servletContext) {
-		List containers = ContainerUtil.getAllPublishedContainers(servletContext);
+		List<Container> containers = ContainerUtil.getAllPublishedContainers(servletContext);
 		String allowGetForSafariButMakeForgeryEasier = "";
 		String scriptTagProtection = DwrConstants.SCRIPT_TAG_PROTECTION;
 		String pollWithXhr = "";
@@ -163,8 +164,8 @@ public class DWRBeanGenerator extends AbstractJavascriptGenerator implements Res
 		
 
 		
-		for(Iterator it = containers.iterator();it.hasNext();) {
-			Container container = (Container) it.next();
+		for(Iterator<Container> it = containers.iterator();it.hasNext();) {
+			Container container = it.next();
 			ServerLoadMonitor monitor = (ServerLoadMonitor) container.getBean(ServerLoadMonitor.class.getName());
 			pollWithXhr = monitor.supportsStreaming() ? "false" : "true";
 			
@@ -236,14 +237,15 @@ public class DWRBeanGenerator extends AbstractJavascriptGenerator implements Res
 	 * @param basePath
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private StringBuffer getInterfaceScript(String scriptName,ServletContext servletContext) {
 		StringBuffer sb = new StringBuffer(ENGINE_INIT);
 
 		// List all containers to find all DWR interfaces
-		List containers = ContainerUtil.getAllPublishedContainers(servletContext);
+		List<Container> containers = ContainerUtil.getAllPublishedContainers(servletContext);
 		boolean found = false;
-		for(Iterator it = containers.iterator();it.hasNext() && !found;) {
-			Container container = (Container) it.next();
+		for(Iterator<Container> it = containers.iterator();it.hasNext() && !found;) {
+			Container container = it.next();
 			
 			// The creatormanager holds the list of beans
 			CreatorManager ctManager = (CreatorManager) container.getBean(CreatorManager.class.getName());
@@ -290,13 +292,14 @@ public class DWRBeanGenerator extends AbstractJavascriptGenerator implements Res
 	 * @param basePath
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private StringBuffer getAllPublishedInterfaces(ServletContext servletContext) {
 		
 		StringBuffer sb = new StringBuffer();
 
 		// List all containers to find all DWR interfaces
-		List containers = ContainerUtil.getAllPublishedContainers(servletContext);
-		for(Iterator it = containers.iterator();it.hasNext();) {
+		List<Container> containers = ContainerUtil.getAllPublishedContainers(servletContext);
+		for(Iterator<Container> it = containers.iterator();it.hasNext();) {
 			Container container = (Container) it.next();
 			
 			// The creatormanager holds the list of beans
@@ -330,8 +333,8 @@ public class DWRBeanGenerator extends AbstractJavascriptGenerator implements Res
 						dfCreator.setDebug(debugMode);
 					}
 				}
-				for(Iterator names = creators.iterator();names.hasNext();) {
-					String script = remoter.generateInterfaceScript((String)names.next(), path);
+				for(Iterator<String> names = creators.iterator();names.hasNext();) {
+					String script = remoter.generateInterfaceScript(names.next(), path);
 					// Must remove the engine init script to avoid unneeded duplication
 					script = removeEngineInit(script);
 					sb.append(script);

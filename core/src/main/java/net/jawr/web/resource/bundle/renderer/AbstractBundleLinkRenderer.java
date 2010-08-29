@@ -136,7 +136,7 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
 	 * @throws IOException if an IOException occurs
 	 */
 	protected void renderBundleLinks(JoinableResourceBundle bundle,
-			BundleRendererContext ctx, Map variant, Writer out, boolean debugOn)
+			BundleRendererContext ctx, Map<String, String> variant, Writer out, boolean debugOn)
 			throws IOException {
 		
 		ResourceBundlePathsIterator it = bundler.getBundlePaths(bundle.getId(), new ConditionalCommentRenderer(out), variant);
@@ -200,12 +200,12 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
 	 */
 	private void renderBundleDependenciesLinks(String requestedPath,
 			BundleRendererContext ctx, Writer out, boolean debugOn,
-			List dependencies) throws IOException {
+			List<JoinableResourceBundle> dependencies) throws IOException {
 		
 		if(dependencies != null && !dependencies.isEmpty()){
-			for (Iterator iterator = dependencies.iterator(); iterator
+			for (Iterator<JoinableResourceBundle> iterator = dependencies.iterator(); iterator
 					.hasNext();) {
-				JoinableResourceBundle dependencyBundle = (JoinableResourceBundle) iterator.next();
+				JoinableResourceBundle dependencyBundle = iterator.next();
 				if(debugOn){
 					addComment("Start adding dependency '"+dependencyBundle.getId()+"'", out);
 				}

@@ -15,6 +15,8 @@ package net.jawr.web.resource.bundle.global.preprocessor;
 
 import java.util.List;
 
+import net.jawr.web.resource.bundle.JoinableResourceBundle;
+
 /**
  * This class defines the wrapper, which wraps a custom global preprocessor to a chained global preprocessor.
  * 
@@ -40,7 +42,7 @@ public class CustomGlobalPreprocessorChainedWrapper extends AbstractChainedGloba
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessor#processBundles(net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessingContext, java.util.List)
 	 */
-	public void processBundles(GlobalPreprocessingContext ctx, List bundles) {
+	public void processBundles(GlobalPreprocessingContext ctx, List<JoinableResourceBundle> bundles) {
 		globalPreprocessor.processBundles(ctx, bundles);
 	}
 	

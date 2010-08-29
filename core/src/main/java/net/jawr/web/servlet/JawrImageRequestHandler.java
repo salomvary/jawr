@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -118,7 +119,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 *            ServletConfig
 	 * @throws ServletException
 	 */
-	public JawrImageRequestHandler(ServletContext context, Map initParams,
+	public JawrImageRequestHandler(ServletContext context, Map<Object, Object> initParams,
 			Properties configProps) throws ServletException {
 
 		super(context, initParams, configProps);
@@ -168,7 +169,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		// Initialize custom generators
 		PropertiesConfigHelper propertiesHelper = new PropertiesConfigHelper(
 				props, resourceType);
-		Iterator generators = propertiesHelper.getCommonPropertyAsSet(
+		Iterator<String> generators = propertiesHelper.getCommonPropertyAsSet(
 				PropertiesBundleConstant.CUSTOM_GENERATORS).iterator();
 		while (generators.hasNext()) {
 			String generatorClass = (String) generators.next();
@@ -212,10 +213,10 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 				&& rsBundleHandler.isExistingMappingFile()) {
 
 			// Initialize the image mapping
-			Iterator mapIterator = bundleMapping.keySet().iterator();
+			Iterator<Entry<Object, Object>> mapIterator = bundleMapping.entrySet().iterator();
 			while (mapIterator.hasNext()) {
-				String key = (String) mapIterator.next();
-				imgRsHandler.addMapping(key, bundleMapping.getProperty(key));
+				Entry<Object, Object> entry = mapIterator.next();
+				imgRsHandler.addMapping((String) entry.getKey(), entry.getValue().toString());
 			}
 
 		} else {
@@ -328,7 +329,7 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 	 */
 	private void addItemsFromDir(ImageResourcesHandler imgRsHandler,
 			String dirName, boolean addSubDirs) {
-		Set resources = rsReaderHandler.getResourceNames(dirName);
+		Set<String> resources = rsReaderHandler.getResourceNames(dirName);
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Adding " + resources.size() + " resources from path ["
@@ -337,9 +338,9 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 
 		// Add remaining resources (remaining after sorting, or all if no sort
 		// file present)
-		List folders = new ArrayList();
-		for (Iterator it = resources.iterator(); it.hasNext();) {
-			String resourceName = (String) it.next();
+		List<String> folders = new ArrayList<String>();
+		for (Iterator<String> it = resources.iterator(); it.hasNext();) {
+			String resourceName = it.next();
 			String resourcePath = PathNormalizer.joinPaths(dirName,
 					resourceName);
 			if (hasImageFileExtension(resourceName)) {
@@ -366,8 +367,8 @@ public class JawrImageRequestHandler extends JawrRequestHandler {
 		// Add subfolders if requested. Subfolders are added last unless
 		// specified in sorting file.
 		if (addSubDirs) {
-			for (Iterator it = folders.iterator(); it.hasNext();) {
-				String folderName = (String) it.next();
+			for (Iterator<String> it = folders.iterator(); it.hasNext();) {
+				String folderName = it.next();
 				addItemsFromDir(imgRsHandler, PathNormalizer.joinPaths(dirName,
 						folderName), true);
 			}

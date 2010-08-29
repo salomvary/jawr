@@ -19,6 +19,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class defines the bean information for the ELCSSBundleTag class.
@@ -27,150 +28,180 @@ import java.util.ArrayList;
  */
 public class ELImgHtmlTagBeanInfo extends SimpleBeanInfo {
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.beans.SimpleBeanInfo#getPropertyDescriptors()
 	 */
 	public PropertyDescriptor[] getPropertyDescriptors() {
-		ArrayList proplist = new ArrayList();
+
+		List<PropertyDescriptor> proplist = new ArrayList<PropertyDescriptor>();
 
 		try {
-            proplist.add(new PropertyDescriptor("base64", ELImageInputTag.class, null,
-                    "setBase64Expr"));
-        } catch (IntrospectionException ex) {
-        }
-        
-        try {
-			proplist.add(new PropertyDescriptor("align", ELImgHtmlTag.class, null, "setAlignExpr"));
+			proplist.add(new PropertyDescriptor("base64",
+					ELImageInputTag.class, null, "setBase64Expr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("alt", ELImgHtmlTag.class, null, "setAltExpr"));
+			proplist.add(new PropertyDescriptor("align", ELImgHtmlTag.class,
+					null, "setAlignExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("border", ELImgHtmlTag.class, null, "setBorderExpr"));
+			proplist.add(new PropertyDescriptor("alt", ELImgHtmlTag.class,
+					null, "setAltExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("dir", ELImgHtmlTag.class, null, "setDirExpr"));
+			proplist.add(new PropertyDescriptor("border", ELImgHtmlTag.class,
+					null, "setBorderExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("height", ELImgHtmlTag.class, null, "setHeightExpr"));
+			proplist.add(new PropertyDescriptor("dir", ELImgHtmlTag.class,
+					null, "setDirExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("hspace", ELImgHtmlTag.class, null, "setHspaceExpr"));
+			proplist.add(new PropertyDescriptor("height", ELImgHtmlTag.class,
+					null, "setHeightExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("ismap", ELImgHtmlTag.class, null, "setIsmapExpr"));
+			proplist.add(new PropertyDescriptor("hspace", ELImgHtmlTag.class,
+					null, "setHspaceExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("lang", ELImgHtmlTag.class, null, "setLangExpr"));
+			proplist.add(new PropertyDescriptor("ismap", ELImgHtmlTag.class,
+					null, "setIsmapExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("name", ELImgHtmlTag.class, null, "setNameExpr"));
+			proplist.add(new PropertyDescriptor("lang", ELImgHtmlTag.class,
+					null, "setLangExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("onclick", ELImgHtmlTag.class, null, "setOnclickExpr"));
+			proplist.add(new PropertyDescriptor("name", ELImgHtmlTag.class,
+					null, "setNameExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("ondblclick", ELImgHtmlTag.class, null, "setOndblclickExpr"));
+			proplist.add(new PropertyDescriptor("onclick", ELImgHtmlTag.class,
+					null, "setOnclickExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("onkeydown", ELImgHtmlTag.class, null, "setOnkeydownExpr"));
+			proplist.add(new PropertyDescriptor("ondblclick",
+					ELImgHtmlTag.class, null, "setOndblclickExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("onkeypress", ELImgHtmlTag.class, null, "setOnkeypressExpr"));
+			proplist.add(new PropertyDescriptor("onkeydown",
+					ELImgHtmlTag.class, null, "setOnkeydownExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("onkeyup", ELImgHtmlTag.class, null, "setOnkeyupExpr"));
+			proplist.add(new PropertyDescriptor("onkeypress",
+					ELImgHtmlTag.class, null, "setOnkeypressExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("onmousedown", ELImgHtmlTag.class, null, "setOnmousedownExpr"));
+			proplist.add(new PropertyDescriptor("onkeyup", ELImgHtmlTag.class,
+					null, "setOnkeyupExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("onmousemove", ELImgHtmlTag.class, null, "setOnmousemoveExpr"));
+			proplist.add(new PropertyDescriptor("onmousedown",
+					ELImgHtmlTag.class, null, "setOnmousedownExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("onmouseout", ELImgHtmlTag.class, null, "setOnmouseoutExpr"));
+			proplist.add(new PropertyDescriptor("onmousemove",
+					ELImgHtmlTag.class, null, "setOnmousemoveExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("onmouseover", ELImgHtmlTag.class, null, "setOnmouseoverExpr"));
+			proplist.add(new PropertyDescriptor("onmouseout",
+					ELImgHtmlTag.class, null, "setOnmouseoutExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("onmouseup", ELImgHtmlTag.class, null, "setOnmouseupExpr"));
+			proplist.add(new PropertyDescriptor("onmouseover",
+					ELImgHtmlTag.class, null, "setOnmouseoverExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("src", ELImgHtmlTag.class, null, "setSrcExpr"));
+			proplist.add(new PropertyDescriptor("onmouseup",
+					ELImgHtmlTag.class, null, "setOnmouseupExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("style", ELImgHtmlTag.class, null, "setStyleExpr"));
+			proplist.add(new PropertyDescriptor("src", ELImgHtmlTag.class,
+					null, "setSrcExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("styleClass", ELImgHtmlTag.class, null, "setStyleClassExpr"));
+			proplist.add(new PropertyDescriptor("style", ELImgHtmlTag.class,
+					null, "setStyleExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("styleId", ELImgHtmlTag.class, null, "setStyleIdExpr"));
+			proplist.add(new PropertyDescriptor("styleClass",
+					ELImgHtmlTag.class, null, "setStyleClassExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("title", ELImgHtmlTag.class, null, "setTitleExpr"));
+			proplist.add(new PropertyDescriptor("styleId", ELImgHtmlTag.class,
+					null, "setStyleIdExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("usemap", ELImgHtmlTag.class, null, "setUsemapExpr"));
+			proplist.add(new PropertyDescriptor("title", ELImgHtmlTag.class,
+					null, "setTitleExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("vspace", ELImgHtmlTag.class, null, "setVspaceExpr"));
+			proplist.add(new PropertyDescriptor("usemap", ELImgHtmlTag.class,
+					null, "setUsemapExpr"));
 		} catch (IntrospectionException ex) {
 		}
 
 		try {
-			proplist.add(new PropertyDescriptor("width", ELImgHtmlTag.class, null, "setWidthExpr"));
+			proplist.add(new PropertyDescriptor("vspace", ELImgHtmlTag.class,
+					null, "setVspaceExpr"));
+		} catch (IntrospectionException ex) {
+		}
+
+		try {
+			proplist.add(new PropertyDescriptor("width", ELImgHtmlTag.class,
+					null, "setWidthExpr"));
 		} catch (IntrospectionException ex) {
 		}
 

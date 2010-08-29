@@ -49,16 +49,17 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	private ResourceBundlesHandler rsHandler;
 
 	/** The cache map for text resource */
-	private Map textCache;
+	private Map<String, String> textCache;
 
 	/** The cache map for zip resource */
-	private Map gzipCache;
+	private Map<String, ByteBuffer> gzipCache;
 
 	/**
 	 * Build a cached wrapper around the supplied ResourceBundlesHandler.
 	 * 
 	 * @param rsHandler
 	 */
+	@SuppressWarnings("unchecked")
 	public CachedResourceBundlesHandler(ResourceBundlesHandler rsHandler) {
 		super();
 		this.rsHandler = rsHandler;
@@ -73,7 +74,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	 * net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#getContextBundles
 	 * ()
 	 */
-	public List getContextBundles() {
+	public List<JoinableResourceBundle> getContextBundles() {
 		return rsHandler.getContextBundles();
 	}
 
@@ -88,7 +89,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	 */
 	public ResourceBundlePathsIterator getBundlePaths(String bundleId,
 			ConditionalCommentCallbackHandler commentCallbackHandler,
-			Map variants) {
+			Map<String, String> variants) {
 		return rsHandler.getBundlePaths(bundleId, commentCallbackHandler,
 				variants);
 	}
@@ -103,7 +104,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	public ResourceBundlePathsIterator getBundlePaths(boolean debugMode,
 			String bundleId,
 			ConditionalCommentCallbackHandler commentCallbackHandler,
-			Map variants) {
+			Map<String, String> variants) {
 		return rsHandler.getBundlePaths(debugMode, bundleId,
 				commentCallbackHandler, variants);
 	}
@@ -148,7 +149,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 			throws ResourceNotFoundException {
 
 		try {
-			ByteBuffer gzip = (ByteBuffer) gzipCache.get(bundlePath);
+			ByteBuffer gzip = gzipCache.get(bundlePath);
 
 			// If it's not cached yet
 			if (null == gzip) {
@@ -228,7 +229,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 			String bundleId,
 			ConditionalCommentCallbackHandler commentCallbackHandler,
-			Map variants) {
+			Map<String, String> variants) {
 
 		return rsHandler.getGlobalResourceBundlePaths(bundleId,
 				commentCallbackHandler, variants);
@@ -240,7 +241,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 			boolean debugMode,
 			ConditionalCommentCallbackHandler commentCallbackHandler,
-			Map variants) {
+			Map<String, String> variants) {
 
 		return rsHandler.getGlobalResourceBundlePaths(debugMode,
 				commentCallbackHandler, variants);
@@ -251,7 +252,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	 */
 	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 			ConditionalCommentCallbackHandler commentCallbackHandler,
-			Map variants) {
+			Map<String, String> variants) {
 		return rsHandler.getGlobalResourceBundlePaths(commentCallbackHandler,
 				variants);
 	}

@@ -55,13 +55,13 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 	private GeneratorRegistry generatorRegistry;
 	
 	/** The list of resource readers */
-	private List resourceReaders = new ArrayList();
+	private List<TextResourceReader> resourceReaders = new ArrayList<TextResourceReader>();
 	
 	/** The list of stream resource readers */
-	private List streamResourceReaders = new ArrayList();
+	private List<StreamResourceReader> streamResourceReaders = new ArrayList<StreamResourceReader>();
 	
 	/** The list of resource info providers */
-	private List resourceInfoProviders = new ArrayList();
+	private List<ResourceBrowser> resourceInfoProviders = new ArrayList<ResourceBrowser>();
 	
 	/**
 	 * Constructor
@@ -133,7 +133,7 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 		}
 		
 		if(obj instanceof ResourceBrowser){
-			resourceInfoProviders.add(obj);
+			resourceInfoProviders.add((ResourceBrowser)obj);
 		}
 	}
 	
@@ -144,11 +144,11 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 	public void addResourceReaderToEnd(ResourceReader rd) {
 		
 		if(rd instanceof TextResourceReader){
-			resourceReaders.add(rd);
+			resourceReaders.add((TextResourceReader) rd);
 		}
 		
 		if(rd instanceof StreamResourceReader){
-			streamResourceReaders.add(rd);
+			streamResourceReaders.add((StreamResourceReader) rd);
 		}
 		
 		initReader(rd);
@@ -160,10 +160,10 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 	 */
 	public void addResourceReaderToStart(ResourceReader rd) {
 		if(rd instanceof TextResourceReader){
-			resourceReaders.add(0, rd);
+			resourceReaders.add(0, (TextResourceReader) rd);
 		}
 		if(rd instanceof StreamResourceReader){
-			streamResourceReaders.add(0, rd);
+			streamResourceReaders.add(0, (StreamResourceReader) rd);
 		}
 		
 		initReader(rd);
@@ -184,8 +184,8 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 
 		Reader rd = null;
 		
-		for (Iterator iterator = resourceReaders.iterator(); iterator.hasNext();) {
-			TextResourceReader rsReader = (TextResourceReader) iterator.next();
+		for (Iterator<TextResourceReader> iterator = resourceReaders.iterator(); iterator.hasNext();) {
+			TextResourceReader rsReader = iterator.next();
 			if (!(rsReader instanceof PrefixedResourceGenerator) 
 					|| (resourceName.startsWith(((PrefixedResourceGenerator)rsReader).getMappingPrefix()+GeneratorRegistry.PREFIX_SEPARATOR))){
 					
@@ -220,9 +220,9 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 		generatorRegistry.loadGeneratorIfNeeded(resourceName);
 		
 		InputStream is = null;
-		for (Iterator iterator = streamResourceReaders.iterator(); iterator.hasNext();) {
+		for (Iterator<StreamResourceReader> iterator = streamResourceReaders.iterator(); iterator.hasNext();) {
 			
-			StreamResourceReader rsReader = (StreamResourceReader) iterator.next();
+			StreamResourceReader rsReader = iterator.next();
 			if (!(rsReader instanceof PrefixedResourceGenerator) 
 					|| (resourceName.startsWith(((PrefixedResourceGenerator)rsReader).getMappingPrefix()+GeneratorRegistry.PREFIX_SEPARATOR))){
 			
@@ -243,10 +243,10 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.handler.reader.ResourceBrowser#getResourceNames(java.lang.String)
 	 */
-	public Set getResourceNames(String dirName) {
-		Set resourceNames = new TreeSet();
-		for (Iterator iterator = resourceInfoProviders.iterator(); iterator.hasNext();) {
-			ResourceBrowser rsBrowser = (ResourceBrowser) iterator.next();
+	public Set<String> getResourceNames(String dirName) {
+		Set<String> resourceNames = new TreeSet<String>();
+		for (Iterator<ResourceBrowser> iterator = resourceInfoProviders.iterator(); iterator.hasNext();) {
+			ResourceBrowser rsBrowser = iterator.next();
 			if(generatorRegistry.isPathGenerated(dirName)){
 				if (rsBrowser instanceof PrefixedResourceGenerator) {
 					PrefixedResourceGenerator rsGeneratorBrowser = (PrefixedResourceGenerator) rsBrowser;
@@ -272,8 +272,8 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 	 */
 	public boolean isDirectory(String resourceName) {
 		boolean result = false;
-		for (Iterator iterator = resourceInfoProviders.iterator(); iterator.hasNext() && !result;) {
-			ResourceBrowser rsBrowser = (ResourceBrowser) iterator.next();
+		for (Iterator<ResourceBrowser> iterator = resourceInfoProviders.iterator(); iterator.hasNext() && !result;) {
+			ResourceBrowser rsBrowser = iterator.next();
 			if(generatorRegistry.isPathGenerated(resourceName)){
 				if (rsBrowser instanceof PrefixedResourceGenerator) {
 					PrefixedResourceGenerator rsGeneratorBrowser = (PrefixedResourceGenerator) rsBrowser;
@@ -284,7 +284,7 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 				}
 			}else{
 				if(!(rsBrowser instanceof PrefixedResourceGenerator)){
-					result = ((ResourceBrowser) rsBrowser).isDirectory(resourceName);
+					result = rsBrowser.isDirectory(resourceName);
 				}
 			}
 		}

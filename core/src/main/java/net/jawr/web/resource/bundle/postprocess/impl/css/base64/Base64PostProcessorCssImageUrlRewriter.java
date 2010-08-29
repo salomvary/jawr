@@ -82,7 +82,7 @@ public class Base64PostProcessorCssImageUrlRewriter extends
 	private int maxFileSize;
 	
 	/** The map of encoded resources */
-	private Map encodedResources = null;
+	private Map<String, Base64EncodedResource> encodedResources = null;
 	
 	/** The flag which determine if we must encode by default or not */
 	private boolean encodeByDefault;
@@ -99,13 +99,14 @@ public class Base64PostProcessorCssImageUrlRewriter extends
 	 * @param status
 	 *            the bundle processing status
 	 */
+	@SuppressWarnings("unchecked")
 	public Base64PostProcessorCssImageUrlRewriter(BundleProcessingStatus status) {
 		super(status);
-		encodedResources = (Map) status
+		encodedResources = (Map<String, Base64EncodedResource>) status
 				.getData(JawrConstant.BASE64_ENCODED_RESOURCES);
 		maxFileSize = MAX_LENGTH_FILE;
 		Properties configProperties = status.getJawrConfig()
-		.getConfigProperties();
+			.getConfigProperties();
 		String maxLengthProperty = (String) configProperties.get(
 						JawrConstant.BASE64_MAX_IMG_FILE_SIZE);
 		

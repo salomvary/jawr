@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.jawr.web.exception.DuplicateBundlePathException;
+import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 
@@ -39,7 +40,7 @@ public class ResourceBundleDirMapper extends AbstractResourceMapper{
 	private static final Logger LOGGER = Logger.getLogger(ResourceBundleDirMapper.class);
 	
 	/** The Set of path to exclude */
-	private Set excludedPaths;
+	private Set<String> excludedPaths;
 	
 	/**
 	 * Constructor
@@ -49,7 +50,7 @@ public class ResourceBundleDirMapper extends AbstractResourceMapper{
 	 * @param resourceExtension Expected resource extension
 	 * @param excludedPaths Paths to exclude from the mappings. 
 	 */
-	public ResourceBundleDirMapper(String baseDir, ResourceReaderHandler rsHandler, List currentBundles,String resourceExtension, Set excludedPaths) {
+	public ResourceBundleDirMapper(String baseDir, ResourceReaderHandler rsHandler, List<JoinableResourceBundle> currentBundles,String resourceExtension, Set<String> excludedPaths) {
 		super(baseDir,rsHandler,currentBundles,resourceExtension);
 		this.excludedPaths = initExcludedPathList(excludedPaths);
 	}
@@ -59,13 +60,13 @@ public class ResourceBundleDirMapper extends AbstractResourceMapper{
 	 * @param paths the Set of path to exclude
 	 * @return the Set of path to exclude
 	 */
-	private Set initExcludedPathList(Set paths) {
-		Set toExclude = new HashSet();
+	private Set<String> initExcludedPathList(Set<String> paths) {
+		Set<String> toExclude = new HashSet<String>();
 		if(null == paths)
 			return toExclude;		
 		
-		for(Iterator it = paths.iterator();it.hasNext(); ) {
-			String path = (String) it.next();
+		for(Iterator<String> it = paths.iterator();it.hasNext(); ) {
+			String path = it.next();
 			path = PathNormalizer.asPath(path);			
 			toExclude.add(path);
 		}
@@ -78,9 +79,9 @@ public class ResourceBundleDirMapper extends AbstractResourceMapper{
 	 * @return Map A map with the resource bundle key and the mapping for it as a value. 
 	 */
 	protected void addBundlesToMapping() throws DuplicateBundlePathException {
-		Set paths = rsHandler.getResourceNames(baseDir);
-		for(Iterator it = paths.iterator(); it.hasNext();) {
-			String path = (String) it.next();
+		Set<String> paths = rsHandler.getResourceNames(baseDir);
+		for(Iterator<String> it = paths.iterator(); it.hasNext();) {
+			String path = it.next();
 			path = PathNormalizer.joinPaths(baseDir, path);
 			if( !excludedPaths.contains(path)  && rsHandler.isDirectory(path)) {	
 				String bundleKey =  path + resourceExtension;			

@@ -223,9 +223,9 @@ public final class PathNormalizer {
 	 * @param paths
 	 * @return
 	 */
-	public static final Set normalizePaths(Set paths) {
-		Set ret = new HashSet();
-		for(Iterator it = paths.iterator();it.hasNext();) {
+	public static final Set<String> normalizePaths(Set<String> paths) {
+		Set<String> ret = new HashSet<String>();
+		for(Iterator<String> it = paths.iterator();it.hasNext();) {
 			String path = normalizePath((String)it.next());
 			ret.add(path);
 		}

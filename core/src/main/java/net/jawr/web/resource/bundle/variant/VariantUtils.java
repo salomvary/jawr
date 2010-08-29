@@ -20,9 +20,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.exception.BundlingProcessException;
@@ -41,23 +41,23 @@ public class VariantUtils {
 	 * @param variants the map of variant set
 	 * @return all variant keys
 	 */
-	public static List getAllVariants(Map variantSets){
+	public static List<Map<String, String>> getAllVariants(Map<String, VariantSet> variantSets){
 		
-		List variantKeys = new ArrayList();
+		List<Map<String, String>> variantKeys = new ArrayList<Map<String, String>>();
 		if(variantSets != null){
-			for (Iterator itVariantSets = new TreeMap(variantSets).entrySet().iterator(); itVariantSets.hasNext();) {
+			for (Iterator<Entry<String, Collection<String>>> itVariantSets = new TreeMap<String, Collection<String>>(variantSets).entrySet().iterator(); itVariantSets.hasNext();) {
 				
-				Entry variantEntry = (Entry) itVariantSets.next();
-				String variantType = (String) variantEntry.getKey();
-				Collection variantList = (Collection) variantEntry.getValue();
+				Entry<String, Collection<String>> variantEntry = itVariantSets.next();
+				String variantType = variantEntry.getKey();
+				Collection<String> variantList = variantEntry.getValue();
 				if(variantKeys.isEmpty()){
 					variantKeys = getVariants(null, variantType, variantList);
 				}else{
 					
-					List tmpResult = new ArrayList();
-					for (Iterator itCurVariantKeys = variantKeys.iterator(); itCurVariantKeys
+					List<Map<String, String>> tmpResult = new ArrayList<Map<String, String>>();
+					for (Iterator<Map<String, String>> itCurVariantKeys = variantKeys.iterator(); itCurVariantKeys
 							.hasNext();) {
-						Map curVariant = (Map) itCurVariantKeys.next();
+						Map<String, String> curVariant = itCurVariantKeys.next();
 						tmpResult.addAll(getVariants(curVariant, variantType, variantList));
 					}
 					variantKeys = tmpResult;
@@ -76,14 +76,14 @@ public class VariantUtils {
 	 * @param variantList the variant list
 	 * @return the list of variant maps
 	 */
-	private static List getVariants(Map curVariant, String variantType, Collection variantList) {
+	private static List<Map<String, String>> getVariants(Map<String, String> curVariant, String variantType, Collection<String> variantList) {
 		
-		List variants = new ArrayList();
-		for (Iterator itCurVariant = variantList.iterator(); itCurVariant.hasNext();) {
+		List<Map<String, String>> variants = new ArrayList<Map<String, String>>();
+		for (Iterator<String> itCurVariant = variantList.iterator(); itCurVariant.hasNext();) {
 			
 			String variant = (String) itCurVariant.next();
 			
-			Map map = new HashMap();
+			Map<String, String> map = new HashMap<String, String>();
 			if(curVariant != null){
 				map.putAll(curVariant);
 			}
@@ -98,19 +98,19 @@ public class VariantUtils {
 	 * @param variants the map of variant set
 	 * @return all variant keys
 	 */
-	public static List getAllVariantKeys(Map variants){
+	public static List<String> getAllVariantKeys(Map<String, ? extends Collection<String>> variants){
 		
-		List variantKeys = new ArrayList();
-		for (Iterator itVariantSets = new TreeMap(variants).values().iterator(); itVariantSets.hasNext();) {
-			Collection variantList = (Collection) itVariantSets.next();
+		List<String> variantKeys = new ArrayList<String>();
+		for (Iterator<Collection<String>> itVariantSets = new TreeMap<String, Collection<String>>(variants).values().iterator(); itVariantSets.hasNext();) {
+			Collection<String> variantList = itVariantSets.next();
 			if(variantKeys.isEmpty()){
 				variantKeys = getVariantKeys(null, variantList);
 			}else{
 				
-				List tmpResult = new ArrayList();
-				for (Iterator itCurVariantKeys = variantKeys.iterator(); itCurVariantKeys
+				List<String> tmpResult = new ArrayList<String>();
+				for (Iterator<String> itCurVariantKeys = variantKeys.iterator(); itCurVariantKeys
 						.hasNext();) {
-					String curVariantKey = (String) itCurVariantKeys.next();
+					String curVariantKey = itCurVariantKeys.next();
 					tmpResult.addAll(getVariantKeys(curVariantKey+JawrConstant.VARIANT_SEPARATOR_CHAR, variantList));
 				}
 				variantKeys = tmpResult;
@@ -125,10 +125,10 @@ public class VariantUtils {
 	 * @param variantKeyPrefix the variant key prefix
 	 * @param variants The variants
 	 */
-	private static List getVariantKeys(String variantKeyPrefix, Collection variants) {
+	private static List<String> getVariantKeys(String variantKeyPrefix, Collection<String> variants) {
 		
-		List variantKeys = new ArrayList();
-		for (Iterator itCurVariant = variants.iterator(); itCurVariant.hasNext();) {
+		List<String> variantKeys = new ArrayList<String>();
+		for (Iterator<String> itCurVariant = variants.iterator(); itCurVariant.hasNext();) {
 			
 			String variant = (String) itCurVariant.next();
 			if(variant == null){
@@ -148,7 +148,7 @@ public class VariantUtils {
 	 * @param variants the variants
 	 * @return the variant key
 	 */
-	public static String getVariantKey(Map variants){
+	public static String getVariantKey(Map<String, String> variants){
 	
 		String variantKey = "";
 		if(variants != null){
@@ -164,18 +164,18 @@ public class VariantUtils {
 	 * @param variantKey the requested variant key
 	 * @return the variant key to use
 	 */
-	public static String getVariantKey(Map curVariants, Set variantTypes) {
+	public static String getVariantKey(Map<String, String> curVariants, Set<String> variantTypes) {
 		
 		String variantKey = "";
 		if(curVariants != null && variantTypes != null){
 			
-			Map tempVariants = new TreeMap(curVariants);
+			Map<String, String> tempVariants = new TreeMap<String, String>(curVariants);
 			StringBuffer variantKeyBuf = new StringBuffer();
-			for (Iterator it = tempVariants.entrySet().iterator(); it
+			for (Iterator<Entry<String,String>> it = tempVariants.entrySet().iterator(); it
 					.hasNext();) {
-				Entry entry = (Entry) it.next();
+				Entry<String,String> entry = it.next();
 				if(variantTypes.contains(entry.getKey())){
-					String value = (String) entry.getValue();
+					String value = entry.getValue();
 					if(value == null){
 						value = "";
 					}
@@ -221,7 +221,7 @@ public class VariantUtils {
 	 * @param variants the map of variant
 	 * @return the variant bundle name
 	 */
-	public static String getVariantBundleName(String bundleName, Map variants) {
+	public static String getVariantBundleName(String bundleName, Map<String, String> variants) {
 		
 		String variantKey = getVariantKey(variants);
 		return getVariantBundleName(bundleName, variantKey);
@@ -233,24 +233,24 @@ public class VariantUtils {
 	 * @param variantSet2 the second map 
 	 * @return the concatenated variant map
 	 */
-	public static Map concatVariants(Map variantSet1, Map variantSet2) {
+	public static Map<String, VariantSet> concatVariants(Map<String, VariantSet> variantSet1, Map<String, VariantSet> variantSet2) {
 		
-		Map result = new HashMap();
+		Map<String, VariantSet> result = new HashMap<String, VariantSet>();
 		if(!isEmpty(variantSet1) && isEmpty(variantSet2)){
 			result.putAll(variantSet1);
 		}else if(isEmpty(variantSet1) && !isEmpty(variantSet2)){
 			result.putAll(variantSet2);
 		}else if(!isEmpty(variantSet1) && !isEmpty(variantSet2)){
 			
-			Set keySet = new HashSet();
+			Set<String> keySet = new HashSet<String>();
 			keySet.addAll(variantSet1.keySet());
 			keySet.addAll(variantSet2.keySet());
-			for (Iterator iterator = keySet.iterator(); iterator
+			for (Iterator<String> iterator = keySet.iterator(); iterator
 					.hasNext();) {
-				String variantType = (String) iterator.next();
-				VariantSet variants1 = (VariantSet) variantSet1.get(variantType);
-				VariantSet variants2 = (VariantSet) variantSet2.get(variantType);
-				Set	variants = new HashSet();
+				String variantType = iterator.next();
+				VariantSet variants1 = variantSet1.get(variantType);
+				VariantSet variants2 = variantSet2.get(variantType);
+				Set<String>	variants = new HashSet<String>();
 				String defaultVariant = null;
 				
 				if(variants1 != null && variants2 != null &&
@@ -280,7 +280,7 @@ public class VariantUtils {
 	 * @param map the map
 	 * @return true if the map is null or empty
 	 */
-	private static boolean isEmpty(Map map){
+	private static boolean isEmpty(Map<?, ?> map){
 		return map == null || map.isEmpty();
 	}
 	

@@ -13,13 +13,12 @@
  */
 package net.jawr.web.config.jmx;
 
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Properties;
 
 import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.servlet.ServletContext;
@@ -53,20 +52,8 @@ public final class JmxUtils {
 	/** The getContextPath method name to retrieve the context path for servlet API 2.5 and above */
 	private static final String GET_CONTEXT_PATH_METHOD = "getContextPath";
 
-	/** The name of the factory class, which load the MBean server for Java 1.5 and above */
-	private static final String JAVA_LANG_MANAGEMENT_MANAGEMENT_FACTORY_CLASSNAME = "java.lang.management.ManagementFactory";
-
-	/** The method name to retrieve the MBean server for Java 1.5 and above */
-	private static final String GET_PLATFORM_M_BEAN_SERVER_METHOD = "getPlatformMBeanServer";
-
-	/** The java 1.4 version prefix */
-	private static final String JAVA_VERSION_1_4_PREFIX = "1.4";
-
-	/** The java version system property name */
-	private static final String JAVA_VERSION_SYSTEM_PROPERTY = "java.version";
-
 	/** The property which enables the use of JMX */
-	public static final String JMX_ENABLE_FLAG_SYSTEL_PROPERTY = "com.sun.management.jmxremote";
+	public static final String JMX_ENABLE_FLAG_SYSTEM_PROPERTY = "com.sun.management.jmxremote";
 	
 	/**
 	 * Constructor 
@@ -139,40 +126,11 @@ public final class JmxUtils {
 	public static MBeanServer getMBeanServer() {
 
 		MBeanServer mbs = null;
-		
 		// Check if JMX is enable
-		if(System.getProperty(JMX_ENABLE_FLAG_SYSTEL_PROPERTY) == null){
-			return null;
+		if(System.getProperty(JMX_ENABLE_FLAG_SYSTEM_PROPERTY) != null){
+			mbs = ManagementFactory.getPlatformMBeanServer();
 		}
 		
-		if (System.getProperty(JAVA_VERSION_SYSTEM_PROPERTY).startsWith(JAVA_VERSION_1_4_PREFIX)) {
-
-			List servers = MBeanServerFactory.findMBeanServer(null);
-			if (servers.size() > 0) {
-				if (LOGGER.isDebugEnabled()){
-					LOGGER.debug("Retrieving the JMX MBeanServer.");
-				}
-				
-				mbs = (MBeanServer) servers.get(0);
-			} else {
-				if (LOGGER.isDebugEnabled()){
-					LOGGER.debug("Creating the JMX MBeanServer.");
-				}
-				
-				mbs = MBeanServerFactory.createMBeanServer();
-				
-			}
-		} else {
-
-			try {
-				Class managementFactoryClass = JmxUtils.class.getClassLoader().loadClass(JAVA_LANG_MANAGEMENT_MANAGEMENT_FACTORY_CLASSNAME);
-				Method getPlatformMBeanServerMethod = managementFactoryClass.getMethod(GET_PLATFORM_M_BEAN_SERVER_METHOD, new Class[] {});
-				mbs = (MBeanServer) getPlatformMBeanServerMethod.invoke(null, null);
-			} catch (Exception e) {
-				LOGGER.error("Enable to get the JMX MBeanServer.");
-			}
-		}
-
 		return mbs;
 	}
 	
@@ -229,7 +187,7 @@ public final class JmxUtils {
 		String contextPath = null;
 		try {
 			Method getServletContextPathMethod = servletContext.getClass().getMethod(GET_CONTEXT_PATH_METHOD, new Class[] {});
-			contextPath = (String) getServletContextPathMethod.invoke(servletContext, null);
+			contextPath = (String) getServletContextPathMethod.invoke(servletContext, (Object[])null);
 		} catch (SecurityException e) {
 			throw new JmxConfigException(e);
 		} catch (NoSuchMethodException e) {

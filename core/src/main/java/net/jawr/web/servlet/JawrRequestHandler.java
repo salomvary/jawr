@@ -135,7 +135,7 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	protected ServletContext servletContext;
 	
 	/** The maps for the init-parameters */
-	protected Map initParameters;
+	protected Map<Object, Object> initParameters;
 	
 	/** The Thread which listen the configuration changes */
 	protected ConfigChangeListenerThread configChangeListenerThread;
@@ -156,7 +156,7 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	protected ClientSideHandlerScriptRequestHandler clientSideScriptRequestHandler;
 
 	/** The image MIME map, associating the image extension to their MIME type */
-	protected Map imgMimeMap;
+	protected Map<Object, Object> imgMimeMap;
 	
 	/** The handler for the illegal bundle request */
 	protected IllegalBundleRequestHandler illegalBundleRequestHandler;
@@ -169,9 +169,10 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	 * @param servletConfig ServletConfig
 	 * @throws ServletException if an exception occurs
 	 */
+	@SuppressWarnings("unchecked")
 	public JawrRequestHandler(ServletContext context, ServletConfig config) throws ServletException {
-		this.initParameters = new HashMap();
-		Enumeration params = config.getInitParameterNames();
+		this.initParameters = new HashMap<Object, Object>();
+		Enumeration<String> params = config.getInitParameterNames();
 		while (params.hasMoreElements()) {
 			String param = (String) params.nextElement();
 			initParameters.put(param, config.getInitParameter(param));
@@ -193,7 +194,7 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	 * @param servletConfig ServletConfig
 	 * @throws ServletException if an exception occurs
 	 */
-	public JawrRequestHandler(ServletContext context, Map initParams, Properties configProps) throws ServletException {
+	public JawrRequestHandler(ServletContext context, Map<Object, Object> initParams, Properties configProps) throws ServletException {
 
 		this.imgMimeMap = MIMETypesSupport.getSupportedProperties(this);
 		this.initParameters = initParams;

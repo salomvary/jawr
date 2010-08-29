@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.resource.bundle.variant.VariantSet;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 
 /**
@@ -43,10 +44,10 @@ public class GeneratorContext {
 	private JawrConfig config;
 
 	/** The variant map */
-	private Map variantMap;
+	private Map<String, String> variantMap;
 	
 	/** The variant sets for the current path */
-	private Map variantSets;
+	private Map<String, VariantSet> variantSets;
 	
 	/** The variant */
 	private String variant;
@@ -118,7 +119,7 @@ public class GeneratorContext {
 	 * Returns the variant map
 	 * @return the variant map
 	 */
-	public Map getVariantMap(){
+	public Map<String, String> getVariantMap(){
 		
 		return variantMap;
 	}
@@ -127,7 +128,7 @@ public class GeneratorContext {
 	 * Returns the variant map
 	 * @return the variant map
 	 */
-	public void setVariantMap(Map variantMap){
+	public void setVariantMap(Map<String, String> variantMap){
 		
 		this.variantMap = variantMap;
 	}
@@ -136,7 +137,7 @@ public class GeneratorContext {
 	 * Returns the variant sets for the current path
 	 * @return the variantSets
 	 */
-	public Map getVariantSets() {
+	public Map<String, VariantSet> getVariantSets() {
 		return variantSets;
 	}
 
@@ -144,7 +145,7 @@ public class GeneratorContext {
 	 * Sets the variant sets for the current path
 	 * @param variantSets the variantSets to set
 	 */
-	public void setVariantSets(Map variantSets) {
+	public void setVariantSets(Map<String, VariantSet> variantSets) {
 		this.variantSets = variantSets;
 	}
 

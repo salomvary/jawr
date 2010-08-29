@@ -31,7 +31,7 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 public class PathsIteratorImpl extends AbstractPathsIterator implements ResourceBundlePathsIterator {
 
 	/** The bundle iterator */
-	private Iterator bundlesIterator;
+	private Iterator<JoinableResourceBundle> bundlesIterator;
 	
 	/** The current bundle */
 	private JoinableResourceBundle currentBundle;
@@ -42,7 +42,8 @@ public class PathsIteratorImpl extends AbstractPathsIterator implements Resource
 	 * @param commentCallbackHandler the comment callback handler
 	 * @param variants the variant map
 	 */
-	public PathsIteratorImpl(List bundles,ConditionalCommentCallbackHandler commentCallbackHandler, Map variants) {
+	public PathsIteratorImpl(List<JoinableResourceBundle> bundles,ConditionalCommentCallbackHandler commentCallbackHandler, 
+			Map<String, String> variants) {
 		super(commentCallbackHandler,variants);
 		this.bundlesIterator = bundles.iterator();
 	}

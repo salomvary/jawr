@@ -57,7 +57,7 @@ public interface ResourceBundlesHandler {
 	 * @param variants the variant map
 	 * @return the global resource bundle path iterator
 	 */
-	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(ConditionalCommentCallbackHandler commentCallbackHandler, Map variants);
+	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(ConditionalCommentCallbackHandler commentCallbackHandler, Map<String, String> variants);
 	
 	/**
 	 * Returns the global resource bundle path iterator
@@ -66,7 +66,7 @@ public interface ResourceBundlesHandler {
 	 * @param variants the variant map
 	 * @return the global resource bundle path iterator
 	 */
-	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(boolean debugMode, ConditionalCommentCallbackHandler commentCallbackHandler, Map variants);
+	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(boolean debugMode, ConditionalCommentCallbackHandler commentCallbackHandler, Map<String, String> variants);
 	
 	/**
 	 * Returns the global resource bundle path iterator for one global bundle
@@ -75,7 +75,7 @@ public interface ResourceBundlesHandler {
 	 * @return the global resource bundle path iterator
 	 */
 	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(String bundlePath,
-			ConditionalCommentCallbackHandler commentCallbackHandler, Map variants);
+			ConditionalCommentCallbackHandler commentCallbackHandler, Map<String, String> variants);
 	
 	/**
 	 * Returns an ordered list of the paths to use when accesing a resource bundle. 
@@ -91,7 +91,7 @@ public interface ResourceBundlesHandler {
 	 */
 	public ResourceBundlePathsIterator getBundlePaths(String bundleId, 
 														ConditionalCommentCallbackHandler commentCallbackHandler, 
-														Map variants);
+														Map<String, String> variants);
 	
 	/**
 	 * Returns an ordered list of the paths to use when accesing a resource bundle. 
@@ -107,7 +107,7 @@ public interface ResourceBundlesHandler {
 	 */
 	public ResourceBundlePathsIterator getBundlePaths(boolean debugMode, String bundleId, 
 														ConditionalCommentCallbackHandler commentCallbackHandler, 
-														Map variants);
+														Map<String, String> variants);
 	
 	
 	/**
@@ -129,7 +129,7 @@ public interface ResourceBundlesHandler {
 	 * Returns the context bundles
 	 * @return the context bundles
 	 */
-	public List getContextBundles();
+	public List<JoinableResourceBundle> getContextBundles();
 	
 	/**
 	 * Generates all file bundles so that they will be ready to attend requests. 

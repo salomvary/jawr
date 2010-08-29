@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2010 Jordi Hernández Sellés, ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -24,9 +24,10 @@ import net.jawr.web.resource.bundle.JoinableResourceBundle;
  * InclusionPattern attribute.  
  * 
  * @author Jordi Hernández Sellés
+ * @author ibrahim Chaehoi
  *
  */
-public class GlobalResourceBundleComparator implements Comparator, Serializable {
+public class GlobalResourceBundleComparator implements Comparator<JoinableResourceBundle>, Serializable {
 
 	/** The serial version UID */
 	private static final long serialVersionUID = -277897413409167116L;
@@ -34,11 +35,9 @@ public class GlobalResourceBundleComparator implements Comparator, Serializable 
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(T, T)
 	 */
-	public int compare(Object bundleA, Object bundleB) {
-		JoinableResourceBundle colA = (JoinableResourceBundle) bundleA;
-		JoinableResourceBundle colB = (JoinableResourceBundle) bundleB;
-		Integer a = new Integer(colA.getInclusionPattern().getInclusionOrder());
-		Integer b = new Integer(colB.getInclusionPattern().getInclusionOrder());
+	public int compare(JoinableResourceBundle bundleA, JoinableResourceBundle bundleB) {
+		Integer a = new Integer(bundleA.getInclusionPattern().getInclusionOrder());
+		Integer b = new Integer(bundleB.getInclusionPattern().getInclusionOrder());
 		return a.compareTo(b);
 	}
 

@@ -52,13 +52,13 @@ public class OrphanResourceBundlesMapper {
 	protected GeneratorRegistry generatorRegistry;
 	
 	/** The list of current bundles */
-	protected List currentBundles;
+	protected List<JoinableResourceBundle> currentBundles;
 	
 	/** The resourcefile extension */
 	protected String resourceExtension;
 	
 	/** The bundle mapping */
-	private List bundleMapping;
+	private List<String> bundleMapping;
 	
 	/**
 	 * Constructor
@@ -70,7 +70,7 @@ public class OrphanResourceBundlesMapper {
 	 * @param resourceExtension the resource file extension
 	 */
 	public OrphanResourceBundlesMapper(String baseDir,
-			ResourceReaderHandler rsHandler, GeneratorRegistry generatorRegistry, List currentBundles,
+			ResourceReaderHandler rsHandler, GeneratorRegistry generatorRegistry, List<JoinableResourceBundle> currentBundles,
 			String resourceExtension) {
 		if(!"".equals(baseDir) && !"/".equals(baseDir))
 			this.baseDir = "/" + PathNormalizer.normalizePath(baseDir) + "/**";
@@ -78,11 +78,11 @@ public class OrphanResourceBundlesMapper {
 		
 		this.rsHandler = rsHandler;
 		this.generatorRegistry = generatorRegistry;
-		this.currentBundles = new ArrayList();
+		this.currentBundles = new ArrayList<JoinableResourceBundle>();
 		if(null != currentBundles)
 			this.currentBundles.addAll(currentBundles);
 		this.resourceExtension = resourceExtension;
-		this.bundleMapping = new ArrayList();
+		this.bundleMapping = new ArrayList<String>();
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class OrphanResourceBundlesMapper {
 	 * resource to the resources map.  
 	 * @return
 	 */
-	public List getOrphansList() throws DuplicateBundlePathException {
+	public List<String> getOrphansList() throws DuplicateBundlePathException {
 		
 		// Create a mapping for every resource available
 		JoinableResourceBundleImpl tempBundle = new JoinableResourceBundleImpl("orphansTemp", "orphansTemp",
@@ -100,15 +100,15 @@ public class OrphanResourceBundlesMapper {
 																				rsHandler, generatorRegistry);
 		
 		// Add licenses
-		Set licensesPathList = tempBundle.getLicensesPathList();
-		for(Iterator it = licensesPathList.iterator(); it.hasNext();) {
-			addFileIfNotMapped((String)it.next());
+		Set<String> licensesPathList = tempBundle.getLicensesPathList();
+		for(Iterator<String> it = licensesPathList.iterator(); it.hasNext();) {
+			addFileIfNotMapped(it.next());
 		}
 		
 		// Add resources
-		List allPaths = tempBundle.getItemPathList();
-		for(Iterator it = allPaths.iterator(); it.hasNext();) {
-			addFileIfNotMapped((String)it.next());
+		List<String> allPaths = tempBundle.getItemPathList();
+		for(Iterator<String> it = allPaths.iterator(); it.hasNext();) {
+			addFileIfNotMapped(it.next());
 		}
 		return this.bundleMapping;
 	}
@@ -122,10 +122,10 @@ public class OrphanResourceBundlesMapper {
 	 */
 	private void addFileIfNotMapped(String filePath)  throws DuplicateBundlePathException{				
 		
-		for(Iterator it = currentBundles.iterator();it.hasNext(); ) {
-			JoinableResourceBundle bundle = (JoinableResourceBundle) it.next();			
-			List items = bundle.getItemPathList();
-			Set licenses = bundle.getLicensesPathList();
+		for(Iterator<JoinableResourceBundle> it = currentBundles.iterator();it.hasNext(); ) {
+			JoinableResourceBundle bundle = it.next();			
+			List<String> items = bundle.getItemPathList();
+			Set<String> licenses = bundle.getLicensesPathList();
 			
 			if(items.contains(filePath))
 				return;

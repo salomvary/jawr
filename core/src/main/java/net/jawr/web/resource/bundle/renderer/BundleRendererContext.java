@@ -34,13 +34,13 @@ public class BundleRendererContext {
 	private String contextPath;
 	
 	/** The variants */
-	private Map variants = new HashMap();
+	private Map<String, String> variants = new HashMap<String, String>();
 	
 	/** The included bundles */
-	private Set includedBundles;
+	private Set<String> includedBundles;
 	
 	/** The included resources in debug mode */
-	private Set includedResources;
+	private Set<String> includedResources;
 	
 	/** The flag indicating if the global bundles have already been added */
 	private boolean globalBundleAdded;
@@ -61,13 +61,13 @@ public class BundleRendererContext {
 	 * @param useGzip the flag indicating if we are using Gzip or not
 	 * @param isSslRequest the flag indicating if it's an SSL request or not
 	 */
-	public BundleRendererContext(String contextPath, Map variants,
+	public BundleRendererContext(String contextPath, Map<String, String> variants,
 			boolean useGzip, boolean isSslRequest) {
 		super();
 		this.contextPath = contextPath;
 		this.variants = variants;
-		this.includedBundles = new HashSet();
-		this.includedResources = new HashSet();
+		this.includedBundles = new HashSet<String>();
+		this.includedResources = new HashSet<String>();
 		this.useGzip = useGzip;
 		this.isSslRequest = isSslRequest;
 	}
@@ -88,8 +88,8 @@ public class BundleRendererContext {
 		this.useGzip = RendererRequestUtils.isRequestGzippable(request,jawrConfig);
 		this.isSslRequest = RendererRequestUtils.isSslRequest(request);
 		
-		this.includedBundles = new HashSet();
-		this.includedResources = new HashSet();
+		this.includedBundles = new HashSet<String>();
+		this.includedResources = new HashSet<String>();
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public class BundleRendererContext {
 	 * Returns the variant map
 	 * @return the variants
 	 */
-	public Map getVariants() {
+	public Map<String, String> getVariants() {
 		return variants;
 	}
 
@@ -136,7 +136,7 @@ public class BundleRendererContext {
 	 * Sets  the variant map
 	 * @param variants the variants to set
 	 */
-	public void setVariants(Map variants) {
+	public void setVariants(Map<String, String> variants) {
 		this.variants = variants;
 	}
 
@@ -192,7 +192,7 @@ public class BundleRendererContext {
 	 * Returns the included bundles
 	 * @return the included bundles
 	 */
-	public Set getIncludedBundles() {
+	public Set<String> getIncludedBundles() {
 		return includedBundles;
 	}
 	
@@ -200,7 +200,7 @@ public class BundleRendererContext {
 	 * Sets the included bundle
 	 * @param includedBundles the included bundles to set
 	 */
-	public void setIncludedBundles(Set includedBundles) {
+	public void setIncludedBundles(Set<String> includedBundles) {
 		this.includedBundles = includedBundles;
 	}
 
@@ -208,7 +208,7 @@ public class BundleRendererContext {
 	 * Returns the included resources
 	 * @return the includedResources
 	 */
-	public Set getIncludedResources() {
+	public Set<String> getIncludedResources() {
 		return includedResources;
 	}
 
@@ -216,7 +216,7 @@ public class BundleRendererContext {
 	 * Sets the included resources
 	 * @param includedResources the includedResources to set
 	 */
-	public void setIncludedResources(Set includedResources) {
+	public void setIncludedResources(Set<String> includedResources) {
 		this.includedResources = includedResources;
 	}
 	

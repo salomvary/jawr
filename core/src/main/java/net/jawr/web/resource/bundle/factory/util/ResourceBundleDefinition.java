@@ -16,6 +16,7 @@ package net.jawr.web.resource.bundle.factory.util;
 import java.util.List;
 import java.util.Map;
 
+import net.jawr.web.resource.bundle.variant.VariantSet;
 import net.jawr.web.servlet.JawrRequestHandler;
 
 /**
@@ -34,7 +35,7 @@ public class ResourceBundleDefinition {
 	private String bundleName;
 	
 	/** The mappings */
-	private List mappings;
+	private List<String> mappings;
 	
 	/** The flag indicating if the bundle is a global one */
 	private boolean isGlobal;
@@ -64,19 +65,19 @@ public class ResourceBundleDefinition {
 	private String alternateProductionURL;
 	
 	/** The list of children for composite bundle */
-	private List children;
+	private List<ResourceBundleDefinition> children;
 	
 	/** The variant map */
-	private Map variants;
+	private Map<String, VariantSet> variants;
 
 	/** The list of dependencies */
-	private List dependencies;
+	private List<String> dependencies;
 	
 	/**
 	 * Returns the variant map
 	 * @param variants the variant map
 	 */
-	public Map getVariants() {
+	public Map<String, VariantSet> getVariants() {
 		return this.variants;
 	}
 	
@@ -84,7 +85,7 @@ public class ResourceBundleDefinition {
 	 * Returns the variant map
 	 * @param variants the variant map
 	 */
-	public void setVariants(Map variants) {
+	public void setVariants(Map<String, VariantSet> variants) {
 		this.variants = variants;
 	}
 	
@@ -92,7 +93,7 @@ public class ResourceBundleDefinition {
 	 * Returns the list of children for composite bundle
 	 * @return the list of children for composite bundle
 	 */
-	public List getChildren() {
+	public List<ResourceBundleDefinition> getChildren() {
 		return children;
 	}
 
@@ -100,7 +101,7 @@ public class ResourceBundleDefinition {
 	 * Sets the list of children for composite bundle
 	 * @param children the list to set
 	 */
-	public void setChildren(List children) {
+	public void setChildren(List<ResourceBundleDefinition> children) {
 		this.children = children;
 	}
 
@@ -143,7 +144,7 @@ public class ResourceBundleDefinition {
 	 * Returns the path mappings for the bundle
 	 * @return the path mappings for the bundle
 	 */
-	public List getMappings() {
+	public List<String> getMappings() {
 		return mappings;
 	}
 
@@ -151,7 +152,7 @@ public class ResourceBundleDefinition {
 	 * Sets the path mappings for the bundle
 	 * @param mappings the mappings to set
 	 */
-	public void setMappings(List mappings) {
+	public void setMappings(List<String> mappings) {
 		this.mappings = mappings;
 	}
 
@@ -159,7 +160,7 @@ public class ResourceBundleDefinition {
 	 * Returns the bundle dependencies
 	 * @return the bundle dependencies
 	 */
-	public List getDependencies() {
+	public List<String> getDependencies() {
 		return dependencies;
 	}
 
@@ -167,7 +168,7 @@ public class ResourceBundleDefinition {
 	 * Sets the bundle dependencies
 	 * @param dependencies the bundle dependencies
 	 */
-	public void setDependencies(List dependencies) {
+	public void setDependencies(List<String> dependencies) {
 		this.dependencies = dependencies;
 	}
 

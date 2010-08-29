@@ -16,7 +16,6 @@
 package net.jawr.web.resource.bundle.factory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,10 +34,10 @@ import net.jawr.web.resource.bundle.factory.util.PropertiesConfigHelper;
 import net.jawr.web.resource.bundle.factory.util.ResourceBundleDefinition;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
+import net.jawr.web.resource.bundle.variant.VariantSet;
 import net.jawr.web.resource.bundle.variant.VariantUtils;
 import net.jawr.web.resource.handler.bundle.ResourceBundleHandler;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
-import net.jawr.web.util.StringUtils;
 
 /**
  * Properties based configuration entry point.
@@ -121,7 +120,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 				.getPropertyAsSet(PropertiesBundleConstant.FACTORY_DIR_MAPPER_EXCLUSION));
 
 		// Initialize custom generators
-		Iterator generators = props.getCommonPropertyAsSet(PropertiesBundleConstant.CUSTOM_GENERATORS)
+		Iterator<String> generators = props.getCommonPropertyAsSet(PropertiesBundleConstant.CUSTOM_GENERATORS)
 				.iterator();
 		while (generators.hasNext()) {
 			String generatorClass = (String) generators.next();
@@ -129,7 +128,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 		}
 		
 		// Initialize variant resolvers
-		Iterator resolvers = props.getCommonPropertyAsSet(PropertiesBundleConstant.CUSTOM_RESOLVERS)
+		Iterator<String> resolvers = props.getCommonPropertyAsSet(PropertiesBundleConstant.CUSTOM_RESOLVERS)
 				.iterator();
 		while (resolvers.hasNext()) {
 			String resolverClass = (String) resolvers.next();
@@ -137,7 +136,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 		}
 
 		// Initialize custom bundles
-		Set customBundles = new HashSet();
+		Set<ResourceBundleDefinition> customBundles = new HashSet<ResourceBundleDefinition>();
 		// Check if we should use the bundle names property or
 		// find the bundle name using the bundle id declaration :
 		// jawr.<type>.bundle.<name>.id
@@ -149,7 +148,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 						.trim(), false, generatorRegistry));
 			}
 		} else {
-			Iterator bundleNames = props.getPropertyBundleNameSet().iterator();
+			Iterator<String> bundleNames = props.getPropertyBundleNameSet().iterator();
 			while (bundleNames.hasNext()) {
 				customBundles.add(buildCustomBundleDefinition(
 						(String) bundleNames.next(), false, generatorRegistry));
@@ -164,7 +163,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 		// Check if we should use the custom postprocessor names property or
 		// find the postprocessor name using the postprocessor class declaration :
 		// jawr.custom.postprocessors.<name>.class
-		Map customPostprocessors = new HashMap();
+		Map<String, String> customPostprocessors = new HashMap<String, String>();
 		if (null != properties.getProperty(PropertiesBundleConstant.CUSTOM_POSTPROCESSORS
 				+ PropertiesBundleConstant.CUSTOM_POSTPROCESSORS_NAMES)) {
 			StringTokenizer tk = new StringTokenizer(properties
@@ -293,7 +292,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 			bundle.setComposite(true);
 
 			// add children
-			List children = new ArrayList();
+			List<ResourceBundleDefinition> children = new ArrayList<ResourceBundleDefinition>();
 			StringTokenizer tk = new StringTokenizer(childBundlesProperty, JawrConstant.COMMA_SEPARATOR);
 			while (tk.hasMoreTokens()) {
 				ResourceBundleDefinition childDef = buildCustomBundleDefinition(
@@ -312,8 +311,8 @@ public class PropertiesBasedBundlesHandlerFactory {
 								+ ". Please specify at least one in configuration. ");
 
 			// Add the mappings
-			List mappings = new ArrayList();
-			Map variants = new TreeMap();
+			List<String> mappings = new ArrayList<String>();
+			Map<String, VariantSet> variants = new TreeMap<String, VariantSet>();
 			StringTokenizer tk = new StringTokenizer(mappingsProperty, JawrConstant.COMMA_SEPARATOR);
 			while (tk.hasMoreTokens()){
 				String mapping = tk.nextToken().trim();
@@ -326,7 +325,7 @@ public class PropertiesBasedBundlesHandlerFactory {
 		}
 
 		// dependencies
-		List dependencies = props.getCustomBundlePropertyAsList(bundleName,
+		List<String> dependencies = props.getCustomBundlePropertyAsList(bundleName,
 				PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_DEPENDENCIES);
 		bundle.setDependencies(dependencies);
 		

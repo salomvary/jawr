@@ -41,7 +41,7 @@ public class MIMETypesSupport {
 	 * @param ref An object reference to anchor the classpath (any 'this' reference does). 
 	 * @return
 	 */
-	public static Map getSupportedProperties(Object ref) {
+	public static Map<Object, Object> getSupportedProperties(Object ref) {
 		
 		if(null == supportedMIMETypes) {
 			synchronized (MIMETypesSupport.class) {

@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.postprocess.AbstractChainedResourceBundlePostProcessor;
+import net.jawr.web.resource.bundle.postprocess.ChainedResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.EmptyResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.postprocess.PostProcessFactoryConstant;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
@@ -36,13 +37,13 @@ import net.jawr.web.resource.bundle.postprocess.impl.LicensesIncluderPostProcess
 public abstract class AbstractPostProcessorChainFactory implements	PostProcessorChainFactory {
 
 	/** The map of custom postprocessor */
-	private Map customPostProcessors;
+	private Map<String, ChainedResourceBundlePostProcessor> customPostProcessors;
 	
 	/**
 	 * Constructor 
 	 */
 	public AbstractPostProcessorChainFactory() {
-		this.customPostProcessors = new HashMap();
+		this.customPostProcessors = new HashMap<String, ChainedResourceBundlePostProcessor>();
 	}
 
 	/* (non-Javadoc)
@@ -128,10 +129,10 @@ public abstract class AbstractPostProcessorChainFactory implements	PostProcessor
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.factory.processor.PostProcessorChainFactory#setCustomPostprocessors(java.util.Map)
 	 */
-	public void setCustomPostprocessors(Map keysClassNames) {
-		for(Iterator it = keysClassNames.entrySet().iterator(); it.hasNext();){
+	public void setCustomPostprocessors(Map<String, String> keysClassNames) {
+		for(Iterator<Entry<String, String>> it = keysClassNames.entrySet().iterator(); it.hasNext();){
 			
-			Entry entry = (Entry) it.next();
+			Entry<String, String> entry = it.next();
 			ResourceBundlePostProcessor customProcessor = 
 				(ResourceBundlePostProcessor) ClassLoaderResourceUtils.buildObjectInstance((String) entry.getValue());
 			

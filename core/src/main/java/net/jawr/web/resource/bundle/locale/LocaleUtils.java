@@ -41,7 +41,7 @@ public class LocaleUtils {
 	private static final String MSG_RESOURCE_BUNDLE_SUFFIX = ".properties";
 
 	/** The available locale suffixes */
-	public static final Set LOCALE_SUFFIXES = LocaleUtils.getAvailableLocaleSuffixes();
+	public static final Set<String> LOCALE_SUFFIXES = LocaleUtils.getAvailableLocaleSuffixes();
 	
 	/**
 	 * Returns the localized bundle name
@@ -69,7 +69,7 @@ public class LocaleUtils {
 	 * @param messageBundlePath the resource bundle path
 	 * @return the list of available locale suffixes for a message resource bundle
 	 */
-	public static List getAvailableLocaleSuffixesForBundle(String messageBundlePath) {
+	public static List<String> getAvailableLocaleSuffixesForBundle(String messageBundlePath) {
 
 		return getAvailableLocaleSuffixesForBundle(messageBundlePath, MSG_RESOURCE_BUNDLE_SUFFIX, null);
 	}
@@ -81,7 +81,7 @@ public class LocaleUtils {
 	 * @param servletContext the servlet context
 	 * @return the list of available locale suffixes for a message resource bundle
 	 */
-	public static List getAvailableLocaleSuffixesForBundle(String messageBundlePath, ServletContext servletContext) {
+	public static List<String> getAvailableLocaleSuffixesForBundle(String messageBundlePath, ServletContext servletContext) {
 
 		return getAvailableLocaleSuffixesForBundle(messageBundlePath, MSG_RESOURCE_BUNDLE_SUFFIX, servletContext);
 	}
@@ -93,7 +93,7 @@ public class LocaleUtils {
 	 * @param fileSuffix the file suffix
 	 * @return the list of available locale suffixes for a message resource bundle
 	 */
-	public static List getAvailableLocaleSuffixesForBundle(String messageBundlePath, String fileSuffix) {
+	public static List<String> getAvailableLocaleSuffixesForBundle(String messageBundlePath, String fileSuffix) {
 		return getAvailableLocaleSuffixesForBundle(messageBundlePath, fileSuffix, null);
 	}
 	
@@ -105,7 +105,7 @@ public class LocaleUtils {
 	 * @param servletContext the servlet context
 	 * @return the list of available locale suffixes for a message resource bundle
 	 */
-	public static List getAvailableLocaleSuffixesForBundle(String messageBundlePath, String fileSuffix, ServletContext servletContext) {
+	public static List<String> getAvailableLocaleSuffixesForBundle(String messageBundlePath, String fileSuffix, ServletContext servletContext) {
 
 		int idxNameSpace = messageBundlePath.indexOf("(");
 		int idxFilter = messageBundlePath.indexOf("[");
@@ -133,7 +133,7 @@ public class LocaleUtils {
 	 * @param messageBundle the resource bundle path
 	 * @return the list of available locale suffixes for a message resource bundle
 	 */
-	public static List getAvailableLocaleSuffixes(String messageBundle, ServletContext servletContext) {
+	public static List<String> getAvailableLocaleSuffixes(String messageBundle, ServletContext servletContext) {
 		
 		return getAvailableLocaleSuffixes(messageBundle, MSG_RESOURCE_BUNDLE_SUFFIX, servletContext);
 	}
@@ -146,8 +146,8 @@ public class LocaleUtils {
 	 * @param servletContext the servlet context 
 	 * @return the list of available locale suffixes for a message resource bundle
 	 */
-	public static List getAvailableLocaleSuffixes(String messageBundle, String fileSuffix, ServletContext servletContext) {
-		List availableLocaleSuffixes = new ArrayList();
+	public static List<String> getAvailableLocaleSuffixes(String messageBundle, String fileSuffix, ServletContext servletContext) {
+		List<String> availableLocaleSuffixes = new ArrayList<String>();
 		Locale[] availableLocales = Locale.getAvailableLocales();
 	
 		addSuffixIfAvailable(messageBundle, availableLocaleSuffixes, null, fileSuffix, servletContext);
@@ -168,7 +168,7 @@ public class LocaleUtils {
 	 * @param locale the locale to check.
 	 * @param fileSuffix the file suffix
 	 */
-	private static void addSuffixIfAvailable(String messageBundlePath, List availableLocaleSuffixes, Locale locale, String fileSuffix, ServletContext servletContext) {
+	private static void addSuffixIfAvailable(String messageBundlePath, List<String> availableLocaleSuffixes, Locale locale, String fileSuffix, ServletContext servletContext) {
 		String localMsgResourcePath = toBundleName(messageBundlePath, locale) + fileSuffix;
 		URL resourceUrl = null;
 		try {
@@ -261,9 +261,9 @@ public class LocaleUtils {
 	 * Returns the set of available locale suffixes
 	 * @return the set of available locale suffixes
 	 */
-	public static Set getAvailableLocaleSuffixes(){
+	public static Set<String> getAvailableLocaleSuffixes(){
 	
-		Set availableLocaleSuffixes = new HashSet(); 
+		Set<String> availableLocaleSuffixes = new HashSet<String>(); 
 		Locale[] availableLocales = Locale.getAvailableLocales();
 		for (int i = 0; i < availableLocales.length; i++) {
 			Locale locale = availableLocales[i];

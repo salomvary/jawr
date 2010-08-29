@@ -39,7 +39,7 @@ public class ConfigPropertiesAugmenter {
 	private final Properties configProperties;
 	
 	/** The set of private configuration properties */
-	private Set privateConfigProperties;
+	private Set<String> privateConfigProperties;
 
 	/**
 	 * Creates an instance of the augmenter which uses configProperties as the base configuration to 
@@ -50,7 +50,7 @@ public class ConfigPropertiesAugmenter {
 	 * @param privateConfigProperties Set of names of properties which may not be overriden. 
 	 */
 	public ConfigPropertiesAugmenter(Properties configProperties,
-			Set privateConfigProperties) {
+			Set<String> privateConfigProperties) {
 		super();
 		this.configProperties = configProperties;
 		this.privateConfigProperties = privateConfigProperties;
@@ -72,9 +72,9 @@ public class ConfigPropertiesAugmenter {
 	 * @param configToAdd the configuration properties to add
 	 */
 	public void augmentConfiguration(Properties configToAdd) {
-		for(Iterator it = configToAdd.entrySet().iterator();it.hasNext();) {
+		for(Iterator<Entry<Object,Object>> it = configToAdd.entrySet().iterator();it.hasNext();) {
 			
-			Entry entry = (Entry) it.next();
+			Entry<Object,Object> entry = it.next();
 			String configKey = (String) entry.getKey();
 			String configValue = (String) entry.getValue();
 			

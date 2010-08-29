@@ -28,7 +28,7 @@ public interface ResourceBrowser {
 	 * @param path
 	 * @return a list of resources at the specified path
 	 */
-	public Set getResourceNames(String path);
+	public Set<String> getResourceNames(String path);
 	
 	/**
 	 * Determines wether a given path is a directory. 

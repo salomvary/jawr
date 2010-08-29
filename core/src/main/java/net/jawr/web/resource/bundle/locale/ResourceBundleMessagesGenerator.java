@@ -121,9 +121,9 @@ public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.handler.LocaleAwareResourceReader#getAvailableLocales(java.lang.String)
 	 */
-	public List getAvailableLocales(String resource) {
+	public List<String> getAvailableLocales(String resource) {
 		
-		List availableLocales = null;
+		List<String> availableLocales = null;
 		if(grailsContext && grailsWarDeployed && resource.startsWith(GRAILS_APP_I18N_RESOURCE_PREFIX)){
 			availableLocales = LocaleUtils.getAvailableLocaleSuffixesForBundle(resource, servletContext); 
 		}else{
@@ -135,13 +135,13 @@ public class ResourceBundleMessagesGenerator extends AbstractJavascriptGenerator
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.variant.VariantResourceGenerator#getAvailableVariants(java.lang.String)
 	 */
-	public Map getAvailableVariants(String resource) {
+	public Map<String, VariantSet> getAvailableVariants(String resource) {
 		
-		List localeVariants = getAvailableLocales(resource);
+		List<String> localeVariants = getAvailableLocales(resource);
 		if(localeVariants.isEmpty()){
 			throw new BundlingProcessException("Enable to find the resource bundle : "+resource);
 		}
-		Map variants = new HashMap();
+		Map<String, VariantSet> variants = new HashMap<String, VariantSet>();
 		VariantSet variantSet = new VariantSet(JawrConstant.LOCALE_VARIANT_TYPE, "", localeVariants);
 		variants.put(JawrConstant.LOCALE_VARIANT_TYPE, variantSet);
 		return variants;

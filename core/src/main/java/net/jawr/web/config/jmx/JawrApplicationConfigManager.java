@@ -68,7 +68,7 @@ public class JawrApplicationConfigManager implements
 	private JawrConfigManagerMBean imgMBean;
 
 	/** The set of session ID for which all requests will be executed in debug mode */
-	private Set debugSessionIdSet = new HashSet();
+	private Set<String> debugSessionIdSet = new HashSet<String>();
 
 	/**
 	 * Constructor
@@ -109,9 +109,9 @@ public class JawrApplicationConfigManager implements
 	 * 
 	 * @return the list of initialized configuration managers.
 	 */
-	private List getInitializedConfigurationManagers() {
+	private List<JawrConfigManagerMBean> getInitializedConfigurationManagers() {
 
-		final List mBeans = new ArrayList();
+		final List<JawrConfigManagerMBean> mBeans = new ArrayList<JawrConfigManagerMBean>();
 		if (jsMBean != null) {
 			mBeans.add(jsMBean);
 		}
@@ -378,7 +378,7 @@ public class JawrApplicationConfigManager implements
 	 */
 	public String getStringValue(String property) {
 
-		final List mBeans = getInitializedConfigurationManagers();
+		final List<JawrConfigManagerMBean> mBeans = getInitializedConfigurationManagers();
 		try {
 
 			if (mBeans.size() == 3) {

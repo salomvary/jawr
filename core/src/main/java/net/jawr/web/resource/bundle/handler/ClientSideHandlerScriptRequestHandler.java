@@ -49,7 +49,7 @@ public class ClientSideHandlerScriptRequestHandler {
 	private JawrConfig config;
 	
 	/** The handler cache */
-	private Map handlerCache;
+	private Map<String, Handler> handlerCache;
 	
 	/**
 	 * Placeholder for a script stringbuffer and its hashcode, meant to 
@@ -71,6 +71,7 @@ public class ClientSideHandlerScriptRequestHandler {
 	 * @param rsHandler the resource bundle handler
 	 * @param config the jawr config
 	 */
+	@SuppressWarnings("unchecked")
 	public ClientSideHandlerScriptRequestHandler(
 			ResourceBundlesHandler rsHandler, JawrConfig config) {
 		super();
@@ -92,13 +93,9 @@ public class ClientSideHandlerScriptRequestHandler {
 	public void handleClientSideHandlerRequest(HttpServletRequest request, HttpServletResponse response){
 		Handler handler;
 		
-		// TODO handle variants
-		// Returns the variant key
-		Map variants = config.getGeneratorRegistry().resolveVariants(request);
+		Map<String, String> variants = config.getGeneratorRegistry().resolveVariants(request);
 		String variantKey = VariantUtils.getVariantKey(variants);
-		//String locale = config.getLocaleResolver().resolveLocaleCode(request);
-		//locale = null == locale ? "_d" : locale;
-
+		
 		if(handlerCache.containsKey(variantKey)){
 			handler = (Handler) handlerCache.get(variantKey);
 		}

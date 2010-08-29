@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
+import net.jawr.web.resource.bundle.variant.VariantSet;
 
 /**
  * Represents a group of related resources which will be referred to by 
@@ -65,19 +66,19 @@ public interface JoinableResourceBundle {
 	 * Sets the mappings, which should be used for the bundle
 	 * @param mappings the mapping of the resources of the bundle
 	 */
-	public void setMappings(List mappings);
+	public void setMappings(List<String> mappings);
 	
 	/**
 	 * Returns an ordered list with all the items pertaining to this bundle. 
 	 * @return an ordered list with all the items pertaining to this bundle. 
 	 */
-	public List getItemPathList();
+	public List<String> getItemPathList();
 	
 	/**
 	 * Returns a set with the license files to include with this bundle. 
 	 * @return a set with the license files to include with this bundle. 
 	 */
-	public Set getLicensesPathList();
+	public Set<String> getLicensesPathList();
 	
 	/**
 	 * Determines if an item path belongs to the bundle. 
@@ -91,7 +92,7 @@ public interface JoinableResourceBundle {
      * when needed. 
      * @return the URL prefix for this Bundle.
      */
-    public String getURLPrefix(Map variants);
+    public String getURLPrefix(Map<String, String> variants);
     
     /**
      * Get the postprocessor to use in resources before adding them to the bundle
@@ -136,19 +137,19 @@ public interface JoinableResourceBundle {
      * Returns the map of variants by type for this bundle. 
      * @return the map of variants by type for this bundle. 
      */
-    public Map getVariants();
+    public Map<String, VariantSet> getVariants();
     
     /**
      * Sets the map of variants by type for this bundle. 
      * @param the map of variants by type for this bundle. 
      */
-    public void setVariants(Map variants);
+    public void setVariants(Map<String, VariantSet> variants);
     
     /**
      * Returns the list of variant keys. 
      * @return the list of variant keys. 
      */
-    public List getVariantKeys();
+    public List<String> getVariantKeys();
     
     /**
      * Returns an ordered list with all the items pertaining to this bundle, with the variations 
@@ -156,24 +157,38 @@ public interface JoinableResourceBundle {
      * @param variants the variant map
      * @return an ordered list with all the items pertaining to this bundle
      */
-    public List getItemPathList(Map variants);
+    public List<String> getItemPathList(Map<String, String> variants);
     
     /**
 	 * Returns the bundle dependencies
 	 * @return the bundle dependencies
 	 */
-	public List getDependencies();
+	public List<JoinableResourceBundle> getDependencies();
 
 	/**
 	 * Sets the bundle dependencies
 	 * @param the bundle dependencies to set
 	 */
-	public void setDependencies(List bundleDependencies);
+	public void setDependencies(List<JoinableResourceBundle> bundleDependencies);
 
 	/**
      * If set, it will force the tag libraries to render a static URL in production mode. 
      * @return
      */
     public String getAlternateProductionURL();
+
+	/**
+	 * Sets the bundle postprocessor
+	 * @param bundlePostProcessor the bundle postprocessor to set
+	 */
+	public void setBundlePostProcessor(
+			ResourceBundlePostProcessor bundlePostProcessor);
+
+	/**
+	 * Sets the unitary postprocessor
+	 * @param unitaryPostProcessor the unitary postprocessor to set
+	 */
+	public void setUnitaryPostProcessor(
+			ResourceBundlePostProcessor unitaryPostProcessor);
 	
 }

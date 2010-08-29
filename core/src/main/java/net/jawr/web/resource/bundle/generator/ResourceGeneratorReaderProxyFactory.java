@@ -47,7 +47,7 @@ public class ResourceGeneratorReaderProxyFactory {
 		
 		// Defines the interfaces to be implemented by the ResourceReader 
 		int nbExtraInterface = 0;
-		Class[] extraInterfaces = new Class[2];
+		Class<?>[] extraInterfaces = new Class<?>[2];
 		boolean isResourceGenerator = generator instanceof ResourceGenerator;
 		boolean isStreamResourceGenerator= generator instanceof StreamResourceGenerator;
 		
@@ -58,8 +58,8 @@ public class ResourceGeneratorReaderProxyFactory {
 			extraInterfaces[nbExtraInterface++] = StreamResourceReader.class;
 		}
 		
-		Class[] generatorInterfaces = getGeneratorInterfaces(generator);
-		Class[] implementedInterfaces = new Class[generatorInterfaces.length+nbExtraInterface];
+		Class<?>[] generatorInterfaces = getGeneratorInterfaces(generator);
+		Class<?>[] implementedInterfaces = new Class[generatorInterfaces.length+nbExtraInterface];
 		for (int i = 0; i < generatorInterfaces.length; i++) {
 			implementedInterfaces[i] = generatorInterfaces[i];
 		}
@@ -82,10 +82,10 @@ public class ResourceGeneratorReaderProxyFactory {
 	 * @param generator the generator
 	 * @return the array of interfaces implemented by the PrefixedResourceGenerator
 	 */
-	private static Class[] getGeneratorInterfaces(
+	private static Class<?>[] getGeneratorInterfaces(
 			PrefixedResourceGenerator generator) {
 		
-		Set interfaces = new HashSet();
+		Set<Class<?>> interfaces = new HashSet<Class<?>>();
 		addInterfaces(generator, interfaces);
 		return (Class[]) interfaces.toArray(new Class[]{});
 	}
@@ -96,13 +96,13 @@ public class ResourceGeneratorReaderProxyFactory {
 	 * @param interfaces the set of interfaces to update
 	 */
 	private static void addInterfaces(Object obj,
-			Set interfaces) {
+			Set<Class<?>> interfaces) {
 		
-		Class[] generatorInterfaces = null;
-		Class superClass = null;
+		Class<?>[] generatorInterfaces = null;
+		Class<?> superClass = null;
 		if(obj instanceof Class){
-			generatorInterfaces = ((Class)obj).getInterfaces();
-			superClass = ((Class)obj).getSuperclass();
+			generatorInterfaces = ((Class<?>)obj).getInterfaces();
+			superClass = ((Class<?>)obj).getSuperclass();
 		}else{
 			generatorInterfaces = obj.getClass().getInterfaces();
 			superClass = obj.getClass().getSuperclass();

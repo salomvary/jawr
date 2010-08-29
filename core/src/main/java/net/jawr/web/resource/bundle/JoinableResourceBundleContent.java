@@ -13,8 +13,6 @@
  */
 package net.jawr.web.resource.bundle;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class defines the content of a joinable resource bundle.
@@ -28,9 +26,6 @@ public class JoinableResourceBundleContent {
 	/** The content */
 	private StringBuffer content;
 	
-	/** The map associating the CSS class path and their content which is usable in debug mode */
-	private Map cssClasspathDebugContentMap;
-
 	// ~---------- Constructor ----------
 	
 	/**
@@ -48,7 +43,6 @@ public class JoinableResourceBundleContent {
 	public JoinableResourceBundleContent(StringBuffer content) {
 		
 		this.content = content;
-		this.cssClasspathDebugContentMap = new HashMap();
 	}
 
 	// ~---------- Getters & Setters ----------
@@ -67,22 +61,6 @@ public class JoinableResourceBundleContent {
 	 */
 	public void setContent(StringBuffer content) {
 		this.content = content;
-	}
-
-	/**
-	 * Returns the map for the CSS class path content for Debug mode
-	 * @return the cssClasspathDebugContentMap the map to set
-	 */
-	public Map getCssClasspathDebugContentMap() {
-		return cssClasspathDebugContentMap;
-	}
-
-	/**
-	 * Set the map for the CSS class path content for Debug mode
-	 * @param the cssClasspathDebugContentMap the map to set
-	 */
-	public void setCssClasspathDebugContentMap(Map cssClasspathDebugContentMap) {
-		this.cssClasspathDebugContentMap = cssClasspathDebugContentMap;
 	}
 	
 	// ~---------- Methods ----------
@@ -103,19 +81,8 @@ public class JoinableResourceBundleContent {
 	public void append(JoinableResourceBundleContent bundleContent){
 		
 		this.content.append(bundleContent.content);
-		this.cssClasspathDebugContentMap.putAll(bundleContent.cssClasspathDebugContentMap);
 	}
 	
-	/**
-	 * Put a CSS class path content in the map. 
-	 * @param cssPath the cssPath
-	 * @param content the content
-	 */
-	public void putCssClasspathDebugContent(String cssPath, String content){
-		
-		this.cssClasspathDebugContentMap.put(cssPath, content);
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -141,11 +108,6 @@ public class JoinableResourceBundleContent {
 			if (other.content != null)
 				return false;
 		} else if (!content.equals(other.content))
-			return false;
-		if (cssClasspathDebugContentMap == null) {
-			if (other.cssClasspathDebugContentMap != null)
-				return false;
-		} else if (!cssClasspathDebugContentMap.equals(other.cssClasspathDebugContentMap))
 			return false;
 		return true;
 	}

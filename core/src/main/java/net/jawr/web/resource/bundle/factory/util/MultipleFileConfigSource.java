@@ -30,14 +30,14 @@ public class MultipleFileConfigSource extends PropsFilePropertiesSource implemen
 		ServletContextAware {
 	private static final String SERVLET_CONTEXT_ADDITIONAL_CONFIG_PARAM = "jawr.config.sources";
 	
-	protected List propertyBaseNames;
+	protected List<String> propertyBaseNames;
 	
 	
 	/**
 	 * Set of private configuration properties which should not be overriden. Subclasses may initialize this 
 	 * collection to fit specific needs. The default implementation does not initialize this Set. 
 	 */
-	protected Set privateConfigProperties;
+	protected Set<String> privateConfigProperties;
 
 
 	/* (non-Javadoc)
@@ -50,8 +50,8 @@ public class MultipleFileConfigSource extends PropsFilePropertiesSource implemen
 			augmenter = new ConfigPropertiesAugmenter(baseConfig);
 		else augmenter = new ConfigPropertiesAugmenter(baseConfig,privateConfigProperties);
 		
-		for(Iterator it = propertyBaseNames.iterator(); it.hasNext();) {
-			String nextConfigSource = (String)it.next();
+		for(Iterator<String> it = propertyBaseNames.iterator(); it.hasNext();) {
+			String nextConfigSource = it.next();
 			Properties additionalConfig = readConfigFile(nextConfigSource);
 			augmenter.augmentConfiguration(additionalConfig);			
 		}
@@ -67,7 +67,7 @@ public class MultipleFileConfigSource extends PropsFilePropertiesSource implemen
 	 */
 	protected void initAdditionalPropertyBaseNames(ServletContext context) {
 		String propertyNames = context.getInitParameter(SERVLET_CONTEXT_ADDITIONAL_CONFIG_PARAM);
-		propertyBaseNames = new ArrayList();
+		propertyBaseNames = new ArrayList<String>();
 		if(null != propertyNames) {
 			StringTokenizer tk = new StringTokenizer(propertyNames, ",");
 			while(tk.hasMoreTokens())

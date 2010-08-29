@@ -16,6 +16,7 @@ package net.jawr.web.resource.bundle.generator.variant;
 import java.util.Map;
 
 import net.jawr.web.resource.bundle.generator.PrefixedResourceGenerator;
+import net.jawr.web.resource.bundle.variant.VariantSet;
 
 /**
  * This interface defines the interface for Resource generator which are able to generate resources with different variant.
@@ -32,6 +33,6 @@ public interface VariantResourceGenerator extends PrefixedResourceGenerator{
 	 * @param resource the resource name
 	 * @return the map of available variant for a resource 
 	 */
-	Map getAvailableVariants(String resource);
+	Map<String, VariantSet> getAvailableVariants(String resource);
 	
 }

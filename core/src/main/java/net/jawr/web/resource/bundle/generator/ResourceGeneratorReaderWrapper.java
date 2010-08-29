@@ -25,6 +25,7 @@ import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.FileNameUtils;
 import net.jawr.web.resource.bundle.generator.variant.VariantResourceGenerator;
+import net.jawr.web.resource.bundle.variant.VariantSet;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 import net.jawr.web.resource.handler.reader.TextResourceReader;
 import net.jawr.web.util.StringUtils;
@@ -73,8 +74,8 @@ public class ResourceGeneratorReaderWrapper implements TextResourceReader {
 		// Remove generator prefix
 		path = path.substring((generator.getMappingPrefix()+GeneratorRegistry.PREFIX_SEPARATOR).length());
 		
-		Map contextVariants = new HashMap();
-		Map variantSets = new HashMap();
+		Map<String, String> contextVariants = new HashMap<String, String>();
+		Map<String, VariantSet> variantSets = new HashMap<String, VariantSet>();
 		if(generator instanceof VariantResourceGenerator || generator instanceof LocaleAwareResourceGenerator){
 			
 			int variantSuffixIdx = path.indexOf("@");
@@ -92,18 +93,19 @@ public class ResourceGeneratorReaderWrapper implements TextResourceReader {
 				if(generator instanceof VariantResourceGenerator){
 					variantSets = ((VariantResourceGenerator)generator).getAvailableVariants(path);
 				}else{ // instanceof LocaleAwareResourceGenerator
-					List availableLocales = ((LocaleAwareResourceGenerator)generator).getAvailableLocales(path);
+					List<String> availableLocales = ((LocaleAwareResourceGenerator)generator).getAvailableLocales(path);
 					if(availableLocales != null){
-						variantSets.put(JawrConstant.LOCALE_VARIANT_TYPE, availableLocales);
+						variantSets.put(JawrConstant.LOCALE_VARIANT_TYPE, new VariantSet(JawrConstant.LOCALE_VARIANT_TYPE, "",availableLocales));
 					}
 				}
 				
-				ArrayList variantTypes = new ArrayList(variantSets.keySet());
+				// Sort the variant types 
+				List<String> variantTypes = new ArrayList<String>(variantSets.keySet());
 				Collections.sort(variantTypes);
 				int nbVariants = variants.length;
 				
 				for(int i = 0; i < nbVariants; i++){
-					String variantType = (String) variantTypes.get(i);
+					String variantType = variantTypes.get(i);
 					String variantValue = variants[i];
 					contextVariants.put(variantType, variantValue);
 					if(variantType == JawrConstant.LOCALE_VARIANT_TYPE){

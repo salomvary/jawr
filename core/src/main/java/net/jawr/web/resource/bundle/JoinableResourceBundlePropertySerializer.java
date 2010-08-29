@@ -109,17 +109,17 @@ public class JoinableResourceBundlePropertySerializer {
 		}
 		
 		// Add variants and the bundle hashcode
-		Map variants = bundle.getVariants();
+		Map<String, VariantSet> variants = bundle.getVariants();
 		if (variants != null && !variants.isEmpty()) {
 			String serializedVariants = serializeVariantSets(variants);
 			if (StringUtils.isNotEmpty(serializedVariants)) {
 				props.put(prefix +  PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_VARIANTS, serializedVariants);
 			}
 
-			List variantKeys = bundle.getVariantKeys();
-			for (Iterator iterator = variantKeys.iterator(); iterator
+			List<String> variantKeys = bundle.getVariantKeys();
+			for (Iterator<String> iterator = variantKeys.iterator(); iterator
 					.hasNext();) {
-				String variantKey = (String) iterator.next();
+				String variantKey = iterator.next();
 				if (StringUtils.isNotEmpty(variantKey)) {
 					props.put(prefix + PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_HASHCODE_VARIANT + variantKey,
 							bundle.getBundleDataHashCode(variantKey));
@@ -132,19 +132,19 @@ public class JoinableResourceBundlePropertySerializer {
 		
 
 		// mapping
-		List itemPathList = bundle.getItemPathList();
+		List<String> itemPathList = bundle.getItemPathList();
 		if (itemPathList != null && !itemPathList.isEmpty()) {
 			props
 					.put(prefix + PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_MAPPINGS,
 							getCommaSeparatedString(itemPathList));
 		}
-		List dependencies = bundle.getDependencies();
+		List<JoinableResourceBundle> dependencies = bundle.getDependencies();
 		if (dependencies != null && !dependencies.isEmpty()) {
-			List dependenciesBundleName = getBundleNames(bundle.getDependencies());
+			List<String> dependenciesBundleName = getBundleNames(dependencies);
 			props.put(prefix + PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_DEPENDENCIES, getCommaSeparatedString(dependenciesBundleName));
 		}
 		
-		Set licensesPathList = bundle.getLicensesPathList();
+		Set<String> licensesPathList = bundle.getLicensesPathList();
 		if (licensesPathList != null && !licensesPathList.isEmpty()) {
 			props.put(prefix + PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_LICENCE_PATH_LIST,
 					getCommaSeparatedString(licensesPathList));
@@ -157,15 +157,15 @@ public class JoinableResourceBundlePropertySerializer {
 	 * @param map the map to serialize
 	 * @return the serialized variant sets
 	 */
-	private static String serializeVariantSets(Map map) {
+	private static String serializeVariantSets(Map<String, VariantSet> map) {
 		StringBuffer result = new StringBuffer();
 		
-		for (Iterator iterator = map.entrySet().iterator(); iterator.hasNext();) {
-			Entry entry = (Entry) iterator.next();
+		for (Iterator<Entry<String, VariantSet>> iterator = map.entrySet().iterator(); iterator.hasNext();) {
+			Entry<String, VariantSet> entry = iterator.next();
 			result.append(entry.getKey()+":");
 			VariantSet variantSet = (VariantSet) entry.getValue();
 			result.append(variantSet.getDefaultVariant()+":");
-			result.append(getCommaSeparatedString((Collection) variantSet));
+			result.append(getCommaSeparatedString(variantSet));
 			result.append(";");
 		}
 		
@@ -177,12 +177,12 @@ public class JoinableResourceBundlePropertySerializer {
 	 * @param bundles the bundles
 	 * @return the list of bundle names
 	 */
-	private static List getBundleNames(List bundles) {
+	private static List<String> getBundleNames(List<JoinableResourceBundle> bundles) {
 		
-		List bundleNames = new ArrayList();
-		for (Iterator iterator = bundles.iterator(); iterator
+		List<String> bundleNames = new ArrayList<String>();
+		for (Iterator<JoinableResourceBundle> iterator = bundles.iterator(); iterator
 				.hasNext();) {
-			bundleNames.add(((JoinableResourceBundle) iterator.next()).getName());
+			bundleNames.add(iterator.next().getName());
 		}
 		return bundleNames;
 	}
@@ -193,11 +193,11 @@ public class JoinableResourceBundlePropertySerializer {
 	 * @param itemPathList the item path list
 	 * @return the item path list
 	 */
-	private static String getCommaSeparatedString(Collection coll) {
+	private static String getCommaSeparatedString(Collection<String> coll) {
 
 		StringBuffer buffer = new StringBuffer();
-		for (Iterator eltIterator = coll.iterator(); eltIterator.hasNext();) {
-			String elt = (String) eltIterator.next();
+		for (Iterator<String> eltIterator = coll.iterator(); eltIterator.hasNext();) {
+			String elt = eltIterator.next();
 			buffer.append(elt);
 			if(eltIterator.hasNext()){
 				buffer.append(",");

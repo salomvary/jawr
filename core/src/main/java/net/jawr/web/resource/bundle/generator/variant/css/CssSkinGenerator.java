@@ -75,10 +75,10 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	private String skinMappingType = JawrConstant.SKIN_TYPE_MAPPING_SKIN_LOCALE;
 	
 	/** The skin mapping */
-	private Map skinMapping = new HashMap();
+	private Map<String, Map<String, VariantSet>> skinMapping = new HashMap<String, Map<String, VariantSet>>();
 	
 	/** The resource strategy class */
-	private Class resourceProviderStrategyClass;
+	private Class<?> resourceProviderStrategyClass;
 	
 	/**
 	 * Constructor
@@ -124,14 +124,14 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.variant.VariantResourceGenerator#getAvailableVariants(java.lang.String)
 	 */
-	public Map getAvailableVariants(String mapping) {
+	public Map<String, VariantSet> getAvailableVariants(String mapping) {
 		
-		Map availableVariants = new HashMap();
+		Map<String, VariantSet> availableVariants = new HashMap<String, VariantSet>();
 		String skinRootDir = getSkinRootDir(mapping, skinMapping.keySet());
 		if(skinRootDir != null){
-			Map variantSets = (Map) skinMapping.get(skinRootDir);
-			for (Iterator it = variantSets.values().iterator(); it.hasNext();) {
-				VariantSet variantSet = (VariantSet) it.next();
+			Map<String, VariantSet> variantSets = skinMapping.get(skinRootDir);
+			for (Iterator<VariantSet> it = variantSets.values().iterator(); it.hasNext();) {
+				VariantSet variantSet = it.next();
 				availableVariants.put(variantSet.getType(), variantSet);
 			}
 		}
@@ -149,13 +149,13 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 		String path = context.getPath();
 		
 		String skinRootDir = getSkinRootDir(path, skinMapping.keySet());
-		Map ctxVariantSetMap = (Map) skinMapping.get(skinRootDir);
+		Map<String, VariantSet> ctxVariantSetMap = skinMapping.get(skinRootDir);
 		
 		String skinVariantPath = path.substring(skinRootDir.length());
 		String[] paths = skinVariantPath.split(JawrConstant.URL_SEPARATOR);
 		
 		VariantResourceReaderStrategy strategy = getVariantStrategy(context, ctxVariantSetMap);
-		Map variantMap = null;
+		Map<String, String> variantMap = null;
 		do {
 			variantMap = strategy.nextVariantMapConbination();
 			if(variantMap != null){
@@ -184,7 +184,7 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.handler.reader.ResourceBrowser#getResourceNames(java.lang.String)
 	 */
-	public Set getResourceNames(String path) {
+	public Set<String> getResourceNames(String path) {
 		
 		String realPath = path.substring((getMappingPrefix()+GeneratorRegistry.PREFIX_SEPARATOR).length());
 		return rsBrowser.getResourceNames(realPath);
@@ -205,11 +205,11 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * @param config the Jawr config
 	 * @return the skin mapping
 	 */
-	public Map getSkinMapping(ResourceBrowser rsBrowser, JawrConfig config) {
+	public Map<String, Map<String,VariantSet>> getSkinMapping(ResourceBrowser rsBrowser, JawrConfig config) {
 		
-		Map skinMapping = new HashMap();
+		Map<String, Map<String,VariantSet>> skinMapping = new HashMap<String, Map<String,VariantSet>>();
 		PropertiesConfigHelper props = new PropertiesConfigHelper(config.getConfigProperties(), JawrConstant.CSS_TYPE);
-		Set skinRootDirectories = props.getPropertyAsSet(JawrConstant.SKIN_DEFAULT_ROOT_DIRS);
+		Set<String> skinRootDirectories = props.getPropertyAsSet(JawrConstant.SKIN_DEFAULT_ROOT_DIRS);
 		if(skinMappingType.equals(JawrConstant.SKIN_TYPE_MAPPING_SKIN_LOCALE)){
 			updateSkinMappingUsingTypeSkinLocale(rsBrowser, config, skinMapping,
 					skinRootDirectories);
@@ -229,14 +229,14 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * @param skinRootDirectories the skin root directories
 	 */
 	private void updateSkinMappingUsingTypeSkinLocale(ResourceBrowser rsBrowser,
-			JawrConfig config, Map skinMapping, Set skinRootDirectories) {
+			JawrConfig config, Map<String, Map<String, VariantSet>> skinMapping, Set<String> skinRootDirectories) {
 		
 		String defaultSkinName = null;
 		String defaultLocaleName = null;
 		
 		// Check if there are no directory which is contained in another root directory
-		for (Iterator itRootDir = skinRootDirectories.iterator(); itRootDir.hasNext();) {
-			String defaultSkinDir = PathNormalizer.asDirPath((String) itRootDir.next());
+		for (Iterator<String> itRootDir = skinRootDirectories.iterator(); itRootDir.hasNext();) {
+			String defaultSkinDir = PathNormalizer.asDirPath(itRootDir.next());
 			String defaultSkinDirName = PathNormalizer.getPathName(defaultSkinDir);
 			String skinRootDir = PathNormalizer.getParentPath(defaultSkinDir);
 			
@@ -266,7 +266,7 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 			
 			checkRootDirectoryNotOverlap(defaultSkinDir, skinRootDirectories);
 			
-			Map variantsMap = getVariants(rsBrowser, skinRootDir, skinName,
+			Map<String, VariantSet> variantsMap = getVariants(rsBrowser, skinRootDir, skinName,
 					localeName, true);
 			
 			skinMapping.put(skinRootDir, variantsMap);
@@ -284,14 +284,14 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * @param skinRootDirectories the skin root directories
 	 */
 	private void updateSkinMappingUsingTypeLocaleSkin(ResourceBrowser rsBrowser,
-			JawrConfig config, Map skinMapping, Set skinRootDirectories) {
+			JawrConfig config, Map<String, Map<String, VariantSet>> skinMapping, Set<String> skinRootDirectories) {
 		
 		String defaultSkinName = null;
 		String defaultLocaleName = null;
 		
 		// Check if there are no directory which is contained in another root directory
-		for (Iterator itRootDir = skinRootDirectories.iterator(); itRootDir.hasNext();) {
-			String defaultLocaleDir = PathNormalizer.asDirPath((String) itRootDir.next());
+		for (Iterator<String> itRootDir = skinRootDirectories.iterator(); itRootDir.hasNext();) {
+			String defaultLocaleDir = PathNormalizer.asDirPath(itRootDir.next());
 			String defaultLocaleDirName = PathNormalizer.getPathName(defaultLocaleDir);
 			String localeRootDir = PathNormalizer.getParentPath(defaultLocaleDir);
 			
@@ -321,7 +321,7 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 			
 			checkRootDirectoryNotOverlap(defaultLocaleDir, skinRootDirectories);
 			
-			Map variantsMap = getVariants(rsBrowser, localeRootDir, skinName,
+			Map<String, VariantSet> variantsMap = getVariants(rsBrowser, localeRootDir, skinName,
 					localeName, false);
 			
 			skinMapping.put(localeRootDir, variantsMap);
@@ -337,10 +337,10 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * @param the set of skin root directories
 	 * @return the skin root dir
 	 */
-	public String getSkinRootDir(String path, Set skinRootDirs) {
+	public String getSkinRootDir(String path, Set<String> skinRootDirs) {
 		String skinRootDir = null;
-		for (Iterator itSkinDir = skinRootDirs.iterator(); itSkinDir.hasNext();) {
-			String skinDir = (String) itSkinDir.next();
+		for (Iterator<String> itSkinDir = skinRootDirs.iterator(); itSkinDir.hasNext();) {
+			String skinDir = itSkinDir.next();
 			if(path.startsWith(skinDir)){
 				skinRootDir = skinDir;
 			}
@@ -355,13 +355,13 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * @param defaultSkinName the default skin name
 	 * @param defaultLocaleName the default locale name
 	 */
-	private Map getVariants(ResourceBrowser rsBrowser, String rootDir,
+	private Map<String, VariantSet> getVariants(ResourceBrowser rsBrowser, String rootDir,
 			String defaultSkinName, String defaultLocaleName, boolean mappingSkinLocale) {
-		Set paths = rsBrowser.getResourceNames(rootDir);
-		Set skinNames = new HashSet();
-		Set localeVariants = new HashSet();
-		for (Iterator itPath = paths.iterator(); itPath.hasNext();) {
-			String path = rootDir+ (String) itPath.next();
+		Set<String> paths = rsBrowser.getResourceNames(rootDir);
+		Set<String> skinNames = new HashSet<String>();
+		Set<String> localeVariants = new HashSet<String>();
+		for (Iterator<String> itPath = paths.iterator(); itPath.hasNext();) {
+			String path = rootDir+ itPath.next();
 			if(rsBrowser.isDirectory(path)){
 				String dirName = PathNormalizer.getPathName(path);
 				if(mappingSkinLocale){
@@ -392,10 +392,10 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * @param localeVariants the locale variants
 	 * @return the skin variants
 	 */
-	private Map getVariants(String defaultSkin, Set skinNames,
-			String defaultLocaleName, Set localeVariants) {
+	private Map<String, VariantSet> getVariants(String defaultSkin, Set<String> skinNames,
+			String defaultLocaleName, Set<String> localeVariants) {
 		
-		Map skinVariants = new HashMap();
+		Map<String, VariantSet> skinVariants = new HashMap<String, VariantSet>();
 		if(!skinNames.isEmpty()){
 			skinVariants.put(JawrConstant.SKIN_VARIANT_TYPE, new VariantSet(JawrConstant.SKIN_VARIANT_TYPE, 
 					defaultSkin, skinNames));
@@ -415,12 +415,12 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * @param path the skin path
 	 * @param localeVariants the set of locale variants to update
 	 */
-	private void updateLocaleVariants(ResourceBrowser rsBrowser, String path, Set localeVariants) {
+	private void updateLocaleVariants(ResourceBrowser rsBrowser, String path, Set<String> localeVariants) {
 	
-		Set skinPaths = rsBrowser.getResourceNames(path);
-		for (Iterator itSkinPath = skinPaths.iterator(); itSkinPath
+		Set<String> skinPaths = rsBrowser.getResourceNames(path);
+		for (Iterator<String> itSkinPath = skinPaths.iterator(); itSkinPath
 				.hasNext();) {
-			String skinPath = path+(String) itSkinPath.next();
+			String skinPath = path+ itSkinPath.next();
 			if(rsBrowser.isDirectory(skinPath)){
 				String skinDirName = PathNormalizer.getPathName(skinPath);
 				if(LocaleUtils.LOCALE_SUFFIXES.contains(skinDirName)){
@@ -436,12 +436,12 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * @param path the skin path
 	 * @param skinVariants the set of skin variants to update
 	 */
-	private void updateSkinVariants(ResourceBrowser rsBrowser, String path, Set skinVariants) {
+	private void updateSkinVariants(ResourceBrowser rsBrowser, String path, Set<String> skinVariants) {
 	
-		Set skinPaths = rsBrowser.getResourceNames(path);
-		for (Iterator itSkinPath = skinPaths.iterator(); itSkinPath
+		Set<String> skinPaths = rsBrowser.getResourceNames(path);
+		for (Iterator<String> itSkinPath = skinPaths.iterator(); itSkinPath
 				.hasNext();) {
-			String skinPath = path+(String) itSkinPath.next();
+			String skinPath = path+itSkinPath.next();
 			if(rsBrowser.isDirectory(skinPath)){
 				String skinDirName = PathNormalizer.getPathName(skinPath);
 				skinVariants.add(skinDirName);
@@ -455,11 +455,11 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * @param skinRootDirectories the root directories
 	 */
 	private void checkRootDirectoryNotOverlap(String dir,
-			Set skinRootDirectories) {
+			Set<String> skinRootDirectories) {
 		
 		String rootDir = removeLocaleSuffixIfExist(dir);
-		for (Iterator itSkinDir = skinRootDirectories.iterator(); itSkinDir.hasNext();) {
-			String skinDir = PathNormalizer.asDirPath((String) itSkinDir.next());
+		for (Iterator<String> itSkinDir = skinRootDirectories.iterator(); itSkinDir.hasNext();) {
+			String skinDir = PathNormalizer.asDirPath(itSkinDir.next());
 			if(!skinDir.equals(dir)){
 				skinDir = removeLocaleSuffixIfExist(skinDir);
 				if(skinDir.startsWith(rootDir)){
@@ -496,7 +496,7 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * @param variantSetMap the variantSet map for the current path
 	 * @return the variant strategy
 	 */
-	private VariantResourceReaderStrategy getVariantStrategy(GeneratorContext context, Map variantSetMap) {
+	private VariantResourceReaderStrategy getVariantStrategy(GeneratorContext context, Map<String, VariantSet> variantSetMap) {
 		
 		VariantResourceReaderStrategy strategy = null;
 		try {
@@ -519,7 +519,7 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * @return the reader
 	 */
 	private Reader getResourceReader(ResourceReaderHandler readerHandler, String skinRootDir, String[] paths,
-			Map variantMap) {
+			Map<String, String> variantMap) {
 		
 		Reader reader = null;
 		StringBuffer path = new StringBuffer(skinRootDir);
@@ -559,7 +559,7 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 * 
 	 * @param strategy the resource reader strategy to set
 	 */
-	public void setVariantResourceReaderStrategy(Class strategyClass) {
+	public void setVariantResourceReaderStrategy(Class<?> strategyClass) {
 		
 		resourceProviderStrategyClass = strategyClass;
 	}

@@ -29,6 +29,6 @@ public interface LocaleAwareResourceGenerator extends PrefixedResourceGenerator{
 	 * @param resource the resource name
 	 * @return the list of available locales for a resource 
 	 */
-	public List getAvailableLocales(String mapping);
+	public List<String> getAvailableLocales(String mapping);
 	
 }

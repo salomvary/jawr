@@ -36,7 +36,7 @@ public class SortFileParser {
 	private Reader reader;
 	
 	/** The available resources */
-	private Collection availableResources;
+	private Collection<String> availableResources;
 	
 	/** The directory name */
 	private String dirName;
@@ -47,7 +47,7 @@ public class SortFileParser {
 	 * @param availableResources the available resources
 	 * @param dirName the directory name
 	 */
-	public SortFileParser(Reader reader,Collection availableResources,String dirName) {
+	public SortFileParser(Reader reader,Collection<String> availableResources,String dirName) {
 		super();
 		this.reader = reader;
 		this.availableResources = availableResources;
@@ -59,9 +59,9 @@ public class SortFileParser {
 	 * If a resource is not in the resources dir, it is ignored. 
 	 * @return the list of ordered resource names
 	 */
-	public List getSortedResources()
+	public List<String> getSortedResources()
 	{
-		List resources = new ArrayList();
+		List<String> resources = new ArrayList<String>();
 		BufferedReader bf = new BufferedReader(reader);
 		String res;
 		try {
@@ -69,7 +69,7 @@ public class SortFileParser {
 			{
 				String name = PathNormalizer.normalizePath(res.trim());
 				
-				for(Iterator it = availableResources.iterator();it.hasNext();) {
+				for(Iterator<String> it = availableResources.iterator();it.hasNext();) {
 					String available = (String)it.next();
 					if(PathNormalizer.normalizePath(available).equals(name)) {
 						if(name.endsWith(".js") || name.endsWith(".css"))

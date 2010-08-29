@@ -45,6 +45,6 @@ public interface ClientSideHandlerGenerator {
 	 * @param useGzip the flag indicating if we must gip or not the content
 	 * @return the part of the script that creates all instances of ResourceBundle javascript objects
 	 */
-	public StringBuffer getClientSideBundles(Map variantMap, boolean useGzip);
+	public StringBuffer getClientSideBundles(Map<String, String> variantMap, boolean useGzip);
 
 }

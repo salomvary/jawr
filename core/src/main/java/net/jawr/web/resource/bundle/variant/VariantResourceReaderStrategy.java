@@ -31,13 +31,13 @@ public interface VariantResourceReaderStrategy {
 	 * @param context the generator context
 	 * @param variantsSetMap the variant set map for the current context path
 	 */
-	void initVariantProviderStrategy(GeneratorContext context, Map variantsSetMap);
+	void initVariantProviderStrategy(GeneratorContext context, Map<String, VariantSet> variantsSetMap);
 	
 	/**
 	 * Returns the new variant map combination to use.
 	 * If the map returned is null, it means that no more strategy is available
 	 * @return the new variant map combination to use
 	 */
-	Map nextVariantMapConbination();
+	Map<String, String> nextVariantMapConbination();
 	
 }

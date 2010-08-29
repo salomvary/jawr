@@ -31,7 +31,7 @@ import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 public class CompositeResourceBundle extends JoinableResourceBundleImpl {
 	
 	/** The child bundles */
-	private List childBundles;
+	private List<JoinableResourceBundle> childBundles;
 
 	/**
 	 * Constructor
@@ -45,7 +45,7 @@ public class CompositeResourceBundle extends JoinableResourceBundleImpl {
      * @param config the jawr configuration
      */
      public CompositeResourceBundle(String id, String name,
-									List childBundles,
+									List<JoinableResourceBundle> childBundles,
 									InclusionPattern inclusionPattern,
 									ResourceReaderHandler resourceHandler,
 									String fileExtension, 
@@ -56,8 +56,8 @@ public class CompositeResourceBundle extends JoinableResourceBundleImpl {
 		
 		boolean debugModeOn = config.isDebugModeOn();
 		
-		for(Iterator it = this.childBundles.iterator();it.hasNext();) {
-			JoinableResourceBundleImpl child = (JoinableResourceBundleImpl) it.next();
+		for(Iterator<JoinableResourceBundle> it = this.childBundles.iterator();it.hasNext();) {
+			JoinableResourceBundle child = it.next();
 			
 			// Skip the child as needed
 			if( (debugModeOn && child.getInclusionPattern().isExcludeOnDebug()) || 
@@ -86,17 +86,9 @@ public class CompositeResourceBundle extends JoinableResourceBundleImpl {
   	}
   	
  	/**
- 	 * Throws UnsupportedOperationException. Composites will use the children's variants instead. 
-	 */
-	public void setLocaleVariantKeys(List localeVariantKeys) {
-		throw new UnsupportedOperationException("Composite bundles do not support locale variants directly. "
-												+"Set locale variants in child bundles instead. ");
-	}
-
-	/**
 	 * @return List<JoinableResourceBundle> The bundles which are members of this composite.
 	 */
-	public List getChildBundles() {
+	public List<JoinableResourceBundle> getChildBundles() {
 		return childBundles;
 	}
 

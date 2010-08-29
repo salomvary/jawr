@@ -56,7 +56,7 @@ public class MessageBundleScriptCreator {
 	protected String namespace;
 	private String filter;
 	protected Locale locale;
-	private List filterList;
+	private List<String> filterList;
 	protected ServletContext servletContext;
 	
 	
@@ -78,7 +78,7 @@ public class MessageBundleScriptCreator {
 		filter = context.getBracketsParam();
 		if(null != filter) {
 			StringTokenizer tk = new StringTokenizer(filter,"\\|");
-			filterList = new ArrayList();
+			filterList = new ArrayList<String>();
 			while(tk.hasMoreTokens())
 				filterList.add(tk.nextToken());
 		}
@@ -165,14 +165,14 @@ public class MessageBundleScriptCreator {
 	 */
 	public void updateProperties(ResourceBundle bundle, Properties props){
 		
-		Enumeration keys = bundle.getKeys();
+		Enumeration<String> keys = bundle.getKeys();
 		
 		while(keys.hasMoreElements()) {
-			String key = (String) keys.nextElement();
+			String key = keys.nextElement();
 			
 			if(matchesFilter(key)) {
-					String value = bundle.getString(key);
-					props.put(key, value);
+				String value = bundle.getString(key);
+				props.put(key, value);
 			}
 		}
 	}
@@ -181,7 +181,7 @@ public class MessageBundleScriptCreator {
 	 * @return
 	 */
 	protected Reader doCreateScript(Properties props) {
-		BundleStringJasonifier bsj = new BundleStringJasonifier(props);
+		BundleStringJsonifier bsj = new BundleStringJsonifier(props);
 		String script = template.toString();
 		String messages = bsj.serializeBundles().toString();
 		script = script.replaceFirst("@namespace", RegexUtil.adaptReplacementToMatcher(namespace));
@@ -198,8 +198,8 @@ public class MessageBundleScriptCreator {
 	protected boolean matchesFilter(String key) {
 		boolean rets = (null == filterList);
 		if(!rets) {
-			for(Iterator it = filterList.iterator();it.hasNext() && !rets; )
-				rets = key.startsWith((String)it.next());
+			for(Iterator<String> it = filterList.iterator();it.hasNext() && !rets; )
+				rets = key.startsWith(it.next());
 		}
 		return rets;
 			

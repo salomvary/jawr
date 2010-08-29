@@ -100,8 +100,8 @@ public class PropertiesConfigHelper {
 	 * @param key the key of the property
 	 * @return a set of the comma separated values of a property 
 	 */
-	public Set getCommonPropertyAsSet(String key) {
-		Set propertiesSet = new HashSet();
+	public Set<String> getCommonPropertyAsSet(String key) {
+		Set<String> propertiesSet = new HashSet<String>();
 		StringTokenizer tk = new StringTokenizer(props.getProperty(PropertiesBundleConstant.PROPS_PREFIX+key, ""),
 				",");
 		while (tk.hasMoreTokens())
@@ -138,8 +138,8 @@ public class PropertiesConfigHelper {
 	 * @param key the key of the property
 	 * @return a list of the comma separated values of a property 
 	 */
-	public List getCustomBundlePropertyAsList(String bundleName, String key) {
-		List propertiesList = new ArrayList();
+	public List<String> getCustomBundlePropertyAsList(String bundleName, String key) {
+		List<String> propertiesList = new ArrayList<String>();
 		StringTokenizer tk = new StringTokenizer(getCustomBundleProperty(bundleName, key, ""),
 				",");
 		while (tk.hasMoreTokens())
@@ -152,8 +152,8 @@ public class PropertiesConfigHelper {
 	 * @param key the key of the property
 	 * @return a set of the comma separated values of a property 
 	 */
-	public Set getCustomBundlePropertyAsSet(String bundleName, String key) {
-		Set propertiesSet = new HashSet();
+	public Set<String> getCustomBundlePropertyAsSet(String bundleName, String key) {
+		Set<String> propertiesSet = new HashSet<String>();
 		StringTokenizer tk = new StringTokenizer(getCustomBundleProperty(bundleName, key, ""),
 				",");
 		while (tk.hasMoreTokens())
@@ -166,8 +166,8 @@ public class PropertiesConfigHelper {
 	 * @param key the key of the property
 	 * @return a set of the comma separated values of a property 
 	 */
-	public Map getCustomBundlePropertyAsMap(String bundleName, String key) {
-		Map propertiesMap = new HashMap();
+	public Map<String,List<String>> getCustomBundlePropertyAsMap(String bundleName, String key) {
+		Map<String,List<String>> propertiesMap = new HashMap<String,List<String>>();
 		
 		StringTokenizer tk = new StringTokenizer(getCustomBundleProperty(bundleName, key, ""),
 				";");
@@ -177,7 +177,7 @@ public class PropertiesConfigHelper {
 			String mapKey = mapEntry[0];
 			String values = mapEntry[1];
 			StringTokenizer valueTk = new StringTokenizer(values, ",");
-			List valueList = new ArrayList();
+			List<String> valueList = new ArrayList<String>();
 			while (valueTk.hasMoreTokens()){
 				valueList.add(valueTk.nextToken().trim());
 			}
@@ -191,8 +191,8 @@ public class PropertiesConfigHelper {
 	 * @param bundleName the bundle name
 	 * @return the map of variantSet for the bundle 
 	 */
-	public Map getCustomBundleVariantSets(String bundleName) {
-		Map variantSets = new HashMap();
+	public Map<String, VariantSet> getCustomBundleVariantSets(String bundleName) {
+		Map<String, VariantSet> variantSets = new HashMap<String, VariantSet>();
 		
 		StringTokenizer tk = new StringTokenizer(getCustomBundleProperty(bundleName, PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_VARIANTS, ""),
 				";");
@@ -203,7 +203,7 @@ public class PropertiesConfigHelper {
 			String defaultVariant = mapEntry[1];
 			String values = mapEntry[2];
 			String[] variantsArray = StringUtils.split(values, ",");
-			List variants = new ArrayList();
+			List<String> variants = new ArrayList<String>();
 			for (int i = 0; i < variantsArray.length; i++) {
 				variants.add(variantsArray[i]);
 			}
@@ -219,8 +219,8 @@ public class PropertiesConfigHelper {
 	 * @param key the key of the property
 	 * @return a set of the comma separated values of a property 
 	 */
-	public Set getPropertyAsSet(String key) {
-		Set propertiesSet = new HashSet();
+	public Set<String> getPropertyAsSet(String key) {
+		Set<String> propertiesSet = new HashSet<String>();
 		StringTokenizer tk = new StringTokenizer(props.getProperty(prefix+key, ""),
 				",");
 		while (tk.hasMoreTokens())
@@ -242,11 +242,11 @@ public class PropertiesConfigHelper {
 	 * Returns the set of names for the bundles 
 	 * @return the set of names for the bundles 
 	 */
-	public Set getPropertyBundleNameSet() {
+	public Set<String> getPropertyBundleNameSet() {
 		
-		Set bundleNameSet = new HashSet();
+		Set<String> bundleNameSet = new HashSet<String>();
 
-		for (Iterator it = props.keySet().iterator();it.hasNext();) {
+		for (Iterator<Object> it = props.keySet().iterator();it.hasNext();) {
 			Object key = it.next();
 			Matcher matcher = bundleNamePattern.matcher((String) key);
 			if (matcher.matches()) {
@@ -262,7 +262,7 @@ public class PropertiesConfigHelper {
 	 * Returns the set of post processor name based on the class definition
 	 * @return the set of post processor name based on the class definition
 	 */
-	public Map getCustomPostProcessorMap() {
+	public Map<String,String> getCustomPostProcessorMap() {
 		return getCustomMap(postProcessorClassPattern);
 	}
 	
@@ -270,7 +270,7 @@ public class PropertiesConfigHelper {
 	 * Returns the map of custom global preprocessor
 	 * @return the map of custom global preprocessor
 	 */
-	public Map getCustomGlobalPreprocessorMap() {
+	public Map<String,String> getCustomGlobalPreprocessorMap() {
 		return getCustomMap(globalPreProcessorClassPattern);
 	}
 	
@@ -279,10 +279,10 @@ public class PropertiesConfigHelper {
 	 * @param keyPattern the pattern of the key
 	 * @return the map.
 	 */
-	private Map getCustomMap(Pattern keyPattern) {
-		Map map = new HashMap();
+	private Map<String,String> getCustomMap(Pattern keyPattern) {
+		Map<String,String> map = new HashMap<String,String>();
 
-		for (Iterator it = props.keySet().iterator();it.hasNext();) {
+		for (Iterator<Object> it = props.keySet().iterator();it.hasNext();) {
 			String key = (String) it.next();
 			Matcher matcher = keyPattern.matcher(key);
 			if (matcher.matches()) {

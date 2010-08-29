@@ -26,11 +26,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.Map.Entry;
 import java.util.zip.GZIPOutputStream;
 
 import net.jawr.web.JawrConstant;
@@ -425,18 +422,6 @@ public abstract class AbstractResourceBundleHandler implements ResourceBundleHan
 
 		// binary version
 		storeBundle(bundleName, bundleContent, true, gzipDirPath);
-
-		// Store Css classpath debug files
-		// TODO check if it still necessary
-		Map cssClasspathDebugContentMap = bundleResourcesContent
-				.getCssClasspathDebugContentMap();
-		Iterator entryIterator = cssClasspathDebugContentMap.entrySet().iterator();
-		while (entryIterator.hasNext()) {
-			Entry entry =  (Entry) entryIterator.next();
-			String filePath = (String) entry.getKey();
-			storeBundle(filePath, (String) entry
-					.getValue(), false, cssClasspathDirPath);
-		}
 	}
 
 	/**

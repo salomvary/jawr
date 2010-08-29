@@ -107,9 +107,6 @@ public class ClassLoaderResourceUtils {
 			}
 		}
 		
-		// Everything failed... exception is trown. 
-		if(null == is)
-			throw new FileNotFoundException( resourcePath + " could not be found. ");
 		return is;
 	}
 
@@ -174,7 +171,7 @@ public class ClassLoaderResourceUtils {
 	 */
 	public static Object buildObjectInstance(String classname) {
 		Object rets = null;
-		Class clazz = getClass(classname);
+		Class<?> clazz = getClass(classname);
 		try {
 			rets = clazz.newInstance();
 		}catch(Exception e) {
@@ -193,8 +190,8 @@ public class ClassLoaderResourceUtils {
 	 * @param classname the class name
 	 * @return the class
 	 */
-	public static Class getClass(String classname) {
-		Class clazz = null;
+	public static Class<?> getClass(String classname) {
+		Class<?> clazz = null;
 		try {
 			clazz = Class.forName(classname);
 			
@@ -244,13 +241,13 @@ public class ClassLoaderResourceUtils {
 	public static Object buildObjectInstance(String classname, Object[] params) {
 		Object rets = null;
 		
-		Class[] paramTypes = new Class[params.length];
+		Class<?>[] paramTypes = new Class[params.length];
 		for(int x = 0; x < params.length; x++){
 			paramTypes[x] = params[x].getClass();
 		}
 		
 		try {
-			Class clazz = getClass(classname);
+			Class<?> clazz = getClass(classname);
 			rets = clazz.getConstructor(paramTypes).newInstance(params);
 			
 		} catch (Exception e) {

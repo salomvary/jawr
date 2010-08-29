@@ -103,7 +103,7 @@ public class FileSystemResourceReader implements TextResourceReader, StreamResou
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.handler.reader.ResourceBrowser#getResourceNames(java.lang.String)
 	 */
-	public Set getResourceNames(String path) {
+	public Set<String> getResourceNames(String path) {
 		path = path.replace('/', File.separatorChar);
 		File resource = new File(baseDir, path);
         return FileUtils.getResourceNames(resource);

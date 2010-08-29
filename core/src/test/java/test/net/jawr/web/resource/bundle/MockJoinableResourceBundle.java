@@ -20,6 +20,7 @@ import java.util.Set;
 import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
+import net.jawr.web.resource.bundle.variant.VariantSet;
 
 /**
  * @author Ibrahim Chaehoi
@@ -58,7 +59,7 @@ public class MockJoinableResourceBundle implements JoinableResourceBundle {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getDependencies()
 	 */
-	public List getDependencies() {
+	public List<JoinableResourceBundle> getDependencies() {
 		return null;
 	}
 
@@ -86,21 +87,21 @@ public class MockJoinableResourceBundle implements JoinableResourceBundle {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList()
 	 */
-	public List getItemPathList() {
+	public List<String> getItemPathList() {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList(java.util.Map)
 	 */
-	public List getItemPathList(Map variants) {
+	public List<String> getItemPathList(Map<String, String> variants) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getLicensesPathList()
 	 */
-	public Set getLicensesPathList() {
+	public Set<String> getLicensesPathList() {
 		return null;
 	}
 
@@ -114,7 +115,7 @@ public class MockJoinableResourceBundle implements JoinableResourceBundle {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getURLPrefix(java.util.Map)
 	 */
-	public String getURLPrefix(Map variants) {
+	public String getURLPrefix(Map<String, String> variants) {
 		return null;
 	}
 
@@ -128,14 +129,14 @@ public class MockJoinableResourceBundle implements JoinableResourceBundle {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getVariantKeys()
 	 */
-	public List getVariantKeys() {
+	public List<String> getVariantKeys() {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getVariants()
 	 */
-	public Map getVariants() {
+	public Map<String, VariantSet> getVariants() {
 		return null;
 	}
 
@@ -164,18 +165,37 @@ public class MockJoinableResourceBundle implements JoinableResourceBundle {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setDependencies(java.util.List)
 	 */
-	public void setDependencies(List bundleDependencies) {
+	public void setDependencies(List<JoinableResourceBundle> bundleDependencies) {
 	
 	}
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setMappings(java.util.List)
 	 */
-	public void setMappings(List mappings) {
+	public void setMappings(List<String> mappings) {
 	
 	}
 
-	public void setVariants(Map variants) {
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setVariants(java.util.Map)
+	 */
+	public void setVariants(Map<String, VariantSet> variants) {
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setBundlePostProcessor(net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor)
+	 */
+	public void setBundlePostProcessor(
+			ResourceBundlePostProcessor bundlePostProcessor) {
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setUnitaryPostProcessor(net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor)
+	 */
+	public void setUnitaryPostProcessor(
+			ResourceBundlePostProcessor unitaryPostProcessor) {
 		
 	}
 

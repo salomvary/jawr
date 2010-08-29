@@ -185,13 +185,13 @@ public class CSSHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer implem
 	 * @throws IOException if an IOException occurs
 	 */
 	protected void renderBundleLinks(JoinableResourceBundle bundle,
-			BundleRendererContext ctx, Map variant, Writer out, boolean debugOn)
+			BundleRendererContext ctx, Map<String, String> variant, Writer out, boolean debugOn)
 			throws IOException {
 		
 		if(alternate && StringUtils.isNotEmpty(title)){
 			
 			// force alternate variant
-			Map variants = ctx.getVariants();
+			Map<String, String> variants = ctx.getVariants();
 			variants.put(JawrConstant.SKIN_VARIANT_TYPE, title);
 		}
 		
@@ -231,22 +231,22 @@ public class CSSHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer implem
 				addComment("Start adding members resolved by '" + requestedPath + "'. Bundle id is: '" + bundle.getId() + "'", out);
 			}
 			
-			List variants = VariantUtils.getAllVariants(bundle.getVariants());
-			Map currentVariant = bundler.getConfig().getGeneratorRegistry().getAvailableVariantMap(bundle.getVariants(), ctx.getVariants());
+			List<Map<String, String>> variants = VariantUtils.getAllVariants(bundle.getVariants());
+			Map<String, String> currentVariant = bundler.getConfig().getGeneratorRegistry().getAvailableVariantMap(bundle.getVariants(), ctx.getVariants());
 			String currentLocale = (String) currentVariant.get(JawrConstant.LOCALE_VARIANT_TYPE);
 			variants.remove(currentVariant);
 			
 			// Renders the different variant as alternate stylesheet
 			alternate = true;
-			for (Iterator itVariantMap = variants.iterator(); itVariantMap.hasNext();) {
-				Map variant = (Map) itVariantMap.next();
-				String skin = (String) variant.get(JawrConstant.SKIN_VARIANT_TYPE);
+			for (Iterator<Map<String, String>> itVariantMap = variants.iterator(); itVariantMap.hasNext();) {
+				Map<String, String> variant = itVariantMap.next();
+				String skin = variant.get(JawrConstant.SKIN_VARIANT_TYPE);
 				if(skin == null){
 					throw new JawrLinkRenderingException("You are trying to render alternate CSS for a bundle which don't have skin variant defined.");
 				}
 				
 				// Only apply if the locale doesn't exists or is the current one  
-				String locale = (String) variant.get(JawrConstant.LOCALE_VARIANT_TYPE);
+				String locale = variant.get(JawrConstant.LOCALE_VARIANT_TYPE);
 				if(currentLocale == null || currentLocale.equals(locale)){
 						
 					title = skin;

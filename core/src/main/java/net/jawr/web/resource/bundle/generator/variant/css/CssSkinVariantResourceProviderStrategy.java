@@ -34,7 +34,7 @@ public class CssSkinVariantResourceProviderStrategy implements
 		VariantResourceReaderStrategy {
 
 	/** The iterator on the variant map */
-	private Iterator variantMapStrategyIterator;
+	private Iterator<Map<String, String>> variantMapStrategyIterator;
 	
 	/**
 	 * Constructor
@@ -50,15 +50,15 @@ public class CssSkinVariantResourceProviderStrategy implements
 	 * @param context the generator context
 	 * @param variantsSetMap the variant set map for the current context path
 	 */
-	public void initVariantProviderStrategy(GeneratorContext context, Map variantsSetMap) {
+	public void initVariantProviderStrategy(GeneratorContext context, Map<String, VariantSet> variantsSetMap) {
 		
-		List variantMapStrategies = new ArrayList();
-		Map ctxVariantMap = context.getVariantMap();
-		VariantSet skinVariantSet = (VariantSet) variantsSetMap.get(JawrConstant.SKIN_VARIANT_TYPE);
-		String skinVariant = (String) ctxVariantMap.get(JawrConstant.SKIN_VARIANT_TYPE);
+		List<Map<String,String>> variantMapStrategies = new ArrayList<Map<String,String>>();
+		Map<String, String> ctxVariantMap = context.getVariantMap();
+		VariantSet skinVariantSet = variantsSetMap.get(JawrConstant.SKIN_VARIANT_TYPE);
+		String skinVariant = ctxVariantMap.get(JawrConstant.SKIN_VARIANT_TYPE);
 		
-		VariantSet localeVariantSet = (VariantSet) variantsSetMap.get(JawrConstant.LOCALE_VARIANT_TYPE);
-		String localeVariant = (String) ctxVariantMap.get(JawrConstant.LOCALE_VARIANT_TYPE);
+		VariantSet localeVariantSet = variantsSetMap.get(JawrConstant.LOCALE_VARIANT_TYPE);
+		String localeVariant = ctxVariantMap.get(JawrConstant.LOCALE_VARIANT_TYPE);
 		
 		variantMapStrategies.add(getVariantMap(skinVariant, localeVariant));
 		if(localeVariantSet != null){
@@ -78,9 +78,9 @@ public class CssSkinVariantResourceProviderStrategy implements
 	 * @param localeVariant the locale variant
 	 * @return the variant map
 	 */
-	private Map getVariantMap(String skinVariant, String localeVariant){
+	private Map<String, String> getVariantMap(String skinVariant, String localeVariant){
 		
-		Map variantMap = new HashMap();
+		Map<String, String> variantMap = new HashMap<String, String>();
 		variantMap.put(JawrConstant.SKIN_VARIANT_TYPE, skinVariant);
 		variantMap.put(JawrConstant.LOCALE_VARIANT_TYPE, localeVariant);
 		return variantMap;
@@ -89,9 +89,9 @@ public class CssSkinVariantResourceProviderStrategy implements
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.generator.variant.VariantResourceProviderStrategy#getNextVariantMapConbination()
 	 */
-	public Map nextVariantMapConbination() {
+	public Map<String, String> nextVariantMapConbination() {
 		
-		return (Map) variantMapStrategyIterator.next();
+		return variantMapStrategyIterator.next();
 	}
 
 }

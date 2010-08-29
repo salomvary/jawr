@@ -169,13 +169,13 @@ public class IECssBundleGeneratorTestCase extends TestCase {
 				
 				return new ResourceBundlePathsIterator() {
 					
-					private Iterator it = Arrays.asList(paths).iterator();
+					private Iterator<String> it = Arrays.asList(paths).iterator();
 					
 					public void remove() {
 						
 					}
 					
-					public Object next() {
+					public String next() {
 						return it.next();
 					}
 					

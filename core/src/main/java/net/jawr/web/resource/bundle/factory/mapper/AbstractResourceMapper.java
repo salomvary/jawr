@@ -47,13 +47,13 @@ public abstract class AbstractResourceMapper {
 	protected ResourceReaderHandler rsHandler;
 
 	/** The list of current bundles */
-	protected List currentBundles;
+	protected List<JoinableResourceBundle> currentBundles;
 
 	/** The resource extension */
 	protected String resourceExtension;
 
 	/** The bundle mapping */
-	private Map bundleMapping;
+	private Map<String, String> bundleMapping;
 
 	/**
 	 * Constructor
@@ -64,15 +64,15 @@ public abstract class AbstractResourceMapper {
 	 * @param resourceExtension the resource file extension
 	 */
 	public AbstractResourceMapper(String baseDir, ResourceReaderHandler rsHandler,
-			List currentBundles, String resourceExtension) {
+			List<JoinableResourceBundle> currentBundles, String resourceExtension) {
 		super();
 		this.baseDir = PathNormalizer.asDirPath(baseDir);
 		this.rsHandler = rsHandler;
-		this.currentBundles = new ArrayList();
+		this.currentBundles = new ArrayList<JoinableResourceBundle>();
 		if (null != currentBundles)
 			this.currentBundles.addAll(currentBundles);
 		this.resourceExtension = resourceExtension;
-		this.bundleMapping = new HashMap();
+		this.bundleMapping = new HashMap<String, String>();
 	}
 
 	/**
@@ -83,7 +83,7 @@ public abstract class AbstractResourceMapper {
 	protected abstract void addBundlesToMapping()
 			throws DuplicateBundlePathException;
 
-	public final Map getBundleMapping() throws DuplicateBundlePathException {
+	public final Map<String, String> getBundleMapping() throws DuplicateBundlePathException {
 		addBundlesToMapping();
 		return bundleMapping;
 	}
@@ -98,8 +98,8 @@ public abstract class AbstractResourceMapper {
 	protected final void addBundleToMap(String bundleId, String mapping)
 			throws DuplicateBundlePathException {
 
-		for (Iterator it = currentBundles.iterator(); it.hasNext();) {
-			JoinableResourceBundle bundle = (JoinableResourceBundle) it.next();
+		for (Iterator<JoinableResourceBundle> it = currentBundles.iterator(); it.hasNext();) {
+			JoinableResourceBundle bundle = it.next();
 			if (bundleId.equals(bundle.getId())
 					|| this.bundleMapping.containsKey(bundleId)) {
 				LOGGER.fatal("Duplicate bundle id resulted from mapping:"

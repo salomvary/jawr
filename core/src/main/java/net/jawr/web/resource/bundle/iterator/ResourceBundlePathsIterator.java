@@ -22,7 +22,7 @@ import java.util.Iterator;
  * 
  * @author Jordi Hernández Sellés
  */
-public interface ResourceBundlePathsIterator extends Iterator {
+public interface ResourceBundlePathsIterator extends Iterator<String> {
 
 	/**
 	 * @return Next path belonging to the bundle. 

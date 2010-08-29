@@ -157,13 +157,14 @@ public class PostProcessorCssImageUrlRewriter extends CssImageUrlRewriter {
 	 * @return the url of the CSS image with a cache buster
 	 * @throws IOException if an IO exception occurs
 	 */
+	@SuppressWarnings("unchecked")
 	private String addCacheBuster(BundleProcessingStatus status, String url, ImageResourcesHandler imgRsHandler) throws IOException {
 		
 		// Try to retrieve the from the bundle processing cache
-		Map imageMapping = (Map) status.getData(JawrConstant.POST_PROCESSING_CTX_JAWR_IMAGE_MAPPING);
+		Map<String, String> imageMapping = (Map<String, String>) status.getData(JawrConstant.POST_PROCESSING_CTX_JAWR_IMAGE_MAPPING);
 		String newUrl = null;
 		if(imageMapping != null){
-			newUrl = (String) imageMapping.get(url);
+			newUrl = imageMapping.get(url);
 			if(newUrl != null){
 				return newUrl;
 			}
@@ -194,7 +195,7 @@ public class PostProcessorCssImageUrlRewriter extends CssImageUrlRewriter {
 		
 		// Set the result in a cache, so we will not search for it the next time
 		if(imageMapping == null){
-			imageMapping = new HashMap();
+			imageMapping = new HashMap<String, String>();
 			status.putData(JawrConstant.POST_PROCESSING_CTX_JAWR_IMAGE_MAPPING, imageMapping);
 		}
 		imageMapping.put(url, newUrl);

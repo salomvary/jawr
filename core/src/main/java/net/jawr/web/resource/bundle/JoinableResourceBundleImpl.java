@@ -15,8 +15,6 @@ package net.jawr.web.resource.bundle;
 
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +29,7 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.bundle.postprocess.ResourceBundlePostProcessor;
 import net.jawr.web.resource.bundle.sorting.SortFileParser;
+import net.jawr.web.resource.bundle.variant.VariantSet;
 import net.jawr.web.resource.bundle.variant.VariantUtils;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 import net.jawr.web.util.StringUtils;
@@ -60,10 +59,10 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	private InclusionPattern inclusionPattern;
 
 	/** The list of path mappings. It could contains directory mapping like 'myPath/**' */
-	private List pathMappings;
+	private List<String> pathMappings;
 
 	/** The final item path list containing all the resource linked to this bundle */
-	protected List itemPathList;
+	protected List<String> itemPathList;
 
 	/** The resource reader handle */
 	private ResourceReaderHandler resourceReaderHandler;
@@ -72,7 +71,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	private GeneratorRegistry generatorRegistry;
 
 	/** The licence path list */
-	protected Set licensesPathList;
+	protected Set<String> licensesPathList;
 
 	/** The file extension */
 	private String fileExtension;
@@ -87,16 +86,16 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	private String alternateProductionURL;
 
 	/** The prefix mapping for locale variant version */
-	private Map prefixMap;
+	private Map<String, String> prefixMap;
 
 	/** The map of variants */
-	protected Map variants;
+	protected Map<String, VariantSet> variants;
 	
 	/** The list of variant keys */
-	protected List variantKeys;
+	protected List<String> variantKeys;
 	
 	/** The list of bundle dependencies */
-	protected List dependencies;
+	protected List<JoinableResourceBundle> dependencies;
 
 	/** The file post processor */
 	private ResourceBundlePostProcessor unitaryPostProcessor;
@@ -114,6 +113,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * @param resourceReaderHandler ResourceHandler Used to access the files and folders.
 	 * @param generatorRegistry The generator registry.
 	 */
+	@SuppressWarnings("unchecked")
 	public JoinableResourceBundleImpl(String id, String name,
 			String fileExtension, InclusionPattern inclusionPattern,
 			ResourceReaderHandler resourceReaderHandler, GeneratorRegistry generatorRegistry) {
@@ -127,7 +127,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		this.generatorRegistry = generatorRegistry;
 		this.itemPathList = ConcurrentCollectionsFactory
 				.buildCopyOnWriteArrayList();
-		this.licensesPathList = new HashSet();
+		this.licensesPathList = new HashSet<String>();
 		this.fileExtension = fileExtension;
 		prefixMap = ConcurrentCollectionsFactory.buildConcurrentHashMap();
 
@@ -146,7 +146,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 */
 	public JoinableResourceBundleImpl(String id, String name,
 			String fileExtension, InclusionPattern inclusionPattern,
-			List pathMappings, ResourceReaderHandler resourceReaderHandler, GeneratorRegistry generatorRegistry) {
+			List<String> pathMappings, ResourceReaderHandler resourceReaderHandler, GeneratorRegistry generatorRegistry) {
 		this(id, name, fileExtension, inclusionPattern, resourceReaderHandler, generatorRegistry);
 
 		if (LOGGER.isDebugEnabled()){
@@ -171,8 +171,8 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 			LOGGER.debug("Creating bundle path List for " + this.id);
 		}
 		
-		for (Iterator it = pathMappings.iterator(); it.hasNext();) {
-			String pathMapping = (String) it.next();
+		for (Iterator<String> it = pathMappings.iterator(); it.hasNext();) {
+			String pathMapping = it.next();
 			boolean isGeneratedPath = generatorRegistry.isPathGenerated(pathMapping);
 			// Handle generated resources
 			// path ends in /, the folder is included without subfolders
@@ -205,18 +205,13 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * @param addSubDirs boolean If subfolders will be included. In such case, every folder below the path is included.
 	 */
 	private void addItemsFromDir(String dirName, boolean addSubDirs) {
-		Collection resources = resourceReaderHandler.getResourceNames(dirName);
+		Set<String> resources = resourceReaderHandler.getResourceNames(dirName);
 		boolean isGeneratedPath = generatorRegistry.isPathGenerated(dirName);
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Adding " + resources.size() + " resources from path ["
 					+ dirName + "] to bundle " + getId());
 		}
 
-		boolean isSortingResourcesAlphabetically = false;
-		if(isSortingResourcesAlphabetically){
-			Collections.sort(new ArrayList(resources));
-		}
-		
 		// If the directory contains a sorting file, it is used to order the resources.
 		if (resources.contains(SORT_FILE_NAME)
 				|| resources.contains("/" + SORT_FILE_NAME)) {
@@ -235,8 +230,8 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 			
 			SortFileParser parser = new SortFileParser(reader, resources, dirName);
 
-			List sortedResources = parser.getSortedResources();
-			for (Iterator it = sortedResources.iterator(); it.hasNext();) {
+			List<String> sortedResources = parser.getSortedResources();
+			for (Iterator<String> it = sortedResources.iterator(); it.hasNext();) {
 				String resourceName = (String) it.next();
 
 				// Add subfolders or files
@@ -260,8 +255,8 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		}
 
 		// Add remaining resources (remaining after sorting, or all if no sort file present)
-		List folders = new ArrayList();
-		for (Iterator it = resources.iterator(); it.hasNext();) {
+		List<String> folders = new ArrayList<String>();
+		for (Iterator<String> it = resources.iterator(); it.hasNext();) {
 			String resourceName = (String) it.next();
 			String resourcePath = joinPaths(dirName,
 					resourceName, isGeneratedPath);
@@ -278,7 +273,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 
 		// Add subfolders if requested. Subfolders are added last unless specified in sorting file.
 		if (addSubDirs) {
-			for (Iterator it = folders.iterator(); it.hasNext();) {
+			for (Iterator<String> it = folders.iterator(); it.hasNext();) {
 				String folderName = (String) it.next();
 				addItemsFromDir(joinPaths(dirName, folderName, isGeneratedPath),
 						true);
@@ -408,10 +403,10 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * 
 	 * @param variantSets
 	 */
-	public void setVariants(Map variantSets) {
+	public void setVariants(Map<String, VariantSet> variantSets) {
 		
 		if(variantSets != null){
-			this.variants = new TreeMap(variantSets);
+			this.variants = new TreeMap<String, VariantSet>(variantSets);
 			variantKeys = VariantUtils.getAllVariantKeys(this.variants);	
 		}
 	}
@@ -419,7 +414,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getVariants()
 	 */
-	public Map getVariants() {
+	public Map<String, VariantSet> getVariants() {
 		
 		return variants;
 	}
@@ -429,7 +424,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * 
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getLocaleVariantKeys()
 	 */
-	public List getVariantKeys() {
+	public List<String> getVariantKeys() {
 		
 		return variantKeys;
 	}
@@ -475,7 +470,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * 
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#setMappings(java.util.List)
 	 */
-	public void setMappings(List pathMappings) {
+	public void setMappings(List<String> pathMappings) {
 
 		this.pathMappings = pathMappings;
 		initPathList();
@@ -486,7 +481,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * 
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList()
 	 */
-	public List getItemPathList() {
+	public List<String> getItemPathList() {
 		return itemPathList;
 	}
 
@@ -495,16 +490,16 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * 
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getItemPathList(java.lang.String)
 	 */
-	public List getItemPathList(Map variants) {
+	public List<String> getItemPathList(Map<String,String> variants) {
 		if (variants == null || variants.isEmpty())
 			return itemPathList;
 
-		List rets = new ArrayList();
+		List<String> rets = new ArrayList<String>();
 		
-		for (Iterator it = itemPathList.iterator(); it.hasNext();) {
+		for (Iterator<String> it = itemPathList.iterator(); it.hasNext();) {
 			String path = (String) it.next();
 			if (generatorRegistry.isPathGenerated(path)) {
-				Set variantTypes = generatorRegistry.getGeneratedResourceVariantTypes(path);
+				Set<String> variantTypes = generatorRegistry.getGeneratedResourceVariantTypes(path);
 				String variantKey = VariantUtils.getVariantKey(variants, variantTypes);
 				if(StringUtils.isNotEmpty(variantKey)){
 					rets.add(VariantUtils.getVariantBundleName(path, variantKey));
@@ -522,14 +517,14 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * Sets the bundle dependencies
 	 * @param dependencies the bundle dependencies
 	 */
-	public void setDependencies(List dependencies) {
+	public void setDependencies(List<JoinableResourceBundle> dependencies) {
 		this.dependencies = dependencies;
 	}
 	
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getDependencies()
 	 */
-	public List getDependencies() {
+	public List<JoinableResourceBundle> getDependencies() {
 		return dependencies;
 	}
 
@@ -538,7 +533,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * 
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getLicensesPathList()
 	 */
-	public Set getLicensesPathList() {
+	public Set<String> getLicensesPathList() {
 		return this.licensesPathList;
 	}
 
@@ -547,14 +542,14 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * 
 	 * @param licencePathList the list to set
 	 */
-	public void setLicensesPathList(Set licencePathList) {
+	public void setLicensesPathList(Set<String> licencePathList) {
 		this.licensesPathList = licencePathList;
 	}
 
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.JoinableResourceBundle#getURLPrefix(java.util.Map)
 	 */
-	public String getURLPrefix(Map variants) {
+	public String getURLPrefix(Map<String, String> variants) {
 		
 		if (null == this.urlPrefix)
 			throw new IllegalStateException(
@@ -605,11 +600,11 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * @param variantKey the requested variant key
 	 * @return the variant key to use
 	 */
-	private String getAvailableVariant(Map curVariants) {
+	private String getAvailableVariant(Map<String, String> curVariants) {
 		
 		String variantKey = null;
 		if(variants != null){
-			Map availableVariants = generatorRegistry.getAvailableVariantMap(variants, curVariants);
+			Map<String, String> availableVariants = generatorRegistry.getAvailableVariantMap(variants, curVariants);
 			variantKey = VariantUtils.getVariantKey(availableVariants);
 		}
 		

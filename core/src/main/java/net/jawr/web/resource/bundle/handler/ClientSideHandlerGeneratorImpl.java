@@ -52,12 +52,12 @@ public class ClientSideHandlerGeneratorImpl implements
 	/**
 	 * Global bundles, to include in every page
 	 */
-	private List globalBundles;
+	private List<JoinableResourceBundle> globalBundles;
 	
 	/**
 	 * Bundles to include upon request
 	 */
-	private List contextBundles;
+	private List<JoinableResourceBundle> contextBundles;
 	
 	/** The Jawr config */
 	private JawrConfig config;
@@ -74,8 +74,8 @@ public class ClientSideHandlerGeneratorImpl implements
 	 * @param contextBundles teh context bundles
 	 * @param config the Jawr configuration
 	 */
-	public ClientSideHandlerGeneratorImpl(List globalBundles,
-			List contextBundles, JawrConfig config) {
+	public ClientSideHandlerGeneratorImpl(List<JoinableResourceBundle> globalBundles,
+			List<JoinableResourceBundle> contextBundles, JawrConfig config) {
 		super();
 		if(null == mainScriptTemplate){
 			mainScriptTemplate = loadScriptTemplate(SCRIPT_TEMPLATE);
@@ -96,7 +96,7 @@ public class ClientSideHandlerGeneratorImpl implements
 		
 		boolean useGzip = RendererRequestUtils.isRequestGzippable(request, this.config);
 		StringBuffer sb = new StringBuffer(mainScriptTemplate.toString());
-		Map variants = this.config.getGeneratorRegistry().resolveVariants(request);
+		Map<String, String> variants = this.config.getGeneratorRegistry().resolveVariants(request);
 		sb.append("JAWR.app_context_path='").append(request.getContextPath()).append("';\n");
 		
 		if(null != this.config.getDwrMapping()){
@@ -145,7 +145,7 @@ public class ClientSideHandlerGeneratorImpl implements
 		}
 		
 		// The global bundles are already sorted and filtered by the bundleshandler
-		for(Iterator it = globalBundles.iterator();it.hasNext();){
+		for(Iterator<JoinableResourceBundle> it = globalBundles.iterator();it.hasNext();){
 			JoinableResourceBundle bundle = (JoinableResourceBundle) it.next();
 			String func = isCSSHandler ? "JAWR.loader.style(" : "JAWR.loader.script(";
 			sb.append(func)
@@ -168,7 +168,7 @@ public class ClientSideHandlerGeneratorImpl implements
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.handler.ClientSideHandlerGenerator#getClientSideBundles(java.lang.String, boolean)
 	 */
-	public StringBuffer getClientSideBundles(Map variants, boolean useGzip){
+	public StringBuffer getClientSideBundles(Map<String, String> variants, boolean useGzip){
 		StringBuffer sb = new StringBuffer();
 		addAllBundles(globalBundles,variants,sb,useGzip);
 		if(!globalBundles.isEmpty() && !contextBundles.isEmpty()){
@@ -204,9 +204,10 @@ public class ClientSideHandlerGeneratorImpl implements
 	 * @param buf the buffer
 	 * @param useGzip the flag indicating if we use gzip compression or not.
 	 */
-	private void addAllBundles(List bundles, Map variants, StringBuffer buf,boolean useGzip){
-		for(Iterator it = bundles.iterator();it.hasNext();){
-			JoinableResourceBundle bundle = (JoinableResourceBundle) it.next();
+	private void addAllBundles(List<JoinableResourceBundle> bundles, Map<String, String> variants, 
+			StringBuffer buf,boolean useGzip){
+		for(Iterator<JoinableResourceBundle> it = bundles.iterator();it.hasNext();){
+			JoinableResourceBundle bundle = it.next();
 			appendBundle(bundle,variants,buf,useGzip);
 			
 			if(it.hasNext())
@@ -221,7 +222,7 @@ public class ClientSideHandlerGeneratorImpl implements
 	 * @param buf the buffer
 	 * @param useGzip the flag indicating if we use gzip compression or not.
 	 */
-	private void appendBundle(JoinableResourceBundle bundle,Map variants, StringBuffer buf,boolean useGzip){
+	private void appendBundle(JoinableResourceBundle bundle,Map<String, String> variants, StringBuffer buf,boolean useGzip){
 		buf.append("r(")
 			.append(JavascriptStringUtil.quote(bundle.getId()))
 			.append(",");
@@ -239,8 +240,8 @@ public class ClientSideHandlerGeneratorImpl implements
 		
 		if(!skipItems) {
 			buf.append(",[");
-			for(Iterator it = bundle.getItemPathList(variants).iterator();it.hasNext();){
-				String path = (String) it.next();
+			for(Iterator<String> it = bundle.getItemPathList(variants).iterator();it.hasNext();){
+				String path = it.next();
 				if(this.config.getGeneratorRegistry().isPathGenerated(path)) {
 					path = PathNormalizer.createGenerationPath(path,this.config.getGeneratorRegistry());
 				}

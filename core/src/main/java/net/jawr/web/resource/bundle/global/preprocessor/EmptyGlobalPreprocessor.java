@@ -16,6 +16,7 @@ package net.jawr.web.resource.bundle.global.preprocessor;
 import java.util.List;
 
 import net.jawr.web.JawrConstant;
+import net.jawr.web.resource.bundle.JoinableResourceBundle;
 
 
 /**
@@ -38,7 +39,7 @@ public class EmptyGlobalPreprocessor extends
 	 * @see net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessor#processBundles(net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessingContext, java.util.List)
 	 */
 	public void processBundles(GlobalPreprocessingContext ctx,
-			List bundles) {
+			List<JoinableResourceBundle> bundles) {
 
 		// Nothing to do
 		

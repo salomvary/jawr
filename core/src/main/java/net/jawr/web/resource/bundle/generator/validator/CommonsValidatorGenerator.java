@@ -60,10 +60,10 @@ public class CommonsValidatorGenerator extends AbstractJavascriptGenerator imple
 	private static final Logger LOGGER = Logger.getLogger(CommonsValidatorGenerator.class.getName());
 	private static final String STATIC_JAVASCRIPT_KEY = "_static";
 
-	private Map validatorResourcesMap;
+	private Map<String, ValidatorResources> validatorResourcesMap;
 	
 	public CommonsValidatorGenerator() {
-		validatorResourcesMap = new HashMap();
+		validatorResourcesMap = new HashMap<String, ValidatorResources>();
 	}
 	
 	/* (non-Javadoc)
@@ -124,10 +124,11 @@ public class CommonsValidatorGenerator extends AbstractJavascriptGenerator imple
 		return  createDynamicJavascript(validatorResources, form, messageNS,stopOnErrors);		
 	}
 	
-	 private StringBuffer createDynamicJavascript(ValidatorResources resources, Form form, String messageNS, boolean stopOnErrors) {
+	 @SuppressWarnings("unchecked")
+	private StringBuffer createDynamicJavascript(ValidatorResources resources, Form form, String messageNS, boolean stopOnErrors) {
         StringBuffer results = new StringBuffer();
 
-        List actions = this.createActionList(resources, form);
+        List<ValidatorAction> actions = this.createActionList(resources, form);
 
         final String methods =
             this.createMethods(actions,stopOnErrors);
@@ -137,8 +138,8 @@ public class CommonsValidatorGenerator extends AbstractJavascriptGenerator imple
 
         results.append(this.getJavascriptBegin(jsFormName,methods));
 
-        for (Iterator i = actions.iterator(); i.hasNext();) {
-            ValidatorAction va = (ValidatorAction) i.next();
+        for (Iterator<ValidatorAction> i = actions.iterator(); i.hasNext();) {
+            ValidatorAction va = i.next();
             int jscriptVar = 0;
             String functionName = null;
 
@@ -152,8 +153,8 @@ public class CommonsValidatorGenerator extends AbstractJavascriptGenerator imple
             results.append("    function " + jsFormName + "_" + functionName
                 + " () { \n");
 
-            for (Iterator x = form.getFields().iterator(); x.hasNext();) {
-                Field field = (Field) x.next();
+            for (Iterator<Field> x = form.getFields().iterator(); x.hasNext();) {
+                Field field = x.next();
 
                 // Skip indexed fields for now until there is a good way to
                 // handle error messages (and the length of the list (could
@@ -198,16 +199,16 @@ public class CommonsValidatorGenerator extends AbstractJavascriptGenerator imple
 
                 results.append("function(varName){");
 
-                Map vars = field.getVars();
+                Map<String, Var> vars = field.getVars();
 
                 // Loop through the field's variables.
-                Iterator varsIterator = vars.entrySet().iterator();
+                Iterator<Entry<String, Var>> varsIterator = vars.entrySet().iterator();
 
                 while (varsIterator.hasNext()) {
                     
-                	Entry varEntry = (Entry) varsIterator.next();
-                	String varName = (String) varEntry.getKey();
-                    Var var = (Var) varEntry.getValue();
+                	Entry<String, Var> varEntry = varsIterator.next();
+                	String varName = varEntry.getKey();
+                    Var var = varEntry.getValue();
                     String varValue = var.getValue();
 
                     // Non-resource variable
@@ -290,17 +291,18 @@ public class CommonsValidatorGenerator extends AbstractJavascriptGenerator imple
         return sb.toString();
     }
 
-	private List createActionList(ValidatorResources resources, Form form) {
-        List actionMethods = new ArrayList();
+	@SuppressWarnings("unchecked")
+	private List<ValidatorAction> createActionList(ValidatorResources resources, Form form) {
+        List<String> actionMethods = new ArrayList<String>();
 
-        Iterator iterator = form.getFields().iterator();
+        Iterator<Field> itFields = form.getFields().iterator();
 
-        while (iterator.hasNext()) {
-            Field field = (Field) iterator.next();
+        while (itFields.hasNext()) {
+            Field field = itFields.next();
 
-            for (Iterator x = field.getDependencyList().iterator();
+            for (Iterator<String> x = field.getDependencyList().iterator();
                 x.hasNext();) {
-                Object o = x.next();
+            	String o = x.next();
 
                 if ((o != null) && !actionMethods.contains(o)) {
                     actionMethods.add(o);
@@ -308,13 +310,13 @@ public class CommonsValidatorGenerator extends AbstractJavascriptGenerator imple
             }
         }
 
-        List actions = new ArrayList();
+        List<ValidatorAction> actions = new ArrayList<ValidatorAction>();
 
         // Create list of ValidatorActions based on actionMethods
-        iterator = actionMethods.iterator();
+        Iterator<String> iterator = actionMethods.iterator();
 
         while (iterator.hasNext()) {
-            String depends = (String) iterator.next();
+            String depends = iterator.next();
             ValidatorAction va = resources.getValidatorAction(depends);
 
             // throw nicer NPE for easier debugging
@@ -336,14 +338,14 @@ public class CommonsValidatorGenerator extends AbstractJavascriptGenerator imple
         return actions;
     }
 	
-	private String createMethods(List actions, boolean stopOnErrors) {
+	private String createMethods(List<ValidatorAction> actions, boolean stopOnErrors) {
         StringBuffer methods = new StringBuffer();
         final String methodOperator = stopOnErrors ? " && " : " & ";
 
-        Iterator iter = actions.iterator();
+        Iterator<ValidatorAction> iter = actions.iterator();
 
         while (iter.hasNext()) {
-            ValidatorAction va = (ValidatorAction) iter.next();
+            ValidatorAction va = iter.next();
 
             if (methods.length() > 0) {
                 methods.append(methodOperator);
@@ -355,13 +357,14 @@ public class CommonsValidatorGenerator extends AbstractJavascriptGenerator imple
         return methods.toString();
     }
 	
+	@SuppressWarnings("unchecked")
 	private StringBuffer buildStaticJavascript(ValidatorResources validatorResources) {
 		StringBuffer sb = new StringBuffer();
 
-        Iterator actions = validatorResources.getValidatorActions().values().iterator();
+        Iterator<ValidatorAction> actions = validatorResources.getValidatorActions().values().iterator();
 
         while (actions.hasNext()) {
-            ValidatorAction va = (ValidatorAction) actions.next();
+            ValidatorAction va = actions.next();
 
             if (va != null) {
                 String javascript = va.getJavascript();
@@ -411,11 +414,9 @@ public class CommonsValidatorGenerator extends AbstractJavascriptGenerator imple
 		validatorResourcesMap.put(path, validatorResources);
 	}
 	
-	private static final Comparator ACTION_COMPARATOR =
-        new Comparator() {
-            public int compare(Object o1, Object o2) {
-                ValidatorAction va1 = (ValidatorAction) o1;
-                ValidatorAction va2 = (ValidatorAction) o2;
+	private static final Comparator<ValidatorAction> ACTION_COMPARATOR =
+        new Comparator<ValidatorAction>() {
+            public int compare(ValidatorAction va1, ValidatorAction va2) {
 
                 if (((va1.getDepends() == null)
                     || (va1.getDepends().length() == 0))

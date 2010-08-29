@@ -56,11 +56,11 @@ public class ImgRenderer implements Serializable {
 	 * 
 	 * @throws IOException if an exception occurs
 	 */
-	public void renderImage(String imgSource, Map attributes, final Writer writer) throws IOException{
+	public void renderImage(String imgSource, Map<String, Object> attributes, final Writer writer) throws IOException{
 		StringBuffer sb = new StringBuffer(tagStart);
 		sb.append("src=\"").append(imgSource).append("\" ");
-		for(Iterator it = attributes.entrySet().iterator();it.hasNext();) {
-			Entry mapEntry = (Entry) it.next();
+		for(Iterator<Entry<String, Object>> it = attributes.entrySet().iterator();it.hasNext();) {
+			Entry<String, Object> mapEntry = it.next();
 			sb.append(mapEntry.getKey())
 				.append("=\"")
 				.append(mapEntry.getValue())

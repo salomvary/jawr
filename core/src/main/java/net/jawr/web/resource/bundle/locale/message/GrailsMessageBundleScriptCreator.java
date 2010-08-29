@@ -69,7 +69,7 @@ public class GrailsMessageBundleScriptCreator extends MessageBundleScriptCreator
 		// Spring message bundle object, the same used by grails. 
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
 		messageSource.setFallbackToSystemLocale(false);
-		Set allPropertyNames = null;
+		Set<String> allPropertyNames = null;
 		
 		// Read the properties files to find out the available message keys. It is done differently 
 		// for run-app or run-war style of runtimes. 
@@ -86,8 +86,8 @@ public class GrailsMessageBundleScriptCreator extends MessageBundleScriptCreator
 			if(null != locale)
 				bundle = ResourceBundle.getBundle(configParam,locale);
 			else bundle = ResourceBundle.getBundle(configParam);
-			allPropertyNames = new HashSet();
-			Enumeration keys = bundle.getKeys();
+			allPropertyNames = new HashSet<String>();
+			Enumeration<String> keys = bundle.getKeys();
 			while(keys.hasMoreElements())
 				allPropertyNames.add(keys.nextElement());
 			String basename = "file:./" + configParam.replaceAll("\\.", "/");
@@ -96,8 +96,8 @@ public class GrailsMessageBundleScriptCreator extends MessageBundleScriptCreator
 		
 		// Pass all messages to a properties file. 
 		Properties props = new Properties();
-		for(Iterator it = allPropertyNames.iterator();it.hasNext();) {
-			String key = (String) it.next();
+		for(Iterator<String> it = allPropertyNames.iterator();it.hasNext();) {
+			String key = it.next();
 			if(matchesFilter(key)){
 				try {
 					String msg = messageSource.getMessage(key, new Object[0], locale);
@@ -117,19 +117,20 @@ public class GrailsMessageBundleScriptCreator extends MessageBundleScriptCreator
 	 * Reads the property names of the resourcebundle for the current locale from the war file. 
 	 * @return
 	 */
-	private Set getPropertyNamesFromWar() {
-		Set filenames = this.servletContext.getResourcePaths(PROPERTIES_DIR);
-		Set allPropertyNames = new HashSet();
+	@SuppressWarnings("unchecked")
+	private Set<String> getPropertyNamesFromWar() {
+		Set<String> filenames = this.servletContext.getResourcePaths(PROPERTIES_DIR);
+		Set<String> allPropertyNames = new HashSet<String>();
 
-		for(Iterator it = filenames.iterator();it.hasNext();){
-			String name = (String) it.next();
+		for(Iterator<String> it = filenames.iterator();it.hasNext();){
+			String name = it.next();
 			if(matchesConfigParam(name)) {
 				try {
 					Properties props = new Properties(); 
 					props.load(servletContext.getResourceAsStream(name));
 					if(LOGGER.isDebugEnabled())
 						LOGGER.debug("Found " + props.keySet().size() + " message keys at " + name + ".");
-					allPropertyNames.addAll(props.keySet());
+					allPropertyNames.addAll(props.stringPropertyNames());
 				} catch (IOException e) {
 					throw new BundlingProcessException("Unexpected error retrieving i18n grails properties file", e);
 				}
@@ -149,7 +150,7 @@ public class GrailsMessageBundleScriptCreator extends MessageBundleScriptCreator
 		String fileNameWOPath = fileName.substring(fileName.lastIndexOf('/') + 1 );
 		
 		// List all the names of files which might have values used by the current locale
-		List allowedNames = new ArrayList(4);
+		List<String> allowedNames = new ArrayList<String>(4);
 		allowedNames.add(configValue + PROPERTIES_EXT);
 		if(null != locale) {
 			allowedNames.add(configValue + "_" + locale.getLanguage() + PROPERTIES_EXT);

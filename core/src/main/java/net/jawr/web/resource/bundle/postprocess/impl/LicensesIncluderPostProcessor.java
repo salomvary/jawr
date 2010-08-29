@@ -72,8 +72,8 @@ public class LicensesIncluderPostProcessor extends
 		Writer writer = Channels.newWriter(wrChannel, charset.name()); 
 		BufferedWriter bwriter = new BufferedWriter(writer);
 		
-		for(Iterator it = bundle.getLicensesPathList().iterator();it.hasNext();) {
-			String path = (String) it.next();
+		for(Iterator<String> it = bundle.getLicensesPathList().iterator();it.hasNext();) {
+			String path = it.next();
 			if(LOGGER.isDebugEnabled())
 				LOGGER.debug("Adding license file: " + path);
 			

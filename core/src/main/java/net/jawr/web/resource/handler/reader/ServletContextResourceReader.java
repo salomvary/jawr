@@ -98,12 +98,13 @@ public class ServletContextResourceReader implements TextResourceReader, StreamR
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.handler.ResourceInfoProvider#getResourceNames(java.lang.String)
 	 */
-	public Set getResourceNames(String path) {
-		Set paths = context.getResourcePaths(path);
-		Set names = new HashSet();
+	@SuppressWarnings("unchecked")
+	public Set<String> getResourceNames(String path) {
+		Set<String> paths = context.getResourcePaths(path);
+		Set<String> names = new HashSet<String>();
 		int length = path.length();
 		if(null != paths) {
-			for(Iterator it = paths.iterator();it.hasNext();) {
+			for(Iterator<String> it = paths.iterator();it.hasNext();) {
 				String resourcePath = (String) it.next();
 				names.add(resourcePath.substring(length, resourcePath.length()));
 			}
@@ -114,8 +115,9 @@ public class ServletContextResourceReader implements TextResourceReader, StreamR
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.handler.ResourceInfoProvider#isDirectory(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean isDirectory(String path) {
-		Set paths = context.getResourcePaths(path);
+		Set<String> paths = context.getResourcePaths(path);
 		return (null != paths && paths.size() > 0);
 	}
 

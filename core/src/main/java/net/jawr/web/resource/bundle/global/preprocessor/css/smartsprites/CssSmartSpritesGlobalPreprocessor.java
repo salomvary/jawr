@@ -77,10 +77,10 @@ public class CssSmartSpritesGlobalPreprocessor extends
 	 * ResourceTypeBundleProcessingContext, java.util.List)
 	 */
 	public void processBundles(GlobalPreprocessingContext ctx,
-			List bundles) {
+			List<JoinableResourceBundle> bundles) {
 		
 		ResourceReaderHandler rsHandler = ctx.getRsReaderHandler();
-		Set resourcePaths = getResourcePaths(bundles);
+		Set<String> resourcePaths = getResourcePaths(bundles);
 		JawrConfig jawrConfig = ctx.getJawrConfig();
 		Charset charset = jawrConfig.getResourceCharset();
 		
@@ -111,7 +111,7 @@ public class CssSmartSpritesGlobalPreprocessor extends
 	 * @param charset the charset
 	 */
 	private void generateSprites(
-			ResourceReaderHandler cssRsHandler, ImageResourcesHandler imgRsHandler, Set resourcePaths,
+			ResourceReaderHandler cssRsHandler, ImageResourcesHandler imgRsHandler, Set<String> resourcePaths,
 			JawrConfig jawrConfig, Charset charset) {
 		
 		Level logLevel = LOGGER.getEffectiveLevel();
@@ -147,13 +147,12 @@ public class CssSmartSpritesGlobalPreprocessor extends
 	 * @param bundles the list of bundle
 	 * @return the list of all CSS files defined in the bundles.
 	 */
-	private Set getResourcePaths(List bundles) {
+	private Set<String> getResourcePaths(List<JoinableResourceBundle> bundles) {
 
-		Set resourcePaths = new HashSet();
+		Set<String> resourcePaths = new HashSet<String>();
 
-		for (Iterator iterator = bundles.iterator(); iterator.hasNext();) {
-			JoinableResourceBundle bundle = (JoinableResourceBundle) iterator
-					.next();
+		for (Iterator<JoinableResourceBundle> iterator = bundles.iterator(); iterator.hasNext();) {
+			JoinableResourceBundle bundle = iterator.next();
 			resourcePaths.addAll(bundle.getItemPathList());
 		}
 

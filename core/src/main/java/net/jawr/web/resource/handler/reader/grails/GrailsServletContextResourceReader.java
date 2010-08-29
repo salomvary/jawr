@@ -52,7 +52,7 @@ public class GrailsServletContextResourceReader extends
 	private static Pattern PLUGIN_RESOURCE_PATTERN = Pattern.compile("^(/plugins/([a-zA-Z0-9_\\-]*))");
 	
 	/** The plugin path map */
-	private Map pluginPathMap;
+	private Map<String, String> pluginPathMap;
 	
 	/** The flag indicating if the grails war is deployed */
 	private boolean warDeployed;
@@ -62,10 +62,11 @@ public class GrailsServletContextResourceReader extends
 	 * @param context the context
 	 * @param config the configuration
 	 */
+	@SuppressWarnings("unchecked")
 	public GrailsServletContextResourceReader(ServletContext context,
 			JawrConfig config) {
 		super(context, config);
-		pluginPathMap = (Map) context.getAttribute(JawrConstant.JAWR_GRAILS_PLUGIN_PATHS);
+		pluginPathMap = (Map<String, String>) context.getAttribute(JawrConstant.JAWR_GRAILS_PLUGIN_PATHS);
 		if(pluginPathMap == null){
 			throw new BundlingProcessException("No grails plugin paths map defined in the servlet context");
 		}
@@ -197,9 +198,9 @@ public class GrailsServletContextResourceReader extends
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.handler.reader.ServletContextResourceReader#getResourceNames(java.lang.String)
 	 */
-	public Set getResourceNames(String path) {
+	public Set<String> getResourceNames(String path) {
 		
-		Set resourceNames = new HashSet();
+		Set<String> resourceNames = new HashSet<String>();
 		String realPath = getRealResourcePath(path);
 		if(isFileSystemPath(path, realPath)){ // The resource has been remapped to a file system path
 			try{

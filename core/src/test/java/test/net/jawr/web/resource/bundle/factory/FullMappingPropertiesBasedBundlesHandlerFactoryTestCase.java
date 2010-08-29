@@ -267,7 +267,7 @@ public class FullMappingPropertiesBasedBundlesHandlerFactoryTestCase extends
 		JoinableResourceBundleImpl bundle1 = getStdBundle("myBundle1");
 		JoinableResourceBundleImpl bundle2 = getStdBundle("myBundle2");
 		
-		bundle.setDependencies(Arrays.asList(new JoinableResourceBundleImpl[]{bundle1, bundle2}));
+		bundle.setDependencies(Arrays.asList(new JoinableResourceBundle[]{bundle1, bundle2}));
 		bundles.add(bundle);
 		bundles.add(bundle1);
 		bundles.add(bundle2);

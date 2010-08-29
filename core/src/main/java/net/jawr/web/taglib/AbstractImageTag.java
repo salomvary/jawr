@@ -36,7 +36,7 @@ public class AbstractImageTag extends ImagePathTag {
 	private ImgRenderer renderer;
 
 	/** The attribute map */
-	private Map attributeMap; 
+	private Map<String, Object> attributeMap; 
 	
 	/**
 	 * Constructor
@@ -44,7 +44,7 @@ public class AbstractImageTag extends ImagePathTag {
 	 */
 	public AbstractImageTag(ImgRenderer renderer) {
 		super();
-		this.attributeMap = new HashMap();
+		this.attributeMap = new HashMap<String, Object>();
 		this.renderer = renderer;
 	}
 	
@@ -52,7 +52,7 @@ public class AbstractImageTag extends ImagePathTag {
 	 * Returns the attribute map
 	 * @return the attribute map
 	 */
-	protected Map getAttributeMap() {
+	protected Map<String, Object> getAttributeMap() {
 		return this.attributeMap;
 	}
 	
@@ -202,7 +202,7 @@ public class AbstractImageTag extends ImagePathTag {
 	 */
 	public void release() {
 		super.release();
-		this.attributeMap = new HashMap();
+		this.attributeMap = new HashMap<String, Object>();
 	}
 	/**
 	 * Render the IMG tag.

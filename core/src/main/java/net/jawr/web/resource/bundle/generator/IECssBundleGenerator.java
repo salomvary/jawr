@@ -84,7 +84,7 @@ public class IECssBundleGenerator extends AbstractCSSGenerator {
 		String contextPath = context.getPath();
 		String bundlePath = getBundlePath(contextPath);
 		
-		Map variants = getVariantMap(bundlesHandler, contextPath, bundlePath);
+		Map<String, String> variants = getVariantMap(bundlesHandler, contextPath, bundlePath);
 		
 		String result = generateContent(context, bundlesHandler, bundlePath, variants);
 
@@ -101,7 +101,7 @@ public class IECssBundleGenerator extends AbstractCSSGenerator {
 	 */
 	private String generateContent(GeneratorContext context,
 			ResourceBundlesHandler bundlesHandler, String bundlePath,
-			Map variants) {
+			Map<String, String> variants) {
 		
 		// Here we create a new context where the bundle name is the Jawr
 		// generator CSS path
@@ -169,12 +169,12 @@ public class IECssBundleGenerator extends AbstractCSSGenerator {
 	 * @param bundlePath the bundle path
 	 * @return the variant map for the current context
 	 */
-	private Map getVariantMap(ResourceBundlesHandler bundlesHandler,
+	private Map<String, String> getVariantMap(ResourceBundlesHandler bundlesHandler,
 			String contextPath, String bundlePath) {
 		
 		
 		JoinableResourceBundle bundle = bundlesHandler.resolveBundleForPath(bundlePath);
-		Set variantTypes = bundle.getVariants().keySet();
+		Set<String> variantTypes = bundle.getVariants().keySet();
 		
 		String variantKey = getVariantKey(contextPath);
 		String[] variantValues = new String[0];
@@ -182,13 +182,13 @@ public class IECssBundleGenerator extends AbstractCSSGenerator {
 			variantValues = variantKey.split(String.valueOf(JawrConstant.VARIANT_SEPARATOR_CHAR)); 
 		}
 		
-		Map variants = new HashMap();
+		Map<String, String> variants = new HashMap<String, String>();
 		if(variantTypes.size() != variantValues.length){
 			throw new BundlingProcessException("For the resource '"+contextPath+"', the number variant types for the bundle don't match the variant values.");
 		}
 		int i = 0;
-		for (Iterator iterator = variantTypes.iterator(); iterator.hasNext();) {
-			String variantType = (String) iterator.next();
+		for (Iterator<String> iterator = variantTypes.iterator(); iterator.hasNext();) {
+			String variantType = iterator.next();
 			variants.put(variantType, variantValues[i++]);
 		}
 		return variants;

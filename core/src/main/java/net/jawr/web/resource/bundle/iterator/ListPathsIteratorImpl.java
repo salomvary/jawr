@@ -28,13 +28,13 @@ public class ListPathsIteratorImpl implements ResourceBundlePathsIterator {
 	/**
 	 * The path iterator 
 	 */
-	private Iterator pathIterator;
+	private Iterator<String> pathIterator;
 	
 	/**
 	 * Constructor
 	 * @param paths the list of path
 	 */
-	public ListPathsIteratorImpl(List paths) {
+	public ListPathsIteratorImpl(List<String> paths) {
 		pathIterator = paths.iterator();
 	}
 	
@@ -58,7 +58,7 @@ public class ListPathsIteratorImpl implements ResourceBundlePathsIterator {
 	 * @see net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator#nextPath()
 	 */
 	public String nextPath() {
-		return (String) pathIterator.next();
+		return pathIterator.next();
 	}
 
 	/* (non-Javadoc)
@@ -71,7 +71,7 @@ public class ListPathsIteratorImpl implements ResourceBundlePathsIterator {
 	/* (non-Javadoc)
 	 * @see java.util.Iterator#next()
 	 */
-	public Object next() {
+	public String next() {
 		return pathIterator.next();
 	}
 

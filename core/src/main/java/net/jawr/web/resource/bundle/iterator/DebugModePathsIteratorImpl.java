@@ -30,10 +30,10 @@ import net.jawr.web.resource.bundle.JoinableResourceBundle;
 public class DebugModePathsIteratorImpl extends AbstractPathsIterator implements ResourceBundlePathsIterator {
 
 	/** The bundle iterator */
-	private Iterator bundlesIterator;
+	private Iterator<JoinableResourceBundle> bundlesIterator;
 	
 	/** The path iterator */
-	private Iterator pathsIterator;
+	private Iterator<String> pathsIterator;
 	
 	/** The current bundle */
 	private JoinableResourceBundle currentBundle;
@@ -44,7 +44,8 @@ public class DebugModePathsIteratorImpl extends AbstractPathsIterator implements
 	 * @param callbackHandler the comment callback handler
 	 * @param variants the variants
 	 */
-	public DebugModePathsIteratorImpl(List bundles,ConditionalCommentCallbackHandler callbackHandler,Map variants) {
+	public DebugModePathsIteratorImpl(List<JoinableResourceBundle> bundles,ConditionalCommentCallbackHandler callbackHandler,
+			Map<String, String> variants) {
 		super(callbackHandler,variants);
 		this.bundlesIterator = bundles.iterator();
 	}

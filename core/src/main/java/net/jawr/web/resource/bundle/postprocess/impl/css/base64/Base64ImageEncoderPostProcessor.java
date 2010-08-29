@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus;
@@ -79,15 +80,16 @@ public class Base64ImageEncoderPostProcessor extends
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.postprocess.impl.CSSURLPathRewriterPostProcessor#doPostProcessBundle(net.jawr.web.resource.bundle.postprocess.BundleProcessingStatus, java.lang.StringBuffer)
 	 */
+	@SuppressWarnings("unchecked")
 	protected StringBuffer doPostProcessBundle(BundleProcessingStatus status, StringBuffer bundleData) throws IOException {
 	
 		if(LOGGER.isInfoEnabled()){
 			LOGGER.info("Base64 encoding resources - '" + status.getLastPathAdded() + "'");
 		}
 		
-		Map encodedResources = (Map) status.getData(JawrConstant.BASE64_ENCODED_RESOURCES);
+		Map<String, Base64EncodedResource> encodedResources = (Map<String, Base64EncodedResource>) status.getData(JawrConstant.BASE64_ENCODED_RESOURCES);
 		if(encodedResources == null){
-			encodedResources = new HashMap();
+			encodedResources = new HashMap<String, Base64EncodedResource>();
 			status.putData(JawrConstant.BASE64_ENCODED_RESOURCES, encodedResources);
 		}
 		
@@ -105,9 +107,9 @@ public class Base64ImageEncoderPostProcessor extends
 		
 		if(!status.isSearchingPostProcessorVariants() && status.getCurrentBundle().isComposite() && status.getProcessingType().equals(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE)){
 				
-			Map bundleVariants = status.getBundleVariants();
+			Map<String, String> bundleVariants = status.getBundleVariants();
 			if(bundleVariants != null){
-				String browser = (String) bundleVariants.get(JawrConstant.BROWSER_VARIANT_TYPE);
+				String browser = bundleVariants.get(JawrConstant.BROWSER_VARIANT_TYPE);
 				if(StringUtils.isNotEmpty(browser) && (JawrConstant.BROWSER_IE6.equals(browser) || JawrConstant.BROWSER_IE7.equals(browser))){
 					prependBase64EncodedResources(sb, encodedResources);
 				}
@@ -126,15 +128,15 @@ public class Base64ImageEncoderPostProcessor extends
 	 * @param sb the string buffer containing the processed bundle data
 	 * @param encodedImages a map of encoded images
 	 */
-	protected void prependBase64EncodedResources(StringBuffer sb, Map encodedImages) {
-		Iterator it = encodedImages.entrySet().iterator();
+	protected void prependBase64EncodedResources(StringBuffer sb, Map<String, Base64EncodedResource> encodedImages) {
+		Iterator<Entry<String, Base64EncodedResource>> it = encodedImages.entrySet().iterator();
 		StringBuffer mhtml = new StringBuffer();
 		String lineSeparator = net.jawr.web.util.StringUtils.LINE_SEPARATOR;
 		mhtml.append("/*!" + lineSeparator);
 		mhtml.append("Content-Type: multipart/related; boundary=\"" + BOUNDARY_SEPARATOR + "\"" + lineSeparator + lineSeparator);
 		
 		while (it.hasNext()) {
-	        Map.Entry pair = (Map.Entry)it.next();
+			Entry<String, Base64EncodedResource> pair = it.next();
 	        Base64EncodedResource encodedResource = (Base64EncodedResource) pair.getValue();
 	        mhtml.append(BOUNDARY_SEPARATOR_PREFIX + BOUNDARY_SEPARATOR + lineSeparator);
 	        mhtml.append("Content-Type:" + encodedResource.getType() + lineSeparator);

@@ -27,7 +27,7 @@ import java.util.Set;
  * @author Ibrahim Chaehoi
  *
  */
-public class VariantSet implements Set {
+public class VariantSet implements Set<String> {
 
 	/** The variant set type */
 	private String type;
@@ -36,7 +36,7 @@ public class VariantSet implements Set {
 	private String defaultVariant;
 	
 	/** The variant set */
-	private Set variants;
+	private Set<String> variants;
 	
 	/**
 	 * Constructor
@@ -55,7 +55,7 @@ public class VariantSet implements Set {
 	 * @param defaultVariant the default variant
 	 * @param variants the variant set
 	 */
-	public VariantSet(String type, String defaultVariant, Collection variants){
+	public VariantSet(String type, String defaultVariant, Collection<String> variants){
 		
 		if(!variants.contains(defaultVariant)){
 			throw new IllegalArgumentException("For the variant type '"+type+"', the default variant '"+defaultVariant+"' doesn't exist in the variant set "+variants+".");
@@ -63,7 +63,7 @@ public class VariantSet implements Set {
 		
 		this.type = type;
 		this.defaultVariant = defaultVariant;
-		this.variants = new HashSet(variants);
+		this.variants = new HashSet<String>(variants);
 	}
 	
 	/**
@@ -72,7 +72,7 @@ public class VariantSet implements Set {
 	 * @param defaultVariant the default variant
 	 * @param variants the variant set
 	 */
-	public VariantSet(String type, String defaultVariant, Set variants){
+	public VariantSet(String type, String defaultVariant, Set<String> variants){
 		
 		if(!variants.contains(defaultVariant)){
 			throw new IllegalArgumentException("For the variant type '"+type+"', the default variant '"+defaultVariant+"' doesn't exist in the variant set "+variants+".");
@@ -103,7 +103,7 @@ public class VariantSet implements Set {
 	 * Returns the variant set
 	 * @return the variants
 	 */
-	public Set getVariants() {
+	public Set<String> getVariants() {
 		return variants;
 	}
 
@@ -122,14 +122,14 @@ public class VariantSet implements Set {
 	/* (non-Javadoc)
 	 * @see java.util.Set#add(E)
 	 */
-	public boolean add(Object arg0) {
+	public boolean add(String arg0) {
 		return variants.add(arg0);
 	}
 
 	/* (non-Javadoc)
 	 * @see java.util.Set#addAll(java.util.Collection)
 	 */
-	public boolean addAll(Collection arg0) {
+	public boolean addAll(Collection<? extends String> arg0) {
 		return variants.addAll(arg0);
 	}
 
@@ -150,7 +150,7 @@ public class VariantSet implements Set {
 	/* (non-Javadoc)
 	 * @see java.util.Set#containsAll(java.util.Collection)
 	 */
-	public boolean containsAll(Collection coll) {
+	public boolean containsAll(Collection<?> coll) {
 		return variants.containsAll(coll);
 	}
 
@@ -164,7 +164,7 @@ public class VariantSet implements Set {
 	/* (non-Javadoc)
 	 * @see java.util.Set#iterator()
 	 */
-	public Iterator iterator() {
+	public Iterator<String> iterator() {
 		return variants.iterator();
 	}
 
@@ -178,14 +178,14 @@ public class VariantSet implements Set {
 	/* (non-Javadoc)
 	 * @see java.util.Set#removeAll(java.util.Collection)
 	 */
-	public boolean removeAll(Collection coll) {
+	public boolean removeAll(Collection<?> coll) {
 		return variants.removeAll(coll);
 	}
 
 	/* (non-Javadoc)
 	 * @see java.util.Set#retainAll(java.util.Collection)
 	 */
-	public boolean retainAll(Collection coll) {
+	public boolean retainAll(Collection<?> coll) {
 		return variants.retainAll(coll);
 	}
 
@@ -206,10 +206,10 @@ public class VariantSet implements Set {
 	/* (non-Javadoc)
 	 * @see java.util.Set#toArray(T[])
 	 */
-	public Object[] toArray(Object[] arg0) {
-		return variants.toArray(arg0);
+	public <T> T[] toArray(T[] a) {
+		return variants.toArray(a);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -252,6 +252,5 @@ public class VariantSet implements Set {
 			return false;
 		return true;
 	}
-	
 	
 }

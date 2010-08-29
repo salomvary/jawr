@@ -43,19 +43,20 @@ public class JawrGrailsServlet extends JawrServlet {
 	/* (non-Javadoc)
 	 * @see net.jawr.web.servlet.JawrServlet#init()
 	 */
+	@SuppressWarnings("unchecked")
 	public void init() throws ServletException {
-		Map config = null;
+		Map<Object, Object> config = null;
 		String type = getServletConfig().getInitParameter("type");
 		
 		ServletContext servletContext = getServletContext();
 		configHash = (Integer)servletContext.getAttribute(JawrConstant.JAWR_GRAILS_CONFIG_HASH);
 		
 		if(JawrConstant.CSS_TYPE.equals(type))
-			config = (Map) servletContext.getAttribute(JawrConstant.JAWR_GRAILS_CSS_CONFIG);
+			config = (Map<Object, Object>) servletContext.getAttribute(JawrConstant.JAWR_GRAILS_CSS_CONFIG);
 		else if(JawrConstant.IMG_TYPE.equals(type))
-			config = (Map) servletContext.getAttribute(JawrConstant.JAWR_GRAILS_IMG_CONFIG);
+			config = (Map<Object, Object>) servletContext.getAttribute(JawrConstant.JAWR_GRAILS_IMG_CONFIG);
 		else
-			config = (Map) servletContext.getAttribute(JawrConstant.JAWR_GRAILS_JS_CONFIG);
+			config = (Map<Object, Object>) servletContext.getAttribute(JawrConstant.JAWR_GRAILS_JS_CONFIG);
 		
 		Properties jawrProps = (Properties)config.get(JawrConstant.JAWR_GRAILS_CONFIG_PROPERTIES_KEY);
 		try {

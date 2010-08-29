@@ -31,14 +31,14 @@ public abstract class AbstractPathsIterator implements
 	protected ConditionalCommentCallbackHandler commentCallbackHandler;
 	
 	/** The current variants */
-	protected Map variants;
+	protected Map<String, String> variants;
 
 
 	/**
 	 * Creates the iterator passing the reference to the ConditionalCommentCallbackHandler. 
 	 * @param handler
 	 */
-	public AbstractPathsIterator(ConditionalCommentCallbackHandler handler,Map variants) {
+	public AbstractPathsIterator(ConditionalCommentCallbackHandler handler,Map<String, String> variants) {
 		super();
 		commentCallbackHandler = handler;
 		this.variants = variants;
@@ -55,7 +55,7 @@ public abstract class AbstractPathsIterator implements
 	/* (non-Javadoc)
 	 * @see java.util.Iterator#next()
 	 */
-	public Object next() {
+	public String next() {
 		return nextPath();
 	}
 

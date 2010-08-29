@@ -44,11 +44,11 @@ public class IENamedResourceFilter {
 	 * @return A Map with all the extracted paths, in which the key is the corresponding IE expression and 
 	 * 			the value is a List instance containing all the paths that match that expression. 
 	 */
-	public Map filterPathSet(Collection paths) {
+	public Map<String, List<String>> filterPathSet(Collection<String> paths) {
 		
-		HashMap expressions = new HashMap();
-		List toRemove = new ArrayList();
-		for(Iterator it = paths.iterator(); it.hasNext();) {
+		Map<String, List<String>> expressions = new HashMap<String, List<String>>();
+		List<String> toRemove = new ArrayList<String>();
+		for(Iterator<String> it = paths.iterator(); it.hasNext();) {
 			String path = it.next().toString();
 			if( COMMENTS_PATTERN.matcher(path).matches() ){
 				
@@ -59,11 +59,11 @@ public class IENamedResourceFilter {
 				String expressionKey = createExpressionKey(sufix);
 				
 				if( expressions.containsKey(expressionKey) ) {
-					List fileNames = (List) expressions.get(expressionKey);
+					List<String> fileNames = expressions.get(expressionKey);
 					fileNames.add(path);
 				}
 				else {
-					List fileNames = new ArrayList();
+					List<String> fileNames = new ArrayList<String>();
 					fileNames.add(path);
 					expressions.put(expressionKey,fileNames);					
 				}
@@ -71,7 +71,7 @@ public class IENamedResourceFilter {
 			}
 		}
 		// Remove extracted paths from the source collection
-		for(Iterator it = toRemove.iterator(); it.hasNext();) {
+		for(Iterator<String> it = toRemove.iterator(); it.hasNext();) {
 			paths.remove(it.next());
 		}
 		

@@ -16,7 +16,6 @@
 package net.jawr.web.resource.bundle.factory;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,7 @@ import net.jawr.web.resource.bundle.JoinableResourceBundleImpl;
 import net.jawr.web.resource.bundle.factory.postprocessor.PostProcessorChainFactory;
 import net.jawr.web.resource.bundle.factory.util.PropertiesConfigHelper;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
+import net.jawr.web.resource.bundle.variant.VariantSet;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 import net.jawr.web.util.StringUtils;
 
@@ -77,13 +77,13 @@ public class FullMappingPropertiesBasedBundlesHandlerFactory {
 	 * 
 	 * @return the list of joinable resource bundle
 	 */
-	public List getResourceBundles(Properties properties) {
+	public List<JoinableResourceBundle> getResourceBundles(Properties properties) {
 		
 		PropertiesConfigHelper props = new PropertiesConfigHelper(properties, resourceType);
 		String fileExtension = "." + resourceType;
 
 		// Initialize custom bundles
-		List customBundles = new ArrayList();
+		List<JoinableResourceBundle> customBundles = new ArrayList<JoinableResourceBundle>();
 		// Check if we should use the bundle names property or
 		// find the bundle name using the bundle id declaration :
 		// jawr.<type>.bundle.<name>.id
@@ -98,23 +98,23 @@ public class FullMappingPropertiesBasedBundlesHandlerFactory {
 						.trim(), fileExtension, rsReaderHandler));
 			}
 		} else {
-			Iterator bundleNames = props.getPropertyBundleNameSet().iterator();
+			Iterator<String> bundleNames = props.getPropertyBundleNameSet().iterator();
 			while (bundleNames.hasNext()) {
 				customBundles.add(buildJoinableResourceBundle(props, 
-						(String) bundleNames.next(), fileExtension,
+						bundleNames.next(), fileExtension,
 						rsReaderHandler));
 			}
 		}
 		
 		// Initialize the bundles dependencies
-		Iterator bundleNames = props.getPropertyBundleNameSet().iterator();
+		Iterator<String> bundleNames = props.getPropertyBundleNameSet().iterator();
 		while (bundleNames.hasNext()) {
 			String bundleName = (String) bundleNames.next();
-			List bundleNameDependencies = props.getCustomBundlePropertyAsList(bundleName,
+			List<String> bundleNameDependencies = props.getCustomBundlePropertyAsList(bundleName,
 					PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_DEPENDENCIES);
 			if(!bundleNameDependencies.isEmpty()){
 				JoinableResourceBundle bundle = getBundleFromName(bundleName, customBundles);
-				List bundleDependencies = getBundlesFromName(bundleNameDependencies, customBundles);
+				List<JoinableResourceBundle> bundleDependencies = getBundlesFromName(bundleNameDependencies, customBundles);
 				bundle.setDependencies(bundleDependencies);
 			}
 		}
@@ -128,14 +128,14 @@ public class FullMappingPropertiesBasedBundlesHandlerFactory {
 	 * @param bundles the list of bundle
 	 * @return a bundle
 	 */
-	private JoinableResourceBundle getBundleFromName(String bundleName, List bundles) {
+	private JoinableResourceBundle getBundleFromName(String bundleName, List<JoinableResourceBundle> bundles) {
 		
 		JoinableResourceBundle bundle = null;
-		List names = new ArrayList();
+		List<String> names = new ArrayList<String>();
 		names.add(bundleName);
-		List result = getBundlesFromName(names, bundles);
+		List<JoinableResourceBundle> result = getBundlesFromName(names, bundles);
 		if(!result.isEmpty()){
-			bundle = (JoinableResourceBundle) result.get(0);
+			bundle = result.get(0);
 		}
 		return bundle;
 	}
@@ -146,13 +146,13 @@ public class FullMappingPropertiesBasedBundlesHandlerFactory {
 	 * @param bundles the list of bundle
 	 * @return a list of bundles
 	 */
-	private List getBundlesFromName(List names, List bundles) {
+	private List<JoinableResourceBundle> getBundlesFromName(List<String> names, List<JoinableResourceBundle> bundles) {
 		
-		List resultBundles = new ArrayList();
-		for (Iterator iterator = names.iterator(); iterator.hasNext();) {
-			String name = (String) iterator.next();
-			for (Iterator itBundle = bundles.iterator(); itBundle.hasNext();) {
-				JoinableResourceBundle bundle = (JoinableResourceBundle) itBundle.next();
+		List<JoinableResourceBundle> resultBundles = new ArrayList<JoinableResourceBundle>();
+		for (Iterator<String> iterator = names.iterator(); iterator.hasNext();) {
+			String name = iterator.next();
+			for (Iterator<JoinableResourceBundle> itBundle = bundles.iterator(); itBundle.hasNext();) {
+				JoinableResourceBundle bundle = itBundle.next();
 				if(bundle.getName().equals(name)){
 					resultBundles.add(bundle);
 				}
@@ -225,7 +225,7 @@ public class FullMappingPropertiesBasedBundlesHandlerFactory {
 		}
 		
 		// Sets the licence path lists.
-		Set licencePathList = props
+		Set<String> licencePathList = props
 				.getCustomBundlePropertyAsSet(
 						bundleName,
 						PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_LICENCE_PATH_LIST);
@@ -233,7 +233,7 @@ public class FullMappingPropertiesBasedBundlesHandlerFactory {
 			bundle.setLicensesPathList(licencePathList);
 		}
 
-		List mappings = props.getCustomBundlePropertyAsList(bundleName,
+		List<String> mappings = props.getCustomBundlePropertyAsList(bundleName,
 				PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_MAPPINGS);
 		if (mappings.isEmpty()) {
 			throw new IllegalArgumentException(
@@ -245,13 +245,11 @@ public class FullMappingPropertiesBasedBundlesHandlerFactory {
 		// Add the mappings
 		bundle.setMappings(mappings);
 		
-		Set localeKeys = new HashSet();
-		Map variants = props.getCustomBundleVariantSets(bundleName);
+		Map<String, VariantSet> variants = props.getCustomBundleVariantSets(bundleName);
 		bundle.setVariants(variants);
-		for (Iterator iterator = bundle.getVariantKeys().iterator(); iterator.hasNext();) {
-			String variantKey = (String) iterator.next();
+		for (Iterator<String> iterator = bundle.getVariantKeys().iterator(); iterator.hasNext();) {
+			String variantKey = iterator.next();
 			if(StringUtils.isNotEmpty(variantKey)){
-				localeKeys.add(variantKey);
 				String hashcode = props.getCustomBundleProperty(bundleName, PropertiesBundleConstant.BUNDLE_FACTORY_CUSTOM_HASHCODE_VARIANT+variantKey);
 				bundle.setBundleDataHashCode(variantKey, hashcode);
 			}

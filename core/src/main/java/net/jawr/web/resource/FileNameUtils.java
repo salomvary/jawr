@@ -44,7 +44,7 @@ import net.jawr.web.servlet.util.MIMETypesSupport;
 public class FileNameUtils {
 
 	/** The image extensions */
-	private static Set IMG_EXTENSIONS = MIMETypesSupport.getSupportedProperties(FileNameUtils.class).keySet();
+	private static Set<Object> IMG_EXTENSIONS = MIMETypesSupport.getSupportedProperties(FileNameUtils.class).keySet();
 	
 	/**
      * The extension separator character.
@@ -281,7 +281,7 @@ public class FileNameUtils {
      * @param extensions  the extensions to check for, null checks for no extension
      * @return true if the filename is one of the extensions
      */
-    public static boolean isExtension(String filename, Collection extensions) {
+    public static boolean isExtension(String filename, Collection<Object> extensions) {
         if (filename == null) {
             return false;
         }
@@ -289,7 +289,7 @@ public class FileNameUtils {
             return (indexOfExtension(filename) == -1);
         }
         String fileExt = getExtension(filename);
-        for (Iterator it = extensions.iterator(); it.hasNext();) {
+        for (Iterator<Object> it = extensions.iterator(); it.hasNext();) {
             if (fileExt.equals(it.next())) {
                 return true;
             }

@@ -23,23 +23,24 @@ import java.util.StringTokenizer;
 import net.jawr.web.resource.bundle.generator.JavascriptStringUtil;
 
 /**
- * Creates a Jason like structure (an object literal) from a set of message resource properties. 
+ * Creates a Json like structure (an object literal) from a set of message resource properties. 
  * 
  * @author Jordi Hernández Sellés
  */
-public class BundleStringJasonifier {
-	private Map keyMap;
+public class BundleStringJsonifier {
+	
+	private Map<String, Object> keyMap;
 	private Properties bundleValues;
 	
 	private static final String FUNC = "p(";
 	
 	
 
-	public BundleStringJasonifier(Properties bundleValues) {
+	public BundleStringJsonifier(Properties bundleValues) {
 		super();
 		this.bundleValues = bundleValues;
-		this.keyMap = new HashMap();
-		Enumeration keys = this.bundleValues.keys();
+		this.keyMap = new HashMap<String, Object>();
+		Enumeration<Object> keys = this.bundleValues.keys();
 		
 		// Create map tree with all the message keys. 
 		while(keys.hasMoreElements())
@@ -59,14 +60,15 @@ public class BundleStringJasonifier {
 	 * 
 	 * @param key A key in the message bundle. 
 	 */
+	@SuppressWarnings("unchecked")
 	private void processKey(String key) {
 		StringTokenizer tk = new StringTokenizer(key,".");
-		Map currentMap = this.keyMap;
+		Map<String, Object> currentMap = this.keyMap;
 		while(tk.hasMoreTokens()) {
 			String token = tk.nextToken();
 			if(!currentMap.containsKey(token))
-				currentMap.put(token, new HashMap());
-			currentMap = (Map) currentMap.get(token);
+				currentMap.put(token, new HashMap<String, Object>());
+			currentMap = (Map<String, Object>) currentMap.get(token);
 		}
 	}
 	
@@ -79,8 +81,8 @@ public class BundleStringJasonifier {
 		StringBuffer sb = new StringBuffer("{");
 		
 		// Iterates over the 
-		for(Iterator it = keyMap.keySet().iterator(); it.hasNext();) {
-			String currentKey = (String) it.next();
+		for(Iterator<String> it = keyMap.keySet().iterator(); it.hasNext();) {
+			String currentKey = it.next();
 			handleKey(sb,keyMap,currentKey,currentKey,!it.hasNext());
 		}
 		
@@ -97,20 +99,21 @@ public class BundleStringJasonifier {
 	 * @param fullKey Key with ancestors as it appears in the message bundle(foo --> com.mycompany.foo)
 	 * @param isLeafLast Wether this is the las item in the current leaf, to append a separator. 
 	 */
+	@SuppressWarnings("unchecked")
 	private void handleKey( final StringBuffer sb, 
-							Map currentLeaf, 
+							Map<String, Object> currentLeaf, 
 							String currentKey, 
 							String fullKey, 
 							boolean isLeafLast) {
 		
-		Map newLeaf = (Map) currentLeaf.get(currentKey);
+		Map<String, Object> newLeaf = (Map<String, Object>) currentLeaf.get(currentKey);
 		
 		if(bundleValues.containsKey(fullKey)) {
 			addValuedKey(sb,currentKey,fullKey);
 			if(!newLeaf.isEmpty()) {
 				sb.append(",({");
-				for(Iterator it = newLeaf.keySet().iterator(); it.hasNext();) {
-					String newKey = (String) it.next();
+				for(Iterator<String> it = newLeaf.keySet().iterator(); it.hasNext();) {
+					String newKey = it.next();
 					handleKey(sb,newLeaf,newKey,fullKey + "." + newKey,!it.hasNext());
 				}
 				sb.append("}))");
@@ -122,8 +125,8 @@ public class BundleStringJasonifier {
 		else if(!newLeaf.isEmpty()) {
 			sb.append(JavascriptStringUtil.quote(currentKey))
 			  .append(":{");
-			for(Iterator it = newLeaf.keySet().iterator(); it.hasNext();) {
-				String newKey = (String) it.next();
+			for(Iterator<String> it = newLeaf.keySet().iterator(); it.hasNext();) {
+				String newKey = it.next();
 				handleKey(sb,newLeaf,newKey,fullKey + "." + newKey,!it.hasNext());
 			}
 			sb.append("}");

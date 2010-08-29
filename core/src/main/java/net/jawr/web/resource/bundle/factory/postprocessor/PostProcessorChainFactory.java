@@ -65,6 +65,6 @@ public interface PostProcessorChainFactory {
 	 * 
 	 * @param keysClassNames
 	 */
-	public void setCustomPostprocessors(Map keysClassNames);
+	public void setCustomPostprocessors(Map<String, String> keysClassNames);
 
 }

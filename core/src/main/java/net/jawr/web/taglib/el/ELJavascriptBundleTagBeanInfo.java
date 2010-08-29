@@ -19,6 +19,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class defines the bean information for the ELCSSBundleTag class.
@@ -34,7 +35,7 @@ public class ELJavascriptBundleTagBeanInfo extends SimpleBeanInfo {
 	 */
 	public PropertyDescriptor[] getPropertyDescriptors() {
 
-		ArrayList proplist = new ArrayList();
+		List<PropertyDescriptor> proplist = new ArrayList<PropertyDescriptor>();
 
 		try {
 			proplist.add(new PropertyDescriptor("src", ELCSSBundleTag.class,

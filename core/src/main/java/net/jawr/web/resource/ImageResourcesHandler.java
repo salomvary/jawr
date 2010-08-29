@@ -29,7 +29,8 @@ import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 public class ImageResourcesHandler {
 
 	/** The image map */
-	private Map imageMap = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+	@SuppressWarnings("unchecked")
+	private Map<String, String> imageMap = ConcurrentCollectionsFactory.buildConcurrentHashMap();
 	
 	/** The Jawr config */
 	private JawrConfig jawrConfig;
@@ -93,7 +94,7 @@ public class ImageResourcesHandler {
 	 * Returns the image map
 	 * @return the image Map
 	 */
-	public Map getImageMap() {
+	public Map<String, String> getImageMap() {
 		return imageMap;
 	}
 
@@ -112,7 +113,7 @@ public class ImageResourcesHandler {
 	 * @return the cache image URL
 	 */
 	public String getCacheUrl(String imgUrl){
-		return (String) imageMap.get(imgUrl);
+		return imageMap.get(imgUrl);
 	}
 	
 	/**

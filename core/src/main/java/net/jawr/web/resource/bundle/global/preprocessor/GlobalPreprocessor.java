@@ -15,6 +15,8 @@ package net.jawr.web.resource.bundle.global.preprocessor;
 
 import java.util.List;
 
+import net.jawr.web.resource.bundle.JoinableResourceBundle;
+
 /**
  * This interface defines the interface for the global preprocessor.
  * 
@@ -28,6 +30,6 @@ public interface GlobalPreprocessor {
 	 * @param ctx the processing context
 	 * @param bundles the list of bundles to process.
 	 */
-	public void processBundles(GlobalPreprocessingContext ctx, List bundles);
+	public void processBundles(GlobalPreprocessingContext ctx, List<JoinableResourceBundle> bundles);
 	
 }
