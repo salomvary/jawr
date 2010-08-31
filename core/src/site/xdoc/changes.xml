@@ -8,7 +8,7 @@
 	
     <section name="Announcementes and change log">
     <ul>
-    	<li> <strong>08/15/2009</strong>: Version 3.3.3 released:<br/>
+    	<li> <strong>08/15/2010</strong>: Version 3.3.3 released:<br/>
 	      	This version contains 2 bug fixes including a major one. It is highly recommended to upgrade to this version.<br/><br/>
 	      	There was an issue in the hashcode generation, which causes the bundle to be reloaded even if the bundle content didn't change.
 	      	This implies some performance penalties.<br/>
@@ -29,7 +29,7 @@
 	      		 Thanks to Mark W. for reporting the hashcode generation issue.
 	      	</ul>
       	  </li>	
-      	  <li> <strong>07/20/2009</strong>: Version 3.3.2 released:<br/>
+      	  <li> <strong>07/20/2010</strong>: Version 3.3.2 released:<br/>
 	      	This version contains only bug fixes.<br/><br/>
 	      	<strong>Fixed issues: </strong>
 	    	 <ul>   
@@ -42,7 +42,7 @@
 	      		 Thanks to zafo and Trygve Lie for reporting these issues.
 	      	</ul>
       	  </li>	
-	      <li> <strong>06/29/2009</strong>: Version 3.3.1 released:<br/>
+	      <li> <strong>06/29/2010</strong>: Version 3.3.1 released:<br/>
 	      	This version contains a lot of new features and bug fixes.<br/><br/>
 	      	<strong>New features: </strong>
 	    	<ul>
@@ -221,7 +221,7 @@
 			There still a lot to do. So any contribution is more than welcome.<br/>
 			If you want to be part of the Jawr project, don't hesitate, join us. 
      	  </li>
-      	  <li> <strong>02/01/2009</strong>: Version 3.2.1 released:<br/>
+      	  <li> <strong>02/01/2010</strong>: Version 3.2.1 released:<br/>
 	      	This version contains mainly bug fixes.<br/><br/>
 	      	<strong>New feature: </strong>
 	    	<ul>
