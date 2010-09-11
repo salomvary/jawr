@@ -61,8 +61,13 @@ public final class PathNormalizer {
 	 */
 	public static String removeVariantPrefixFromPath(String path) {
 		
+		String resultPath = path;
+		
 		// Remove first slash
-		String resultPath = path.substring(1);
+		if(path.charAt(0) == '/'){
+			resultPath = path.substring(1);
+		}
+		
 		// eval the existence of a suffix
 		String prefix = resultPath.substring(0, resultPath.indexOf("/"));
 
