@@ -126,6 +126,7 @@ public class ClientSideHandlerGeneratorImpl implements
 			// If this is not a pointer to the same generator it means this generator is the javascript one, 
 			// so we add CSS bundles to the script
 			if(this != generator){
+				variants = rsHandler.getConfig().getGeneratorRegistry().resolveVariants(request);
 				sb.append(";JAWR.loader.cssbundles = [");
 				sb.append(generator.getClientSideBundles(variants, useGzip));
 				sb.append("];\n");
@@ -226,12 +227,19 @@ public class ClientSideHandlerGeneratorImpl implements
 		buf.append("r(")
 			.append(JavascriptStringUtil.quote(bundle.getId()))
 			.append(",");
+		String path = bundle.getURLPrefix(variants);
 		if(useGzip){
-			String path = bundle.getURLPrefix(variants);
-			path = path.substring(1); // remove leading '/'
+			if(path.charAt(0) == '/'){
+				path = path.substring(1); // remove leading '/'
+			}
 			buf.append(JavascriptStringUtil.quote(BundleRenderer.GZIP_PATH_PREFIX + path ));
 		}
-		else buf.append(JavascriptStringUtil.quote(bundle.getURLPrefix(variants)));
+		else {
+			if(path.charAt(0) != '/'){
+				path = "/"+path; // Add leading '/'
+			}
+			buf.append(JavascriptStringUtil.quote(path));
+		}
 		
 		boolean skipItems = false;
 		if(bundle.getItemPathList().size() == 1 && null == bundle.getExplorerConditionalExpression()){
@@ -241,7 +249,7 @@ public class ClientSideHandlerGeneratorImpl implements
 		if(!skipItems) {
 			buf.append(",[");
 			for(Iterator<String> it = bundle.getItemPathList(variants).iterator();it.hasNext();){
-				String path = it.next();
+				path = it.next();
 				if(this.config.getGeneratorRegistry().isPathGenerated(path)) {
 					path = PathNormalizer.createGenerationPath(path,this.config.getGeneratorRegistry());
 				}
