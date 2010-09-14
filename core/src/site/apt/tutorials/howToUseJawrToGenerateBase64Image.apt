@@ -190,15 +190,16 @@ iVBORw0KGgoAAAANSUhEUgAAA...AAElFTkSuQmCC
 	jawr.css.bundle.base64Bundle.id=/css/base64Bundle.css
 	jawr.css.bundle.skinnedBundle.mappings=/css/one.css
 	jawr.css.bundle.base64Bundle.bundlepostprocessors=cssminify,base64ImageEncoder
+	jawr.css.bundle.base64Bundle.bundlepostprocessors=base64ImageEncoder
 +-------------------------	
 
 	<<Warning:>>\
 	You should noticed that we have set the <<CSS minifier>> before our <<base64ImageEncoder>>.
 	We use this configuration because the CSS minifier would have removed the MHTML part which in comment.
 	
-	It is also important to set the base64ImageEncoder as a <<bundle post processor>>, because this post processor
-	needs to prepend the MHTML part to the bundle and not for each file. \
-	So <<never>> use this post processor as a file post processor.
+	It is also important to set the base64ImageEncoder as a <<bundle post processor>> AND as a <<file post processor>>, because this post processor
+	needs to prepend the MHTML part to the bundle and also to rewrite the URL for each file. \
+	So <<never>> use this post processor only as a bundle post processor or only as a file post processor.
 		
 * Test the base64 image encoding
 
