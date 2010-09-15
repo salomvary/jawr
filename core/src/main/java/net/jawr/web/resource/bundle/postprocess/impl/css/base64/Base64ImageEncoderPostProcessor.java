@@ -105,7 +105,7 @@ public class Base64ImageEncoderPostProcessor extends
 			status.addPostProcessVariant(JawrConstant.CONNECTION_TYPE_VARIANT_TYPE, variantSet);
 		}
 		
-		if(!status.isSearchingPostProcessorVariants() && status.getCurrentBundle().isComposite() && status.getProcessingType().equals(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE)){
+		if(!status.isSearchingPostProcessorVariants() && status.getProcessingType().equals(BundleProcessingStatus.BUNDLE_PROCESSING_TYPE)){
 				
 			Map<String, String> bundleVariants = status.getBundleVariants();
 			if(bundleVariants != null){
