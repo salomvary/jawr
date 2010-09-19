@@ -99,7 +99,7 @@ public class CSSHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer implem
      * @param displayAlternateStyles the flag indicating if the alternate styles must be displayed
      * @param title the title
      */
-    public CSSHTMLBundleLinkRenderer(ResourceBundlesHandler bundler, boolean useRandomParam, String media, 
+    public CSSHTMLBundleLinkRenderer(ResourceBundlesHandler bundler, Boolean useRandomParam, String media, 
     		boolean alternate, boolean displayAlternateStyles, String title) {
         super(bundler, useRandomParam);
         

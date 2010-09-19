@@ -19,9 +19,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.resource.bundle.renderer.BundleRendererContext;
 import net.jawr.web.servlet.RendererRequestUtils;
+import net.jawr.web.util.StringUtils;
 
 /**
  * Abstract implementation of a tag lib component which will retrieve a Jawr
@@ -39,12 +41,9 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 	/** The source path */
 	protected String src;
 
-	/** The bundle renderer */
-	protected BundleRenderer renderer;
+	protected String useRandomParam = null;
 
 	/** The flag indicating if we should use the random parameter */
-	protected boolean useRandomParam = true;
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -52,12 +51,20 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 	 */
 	public int doStartTag() throws JspException {
 
-		// Renderer istance which takes care of generating the response
-		this.renderer = createRenderer();
-
 		HttpServletRequest request = (HttpServletRequest) pageContext
-				.getRequest();
+			.getRequest();
+		
+		if(null == pageContext.getServletContext().getAttribute(getResourceHandlerAttributeName()))
+			throw new IllegalStateException("ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or never occurred.");
 
+		ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) request.getAttribute(getResourceHandlerAttributeName());
+		Boolean useRandomFlag = null;
+		if(StringUtils.isNotEmpty(useRandomParam)){
+			useRandomFlag = Boolean.valueOf(useRandomParam);
+		}
+		// Renderer istance which takes care of generating the response
+		BundleRenderer renderer = createRenderer(rsHandler, useRandomFlag);
+		
 		// set the debug override
 		RendererRequestUtils.setRequestDebuggable(request, renderer
 				.getBundler().getConfig());
@@ -72,9 +79,9 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 							+ src, ex);
 		}
 
-		return super.doStartTag();
+		return SKIP_BODY;
 	}
-
+	
 	/**
 	 * Set the source of the resource or bundle to retrieve.
 	 * 
@@ -90,18 +97,24 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 	 * 
 	 * @param useRandomParam
 	 */
-	public void setUseRandomParam(boolean useRandomParam) {
+	public void setUseRandomParam(String useRandomParam) {
 		this.useRandomParam = useRandomParam;
 	}
 
 	/**
-	 * Retrieve the ResourceCollector from context. Each implementation will use
-	 * a different key to retrieve it.
-	 * 
-	 * @return
+	 * Returns the resource bundle attribute name
+	 * @return the resource bundle attribute name
 	 */
-	protected abstract BundleRenderer createRenderer();
-
+	protected abstract String getResourceHandlerAttributeName();
+	
+	/**
+	 * Returns the bundle renderer
+	 * @param rsHandler the resource bundle handler
+	 * @param useRandomParam the flag indicating if we must add the random param in debug mode or not
+	 * @return the bundle renderer
+	 */
+	protected abstract BundleRenderer createRenderer(ResourceBundlesHandler rsHandler, Boolean useRandomParam);
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -110,6 +123,7 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 	public void release() {
 
 		src = null;
+		useRandomParam = null;
 	}
 
 }

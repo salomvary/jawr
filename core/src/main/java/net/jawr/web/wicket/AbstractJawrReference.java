@@ -18,9 +18,11 @@ import java.io.Writer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.resource.bundle.renderer.BundleRendererContext;
 import net.jawr.web.servlet.RendererRequestUtils;
+import net.jawr.web.util.StringUtils;
 
 import org.apache.log4j.Logger;
 import org.apache.wicket.Response;
@@ -49,7 +51,7 @@ public abstract class AbstractJawrReference extends WebMarkupContainer {
 	protected BundleRenderer renderer;
 	
 	/** The flag indicating if we must use the random parameter */
-    protected boolean useRandomParam = true;
+    protected String useRandomParam;
     
     /**
      * Constructor
@@ -69,11 +71,6 @@ public abstract class AbstractJawrReference extends WebMarkupContainer {
             final IValueMap attributes = tag.getAttributes();
 
             // Initialize attributes
-            String useRandom = (String) attributes.get("useRandomParam");
-            if (null != useRandom) {
-                this.useRandomParam = Boolean.valueOf(useRandom).booleanValue();
-            }
-
             String src = getReferencePath(attributes);
             
             // src is mandatory
@@ -81,14 +78,21 @@ public abstract class AbstractJawrReference extends WebMarkupContainer {
                 throw new IllegalStateException("The src attribute is mandatory for this Jawr reference tag. ");
             }
 
-            // Get an instance of the renderer.
-            if (null == this.renderer || !this.renderer.getBundler().getConfig().isValid()) {
-                this.renderer = createRenderer(tag);
-            }
-
             ServletWebRequest servletWebRequest = (ServletWebRequest) getRequest();
             HttpServletRequest request = servletWebRequest.getHttpServletRequest();
 
+            // Get an instance of the renderer.
+            ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) request.getSession().getServletContext().getAttribute(getResourceHandlerAttributeName());
+            if (null == rsHandler) {
+                throw new IllegalStateException("ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or never occurred.");
+            }
+
+            Boolean useRandomFlag = null;
+    		if(StringUtils.isNotEmpty(useRandomParam)){
+    			useRandomFlag = Boolean.valueOf(useRandomParam);
+    		}
+            BundleRenderer renderer = createRenderer(rsHandler, useRandomFlag, tag);
+            
             // set the debug override
  	       	RendererRequestUtils.setRequestDebuggable(request,renderer.getBundler().getConfig());
  		   
@@ -114,10 +118,18 @@ public abstract class AbstractJawrReference extends WebMarkupContainer {
     protected abstract String getReferencePath(final IValueMap attributes);
     
     /**
+	 * Returns the resource bundle attribute name
+	 * @return the resource bundle attribute name
+	 */
+	protected abstract String getResourceHandlerAttributeName();
+	
+	/**
      * Create the tag renderer.
-     * @param tag the tag
+	 * @param rsHandler the resource bundle handler 
+     * @param useRandomParam the flag indicating if we must use random parameter in debug mode
+	 * @param tag the tag
      * @return the tag renderer.
      */
-    protected abstract BundleRenderer createRenderer(ComponentTag tag);
+    protected abstract BundleRenderer createRenderer(ResourceBundlesHandler rsHandler, Boolean useRandomParam, ComponentTag tag);
     
 }

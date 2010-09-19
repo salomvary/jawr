@@ -83,8 +83,7 @@ public class ELJavascriptBundleTag extends JavascriptBundleTag {
 	public int doStartTag() throws JspException {
 
 		String string = null;
-		Boolean bool = null;
-
+		
 		if (srcExpr != null) {
 			string = (String) ExpressionEvaluatorManager.evaluate("srcExpr",
 					srcExpr, String.class, this, pageContext);
@@ -92,10 +91,10 @@ public class ELJavascriptBundleTag extends JavascriptBundleTag {
 		}
 
 		if (useRandomParamExpr != null) {
-			bool = (Boolean) ExpressionEvaluatorManager.evaluate(
-					"useRandomParamExpr", useRandomParamExpr, Boolean.class,
+			string = (String) ExpressionEvaluatorManager.evaluate(
+					"useRandomParamExpr", useRandomParamExpr, String.class,
 					this, pageContext);
-			setUseRandomParam(bool.booleanValue());
+			setUseRandomParam(string);
 		}
 
 		return super.doStartTag();

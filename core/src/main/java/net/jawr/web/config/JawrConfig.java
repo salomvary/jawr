@@ -119,6 +119,11 @@ public class JawrConfig implements Serializable {
 	public static final String JAWR_DEBUG_OVERRIDE_KEY = "jawr.debug.overrideKey";
 
 	/**
+	 * The property name for the debug use random parameter
+	 */
+	public static final String JAWR_USE_RANDOM_PARAM = "jawr.debug.use.random.parameter";
+
+	/**
 	 * The property name for the reload refresh key
 	 */
 	private static final String JAWR_CONFIG_RELOAD_REFRESH_KEY = "jawr.config.reload.refreshKey";
@@ -218,6 +223,11 @@ public class JawrConfig implements Serializable {
 	 * Flag to switch on the debug mode. defaults to false.
 	 */
 	private boolean debugModeOn = false;
+	
+	/**
+	 * Flag to switch on the debug use random parameter. defaults to true.
+	 */
+	private boolean debugUseRandomParam = true;
 	
 	/**
 	 * Key that may be passed in to override production mode
@@ -323,6 +333,9 @@ public class JawrConfig implements Serializable {
 		}
 		if (null != props.getProperty(JAWR_DEBUG_OVERRIDE_KEY)) {
 			this.debugOverrideKey = props.getProperty(JAWR_DEBUG_OVERRIDE_KEY);
+		}
+		if (null != props.getProperty(JAWR_USE_RANDOM_PARAM)) {
+			this.debugUseRandomParam = Boolean.valueOf(props.getProperty(JAWR_USE_RANDOM_PARAM)).booleanValue();
 		}
 		
 		if (null != props.getProperty(JAWR_STRICT_MODE)) {
@@ -445,6 +458,20 @@ public class JawrConfig implements Serializable {
 	 */
 	public void setDebugOverrideKey(final String debugOverrideKey) {
 		this.debugOverrideKey = debugOverrideKey;
+	}
+
+	/**
+	 * @return the debugUseRandomParam
+	 */
+	public boolean isDebugUseRandomParam() {
+		return debugUseRandomParam;
+	}
+
+	/**
+	 * @param debugUseRandomParam the debugUseRandomParam to set
+	 */
+	public void setDebugUseRandomParam(boolean debugUseRandomParam) {
+		this.debugUseRandomParam = debugUseRandomParam;
 	}
 
 	/**

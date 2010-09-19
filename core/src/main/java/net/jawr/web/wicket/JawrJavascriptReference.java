@@ -19,7 +19,6 @@ import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.resource.bundle.renderer.JavascriptHTMLBundleLinkRenderer;
 
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.value.IValueMap;
 
 /**
@@ -48,16 +47,21 @@ public class JawrJavascriptReference extends AbstractJawrReference {
 		return (String) attributes.get("src");
 	}
 	
-    /* (non-Javadoc)
-     * @see net.jawr.web.wicket.JawrAbstractReference#createRenderer(org.apache.wicket.markup.ComponentTag)
-     */
-    protected BundleRenderer createRenderer(ComponentTag tag) {
-        Object handler = WebApplication.get().getServletContext().getAttribute(JawrConstant.JS_CONTEXT_ATTRIBUTE);
-        if (null == handler) {
-            throw new IllegalStateException("ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or never occurred.");
-        }
+	/* (non-Javadoc)
+	 * @see net.jawr.web.wicket.AbstractJawrReference#getResourceHandlerAttributeName()
+	 */
+	@Override
+	protected String getResourceHandlerAttributeName() {
+		return JawrConstant.JS_CONTEXT_ATTRIBUTE;
+	}
 
-        ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) handler;
-        return new JavascriptHTMLBundleLinkRenderer(rsHandler, this.useRandomParam);
-    }
+	/* (non-Javadoc)
+	 * @see net.jawr.web.wicket.AbstractJawrReference#createRenderer(net.jawr.web.resource.bundle.handler.ResourceBundlesHandler, boolean, org.apache.wicket.markup.ComponentTag)
+	 */
+	@Override
+	protected BundleRenderer createRenderer(ResourceBundlesHandler rsHandler,
+			Boolean useRandomParam, ComponentTag tag) {
+		
+		return new JavascriptHTMLBundleLinkRenderer(rsHandler, useRandomParam);
+	}
 }

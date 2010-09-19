@@ -1,5 +1,5 @@
 /**
- * Copyright 2007 Jordi Hernández Sellés
+ * Copyright 2007-2010 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -22,7 +22,7 @@ import net.jawr.web.resource.bundle.renderer.JavascriptHTMLBundleLinkRenderer;
  * Implementation of a jsp taglib AbstractResourceBundleTag used to render javascript bundles. 
  * 
  * @author Jordi Hernández Sellés
- *
+ * @author Ibrahim Chaehoi
  */
 public class JavascriptBundleTag extends AbstractResourceBundleTag {
 
@@ -30,15 +30,21 @@ public class JavascriptBundleTag extends AbstractResourceBundleTag {
 	private static final long serialVersionUID = 5087323727715427593L;
 
 	/* (non-Javadoc)
-	 * @see net.jawr.web.taglib.AbstractResourceBundleTag#createRenderer()
+	 * @see net.jawr.web.taglib.AbstractResourceBundleTag#getResourceHandlerAttributeName()
 	 */
-	protected BundleRenderer createRenderer() {
-		if(null == pageContext.getServletContext().getAttribute(JawrConstant.JS_CONTEXT_ATTRIBUTE))
-			throw new IllegalStateException("ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or never occurred.");
-
-		ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) pageContext.getServletContext().getAttribute(JawrConstant.JS_CONTEXT_ATTRIBUTE);
-		return  new JavascriptHTMLBundleLinkRenderer(rsHandler, this.useRandomParam);
+	@Override
+	protected String getResourceHandlerAttributeName() {
+		return JawrConstant.JS_CONTEXT_ATTRIBUTE;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.jawr.web.taglib.AbstractResourceBundleTag#createRenderer(net.jawr.web.resource.bundle.handler.ResourceBundlesHandler, boolean)
+	 */
+	@Override
+	protected BundleRenderer createRenderer(ResourceBundlesHandler rsHandler,
+			Boolean useRandomParam) {
+		
+		return  new JavascriptHTMLBundleLinkRenderer(rsHandler, useRandomParam);
+	}
 
 }

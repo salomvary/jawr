@@ -41,16 +41,20 @@ public abstract class AbstractBundleLinkRenderer implements BundleRenderer {
 	protected ResourceBundlesHandler bundler;
 
 	/** The flag indicating if we must use the random parameter */
-	private boolean useRandomParam = true;
+	private boolean useRandomParam;
 	
 	/**
 	 * Creates a new instance of AbstractBundleLinkRenderer
 	 * 
 	 * @param bundler ResourceBundlesHandler Handles resolving of paths.
 	 */
-	protected AbstractBundleLinkRenderer(ResourceBundlesHandler bundler, boolean useRandomParam) {
+	protected AbstractBundleLinkRenderer(ResourceBundlesHandler bundler, Boolean useRandomParam) {
 		this.bundler = bundler;
-		this.useRandomParam = useRandomParam;
+		if(useRandomParam == null){
+			this.useRandomParam = bundler.getConfig().isDebugUseRandomParam();
+		}else{
+			this.useRandomParam = useRandomParam;
+		}
 	}
 
 	/**

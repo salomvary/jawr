@@ -31,7 +31,7 @@ public class JavascriptHTMLBundleLinkRenderer extends AbstractBundleLinkRenderer
     private static final String POST_TAG = "\" ></script>\n";
     
     /** Creates a new instance of JavascriptHTMLBundleLinkRenderer */
-    public JavascriptHTMLBundleLinkRenderer(ResourceBundlesHandler bundler, boolean useRandomParam) {
+    public JavascriptHTMLBundleLinkRenderer(ResourceBundlesHandler bundler, Boolean useRandomParam) {
         super(bundler, useRandomParam);
     }
 

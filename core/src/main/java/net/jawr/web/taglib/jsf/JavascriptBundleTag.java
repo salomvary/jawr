@@ -37,7 +37,7 @@ public class JavascriptBundleTag extends AbstractResourceBundleTag {
 			throw new IllegalStateException("ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or never occurred.");
 
 		ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) handler;
-		return  new JavascriptHTMLBundleLinkRenderer(rsHandler, this.useRandomParam);
+		return  new JavascriptHTMLBundleLinkRenderer(rsHandler, getUseRandomParamFlag(rsHandler.getConfig()));
 	}
 
 }

@@ -20,7 +20,6 @@ import net.jawr.web.resource.bundle.renderer.CSSHTMLBundleLinkRenderer;
 import net.jawr.web.util.StringUtils;
 
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.value.IValueMap;
 
 
@@ -57,24 +56,27 @@ public class JawrStylesheetReference extends AbstractJawrReference {
 	}
 	
 	/* (non-Javadoc)
-     * @see net.jawr.web.wicket.JawrAbstractReference#createRenderer(org.apache.wicket.markup.ComponentTag)
-     */
-    protected BundleRenderer createRenderer(ComponentTag tag) {
-        final IValueMap attributes = tag.getAttributes();
+	 * @see net.jawr.web.wicket.AbstractJawrReference#getResourceHandlerAttributeName()
+	 */
+	@Override
+	protected String getResourceHandlerAttributeName() {
+		return JawrConstant.CSS_CONTEXT_ATTRIBUTE;
+	}
 
-        Object handler = WebApplication.get().getServletContext().getAttribute(JawrConstant.CSS_CONTEXT_ATTRIBUTE);
-        if (null == handler) {
-            throw new IllegalStateException("ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or never occurred.");
-        }
-
-        ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) handler;
-        String media = attributes.getString(JawrConstant.MEDIA_ATTR);
+	/* (non-Javadoc)
+	 * @see net.jawr.web.wicket.AbstractJawrReference#createRenderer(net.jawr.web.resource.bundle.handler.ResourceBundlesHandler, boolean, org.apache.wicket.markup.ComponentTag)
+	 */
+	@Override
+	protected BundleRenderer createRenderer(ResourceBundlesHandler rsHandler,
+			Boolean useRandomParam, ComponentTag tag) {
+		
+		final IValueMap attributes = tag.getAttributes();
+		String media = attributes.getString(JawrConstant.MEDIA_ATTR);
         String title = attributes.getString(JawrConstant.TITLE_ATTR);
         boolean alternate = attributes.getBoolean(JawrConstant.ALTERNATE_ATTR);
         boolean displayAlternateStyles = attributes.getBoolean(JawrConstant.DISPLAY_ALTERNATE_ATTR);
         
-        
-        return new CSSHTMLBundleLinkRenderer(rsHandler, this.useRandomParam, media, alternate, displayAlternateStyles, title);
-    }
+        return new CSSHTMLBundleLinkRenderer(rsHandler, useRandomParam, media, alternate, displayAlternateStyles, title);
+	}
     
 }

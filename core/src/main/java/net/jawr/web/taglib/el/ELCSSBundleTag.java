@@ -188,10 +188,10 @@ public class ELCSSBundleTag extends CSSBundleTag {
 		}
 
 		if (useRandomParamExpr != null) {
-			bool = (Boolean) ExpressionEvaluatorManager.evaluate(
-					"useRandomParamExpr", useRandomParamExpr, Boolean.class,
+			string = (String) ExpressionEvaluatorManager.evaluate(
+					"useRandomParamExpr", useRandomParamExpr, String.class,
 					this, pageContext);
-			setUseRandomParam(bool.booleanValue());
+			setUseRandomParam(string);
 		}
 
 		if (mediaExpr != null) {

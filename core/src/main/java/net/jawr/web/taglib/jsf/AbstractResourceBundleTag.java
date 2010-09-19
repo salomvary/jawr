@@ -20,6 +20,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.servlet.http.HttpServletRequest;
 
+import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.renderer.BundleRenderer;
 import net.jawr.web.resource.bundle.renderer.BundleRendererContext;
 import net.jawr.web.servlet.RendererRequestUtils;
@@ -39,7 +40,7 @@ public abstract class AbstractResourceBundleTag extends UIOutput {
 	protected BundleRenderer renderer;
 	
 	/** The flag indicating if we use the random parameter or not */
-	protected boolean useRandomParam = true;    
+	protected String useRandomParam = null;    
 	
 	/* (non-Javadoc)
 	 * @see javax.faces.component.UIComponentBase#encodeBegin(javax.faces.context.FacesContext)
@@ -47,9 +48,7 @@ public abstract class AbstractResourceBundleTag extends UIOutput {
 	public void encodeBegin(FacesContext context) throws IOException {
 		
 		// Initialize attributes
-		String useRandom = (String)getAttributes().get("useRandomParam");
-        if(null != useRandom)
-        	this.useRandomParam = Boolean.valueOf(useRandom).booleanValue();
+		this.useRandomParam = (String)getAttributes().get("useRandomParam");
         
         String src = (String)getAttributes().get("src"); 
         
@@ -72,6 +71,20 @@ public abstract class AbstractResourceBundleTag extends UIOutput {
 		super.encodeBegin(context);
 	}
 
+	/**
+	 * Returns the flag for the use of random param in debug mode
+	 * @param config the Jawr config
+	 * @return the flag for the use of random param in debug mode
+	 */
+	protected boolean getUseRandomParamFlag(JawrConfig config){
+		
+		boolean useRandomParamFlag = config.isDebugUseRandomParam(); 
+		if(useRandomParam != null){
+			useRandomParamFlag = Boolean.parseBoolean(useRandomParam);
+		}
+		return useRandomParamFlag;
+	}
+	
 	/**
 	 * Retrieve the ResourceCollector from context. Each implementation will use a different key
 	 * to retrieve it. 
