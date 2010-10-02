@@ -49,9 +49,6 @@ public class GeneratorContext {
 	/** The variant sets for the current path */
 	private Map<String, VariantSet> variantSets;
 	
-	/** The variant */
-	private String variant;
-	
 	/** The locale */
 	private Locale locale;
 
@@ -147,22 +144,6 @@ public class GeneratorContext {
 	 */
 	public void setVariantSets(Map<String, VariantSet> variantSets) {
 		this.variantSets = variantSets;
-	}
-
-	/**
-	 * Returns the resource variant
-	 * @return the resource variant
-	 */
-	public String getVariant() {
-		return variant;
-	}
-
-	/**
-	 * Sets the resource variant
-	 * @param variant the variant to set
-	 */
-	public void setVariant(String variant) {
-		this.variant = variant;
 	}
 
 	/**
