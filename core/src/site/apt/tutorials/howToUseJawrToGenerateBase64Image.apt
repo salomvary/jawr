@@ -188,9 +188,9 @@ iVBORw0KGgoAAAANSUhEUgAAA...AAElFTkSuQmCC
 	
 +-------------------------
 	jawr.css.bundle.base64Bundle.id=/css/base64Bundle.css
-	jawr.css.bundle.skinnedBundle.mappings=/css/one.css
+	jawr.css.bundle.base64Bundle.mappings=/css/one.css
 	jawr.css.bundle.base64Bundle.bundlepostprocessors=cssminify,base64ImageEncoder
-	jawr.css.bundle.base64Bundle.bundlepostprocessors=base64ImageEncoder
+	jawr.css.bundle.base64Bundle.filepostprocessors=base64ImageEncoder
 +-------------------------	
 
 	<<Warning:>>\
@@ -200,7 +200,25 @@ iVBORw0KGgoAAAANSUhEUgAAA...AAElFTkSuQmCC
 	It is also important to set the base64ImageEncoder as a <<bundle post processor>> AND as a <<file post processor>>, because this post processor
 	needs to prepend the MHTML part to the bundle and also to rewrite the URL for each file. \
 	So <<never>> use this post processor only as a bundle post processor or only as a file post processor.
-		
+	
+	To use the base64ImageEncoder with composite bundle, you need to define the base64ImageEncoder as file postprocessor for the child bundles,
+	and as bundle postprocessor for the composite bundle.
+	
++-------------------------	
+jawr.css.bundle.base64CompositeBundle.id=/css/compositeBundle.css
+jawr.css.bundle.base64CompositeBundle.composite=true
+jawr.css.bundle.base64CompositeBundle.child.names=childOne,childTwo
+jawr.css.bundle.base64CompositeBundle.filepostprocessors=none
+jawr.css.bundle.base64CompositeBundle.bundlepostprocessors=cssminify,base64ImageEncoder
+ 
+jawr.css.bundle.childOne.mappings=/css/one.css
+jawr.css.bundle.childOne.filepostprocessors=base64ImageEncoder
+jawr.css.bundle.childOne.bundlepostprocessors=none
+jawr.css.bundle.childTwo.mappings=/css/dir/two.css
+jawr.css.bundle.childTwo.filepostprocessors=base64ImageEncoder
+jawr.css.bundle.childTwo.bundlepostprocessors=none
++-------------------------	
+	
 * Test the base64 image encoding
 
 	Create an <</img>> directory at the root of your web application and copy 2 <<png>> images in it and rename them to <<img1.png>> and <<img2.png>> . 
