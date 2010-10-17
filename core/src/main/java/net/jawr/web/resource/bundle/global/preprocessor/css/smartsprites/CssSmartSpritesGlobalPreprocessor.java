@@ -128,6 +128,9 @@ public class CssSmartSpritesGlobalPreprocessor extends
 		
 		SmartSpritesResourceHandler smartSpriteRsHandler = new SmartSpritesResourceHandler(cssRsHandler, imgRsHandler.getRsReaderHandler(), 
 				jawrConfig.getGeneratorRegistry(), imgRsHandler.getJawrConfig().getGeneratorRegistry(), charset.toString(), messageLog);
+		
+		smartSpriteRsHandler.setContextPath(jawrConfig.getProperty(JawrConstant.JAWR_CSS_URL_REWRITER_CONTEXT_PATH));
+		
 		String outDir = cssRsHandler.getWorkingDirectory()+JawrConstant.CSS_SMARTSPRITES_TMP_DIR;
 		
 		SmartSpritesParameters params = new SmartSpritesParameters("/", null, outDir, null, msgLevel, "", PngDepth.valueOf("AUTO"),

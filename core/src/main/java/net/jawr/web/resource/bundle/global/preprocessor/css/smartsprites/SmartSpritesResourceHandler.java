@@ -59,6 +59,9 @@ public class SmartSpritesResourceHandler implements ResourceHandler {
 	/** The working directory */
 	private final String workingDir;
 	
+	/** The webapp context path */
+	private String contextPath = null;
+	
 	/**
 	 * Constructor
 	 * 
@@ -80,6 +83,18 @@ public class SmartSpritesResourceHandler implements ResourceHandler {
 		this.imgGeneratorRegistry = imgGeneratorRegistry;
 		this.charset = charset;
 		this.workingDir = rsHandler.getWorkingDirectory()+JawrConstant.CSS_SMARTSPRITES_TMP_DIR;
+	}
+
+	/**
+	 * Sets the context path
+	 * @param contextPath the contextPath to set
+	 */
+	public void setContextPath(String contextPath) {
+		
+		if(!contextPath.endsWith("/")){
+			contextPath += "/";
+		}
+		this.contextPath = contextPath;
 	}
 
 	/*
@@ -122,7 +137,9 @@ public class SmartSpritesResourceHandler implements ResourceHandler {
 		String result = null;
 		if (imgGeneratorRegistry.isGeneratedImage(relativePath)) {
 			result = relativePath;
-		} else {
+		} else if(contextPath != null && relativePath.startsWith(contextPath)){
+			result = relativePath.substring(contextPath.length()-1);
+		}else{
 			result = PathNormalizer.concatWebPath(basePath, relativePath);
 		}
 		return result;
