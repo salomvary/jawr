@@ -57,7 +57,7 @@ public abstract class AbstractResourceBundleTag extends TagSupport {
 		if(null == pageContext.getServletContext().getAttribute(getResourceHandlerAttributeName()))
 			throw new IllegalStateException("ResourceBundlesHandler not present in servlet context. Initialization of Jawr either failed or never occurred.");
 
-		ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) request.getAttribute(getResourceHandlerAttributeName());
+		ResourceBundlesHandler rsHandler = (ResourceBundlesHandler) pageContext.getServletContext().getAttribute(getResourceHandlerAttributeName());
 		Boolean useRandomFlag = null;
 		if(StringUtils.isNotEmpty(useRandomParam)){
 			useRandomFlag = Boolean.valueOf(useRandomParam);
