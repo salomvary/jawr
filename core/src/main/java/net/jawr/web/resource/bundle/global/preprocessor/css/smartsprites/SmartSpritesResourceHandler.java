@@ -91,7 +91,7 @@ public class SmartSpritesResourceHandler implements ResourceHandler {
 	 */
 	public void setContextPath(String contextPath) {
 		
-		if(!contextPath.endsWith("/")){
+		if(contextPath != null && !contextPath.endsWith("/")){
 			contextPath += "/";
 		}
 		this.contextPath = contextPath;
