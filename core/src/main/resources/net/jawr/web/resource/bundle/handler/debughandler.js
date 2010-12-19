@@ -15,7 +15,7 @@ JAWR.loader.insert = function(bundles,func,mappingToUse,path,media) {
 					var pathLink = this.addRandomParam(this.normalizePath(mappingToUse +'/'+bundle.itemPathList[i]));
 					if(bundle.ieExpression)
 						this.insertCondComment(bundle.ieExpression,func,pathLink,media);
-					else this[func](pathLink);
+					else this[func](pathLink,media);
 				}
 			}
 		}
