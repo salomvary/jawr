@@ -248,6 +248,15 @@ public class GeneratorRegistry {
 	}
 	
 	/**
+	 * Returns the variant resolver corresponding to the variant type given in parameter 
+	 * @param variantType the variant type
+	 * @return the variant resolver
+	 */
+	public VariantResolver getVariantResolver(String variantType){
+		return variantResolvers.get(variantType);
+	}
+	
+	/**
 	 * Register a generator mapping it to the specified prefix. 
 	 * 
 	 * @param clazz the classname of the generator

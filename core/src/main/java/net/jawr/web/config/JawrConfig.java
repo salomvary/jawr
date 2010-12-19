@@ -24,6 +24,7 @@ import net.jawr.web.context.ThreadLocalJawrContext;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
+import net.jawr.web.resource.bundle.generator.variant.css.CssSkinVariantResolver;
 import net.jawr.web.resource.bundle.hashcode.BundleHashcodeGenerator;
 import net.jawr.web.resource.bundle.hashcode.BundleStringHashcodeGenerator;
 import net.jawr.web.resource.bundle.hashcode.MD5BundleHashcodeGenerator;
@@ -62,6 +63,11 @@ public class JawrConfig implements Serializable {
 	 * The property name for the browser resolver
 	 */
 	public static final String JAWR_BROWSER_RESOLVER = "jawr.browser.resolver";
+	
+	/**
+	 * The property name for the css skin resolver
+	 */
+	public static final String JAWR_CSS_SKIN_RESOLVER = "jawr.css.skin.resolver";
 	
 	/**
 	 * The property name for the bundle hashcode generator
@@ -800,7 +806,7 @@ public class JawrConfig implements Serializable {
 		
 		registerResolver(new BrowserResolver(), JAWR_BROWSER_RESOLVER);
 		registerResolver(new ConnectionTypeResolver(), JAWR_CONNECTION_TYPE_SCHEME_RESOLVER);
-		
+		registerResolver(new CssSkinVariantResolver(), JAWR_CSS_SKIN_RESOLVER);
 	}
 
 	/**
