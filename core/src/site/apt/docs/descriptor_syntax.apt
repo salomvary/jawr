@@ -41,6 +41,8 @@ Descriptor file syntax
 *---------------*---------*--------------+----------------+
 | jawr.url.connection.type.resolver | String | Name of a class implementing net.jawr.web.resource.bundle.variant.VariantResolver. An instance of this class will be created and used to determine the connection type (standard or ssl) of a given request.   | net.jawr.web.resource.bundle.variant.resolver.ConnectionTypeResolver |
 *---------------*---------*--------------+----------------+
+| jawr.css.skin.resolver | String | Name of a class extending net.jawr.web.resource.bundle.variant.css.AbstractCssSkinResolver. An instance of this class will be created and used to determine the css skin used in a given request.   | net.jawr.web.resource.bundle.variant.css.CssSkinResolver |
+*---------------*---------*--------------+----------------+
 | jawr.url.contextpath.override | URL (absolute or fragment) [<<http://...>>],[<<//somepath>> protocol relative],[<</somepath >>] or [<</>>] or []. | Override the use of the application's contextpath to prefix every generated URL.  | none    | 
 | | | Using '<</>>' will cause Jawr to skip the context path altogether ('/001/bundles/mybundle.js').  |     | 
 | | | Using an empty value will cause Jawr to generate page relative urls ('001/bundles/mybundle.js').  |     | 

@@ -235,3 +235,17 @@ Variant bundle
 | jawr.custom.resolvers  | Comma separated list.  | List of all the VariantResolver implementations you want to use.    | None    | 
 *---------------+---------+--------------+----------------+
  
+* Custom CSS skin variant resolver
+ 	
+ 	Jawr provides by default a variant resolver for CSS skin, which determine the current CSS skin based on the <<jawr.css.skin.cookie>>
+ 	property.
+ 	You can define your own CSS variant resolver by setting the <<jawr.css.skin.resolver>> property to point to your class, which must
+ 	extend <<net.jawr.web.resource.bundle.generator.variant.css.AbstractCssSkinVariantResolver>>.
+ 	Then you need to define the following method in your class : 
+
++-----------------
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.variant.VariantResolver#resolveVariant(javax.servlet.http.HttpServletRequest)
+	 */
+	public abstract String resolveVariant(HttpServletRequest request);
++----------------- 	
