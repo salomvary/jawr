@@ -17,9 +17,7 @@ package net.jawr.web.resource.bundle.generator.variant.css;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import net.jawr.web.JawrConstant;
-import net.jawr.web.resource.bundle.variant.VariantResolver;
-import net.jawr.web.resource.bundle.variant.VariantSet;
+import org.apache.log4j.Logger;
 
 /**
  * The skin variant resolver is used to determine the current skin from the cookie
@@ -28,33 +26,27 @@ import net.jawr.web.resource.bundle.variant.VariantSet;
  * @author Ibrahim Chaehoi
  *
  */
-public class CssSkinVariantResolver implements VariantResolver {
+public class CssSkinVariantResolver extends AbstractCssSkinVariantResolver {
 
-	/** the default skin */
-	private final String defaultSkin;
+	private Logger log = Logger.getLogger(CssSkinVariantResolver.class);
 	
-	/** the cookie name for the skin */
-	private final String skinCookieName;
+	/**
+	 * Constructor
+	 */
+	public CssSkinVariantResolver() {
+		
+	}
 	
 	/**
 	 * Constructor
 	 * @param defaultSkin the default skin
 	 * @param skinCookieName the cookie name for the skin
 	 */
-	public CssSkinVariantResolver(final String defaultSkin, final String skinCookieName) {
+	public CssSkinVariantResolver(String defaultSkin, String skinCookieName) {
 		
-		this.defaultSkin = defaultSkin;
-		this.skinCookieName = skinCookieName;
+		super(defaultSkin, skinCookieName);
 	}
 	
-	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.variant.VariantResolver#getVariantType()
-	 */
-	public String getVariantType() {
-		
-		return JawrConstant.SKIN_VARIANT_TYPE;
-	}
-
 	/* (non-Javadoc)
 	 * @see net.jawr.web.resource.bundle.variant.VariantResolver#resolveVariant(javax.servlet.http.HttpServletRequest)
 	 */
@@ -71,19 +63,8 @@ public class CssSkinVariantResolver implements VariantResolver {
 				}
 			}
 		}
+		log.debug("Resolved skin "+skin);
+		
 		return skin;
 	}
-
-	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.variant.VariantResolver#getAvailableVariant(java.lang.String, java.util.Collection)
-	 */
-	public String getAvailableVariant(String variant, VariantSet variantSet) {
-		
-		String result = null;
-		if(variantSet.contains(variant)){
-			result = variant;
-		}
-		return result;
-	}
-
 }

@@ -57,6 +57,9 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	/** The resource browser */
 	private ResourceBrowser rsBrowser;
 	
+	/** The CSS skin resolver */
+	private AbstractCssSkinVariantResolver cssSkinResolver;
+	
 	/** 
 	 * This property defines the type of skin mapping.
 	 * So it defines how the resources are mapped in the directory.
@@ -97,6 +100,11 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 	 */
 	public CssSkinGenerator(ResourceBrowser rsBrowser, JawrConfig config, boolean initSkinMapping) {
 		this.rsBrowser = rsBrowser;
+		cssSkinResolver = (AbstractCssSkinVariantResolver) config.getGeneratorRegistry().getVariantResolver(JawrConstant.SKIN_VARIANT_TYPE);
+		if(cssSkinResolver == null){
+			cssSkinResolver = new CssSkinVariantResolver();
+			config.getGeneratorRegistry().registerVariantResolver(cssSkinResolver);
+		}
 		if(initSkinMapping){
 			String skinMappingType = config.getProperty(JawrConstant.SKIN_TYPE_MAPPING_CONFIG_PARAM);
 			if(StringUtils.isNotEmpty(skinMappingType)){
@@ -109,7 +117,6 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 				}
 			}
 			this.skinMapping = getSkinMapping(rsBrowser, config);
-			
 			resourceProviderStrategyClass = CssSkinVariantResourceProviderStrategy.class;
 		}
 	}
@@ -272,8 +279,9 @@ public class CssSkinGenerator extends AbstractCSSGenerator implements VariantRes
 			skinMapping.put(skinRootDir, variantsMap);
 		}
 		
-		CssSkinVariantResolver resolver = new CssSkinVariantResolver(defaultSkinName, config.getSkinCookieName());
-		config.getGeneratorRegistry().registerVariantResolver(resolver);
+		// Init resolver
+		cssSkinResolver.setDefaultSkin(defaultSkinName);
+		cssSkinResolver.setSkinCookieName(config.getSkinCookieName());
 	}
 
 	/**
