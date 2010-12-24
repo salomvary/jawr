@@ -20,6 +20,7 @@ import java.util.Set;
 import junit.framework.TestCase;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.BundleDependencyException;
+import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
@@ -37,6 +38,34 @@ import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
  */
 public class BundlesHandlerFactoryTestCase extends TestCase {
 
+	public void testBundleWithInvalidBundleId1() throws IOException, DuplicateBundlePathException, BundleDependencyException{
+		try{
+			getBundles("/bundle/factory/bundleshandlerfactory/jawr-invalid-bundleId1.properties");
+			fail("No bundle processing exception has been throwned");
+		}catch(BundlingProcessException e){
+			
+		}
+		
+	}
+	
+	public void testBundleWithInvalidBundleId2() throws IOException, DuplicateBundlePathException, BundleDependencyException{
+		try{
+			getBundles("/bundle/factory/bundleshandlerfactory/jawr-invalid-bundleId2.properties");
+			fail("No bundle processing exception has been throwned");
+		}catch(BundlingProcessException e){
+			
+		}
+	}
+	
+	public void testBundleWithInvalidBundleId3() throws IOException, DuplicateBundlePathException, BundleDependencyException{
+		try{
+			getBundles("/bundle/factory/bundleshandlerfactory/jawr-invalid-bundleId3.properties");
+			fail("No bundle processing exception has been throwned");
+		}catch(BundlingProcessException e){
+			
+		}
+	}
+	
 	/**
 	 * Test the dependency resolution
 	 * @throws DuplicateBundlePathException

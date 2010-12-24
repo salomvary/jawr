@@ -655,9 +655,15 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 		
 		// Send gzipped resource if user agent supports it.
 		if (requestedPath.startsWith(BundleRenderer.GZIP_PATH_PREFIX)) {
-			requestedPath = "/" + requestedPath.substring(BundleRenderer.GZIP_PATH_PREFIX.length(), requestedPath.length());
-			response.setHeader("Content-Encoding", "gzip");
-			bundlesHandler.streamBundleTo(requestedPath, response.getOutputStream());
+				
+				requestedPath = "/" + requestedPath.substring(BundleRenderer.GZIP_PATH_PREFIX.length(), requestedPath.length());
+				if(isValidRequestedPath(requestedPath)){
+					response.setHeader("Content-Encoding", "gzip");
+					bundlesHandler.streamBundleTo(requestedPath, response.getOutputStream());
+				}else{
+					throw new ResourceNotFoundException(requestedPath);
+				}
+				
 		} else {
 
 			// In debug mode, we take in account the image generated from a StreamGenerator like classpath Image generator
@@ -679,7 +685,6 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 				}
 			}
 		}
-		
 	}
 
 	/**
@@ -735,11 +740,12 @@ public class JawrRequestHandler implements ConfigChangeListener, Serializable {
 	protected boolean isValidRequestedPath(String requestedPath) {
 		
 		boolean result = true;
-		if(requestedPath.startsWith(JawrConstant.WEB_INF_DIR_PREFIX) || requestedPath.startsWith(JawrConstant.META_INF_DIR_PREFIX)){
+		if(!this.jawrConfig.isDebugModeOn() && 
+				requestedPath.startsWith(JawrConstant.WEB_INF_DIR_PREFIX) || requestedPath.startsWith(JawrConstant.META_INF_DIR_PREFIX)){
 			result = false;
 		}else{
 			// If it's not a generated path check the extension file 
-			if(!generatorRegistry.isPathGenerated(requestedPath)){
+			if(this.jawrConfig.isDebugModeOn() && !generatorRegistry.isPathGenerated(requestedPath)){
 				String extension = FileNameUtils.getExtension(requestedPath);
 				if(!extension.toLowerCase().equals(resourceType)){
 					result = false;

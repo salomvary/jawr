@@ -64,7 +64,21 @@ Definition of custom bundles
 	
 	It is recommended that you use a virtual prefix for bundle ids  (such as '/bundles/'). The prefix should not correspond to any actual 
 	directory in the root resources dir, to avoid namespace collisions.
+
+	* Restriction on bundle ID
 	
+	When defining a bundle ID, you must ensure that your bundle ID has the right suffix ( ".js" or ".css" ).
+	Jawr doesn't allow you to define bundle whose the ID starts with '/WEB-INF' and '/META-INF'. 
+		
+	So valid bundle IDs are : 
+
++------------------------------------------+
+	jawr.js.bundle.foo.id=/bundles/fooBundle.js
+	...
+	jawr.css.bundle.bar.id=/bundles/barBundle.css
++------------------------------------------+
+
+		  	
 * Mapping resources
 	
 	There are three ways to map resources: 
@@ -95,6 +109,11 @@ Definition of custom bundles
 +------------------------------------------+
 
 	For details on how the resources are ordered within the bundle, refer to the {{{./source_ordering.html}source ordering manual page}}. 
+	
+	* Restriction on bundle mapping
+	
+	When defining the bundle mapping, Jawr allows you to define mapping containing files which have the right suffix ( ".js" or ".css" ) depending on your bundle,
+	except for generated resource, where there is no restriction on the suffix.
 	
 ** Special mappings
 

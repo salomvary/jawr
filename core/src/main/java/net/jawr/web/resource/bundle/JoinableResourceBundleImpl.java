@@ -190,7 +190,7 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 			}else if (pathMapping.endsWith(LICENSES_FILENAME)) {
 				licensesPathList.add(asPath(pathMapping, isGeneratedPath));
 			} else
-				LOGGER.warn("Wrong mapping [" + pathMapping + "] for bundle ["
+				throw new BundlingProcessException("Wrong mapping [" + pathMapping + "] for bundle ["
 						+ this.name + "]. Please check configuration. ");
 		}
 		if (LOGGER.isDebugEnabled()){
