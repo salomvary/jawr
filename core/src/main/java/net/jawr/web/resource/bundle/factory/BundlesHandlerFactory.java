@@ -23,8 +23,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.BundleDependencyException;
+import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.exception.DuplicateBundlePathException;
 import net.jawr.web.resource.FileNameUtils;
 import net.jawr.web.resource.bundle.CompositeResourceBundle;
@@ -382,6 +384,8 @@ public class BundlesHandlerFactory {
 			LOGGER.debug("Init composite bundle with id:"
 					+ definition.getBundleId());
 
+		validateBundleId(definition);
+		
 		InclusionPattern include = new InclusionPattern(definition.isGlobal(),
 				definition.getInclusionOrder(), definition.isDebugOnly(),
 				definition.isDebugNever());
@@ -430,6 +434,8 @@ public class BundlesHandlerFactory {
 		if (LOGGER.isDebugEnabled())
 			LOGGER.debug("Init bundle with id:" + definition.getBundleId());
 
+		validateBundleId(definition);
+		
 		InclusionPattern include = new InclusionPattern(definition.isGlobal(),
 				definition.getInclusionOrder(), definition.isDebugOnly(),
 				definition.isDebugNever());
@@ -466,6 +472,23 @@ public class BundlesHandlerFactory {
 		}
 			
 		return newBundle;
+	}
+
+	/**
+	 * Validates the bundle ID
+	 * @param definition the bundle ID
+	 * @throws a BundlingProcessException if the bundle ID is not valid
+	 */
+	private void validateBundleId(ResourceBundleDefinition definition) {
+		String bundleId = definition.getBundleId();
+		if(bundleId != null){
+			if(!bundleId.endsWith(fileExtension)){
+				throw new BundlingProcessException("The extension of the bundle "+definition.getBundleName()+" - "+bundleId+" doesn't match the allowed extension : '"+fileExtension+"'. Please update your bundle definition.");
+			}else if(bundleId.startsWith(JawrConstant.WEB_INF_DIR_PREFIX) ||
+						 bundleId.startsWith(JawrConstant.META_INF_DIR_PREFIX)){
+				throw new BundlingProcessException("For the bundle "+definition.getBundleName()+", the bundle id '"+bundleId+"' is not allowed because it starts with \"/WEB-INF/\". Please update your bundle definition.");
+			}
+		}
 	}
 
 	/**
