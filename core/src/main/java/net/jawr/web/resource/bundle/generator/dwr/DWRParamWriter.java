@@ -57,7 +57,7 @@ public class DWRParamWriter {
 
 
 
-	public static void setUSE_DYNAMIC_SESSION_ID(boolean useDynamicSessionId) {
+	public static void setUseDynamicSessionId(boolean useDynamicSessionId) {
 		DWRParamWriter.USE_DYNAMIC_SESSION_ID = useDynamicSessionId;
 	}
 

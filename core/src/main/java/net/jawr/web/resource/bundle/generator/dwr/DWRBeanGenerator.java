@@ -203,7 +203,7 @@ public class DWRBeanGenerator extends AbstractJavascriptGenerator implements Res
 				matcher.appendReplacement(sb, "\"+JAWR.jawr_dwr_path+\"");
 			}
 		}
-		DWRParamWriter.setUSE_DYNAMIC_SESSION_ID(true);
+		DWRParamWriter.setUseDynamicSessionId(true);
 		matcher.appendTail(sb);
 		return sb;
 	}
