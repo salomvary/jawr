@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2007-2011 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -111,6 +111,12 @@ public class JawrConstant {
 	/** The ID of the empty global preprocessor */
 	public static final String EMPTY_GLOBAL_PREPROCESSOR_ID = "none";
 	
+	/** The ID of the empty global postprocessor */
+	public static final String EMPTY_GLOBAL_POSTPROCESSOR_ID = "none";
+	
+	/** The ID of the google closure postprocessor */
+	public static final String GLOBAL_GOOGLE_CLOSURE_POSTPROCESSOR_ID = "closure";
+
 	/** The META-INF directory prefix */
 	public static final String META_INF_DIR_PREFIX = "/META-INF/";
 
@@ -239,5 +245,9 @@ public class JawrConstant {
 	
 	/** The attribute name of the config properties */
 	public static final String JAWR_GRAILS_CONFIG_PROPERTIES_KEY = "configProperties";
+
+	public static final String JAWR_BASECONTEXT_DIRECTORY = "jawr.basecontext.directory";
+
+	public static final String JAWR_BASECONTEXT_DIRECTORY_HIGH_PRIORITY = "jawr.basecontext.directory.high.priority";
 	
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2009 Ibrahim Chaehoi
+ * Copyright 2009-2011 Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -23,8 +23,11 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Set;
 
+import net.jawr.web.JawrConstant;
 import net.jawr.web.config.JawrConfig;
+import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.util.FileUtils;
+import net.jawr.web.util.StringUtils;
 
 /**
  * This class defines the resource reader which is based on a file system and which can handle
@@ -47,8 +50,32 @@ public class FileSystemResourceReader implements TextResourceReader, StreamResou
 	 * @param baseDir the base directory
 	 * @param charset the charset
 	 */
+	public FileSystemResourceReader(JawrConfig config) {
+		this(config.getProperty(JawrConstant.JAWR_BASECONTEXT_DIRECTORY), config);
+	}
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param baseDir the base directory
+	 * @param charset the charset
+	 */
 	public FileSystemResourceReader(String baseDir, JawrConfig config) {
+		
 		this.baseDir = baseDir;
+		if(StringUtils.isEmpty(this.baseDir)){
+			throw new BundlingProcessException("The 'jawr.basecontext.directory' is not set. Please provide a value or remove it if it's not used.");
+		}
+		if (this.baseDir != null && this.baseDir.startsWith(JawrConstant.FILE_URI_PREFIX)) {
+			this.baseDir = this.baseDir.substring(JawrConstant.FILE_URI_PREFIX.length());
+		}
+		
+		File baseDirFile = new File(this.baseDir);
+		if(!baseDirFile.exists()){
+			throw new BundlingProcessException("The base context directory '"+this.baseDir+" doesn't exists. Please check your configuration.");
+		}else if(!baseDirFile.isDirectory()){
+			throw new BundlingProcessException("The base context directory '"+this.baseDir+" is not a directory. Please check your configuration.");
+		}
 		this.charset = config.getResourceCharset();
 	}
 	

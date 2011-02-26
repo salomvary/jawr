@@ -1,5 +1,5 @@
 /**
- * Copyright 2009-2010 Ibrahim Chaehoi
+ * Copyright 2009-2011 Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -104,6 +104,28 @@ public class ServletContextResourceReaderHandler implements ResourceReaderHandle
 			rd = new GrailsServletContextResourceReader(servletContext, jawrConfig);
 		}
 		addResourceReaderToEnd(rd);
+		
+		// Add FileSystemResourceReader if needed
+		String baseContextDir = jawrConfig.getProperty(JawrConstant.JAWR_BASECONTEXT_DIRECTORY);
+		if(StringUtils.isNotEmpty(baseContextDir)){
+			ResourceReader fileRd = new FileSystemResourceReader(jawrConfig);
+			if(LOGGER.isDebugEnabled()){
+				LOGGER.debug("The base directory context is set to "+baseContextDir);
+			}
+			
+			boolean baseContextDirHighPriority = Boolean.valueOf(jawrConfig.getProperty(JawrConstant.JAWR_BASECONTEXT_DIRECTORY_HIGH_PRIORITY));
+			if(baseContextDirHighPriority){
+				addResourceReaderToStart(fileRd);
+				if(LOGGER.isDebugEnabled()){
+					LOGGER.debug("Jawr will search in priority in the base directory context before searching in the war content.");
+				}
+			}else{
+				addResourceReaderToEnd(fileRd);
+				if(LOGGER.isDebugEnabled()){
+					LOGGER.debug("Jawr will search in priority in the war content before searching in the base directory context.");
+				}
+			}
+		}
 	}
 	
 	/* (non-Javadoc)
