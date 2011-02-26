@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2010 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2007-2011 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -18,19 +18,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.exception.ResourceNotFoundException;
+import net.jawr.web.resource.bundle.IOUtils;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler;
 import net.jawr.web.resource.bundle.iterator.ResourceBundlePathsIterator;
+
 
 /**
  * ResourceBundlesHandler wrapper implementation that uses a ConcurrentHashMap
@@ -52,19 +53,30 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	private Map<String, String> textCache;
 
 	/** The cache map for zip resource */
-	private Map<String, ByteBuffer> gzipCache;
+	private Map<String, byte[]> gzipCache;
 
 	/**
 	 * Build a cached wrapper around the supplied ResourceBundlesHandler.
 	 * 
 	 * @param rsHandler
 	 */
-	@SuppressWarnings("unchecked")
 	public CachedResourceBundlesHandler(ResourceBundlesHandler rsHandler) {
 		super();
 		this.rsHandler = rsHandler;
-		this.textCache = ConcurrentCollectionsFactory.buildConcurrentHashMap();
-		this.gzipCache = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+		
+		this.textCache = new ConcurrentHashMap<String, String>();
+		this.gzipCache = new ConcurrentHashMap<String, byte[]>();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#getGlobalBundles
+	 * ()
+	 */
+	public List<JoinableResourceBundle> getGlobalBundles() {
+		return rsHandler.getGlobalBundles();
 	}
 
 	/*
@@ -149,7 +161,7 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 			throws ResourceNotFoundException {
 
 		try {
-			ByteBuffer gzip = gzipCache.get(bundlePath);
+			byte[] gzip = gzipCache.get(bundlePath);
 
 			// If it's not cached yet
 			if (null == gzip) {
@@ -160,17 +172,15 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 
 				// Copy the data into the ByteBuffer
 				bfOs.close();
-				gzip = ByteBuffer.wrap(baOs.toByteArray());
+				gzip = baOs.toByteArray();
 
 				// Cache the ByteBuffer
 				gzipCache.put(bundlePath, gzip);
 			}
 
 			// Write bytes to the outputstream
-			int max = gzip.capacity();
-			for (int x = 0; x < max; x++)
-				out.write(gzip.get(x)); // Use absolute get method
-
+			IOUtils.write(gzip, out);
+			
 		} catch (IOException e) {
 			throw new BundlingProcessException(
 					"Unexpected IOException writing bundle[" + bundlePath + "]",
@@ -223,8 +233,13 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 		return rsHandler.getClientSideHandler();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#getGlobalResourceBundlePaths(java.lang.String, net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler, java.util.Map)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#
+	 * getGlobalResourceBundlePaths(java.lang.String,
+	 * net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler,
+	 * java.util.Map)
 	 */
 	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 			String bundleId,
@@ -235,8 +250,13 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 				commentCallbackHandler, variants);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#getGlobalResourceBundlePaths(boolean, net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler, java.util.Map)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#
+	 * getGlobalResourceBundlePaths(boolean,
+	 * net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler,
+	 * java.util.Map)
 	 */
 	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 			boolean debugMode,
@@ -247,8 +267,13 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 				commentCallbackHandler, variants);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#getGlobalResourceBundlePaths(net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler, java.util.Map)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#
+	 * getGlobalResourceBundlePaths
+	 * (net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler,
+	 * java.util.Map)
 	 */
 	public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 			ConditionalCommentCallbackHandler commentCallbackHandler,
@@ -260,18 +285,31 @@ public class CachedResourceBundlesHandler implements ResourceBundlesHandler {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @seenet.jawr.web.resource.bundle.handler.ResourceBundlesHandler#
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#
 	 * isGlobalResourceBundle(java.lang.String)
 	 */
 	public boolean isGlobalResourceBundle(String resourceBundleId) {
 		return rsHandler.isGlobalResourceBundle(resourceBundleId);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#containsValidBundleHashcode(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#
+	 * containsValidBundleHashcode(java.lang.String)
 	 */
 	public boolean containsValidBundleHashcode(String requestedPath) {
 		return rsHandler.containsValidBundleHashcode(requestedPath);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#
+	 * getBundleTextDirPath()
+	 */
+	public String getBundleTextDirPath() {
+		return rsHandler.getBundleTextDirPath();
 	}
 
 }

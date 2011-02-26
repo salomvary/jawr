@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -143,13 +144,6 @@ public class IECssBundleGeneratorTestCase extends TestCase {
 				
 			}
 			
-			public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
-					ConditionalCommentCallbackHandler commentCallbackHandler,
-					Map variants) {
-				
-				return null;
-			}
-			
 			public List getContextBundles() {
 				return null;
 			}
@@ -164,7 +158,7 @@ public class IECssBundleGeneratorTestCase extends TestCase {
 			
 			public ResourceBundlePathsIterator getBundlePaths(String bundleId,
 					ConditionalCommentCallbackHandler commentCallbackHandler,
-					Map variants) {
+					Map<String, String> variants) {
 				
 				
 				return new ResourceBundlePathsIterator() {
@@ -189,32 +183,45 @@ public class IECssBundleGeneratorTestCase extends TestCase {
 				};
 			}
 
-			public ResourceBundlePathsIterator getBundlePaths(
-					boolean debugMode, String bundleId,
+			public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 					ConditionalCommentCallbackHandler commentCallbackHandler,
-					Map variants) {
+					Map<String, String> variants) {
+				// TODO Auto-generated method stub
 				return null;
 			}
 
 			public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 					boolean debugMode,
 					ConditionalCommentCallbackHandler commentCallbackHandler,
-					Map variants) {
+					Map<String, String> variants) {
 				return null;
 			}
 
 			public ResourceBundlePathsIterator getGlobalResourceBundlePaths(
 					String bundlePath,
 					ConditionalCommentCallbackHandler commentCallbackHandler,
-					Map variants) {
+					Map<String, String> variants) {
+				return null;
+			}
+
+			public ResourceBundlePathsIterator getBundlePaths(
+					boolean debugMode, String bundleId,
+					ConditionalCommentCallbackHandler commentCallbackHandler,
+					Map<String, String> variants) {
 				return null;
 			}
 
 			public boolean containsValidBundleHashcode(String requestedPath) {
-				// TODO Auto-generated method stub
 				return false;
 			}
+
+			public String getBundleTextDirPath() {
+				return null;
+			}
 			
+			public List<JoinableResourceBundle> getGlobalBundles() {
+				return new ArrayList<JoinableResourceBundle>();
+			}
 		};
 		return bundlesHandler;
 	}

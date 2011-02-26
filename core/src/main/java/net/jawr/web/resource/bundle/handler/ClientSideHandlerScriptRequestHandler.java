@@ -1,5 +1,5 @@
 /**
- * Copyright 2008-2010 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2008-2011 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -17,12 +17,12 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.resource.bundle.IOUtils;
@@ -71,13 +71,12 @@ public class ClientSideHandlerScriptRequestHandler {
 	 * @param rsHandler the resource bundle handler
 	 * @param config the jawr config
 	 */
-	@SuppressWarnings("unchecked")
 	public ClientSideHandlerScriptRequestHandler(
 			ResourceBundlesHandler rsHandler, JawrConfig config) {
 		super();
 		this.rsHandler = rsHandler;
 		this.config = config;
-		this.handlerCache = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+		this.handlerCache = new ConcurrentHashMap<String, ClientSideHandlerScriptRequestHandler.Handler>();
 	}
 	
 

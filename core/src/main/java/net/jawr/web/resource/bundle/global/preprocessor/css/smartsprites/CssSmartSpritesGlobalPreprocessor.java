@@ -25,20 +25,20 @@ import net.jawr.web.config.JawrConfig;
 import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.resource.ImageResourcesHandler;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
-import net.jawr.web.resource.bundle.global.preprocessor.AbstractChainedGlobalPreprocessor;
-import net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessingContext;
+import net.jawr.web.resource.bundle.global.processor.AbstractChainedGlobalProcessor;
+import net.jawr.web.resource.bundle.global.processor.GlobalProcessingContext;
 import net.jawr.web.resource.handler.reader.ResourceReader;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.carrot2.labs.smartsprites.SmartSpritesParameters;
-import org.carrot2.labs.smartsprites.SpriteBuilder;
-import org.carrot2.labs.smartsprites.SmartSpritesParameters.PngDepth;
-import org.carrot2.labs.smartsprites.message.Message;
-import org.carrot2.labs.smartsprites.message.MessageLog;
-import org.carrot2.labs.smartsprites.message.MessageSink;
-import org.carrot2.labs.smartsprites.message.Message.MessageLevel;
+//import org.carrot2.labs.smartsprites.SmartSpritesParameters;
+//import org.carrot2.labs.smartsprites.SpriteBuilder;
+//import org.carrot2.labs.smartsprites.SmartSpritesParameters.PngDepth;
+//import org.carrot2.labs.smartsprites.message.Message;
+//import org.carrot2.labs.smartsprites.message.MessageLog;
+//import org.carrot2.labs.smartsprites.message.MessageSink;
+//import org.carrot2.labs.smartsprites.message.Message.MessageLevel;
 
 
 /**
@@ -49,7 +49,7 @@ import org.carrot2.labs.smartsprites.message.Message.MessageLevel;
  * 
  */
 public class CssSmartSpritesGlobalPreprocessor extends
-		AbstractChainedGlobalPreprocessor {
+		AbstractChainedGlobalProcessor {
 
 	/** The logger */
 	private static Logger LOGGER = Logger.getLogger(CssSmartSpritesGlobalPreprocessor.class);
@@ -76,7 +76,7 @@ public class CssSmartSpritesGlobalPreprocessor extends
 	 * @seenet.jawr.web.resource.bundle.global.processor.ResourceTypeBundleProcessor#processBundles(net.jawr.web.resource.bundle.global.processor.
 	 * ResourceTypeBundleProcessingContext, java.util.List)
 	 */
-	public void processBundles(GlobalPreprocessingContext ctx,
+	public void processBundles(GlobalProcessingContext ctx,
 			List<JoinableResourceBundle> bundles) {
 		
 		ResourceReaderHandler rsHandler = ctx.getRsReaderHandler();
@@ -114,34 +114,34 @@ public class CssSmartSpritesGlobalPreprocessor extends
 			ResourceReaderHandler cssRsHandler, ImageResourcesHandler imgRsHandler, Set<String> resourcePaths,
 			JawrConfig jawrConfig, Charset charset) {
 		
-		Level logLevel = LOGGER.getEffectiveLevel();
-		MessageLevel msgLevel = MessageLevel.valueOf(ERROR_LEVEL);
-		if(logLevel != null){
-			if(logLevel.isGreaterOrEqual(Level.DEBUG)){
-				msgLevel = MessageLevel.valueOf(INFO_LEVEL);
-			}else if(logLevel.isGreaterOrEqual(Level.WARN)){
-				msgLevel = MessageLevel.valueOf(WARN_LEVEL);
-			}
-		}
-		
-		MessageLog messageLog = new MessageLog(new MessageSink[]{new LogMessageSink()});
-		
-		SmartSpritesResourceHandler smartSpriteRsHandler = new SmartSpritesResourceHandler(cssRsHandler, imgRsHandler.getRsReaderHandler(), 
-				jawrConfig.getGeneratorRegistry(), imgRsHandler.getJawrConfig().getGeneratorRegistry(), charset.toString(), messageLog);
-		
-		smartSpriteRsHandler.setContextPath(jawrConfig.getProperty(JawrConstant.JAWR_CSS_URL_REWRITER_CONTEXT_PATH));
-		
-		String outDir = cssRsHandler.getWorkingDirectory()+JawrConstant.CSS_SMARTSPRITES_TMP_DIR;
-		
-		SmartSpritesParameters params = new SmartSpritesParameters("/", null, outDir, null, msgLevel, "", PngDepth.valueOf("AUTO"),
-			 false, charset.toString());
-		
-		SpriteBuilder spriteBuilder = new SpriteBuilder(params, messageLog, smartSpriteRsHandler);
-		try {
-			spriteBuilder.buildSprites(resourcePaths);
-		} catch (IOException e) {
-			throw new BundlingProcessException("Unable to build sprites", e);
-		}
+//		Level logLevel = LOGGER.getEffectiveLevel();
+//		MessageLevel msgLevel = MessageLevel.valueOf(ERROR_LEVEL);
+//		if(logLevel != null){
+//			if(logLevel.isGreaterOrEqual(Level.DEBUG)){
+//				msgLevel = MessageLevel.valueOf(INFO_LEVEL);
+//			}else if(logLevel.isGreaterOrEqual(Level.WARN)){
+//				msgLevel = MessageLevel.valueOf(WARN_LEVEL);
+//			}
+//		}
+//		
+//		MessageLog messageLog = new MessageLog(new MessageSink[]{new LogMessageSink()});
+//		
+//		SmartSpritesResourceHandler smartSpriteRsHandler = new SmartSpritesResourceHandler(cssRsHandler, imgRsHandler.getRsReaderHandler(), 
+//				jawrConfig.getGeneratorRegistry(), imgRsHandler.getJawrConfig().getGeneratorRegistry(), charset.toString(), messageLog);
+//		
+//		smartSpriteRsHandler.setContextPath(jawrConfig.getProperty(JawrConstant.JAWR_CSS_URL_REWRITER_CONTEXT_PATH));
+//		
+//		String outDir = cssRsHandler.getWorkingDirectory()+JawrConstant.CSS_SMARTSPRITES_TMP_DIR;
+//		
+//		SmartSpritesParameters params = new SmartSpritesParameters("/", null, outDir, null, msgLevel, "", PngDepth.valueOf("AUTO"),
+//			 false, charset.toString());
+//		
+//		SpriteBuilder spriteBuilder = new SpriteBuilder(params, messageLog, smartSpriteRsHandler);
+//		try {
+//			spriteBuilder.buildSprites(resourcePaths);
+//		} catch (IOException e) {
+//			throw new BundlingProcessException("Unable to build sprites", e);
+//		}
 	}
 
 	/**
@@ -162,25 +162,25 @@ public class CssSmartSpritesGlobalPreprocessor extends
 		return resourcePaths;
 	}
 
-	/**
-	 * The log message sink
-	 * 
-	 * @author Ibrahim Chaehoi
-	 */
-	private static class LogMessageSink implements MessageSink{
-		
-		
-		/* (non-Javadoc)
-		 * @see org.carrot2.labs.smartsprites.message.MessageSink#add(org.carrot2.labs.smartsprites.message.Message)
-		 */
-		public void add(Message message) {
-			
-			Level logLevel = LOGGER.getEffectiveLevel();
-			if(logLevel == null){
-				logLevel = Level.INFO;
-			}
-			LOGGER.log(logLevel, message.getFormattedMessage());
-		}
-		
-	}
+//	/**
+//	 * The log message sink
+//	 * 
+//	 * @author Ibrahim Chaehoi
+//	 */
+//	private static class LogMessageSink implements MessageSink{
+//		
+//		
+//		/* (non-Javadoc)
+//		 * @see org.carrot2.labs.smartsprites.message.MessageSink#add(org.carrot2.labs.smartsprites.message.Message)
+//		 */
+//		public void add(Message message) {
+//			
+//			Level logLevel = LOGGER.getEffectiveLevel();
+//			if(logLevel == null){
+//				logLevel = Level.INFO;
+//			}
+//			LOGGER.log(logLevel, message.getFormattedMessage());
+//		}
+//		
+//	}
 }

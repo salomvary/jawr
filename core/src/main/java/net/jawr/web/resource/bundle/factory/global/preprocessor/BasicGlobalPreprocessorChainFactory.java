@@ -21,12 +21,12 @@ import java.util.Map.Entry;
 
 import net.jawr.web.JawrConstant;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
-import net.jawr.web.resource.bundle.global.preprocessor.AbstractChainedGlobalPreprocessor;
-import net.jawr.web.resource.bundle.global.preprocessor.ChainedGlobalPreprocessor;
-import net.jawr.web.resource.bundle.global.preprocessor.CustomGlobalPreprocessorChainedWrapper;
-import net.jawr.web.resource.bundle.global.preprocessor.EmptyGlobalPreprocessor;
-import net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessor;
 import net.jawr.web.resource.bundle.global.preprocessor.css.smartsprites.CssSmartSpritesGlobalPreprocessor;
+import net.jawr.web.resource.bundle.global.processor.AbstractChainedGlobalProcessor;
+import net.jawr.web.resource.bundle.global.processor.ChainedGlobalProcessor;
+import net.jawr.web.resource.bundle.global.processor.CustomGlobalProcessorChainedWrapper;
+import net.jawr.web.resource.bundle.global.processor.EmptyGlobalProcessor;
+import net.jawr.web.resource.bundle.global.processor.GlobalProcessor;
 
 /**
  * This class defines the global preprocessor factory.
@@ -34,11 +34,11 @@ import net.jawr.web.resource.bundle.global.preprocessor.css.smartsprites.CssSmar
  * @author Ibrahim Chaehoi
  * 
  */
-public class BasicProcessorChainFactory implements
+public class BasicGlobalPreprocessorChainFactory implements
 		GlobalPreprocessorChainFactory {
 
 	/** The user-defined preprocessors */
-	private Map<String, ChainedGlobalPreprocessor> customPreprocessors = new HashMap<String, ChainedGlobalPreprocessor>();
+	private Map<String, ChainedGlobalProcessor> customPreprocessors = new HashMap<String, ChainedGlobalProcessor>();
 
 	/*
 	 * (non-Javadoc)
@@ -51,11 +51,11 @@ public class BasicProcessorChainFactory implements
 		for(Iterator<Entry<String, String>> it = keysClassNames.entrySet().iterator(); it.hasNext();){
 			
 			Entry<String, String> entry = it.next();
-			GlobalPreprocessor customGlobalPreprocessor = 
-				(GlobalPreprocessor) ClassLoaderResourceUtils.buildObjectInstance((String) entry.getValue());
+			GlobalProcessor customGlobalPreprocessor = 
+				(GlobalProcessor) ClassLoaderResourceUtils.buildObjectInstance((String) entry.getValue());
 			
 			String key = (String) entry.getKey();			
-			customPreprocessors.put(key, new CustomGlobalPreprocessorChainedWrapper(key, customGlobalPreprocessor));
+			customPreprocessors.put(key, new CustomGlobalProcessorChainedWrapper(key, customGlobalPreprocessor));
 		}		
 	}
 
@@ -66,9 +66,9 @@ public class BasicProcessorChainFactory implements
 	 * net.jawr.web.resource.bundle.factory.processor.ProcessorChainFactory#
 	 * buildDefaultProcessorChain()
 	 */
-	public GlobalPreprocessor buildDefaultProcessorChain() {
+	public GlobalProcessor buildDefaultProcessorChain() {
 
-		return new EmptyGlobalPreprocessor();
+		return new EmptyGlobalProcessor();
 	}
 
 	/*
@@ -78,17 +78,17 @@ public class BasicProcessorChainFactory implements
 	 * net.jawr.web.resource.bundle.factory.processor.ProcessorChainFactory#
 	 * buildProcessorChain(java.lang.String)
 	 */
-	public GlobalPreprocessor buildProcessorChain(String processorKeys) {
+	public GlobalProcessor buildProcessorChain(String processorKeys) {
 
 		if (null == processorKeys)
 			return null;
 		else if (JawrConstant.EMPTY_GLOBAL_PREPROCESSOR_ID
 				.equals(processorKeys))
-			return new EmptyGlobalPreprocessor();
+			return new EmptyGlobalProcessor();
 
 		StringTokenizer tk = new StringTokenizer(processorKeys, ",");
 
-		AbstractChainedGlobalPreprocessor chain = null;
+		AbstractChainedGlobalProcessor chain = null;
 		while (tk.hasMoreTokens())
 			chain = addOrCreateChain(chain, tk.nextToken());
 
@@ -106,19 +106,19 @@ public class BasicProcessorChainFactory implements
 	 *            the id of the post processor
 	 * @return the chained post processor, with the new post processor.
 	 */
-	private AbstractChainedGlobalPreprocessor addOrCreateChain(
-			AbstractChainedGlobalPreprocessor chain, String key) {
+	private AbstractChainedGlobalProcessor addOrCreateChain(
+			AbstractChainedGlobalProcessor chain, String key) {
 
-		AbstractChainedGlobalPreprocessor toAdd;
+		AbstractChainedGlobalProcessor toAdd;
 
 		if (customPreprocessors.get(key) == null) {
 			toAdd = buildProcessorByKey(key);
 		} else{
-			toAdd = (AbstractChainedGlobalPreprocessor) customPreprocessors
+			toAdd = (AbstractChainedGlobalProcessor) customPreprocessors
 				.get(key);
 		}
 		
-		AbstractChainedGlobalPreprocessor newChainResult = null;
+		AbstractChainedGlobalProcessor newChainResult = null;
 		if (chain == null) {
 			newChainResult = toAdd;
 		}else{
@@ -135,9 +135,9 @@ public class BasicProcessorChainFactory implements
 	 * @param key the ID of the preprocessor
 	 * @return a global preprocessor
 	 */
-	private AbstractChainedGlobalPreprocessor buildProcessorByKey(String key) {
+	private AbstractChainedGlobalProcessor buildProcessorByKey(String key) {
 
-		AbstractChainedGlobalPreprocessor processor = null;
+		AbstractChainedGlobalProcessor processor = null;
 
 		if (key.equals(JawrConstant.GLOBAL_CSS_SMARTSPRITES_PREPROCESSOR_ID)) {
 			processor = new CssSmartSpritesGlobalPreprocessor();

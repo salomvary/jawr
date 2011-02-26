@@ -277,6 +277,10 @@ public class BundlesHandlerFactoryTestCase extends TestCase {
 			public void storeJawrBundleMapping(Properties bundleMapping) {
 				
 			}
+
+			public String getBundleTextDirPath() {
+				return null;
+			}
 		};
 	}
 }

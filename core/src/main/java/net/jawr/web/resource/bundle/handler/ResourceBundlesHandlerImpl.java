@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2010 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2007-2011 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -32,10 +32,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPOutputStream;
 
 import net.jawr.web.JawrConstant;
-import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.context.ThreadLocalJawrContext;
 import net.jawr.web.exception.BundlingProcessException;
@@ -47,8 +47,8 @@ import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.JoinableResourceBundleContent;
 import net.jawr.web.resource.bundle.JoinableResourceBundlePropertySerializer;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
-import net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessingContext;
-import net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessor;
+import net.jawr.web.resource.bundle.global.processor.GlobalProcessingContext;
+import net.jawr.web.resource.bundle.global.processor.GlobalProcessor;
 import net.jawr.web.resource.bundle.hashcode.BundleHashcodeGenerator;
 import net.jawr.web.resource.bundle.iterator.ConditionalCommentCallbackHandler;
 import net.jawr.web.resource.bundle.iterator.DebugModePathsIteratorImpl;
@@ -119,7 +119,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	private ResourceBundlePostProcessor unitaryCompositePostProcessor;
 
 	/** The resourceTypeBundle processor */
-	private GlobalPreprocessor resourceTypeProcessor;
+	private GlobalProcessor resourceTypeProcessor;
 
 	/** The client side handler generator */
 	private ClientSideHandlerGenerator clientSideHandlerGenerator;
@@ -159,7 +159,6 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 *            Configuration for this handler.
 	 * @param postProcessor
 	 */
-	@SuppressWarnings("unchecked")
 	public ResourceBundlesHandlerImpl(List<JoinableResourceBundle> bundles,
 			ResourceReaderHandler resourceHandler,
 			ResourceBundleHandler resourceBundleHandler, JawrConfig config,
@@ -167,7 +166,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 			ResourceBundlePostProcessor unitaryPostProcessor,
 			ResourceBundlePostProcessor compositePostProcessor,
 			ResourceBundlePostProcessor unitaryCompositePostProcessor,
-			GlobalPreprocessor resourceTypeProcessor) {
+			GlobalProcessor resourceTypeProcessor) {
 		super();
 		this.resourceHandler = resourceHandler;
 		this.resourceBundleHandler = resourceBundleHandler;
@@ -178,7 +177,7 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		this.compositePostProcessor = compositePostProcessor;
 		this.unitaryCompositePostProcessor = unitaryCompositePostProcessor;
 		this.resourceTypeProcessor = resourceTypeProcessor;
-		this.bundles = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
+		this.bundles = new CopyOnWriteArrayList<JoinableResourceBundle>();
 		this.bundles.addAll(bundles);
 		splitBundlesByType(bundles);
 
@@ -197,11 +196,21 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		return contextBundles;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#getGlobalBundles
+	 * ()
+	 */
+	public List<JoinableResourceBundle> getGlobalBundles() {
+		return globalBundles;
+	}
+	
 	/**
 	 * Splits the bundles in two lists, one for global lists and other for the
 	 * remaining bundles.
 	 */
-	@SuppressWarnings("unchecked")
 	private void splitBundlesByType(List<JoinableResourceBundle> bundles) {
 		// Temporary lists (CopyOnWriteArrayList does not support sort())
 		List<JoinableResourceBundle> tmpGlobal = new ArrayList<JoinableResourceBundle>();
@@ -227,12 +236,10 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		// Sort the global bundles
 		Collections.sort(tmpGlobal, new GlobalResourceBundleComparator());
 
-		globalBundles = ConcurrentCollectionsFactory
-				.buildCopyOnWriteArrayList();
+		globalBundles = new CopyOnWriteArrayList<JoinableResourceBundle>();
 		globalBundles.addAll(tmpGlobal);
 
-		contextBundles = ConcurrentCollectionsFactory
-				.buildCopyOnWriteArrayList();
+		contextBundles = new CopyOnWriteArrayList<JoinableResourceBundle>();
 		contextBundles.addAll(tmpContext);
 	}
 
@@ -513,11 +520,13 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 		// Run through every bundle
 		boolean mappingFileExists = resourceBundleHandler
 				.isExistingMappingFile();
+		
+		// TODO Clean up usage of processBundleFlag... Why it is in GlobalProcessingContext?
 		boolean processBundleFlag = !config.getUseBundleMapping()
 				|| !mappingFileExists;
 
 		if (resourceTypeProcessor != null) {
-			GlobalPreprocessingContext ctx = new GlobalPreprocessingContext(
+			GlobalProcessingContext ctx = new GlobalProcessingContext(
 					config, resourceHandler, processBundleFlag);
 			resourceTypeProcessor.processBundles(ctx, bundles);
 		}
@@ -1010,6 +1019,13 @@ public class ResourceBundlesHandlerImpl implements ResourceBundlesHandler {
 	 */
 	public ClientSideHandlerGenerator getClientSideHandler() {
 		return this.clientSideHandlerGenerator;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.jawr.web.resource.bundle.handler.ResourceBundlesHandler#getBundleTextDirPath()
+	 */
+	public String getBundleTextDirPath() {
+		return this.resourceBundleHandler.getBundleTextDirPath();
 	}
 	
 }

@@ -18,14 +18,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
 import net.jawr.web.JawrConstant;
-import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.bundle.factory.util.ClassLoaderResourceUtils;
 import net.jawr.web.resource.bundle.generator.classpath.ClassPathCSSGenerator;
@@ -87,20 +88,16 @@ public class GeneratorRegistry {
 	public static final String PREFIX_SEPARATOR = ":";
 	
 	/** The generator prefix registry */
-	@SuppressWarnings("unchecked")
-	private final List<String> prefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
+	private final List<String> prefixRegistry = new CopyOnWriteArrayList<String>();
 	
 	/** The CSS image resource prefix registry */
-	@SuppressWarnings("unchecked")
-	private final List<String> cssImageResourceGeneratorPrefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
+	private final List<String> cssImageResourceGeneratorPrefixRegistry = new CopyOnWriteArrayList<String>();
 	
 	/** The image resource prefix registry */
-	@SuppressWarnings("unchecked")
-	private final List<String> imageResourceGeneratorPrefixRegistry = ConcurrentCollectionsFactory.buildCopyOnWriteArrayList();
+	private final List<String> imageResourceGeneratorPrefixRegistry = new CopyOnWriteArrayList<String>();
 	
 	/** The generator registry */
-	@SuppressWarnings("unchecked")
-	private final Map<String, PrefixedResourceGenerator> registry = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+	private final Map<String, PrefixedResourceGenerator> registry = new ConcurrentHashMap<String, PrefixedResourceGenerator>();
 	
 	/** The resource type */
 	private String resourceType;
@@ -112,8 +109,7 @@ public class GeneratorRegistry {
 	private ResourceReaderHandler rsHandler;
 	
 	/** The map of variant resolvers */
-	@SuppressWarnings("unchecked")
-	private final Map<String, VariantResolver> variantResolvers = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+	private final Map<String, VariantResolver> variantResolvers = new ConcurrentHashMap<String, VariantResolver>();
 	
 	/**
 	 * Use only for testing purposes.

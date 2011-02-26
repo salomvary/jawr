@@ -15,7 +15,7 @@ package net.jawr.web.resource.bundle.factory.global.preprocessor;
 
 import java.util.Map;
 
-import net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessor;
+import net.jawr.web.resource.bundle.global.processor.GlobalProcessor;
 
 /**
  * Interface for a factory of chained preprocessor objects. It is meant to ease 
@@ -30,14 +30,14 @@ public interface GlobalPreprocessorChainFactory {
 	 * Builds the default chain of preprocessors for resources, be it javascript or css ones. 
 	 * @return the default chain of preprocessors
 	 */
-	public abstract GlobalPreprocessor buildDefaultProcessorChain();
+	public abstract GlobalProcessor buildDefaultProcessorChain();
 
 	/**
 	 * Builds a chain of preprocessors based on a comma-separated list of postprocessor keys. 
 	 * @param preprocessorKeys the comma-separated list of preprocessor keys.
 	 * @return a chain of preprocessors
 	 */
-	public abstract GlobalPreprocessor buildProcessorChain(String preprocessorKeys);
+	public abstract GlobalProcessor buildProcessorChain(String preprocessorKeys);
 	
 	
 	/**

@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2010 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2007-2011 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -33,7 +33,7 @@ import net.jawr.web.resource.bundle.CompositeResourceBundle;
 import net.jawr.web.resource.bundle.InclusionPattern;
 import net.jawr.web.resource.bundle.JoinableResourceBundle;
 import net.jawr.web.resource.bundle.JoinableResourceBundleImpl;
-import net.jawr.web.resource.bundle.factory.global.preprocessor.BasicProcessorChainFactory;
+import net.jawr.web.resource.bundle.factory.global.preprocessor.BasicGlobalPreprocessorChainFactory;
 import net.jawr.web.resource.bundle.factory.global.preprocessor.GlobalPreprocessorChainFactory;
 import net.jawr.web.resource.bundle.factory.mapper.OrphanResourceBundlesMapper;
 import net.jawr.web.resource.bundle.factory.mapper.ResourceBundleDirMapper;
@@ -42,7 +42,7 @@ import net.jawr.web.resource.bundle.factory.postprocessor.JSPostProcessorChainFa
 import net.jawr.web.resource.bundle.factory.postprocessor.PostProcessorChainFactory;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.factory.util.ResourceBundleDefinition;
-import net.jawr.web.resource.bundle.global.preprocessor.GlobalPreprocessor;
+import net.jawr.web.resource.bundle.global.processor.GlobalProcessor;
 import net.jawr.web.resource.bundle.handler.CachedResourceBundlesHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandler;
 import net.jawr.web.resource.bundle.handler.ResourceBundlesHandlerImpl;
@@ -216,7 +216,7 @@ public class BundlesHandlerFactory {
 		if (null != customGlobalPreprocessors)
 			resourceTypeChainFactory.setCustomGlobalPreprocessors(customGlobalPreprocessors);
 
-		GlobalPreprocessor resourceTypeProcessor = null;
+		GlobalProcessor resourceTypeProcessor = null;
 		if (null == this.resourceTypeProcessorKeys)
 			resourceTypeProcessor = this.resourceTypeChainFactory.buildDefaultProcessorChain();
 		else
@@ -651,7 +651,7 @@ public class BundlesHandlerFactory {
 		// Set the extension for resources and bundles
 		this.resourceType = resourceType;
 		this.fileExtension = "." + resourceType.toLowerCase();
-		this.resourceTypeChainFactory = new BasicProcessorChainFactory();
+		this.resourceTypeChainFactory = new BasicGlobalPreprocessorChainFactory();
 		// Create the chain factory.
 		if ("js".equals(resourceType))
 			this.chainFactory = new JSPostProcessorChainFactory();

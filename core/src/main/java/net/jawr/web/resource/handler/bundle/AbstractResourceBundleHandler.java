@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2009 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2007-2011 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -204,6 +204,13 @@ public abstract class AbstractResourceBundleHandler implements ResourceBundleHan
 						e);
 			}
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	public String getBundleTextDirPath() {
+		return textDirPath;
 	}
 
 	/*

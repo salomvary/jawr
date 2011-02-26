@@ -31,15 +31,16 @@ import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
 import net.jawr.web.resource.bundle.generator.GeneratorRegistry;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 
-import org.carrot2.labs.smartsprites.message.MessageLog;
-import org.carrot2.labs.smartsprites.resource.ResourceHandler;
+//import org.carrot2.labs.smartsprites.message.MessageLog;
+//import org.carrot2.labs.smartsprites.resource.ResourceHandler;
 
 /**
  * This class defines the resource handler for smartSprites
  * 
  * @author Ibrahim Chaehoi
  */
-public class SmartSpritesResourceHandler implements ResourceHandler {
+public class SmartSpritesResourceHandler //implements ResourceHandler 
+{
 	
 	/** The resource handler for CSS resources */
 	private ResourceReaderHandler rsHandler;
@@ -54,36 +55,36 @@ public class SmartSpritesResourceHandler implements ResourceHandler {
 	private GeneratorRegistry imgGeneratorRegistry;
 	
 	/** The charset */
-	private final String charset;
+	private  String charset;
 
 	/** The working directory */
-	private final String workingDir;
+	private  String workingDir;
 	
 	/** The webapp context path */
 	private String contextPath = null;
 	
-	/**
-	 * Constructor
-	 * 
-	 * @param rsHandler the CSS resource handler
-	 * @param imgRsHandler the image resource handler
-	 * @param imgGeneratorRegistry the image generator registry
-	 * @param charset the charset
-	 * @param messageLog the message log
-	 */
-	public SmartSpritesResourceHandler(
-			ResourceReaderHandler rsHandler,
-			ResourceReaderHandler imgRsHandler, 
-			GeneratorRegistry cssGeneratorRegistry,
-			GeneratorRegistry imgGeneratorRegistry,
-			String charset, MessageLog messageLog) {
-		this.rsHandler = rsHandler;
-		this.imgRsHandler = imgRsHandler;
-		this.cssGeneratorRegistry = cssGeneratorRegistry;
-		this.imgGeneratorRegistry = imgGeneratorRegistry;
-		this.charset = charset;
-		this.workingDir = rsHandler.getWorkingDirectory()+JawrConstant.CSS_SMARTSPRITES_TMP_DIR;
-	}
+//	/**
+//	 * Constructor
+//	 * 
+//	 * @param rsHandler the CSS resource handler
+//	 * @param imgRsHandler the image resource handler
+//	 * @param imgGeneratorRegistry the image generator registry
+//	 * @param charset the charset
+//	 * @param messageLog the message log
+//	 */
+//	public SmartSpritesResourceHandler(
+//			ResourceReaderHandler rsHandler,
+//			ResourceReaderHandler imgRsHandler, 
+//			GeneratorRegistry cssGeneratorRegistry,
+//			GeneratorRegistry imgGeneratorRegistry,
+//			String charset, MessageLog messageLog) {
+//		this.rsHandler = rsHandler;
+//		this.imgRsHandler = imgRsHandler;
+//		this.cssGeneratorRegistry = cssGeneratorRegistry;
+//		this.imgGeneratorRegistry = imgGeneratorRegistry;
+//		this.charset = charset;
+//		this.workingDir = rsHandler.getWorkingDirectory()+JawrConstant.CSS_SMARTSPRITES_TMP_DIR;
+//	}
 
 	/**
 	 * Sets the context path

@@ -1,5 +1,5 @@
 /**
- * Copyright 2007-2010 Jordi Hernández Sellés, Ibrahim Chaehoi
+ * Copyright 2007-2011 Jordi Hernández Sellés, Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.exception.BundlingProcessException;
 import net.jawr.web.exception.ResourceNotFoundException;
 import net.jawr.web.resource.bundle.factory.util.PathNormalizer;
@@ -113,7 +114,6 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 	 * @param resourceReaderHandler ResourceHandler Used to access the files and folders.
 	 * @param generatorRegistry The generator registry.
 	 */
-	@SuppressWarnings("unchecked")
 	public JoinableResourceBundleImpl(String id, String name,
 			String fileExtension, InclusionPattern inclusionPattern,
 			ResourceReaderHandler resourceReaderHandler, GeneratorRegistry generatorRegistry) {
@@ -125,11 +125,10 @@ public class JoinableResourceBundleImpl implements JoinableResourceBundle {
 		this.name = name;
 		this.resourceReaderHandler = resourceReaderHandler;
 		this.generatorRegistry = generatorRegistry;
-		this.itemPathList = ConcurrentCollectionsFactory
-				.buildCopyOnWriteArrayList();
+		this.itemPathList = new CopyOnWriteArrayList<String>();
 		this.licensesPathList = new HashSet<String>();
 		this.fileExtension = fileExtension;
-		prefixMap = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+		prefixMap = new ConcurrentHashMap<String, String>();
 
 	}
 

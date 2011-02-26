@@ -89,7 +89,7 @@ public class IOUtils {
 	}
 
 	/**
-	 * Writes all the contents of an InputStream to an OutStream.
+	 * Writes all the contents of an InputStream to an OutputStream.
 	 * 
 	 * @param input the input stream to read from
 	 * @param output the output stream to write to
@@ -107,6 +107,19 @@ public class IOUtils {
 		}
 	}
 
+	/**
+	 * Writes all the contents of a byte array to an OutputStream.
+	 * 
+	 * @param input the input stream to read from
+	 * @param output the output stream to write to
+	 * @param closeStreams the flag indicating if the stream must be close at the end, even if an exception occurs
+	 */
+	public static void write(byte[] byteArray, OutputStream out) throws IOException {
+		if(byteArray != null){
+			out.write(byteArray);
+		}
+	}
+	
 	/**
 	 * Copy the readable byte channel to the writable byte channel
 	 * 
@@ -226,5 +239,7 @@ public class IOUtils {
 			}
 		}
 	}
+
+	
 
 }

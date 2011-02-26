@@ -1,5 +1,5 @@
 /**
- * Copyright 2009 Ibrahim Chaehoi
+ * Copyright 2009-2011 Ibrahim Chaehoi
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -14,8 +14,8 @@
 package net.jawr.web.resource;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import net.jawr.web.collections.ConcurrentCollectionsFactory;
 import net.jawr.web.config.JawrConfig;
 import net.jawr.web.resource.handler.bundle.ResourceBundleHandler;
 import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
@@ -29,8 +29,7 @@ import net.jawr.web.resource.handler.reader.ResourceReaderHandler;
 public class ImageResourcesHandler {
 
 	/** The image map */
-	@SuppressWarnings("unchecked")
-	private Map<String, String> imageMap = ConcurrentCollectionsFactory.buildConcurrentHashMap();
+	private Map<String, String> imageMap = new ConcurrentHashMap<String, String>();
 	
 	/** The Jawr config */
 	private JawrConfig jawrConfig;
