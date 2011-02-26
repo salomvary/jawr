@@ -249,5 +249,7 @@ public class JawrConstant {
 	public static final String JAWR_BASECONTEXT_DIRECTORY = "jawr.basecontext.directory";
 
 	public static final String JAWR_BASECONTEXT_DIRECTORY_HIGH_PRIORITY = "jawr.basecontext.directory.high.priority";
+
+	public static final String JAWR_LOCALE_GENERATOR_FALLBACK_TO_SYSTEM_LOCALE = "jawr.locale.generator.fallbackToSystemLocale";
 	
 }
