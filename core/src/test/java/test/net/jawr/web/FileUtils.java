@@ -8,7 +8,6 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 
 public class FileUtils {
 
@@ -58,11 +57,22 @@ public class FileUtils {
 		return removeCarriageReturn(readFile(getClassPathFile(path)).toString());
 	}
 
+	public static String readFile(String filePath) throws Exception {
+		
+		return readFile(new File(filePath));
+	}
+	
 	public static String readFile(File toRead) throws Exception {
+		
+		return readFile(toRead, "UTF-8");
+	}
+	
+	public static String readFile(File toRead, String charset) throws Exception {
+		
 		StringWriter sw = new StringWriter();
 		FileInputStream fis = new FileInputStream(toRead);
 		FileChannel inchannel = fis.getChannel();
-		Reader rd = Channels.newReader(inchannel, Charset.forName("UTF-8").newDecoder(), -1);
+		Reader rd = Channels.newReader(inchannel, charset);
 		int i;
 		while ((i = rd.read()) != -1)
 			sw.write(i);
