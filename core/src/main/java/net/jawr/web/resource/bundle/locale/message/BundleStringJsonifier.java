@@ -123,7 +123,7 @@ public class BundleStringJsonifier {
 			}
 		}
 		else if(!newLeaf.isEmpty()) {
-			sb.append(JavascriptStringUtil.quote(currentKey))
+			sb.append(currentKey)
 			  .append(":{");
 			for(Iterator<String> it = newLeaf.keySet().iterator(); it.hasNext();) {
 				String newKey = it.next();
@@ -143,7 +143,7 @@ public class BundleStringJsonifier {
 	 * @param fullKey
 	 */
 	private void addValuedKey(final StringBuffer sb, String key, String fullKey) {
-		sb	.append(JavascriptStringUtil.quote(key))
+		sb	.append(key)
 		.append(":")
 		.append(FUNC)
 		.append(JavascriptStringUtil.quote(bundleValues.get(fullKey).toString()));
